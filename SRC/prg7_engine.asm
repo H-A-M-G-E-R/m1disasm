@@ -1185,118 +1185,36 @@ LoadSamusGFX:
         ldy #$1B                        ;Entry 27 in GFXInfo table.
         jsr LoadGFX                     ;($C7AB)Switch to girl gfx
     LC5EB:
-    ldy #$14                        ;Entry 20 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$17                        ;Entry 23 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$18                        ;Entry 24 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$19                        ;Entry 25 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$16                        ;Entry 22 in GFXInfo table.
-    jmp LoadGFX                     ;($C7AB)Load pattern table GFX.
+    jsr LoadMultipleGFX
+    .byte $14,$17,$18,$19,$16, $FF
 
 InitBrinstarGFX:
-    ldy #$03                        ;Entry 3 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$04                        ;Entry 4 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$05                        ;Entry 5 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$06                        ;Entry 6 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$19                        ;Entry 25 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$16                        ;Entry 22 in GFXInfo table.
-    jmp LoadGFX                     ;($C7AB)Load pattern table GFX.
+    jsr LoadMultipleGFX
+    .byte $03,$04,$05,$06,$19,$16, $FF
 
 InitNorfairGFX:
-    ldy #$04                        ;Entry 4 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$05                        ;Entry 5 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$07                        ;Entry 7 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$08                        ;Entry 8 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$09                        ;Entry 9 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$19                        ;Entry 25 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$16                        ;Entry 22 in GFXInfo table.
-    jmp LoadGFX                     ;($C7AB)Load pattern table GFX.
+    jsr LoadMultipleGFX
+    .byte $04,$05,$07,$08,$09,$19,$16, $FF
 
 InitTourianGFX:
-    ldy #$05                        ;Entry 5 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$0A                        ;Entry 10 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$0B                        ;Entry 11 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$0C                        ;Entry 12 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$0D                        ;Entry 13 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$0E                        ;Entry 14 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$1A                        ;Entry 26 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$1C                        ;Entry 28 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$19                        ;Entry 25 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$16                        ;Entry 22 in GFXInfo table.
-    jmp LoadGFX                     ;($C7AB)Load pattern table GFX.
+    jsr LoadMultipleGFX
+    .byte $05,$0A,$0B,$0C,$0D,$0E,$1A,$1C,$19,$16, $FF
 
 InitKraidGFX:
-    ldy #$04                        ;Entry 4 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$05                        ;Entry 5 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$0A                        ;Entry 10 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$0F                        ;Entry 15 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$10                        ;Entry 16 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$11                        ;Entry 17 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$19                        ;Entry 25 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$16                        ;Entry 22 in GFXInfo table.
-    jmp LoadGFX                     ;($C7AB)Load pattern table GFX.
+    jsr LoadMultipleGFX
+    .byte $04,$05,$0A,$0F,$10,$11,$19,$16, $FF
 
 InitRidleyGFX:
-    ldy #$04                        ;Entry 4 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$05                        ;Entry 5 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$0A                        ;Entry 10 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$12                        ;Entry 18 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$13                        ;Entry 19 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$19                        ;Entry 25 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$16                        ;Entry 22 in GFXInfo table.
-    jmp LoadGFX                     ;($C7AB)Load pattern table GFX.
+    jsr LoadMultipleGFX
+    .byte $04,$05,$0A,$12,$13,$19,$16, $FF
 
 InitGFX6:
-    ldy #$01                        ;Entry 1 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$02                        ;Entry 2 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$19                        ;Entry 25 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$16                        ;Entry 22 in GFXInfo table.
-    jmp LoadGFX                     ;($C7AB)Load pattern table GFX.
+    jsr LoadMultipleGFX
+    .byte $01,$02,$19,$16, $FF
 
 InitGFX7: ; Load Password Font
-    ldy #$17                        ;Entry 23 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    ldy #$16                        ;Entry 22 in GFXInfo table.
-    jmp LoadGFX                     ;($C7AB)Load pattern table GFX.
+    jsr LoadMultipleGFX
+    .byte $17,$16, $FF
 
 ;The table below contains info for each tile data block in the ROM.
 ;Each entry is 7 bytes long. The format is as follows:
@@ -1366,6 +1284,25 @@ GFXInfo:
         .word GFX_ExclamationPoint, $1F40, $0010
 
 ;--------------------------------[ Pattern table loading routines ]---------------------------------
+
+LoadMultipleGFX:
+    pla
+    sta $07
+    pla
+    sta $08
+    ldy #$01
+@loop:
+    lda ($07),y
+    cmp #$FF
+    beq @end
+    sty $09
+    tay
+    jsr LoadGFX
+    ldy $09
+    iny
+    jmp @loop
+@end:
+    rts
 
 ;Y contains the GFX header to fetch from the table above, GFXInfo.
 
