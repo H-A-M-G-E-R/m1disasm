@@ -4460,6 +4460,236 @@ PPUString_Credits29:
     .byte $00                       ;End PPU block write.
 
 ;Code I moved from bank 7 to free up space in there
+
+;Calls the proper routine according to the bank number in A.
+
+GoBankInit:
+    jsr ChooseRoutine
+        .word InitBank0                 ;($C531)Initialize bank 0.
+        .word InitBank1                 ;($C552)Initialize bank 1.
+        .word InitGenericAreaBank
+        .word InitBank3                 ;($C590)Initialize bank 3.
+        .word InitGenericAreaBank
+        .word InitGenericAreaBank
+        .word ExitSub                   ;($C45C)Rts
+        .word ExitSub                   ;($C45C)Rts
+
+;Title screen memory page.
+
+InitBank0:
+    ldy #$00                        ;
+    sty GamePaused                  ;Ensure game is not paused.
+    iny                             ;Y=1.
+    sty GameMode                    ;Game is at title routines.
+    jsr ScreenNmiOff                ;($C45D)Waits for NMI to end then turns it off.
+    jsr ClearNameTables             ;($C158)Erase name table data.
+
+    ldy #$A0                        ;
+    LC543:
+        lda IntroStarsData-1,y                     ;
+        sta IntroStarSprite-1,y                     ;Loads sprite info for stars into RAM $6E00 thru 6E9F.
+        dey                             ;
+        bne LC543                       ;
+
+    jsr InitTitleGFX                ;($C5D7)Load title GFX.
+    jmp NMIOn                       ;($C487)Turn on VBlank interrupts.
+
+;Brinstar memory page.
+InitBank1:
+    lda MainRoutine                 ;
+    cmp #$03                        ;Is game engine running? if so, branch.-->
+    beq LC56D                           ;Else do some housekeeping first.
+        lda #$00                        ;
+        sta MainRoutine                 ;Run InitArea routine next.
+        sta InArea                      ;Start in Brinstar.
+        sta GamePaused                  ;Make sure game is not paused.
+        jsr ClearRAM_33_DF              ;($C1D4)Clear game engine memory addresses.
+        jsr ClearSamusStats             ;($C578)Clear Samus' stats memory addresses.
+    LC56D:
+    jmp InitGenericAreaBank
+
+ClearSamusStats:
+    ;Clears Samus stats(Health, full tanks, game timer, etc.).
+    ldy #$0F
+    lda #$00
+    @loop:
+        ;Load $100 thru $10F with #$00.
+        sta $0100,y
+        dey
+        ;Loop 16 times.
+        bpl @loop
+    rts
+
+;Tourian memory page.
+InitBank3:
+    ldy #$0D                        ;
+    LC599:
+        lda MetroidData,y               ;Load info from table below into-->
+        sta MetroidRepelSpeed,y                     ;$77F0 thru $77FD.
+        dey                             ;
+        bpl LC599                       ;
+    ;fallthrough
+
+InitGenericAreaBank:
+    lda #$00                        ;GameMode = play.
+    sta GameMode                    ;
+    jsr ScreenNmiOff                ;($C45D)Disable screen and Vblank.
+    jsr InitAreaGFX
+    jmp NMIOn                       ;($C487)Turn on VBlank interrupts.
+
+;Table used by above subroutine and loads the initial data used to describe
+;metroid's behavior in the Tourian section of the game.
+MetroidData:
+    .byte $F8, $08, $30, $D0, $60, $A0, $02, $04, $00, $00, $00, $00, $00, $00
+
+InitEndGFX:
+    lda #$01                        ;
+    sta GameMode                    ;Game is at title/end game.
+    jmp InitGFX6                    ;($C6C2)Load end game GFX.
+
+InitTitleGFX:
+    ldy #$15                        ;Entry 21 in GFXInfo table.
+    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
+
+LoadSamusGFX:
+    ldy #$00                        ;Entry 0 in GFXInfo table.
+    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
+    lda JustInBailey                ;
+    beq LC5EB                           ;Branch if wearing suit
+        ldy #$1B                        ;Entry 27 in GFXInfo table.
+        jsr LoadGFX                     ;($C7AB)Switch to girl gfx
+    LC5EB:
+    jsr LoadMultipleGFX
+    .byte $14,$17,$18,$19,$16, $FF
+
+InitAreaGFX:
+    lda CurrentBank
+    jsr ChooseRoutine
+        .word ExitSub
+        .word InitBrinstarGFX
+        .word InitNorfairGFX
+        .word InitTourianGFX
+        .word InitKraidGFX
+        .word InitRidleyGFX
+        .word ExitSub
+        .word ExitSub
+
+InitBrinstarGFX:
+    jsr LoadMultipleGFX
+    .byte $03,$04,$05,$06,$19,$16, $FF
+
+InitNorfairGFX:
+    jsr LoadMultipleGFX
+    .byte $04,$05,$07,$08,$09,$19,$16, $FF
+
+InitTourianGFX:
+    jsr LoadMultipleGFX
+    .byte $05,$0A,$0B,$0C,$0D,$0E,$1A,$1C,$19,$16, $FF
+
+InitKraidGFX:
+    jsr LoadMultipleGFX
+    .byte $04,$05,$0A,$0F,$10,$11,$19,$16, $FF
+
+InitRidleyGFX:
+    jsr LoadMultipleGFX
+    .byte $04,$05,$0A,$12,$13,$19,$16, $FF
+
+InitGFX6:
+    jsr LoadMultipleGFX
+    .byte $01,$02,$19,$16, $FF
+
+InitGFX7: ; Load Password Font
+    jsr LoadMultipleGFX
+    .byte $17,$16, $FF
+
+;The table below contains info for each tile data block in the ROM.
+;Each entry is 7 bytes long. The format is as follows:
+;byte 0: ROM bank where GFX data is located.
+;byte 1-2: 16-bit ROM start address (src).
+;byte 3-4: 16-bit PPU start address (dest).
+;byte 5-6: data length (16-bit).
+
+GFXInfo:
+    .byte bank(GFX_Samus)          ;[SPR]Samus, items.             Entry 0.
+        .word GFX_Samus, $0000, $09A0
+    .byte bank(GFX_EndingSprites)  ;[SPR]Samus in ending.          Entry 1.
+        .word GFX_EndingSprites, $0000, $0520
+    .byte bank(GFX_TheEndFont)     ;[BGR]Partial font, "The End".  Entry 2.
+        .word GFX_TheEndFont, $1000, $0400
+    .byte bank(GFX_BrinBG1)        ;[BGR]Brinstar rooms.           Entry 3.
+        .word GFX_BrinBG1, $1000, $0150
+    .byte bank(GFX_CREBG1)         ;[BGR]Common Room Elements      Entry 4.
+        .word GFX_CREBG1, $1200, $0450
+    .byte bank(GFX_CREBG2)         ;[BGR]More CRE                  Entry 5.
+        .word GFX_CREBG2, $1800, $0800
+    .byte bank(GFX_BrinstarSprites);[SPR]Brinstar enemies.         Entry 6.
+        .word GFX_BrinstarSprites, $0C00, $0400
+    .byte bank(GFX_NorfBG1)        ;[BGR]Norfair rooms.            Entry 7.
+        .word GFX_NorfBG1, $1000, $0260
+    .byte bank(GFX_NorfBG2)        ;[BGR]More Norfair rooms.       Entry 8.
+        .word GFX_NorfBG2, $1700, $0070
+    .byte bank(GFX_NorfairSprites) ;[SPR]Norfair enemies.          Entry 9.
+        .word GFX_NorfairSprites, $0C00, $0400
+    .byte bank(GFX_BossBG)         ;[BGR]Boss areas (Kr, Rd, Tr)   Entry 10. (0A)
+        .word GFX_BossBG, $1000, $02E0
+    .byte bank(GFX_TourBG)         ;[BGR]Tourian rooms.            Entry 11. (0B)
+        .word GFX_TourBG, $1200, $0600
+    .byte bank(GFX_Zebetite)       ;[BGR]Mother Brain room.        Entry 12. (0C)
+        .word GFX_Zebetite, $1900, $0090
+    .byte bank(GFX_TourianFont)    ;[BGR]Misc. object.             Entry 13. (0D)
+        .word GFX_TourianFont, $1D00, $0300
+    .byte bank(GFX_TourianSprites) ;[SPR]Tourian enemies.          Entry 14. (0E)
+        .word GFX_TourianSprites, $0C00, $0400
+    .byte bank(GFX_KraiBG2)        ;[BGR]More Kraid Rooms          Entry 15. (0F)
+        .word GFX_KraiBG2, $1700, $00C0
+    .byte bank(GFX_KraiBG3)        ;[BGR]More Kraid Rooms          Entry 16. (10)
+        .word GFX_KraiBG3, $1E00, $0200
+    .byte bank(GFX_KraidSprites)   ;[SPR]Miniboss I enemies.       Entry 17. (11)
+        .word GFX_KraidSprites, $0C00, $0400
+    .byte bank(GFX_RidlBG)         ;[BGR]More Ridley Rooms         Entry 18. (12)
+        .word GFX_RidlBG, $1700, $00C0
+    .byte bank(GFX_RidleySprites)  ;[SPR]Miniboss II enemies.      Entry 19. (13)
+        .word GFX_RidleySprites, $0C00, $0400
+    .byte bank(GFX_IntroSprites)   ;[SPR]Intro/End sprites.        Entry 20. (14)
+        .word GFX_IntroSprites, $0C00, $0100
+    .byte bank(GFX_Title)          ;[BGR]Title.                    Entry 21. (15)
+        .word GFX_Title, $1400, $0500
+    .byte bank(GFX_Solid)          ;[BGR]Solid tiles.              Entry 22. (16)
+        .word GFX_Solid, $1FC0, $0040
+    .byte bank(GFX_Font)           ;[BGR]Complete font.            Entry 23. (17)
+        .word GFX_Font, $1000, $0400
+    .byte bank(GFX_Font)           ;[BGR]Ingame HUD font.          Entry 24. (18)
+        .word GFX_Font, $0A00, $00A0
+    .byte bank(GFX_Solid)          ;[BGR]Solid tiles.              Entry 25. (19)
+        .word GFX_Solid, $0FC0, $0040
+    .byte bank(GFX_Font)           ;[BGR]Tourian font.             Entry 26. (1A)
+        .word GFX_Font, $1D00, $02A0
+    .byte bank(GFX_SamusSuitless)  ;[SPR]Suitless Samus.           Entry 27. (1B)
+        .word GFX_SamusSuitless, $0000, $07B0
+    .byte bank(GFX_ExclamationPoint)  ;[BGR]Exclaimation point.       Entry 28. (1C)
+        .word GFX_ExclamationPoint, $1F40, $0010
+
+;--------------------------------[ Pattern table loading routines ]---------------------------------
+
+LoadMultipleGFX:
+    pla
+    sta $07
+    pla
+    sta $08
+    ldy #$01
+@loop:
+    lda ($07),y
+    cmp #$FF
+    beq @end
+    sty $09
+    tay
+    jsr LoadGFX
+    ldy $09
+    iny
+    jmp @loop
+@end:
+    rts
+
 ;---------------------------------------[ Remove intro sprites ]-------------------------------------
 
 ;The following routine is used in the Intro to remove the sparkle sprites and the crosshairs
