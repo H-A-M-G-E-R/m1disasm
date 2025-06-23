@@ -9400,6 +9400,7 @@ LF85A:
     lda EnemyData0DTbl,y
     sta EnData0D,x
     lda EnemyHitPointTbl,y          ;($962B)
+    bmi Lx353 ; BUGFIX: tough rippers and squeepts now doesn't bug out their immunity
     ldy EnSpecialAttribs,x
     bpl Lx353 ; Check MSB of enemyAttr, double health if set
         asl
