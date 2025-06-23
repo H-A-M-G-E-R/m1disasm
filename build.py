@@ -32,12 +32,12 @@ print('Linking .o files')
 run_or_exit("wlalink -c -S SRC/linkfile out/M1.nes", "Linker Error.")
 print('Success\n')
 
-with open("out/M1.nes", "rb") as f:
-    md5_hash_generated = hashlib.md5(f.read())
-print('MD5 hash: ' + md5_hash_generated.hexdigest())
+#with open("out/M1.nes", "rb") as f:
+#    md5_hash_generated = hashlib.md5(f.read())
+#print('MD5 hash: ' + md5_hash_generated.hexdigest())
 
-md5_hash_expected_hex = "d7da4a907be0012abca6625471ef2c9c"
-if md5_hash_generated.hexdigest() == md5_hash_expected_hex:
-    print("Hash matches vanilla ROM.")
-else:
-    print("Hash does not match vanilla ROM.")
+#md5_hash_expected_hex = "d7da4a907be0012abca6625471ef2c9c"
+#if md5_hash_generated.hexdigest() == md5_hash_expected_hex:
+#    print("Hash matches vanilla ROM.")
+#else:
+#    print("Hash does not match vanilla ROM.")

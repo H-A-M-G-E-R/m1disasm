@@ -4461,6 +4461,8 @@ PPUString_Credits29:
 
 ;-------------------------------------------[ World map ]--------------------------------------------
 
+.ALIGN $100 ;Needs to be aligned, see GetRoomNum
+
 WorldMap:
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $08, $FF, $08, $FF, $FF, $FF, $FF, $FF, $FF, $08, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
@@ -4494,31 +4496,6 @@ WorldMap:
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $1D, $1B, $17, $18, $0C, $FF, $04, $11, $10, $12, $13, $14, $14, $15, $03, $1C, $1E, $1E, $1F, $1F, $1F, $1D, $07, $FF
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $0B, $FF, $0C, $16, $18, $17, $18, $17, $0F, $17, $17, $1A, $1A, $17, $1B, $1B, $17, $19, $09, $FF
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-
-;Loads contents of world map into -->
-;RAM at addresses $7000 thru $73FF.
-CopyMap:
-    lda #<WorldMap.b
-    sta $00
-    lda #>WorldMap.b
-    sta $01
-    lda #<WorldMapRAM.b
-    sta $02
-    lda #>WorldMapRAM.b
-    sta $03
-    ldx #$04
-    LA950:
-        ldy #$00
-        LA952:
-            lda ($00),y
-            sta ($02),y
-            iny
-            bne LA952
-        inc $01
-        inc $03
-        dex
-        bne LA950
-    rts
 
 ;Code I moved from bank 7 to free up space in there
 ;---------------------------------------[ Remove intro sprites ]-------------------------------------

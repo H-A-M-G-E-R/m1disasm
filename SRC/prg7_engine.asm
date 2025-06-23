@@ -1080,7 +1080,6 @@ InitBank0:
     iny                             ;Y=1.
     sty GameMode                    ;Game is at title routines.
     jsr ScreenNmiOff                ;($C45D)Waits for NMI to end then turns it off.
-    jsr CopyMap                     ;($A93E)Copy game map from ROM to cartridge RAM $7000-$73FF
     jsr ClearNameTables             ;($C158)Erase name table data.
 
     ldy #$A0                        ;
@@ -6610,6 +6609,8 @@ GetRoomNum:
                                     ;through the door(horizontal scrolling only).
 
 LE733:
+    lda #$00
+    jsr MMCWriteReg3
     lda SamusMapPosY                ;Map pos y.
     jsr Amul16                      ;($C2C5)Multiply by 16.
     sta $00                         ;Store multiplied value in $00.
@@ -6622,10 +6623,14 @@ LE733:
     adc SamusMapPosX                ;Add map pos X to A.
     sta $00                         ;Store result.
     lda $01                         ;
-    adc #$70                        ;Add #$7000 to result.
+    adc #>WorldMap.b                ;Add #$7000 to result.
     sta $01                         ;$0000 = (MapY*32)+MapX+#$7000.
     ldy #$00                        ;
     lda ($00),y                     ;Load room number.
+    pha
+    lda CurrentBank
+    jsr MMCWriteReg3
+    pla
     cmp #$FF                        ;Is it unused?-->
     beq RTS_E76F                    ;If so, branch to exit with carry flag set.
 
