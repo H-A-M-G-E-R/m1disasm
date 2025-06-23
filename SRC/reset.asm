@@ -46,15 +46,3 @@ RESET: ;($BFB0)
     ;($C01A)Does preliminary housekeeping.
     jmp Startup
 
-
-;Not used.
-.if BANK == 7
-    .byte $FF, $FF, $FF, $4C, $E4, $B3, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-    .byte $FF, $FF, $FF, $FF, $4D, $45, $54, $52, $4F, $49, $44, $E4, $8D, $00, $00, $38
-    .byte $04, $01, $06, $01, $BC
-.else
-    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $00, $00, $00, $00, $00
-    .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-    .byte $00, $00, $00, $00, $00
-.endif
-

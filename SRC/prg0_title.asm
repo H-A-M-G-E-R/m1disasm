@@ -4461,9 +4461,10 @@ PPUString_Credits29:
 
 ;Code I moved from bank 7 to free up space in there
 
-;Calls the proper routine according to the bank number in A.
+;Calls the proper routine according to the bank number in $11.
 
 GoBankInit:
+    lda $11
     jsr ChooseRoutine
         .word InitBank0                 ;($C531)Initialize bank 0.
         .word InitBank1                 ;($C552)Initialize bank 1.
@@ -4563,7 +4564,7 @@ LoadSamusGFX:
     .byte $14,$17,$18,$19,$16, $FF
 
 InitAreaGFX:
-    lda CurrentBank
+    lda $11
     jsr ChooseRoutine
         .word ExitSub
         .word InitBrinstarGFX

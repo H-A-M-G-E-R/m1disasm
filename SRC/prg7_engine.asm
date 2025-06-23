@@ -1017,10 +1017,12 @@ CheckSwitch:
     lda #$00                        ;Reset(so that the bank switch won't be performed-->
     sta SwitchPending               ;every succeeding frame too).
     dey                             ;Y now contains the bank to switch to.
-    sty CurrentBank                 ;
+    sty $11
+    sta CurrentBank                 ;
     jsr MMCWriteReg3                ;Switch bank to 0
     jsr GoBankInit                  ;($C510)Initialize bank switch data.
-    lda CurrentBank
+    lda $11
+    sta CurrentBank
     ;fallthrough
 
 ;Loads the lower memory page with the bank specified in A.
