@@ -30,21 +30,22 @@
 ;password scrambling and determinig what items, if any, an enemy leaves
 ;behind after it is killed.
 
+;RNG from https://www.nesdev.org/wiki/Random_number_generator
+
 RandomNumbers: ;$C000
     txa
     pha
-    ldx #$05
-    @loop:
-        lda RandomNumber1
-        clc
-        adc #$05
-        sta RandomNumber1               ;2E is increased by #$19 every frame and-->
-        lda RandomNumber2               ;2F is increased by #$5F every frame.
-        clc
-        adc #$13
-        sta RandomNumber2
+    ldx #$08
+    lda RandomNumber1
+    -
+        asl
+        rol RandomNumber2
+        bcc +
+            eor #$39
+        +
         dex
-        bne @loop
+        bne -
+    sta RandomNumber1
     pla
     tax
     lda RandomNumber1
@@ -352,27 +353,6 @@ EraseAllSprites:
         jmp DecSpriteYCoord             ;($988A)Find proper y coord of sprites.
     Exit101:
     rts                             ;Return used by subroutines above and below.
-
-;---------------------------------------[ Remove intro sprites ]-------------------------------------
-
-;The following routine is used in the Intro to remove the sparkle sprites and the crosshairs
-;sprites every frame.  It does this by loading the sprite values with #$F4 which moves the
-;sprite to the bottom right of the screen and uses a blank graphic for the sprite.
-
-RemoveIntroSprites:
-    ldy #$02                        ;Start at address $200.
-    sty $01                         ;
-    ldy #$00                        ;
-    sty $00                         ;($00) = $0200 (sprite page)
-    ldy #$5F                        ;Prepare to clear RAM $0200-$025F
-    lda #$F4                        ;
-    LC1C8:
-        sta ($00),y                     ;
-        dey                             ;Loop unitl $200 thru $25F is filled with #$F4.
-        bpl LC1C8                       ;
-    lda GameMode                    ;
-    beq Exit101                     ; branch if mode = Play.
-        jmp DecSpriteYCoord             ;($988A)Find proper y coord of sprites.
 
 ;-------------------------------------[Clear RAM $33 thru $DF]---------------------------------------
 
@@ -1639,9 +1619,11 @@ SamusInit:
     lda PPUCTRL_ZP                  ;
     and #$01                        ;Set Samus' name table position to current name table-->
     sta ObjHi                       ;active in PPU.
-    lda #$00                        ;
+    lda #$90                        ;
     sta Health                      ;Starting health is-->
-    lda #$03                        ;set to 30 units.
+    lda TankCount                   ;full...
+    jsr Amul16                      ;
+    ora #$09                        ;
     sta Health+1                    ;
 RTS_C92A:
     rts
@@ -1996,37 +1978,6 @@ SavedDataTable:
     .word ItemHistory               ;($69B4)Base for save game slot 1.
     .word ItemHistory               ;($69B4)Base for save game slot 2.
 
-;----------------------------------------[ Choose ending ]-------------------------------------------
-
-;Determine what type of ending is to be shown, based on Samus' age.
-ChooseEnding:
-    ldy #$01                        ;
-LCAF7:
-    lda SamusAge+2                  ;If SamusAge+2 anything but #$00, load worst-->
-    bne LCB09                           ;ending(more than 37 hours of gameplay).
-    lda SamusAge+1                  ;
-    cmp AgeTable-1,y                ;Loop four times to determine-->
-    bcs LCB09                           ;ending type from table below.
-    iny                             ;
-    cpy #$05                        ;
-    bne LCAF7                       ;
-LCB09:
-    sty EndingType                  ;Store the ending # (1..5), 5=best ending
-    lda #$00                        ;
-    cpy #$04                        ;Was the best or 2nd best ending achieved?
-    bcc LCB14                           ;Branch if not (suit stays on)
-        lda #$01                        ;
-    LCB14:
-    sta JustInBailey                ;Suit OFF, baby!
-    rts
-
-;Table used by above subroutine to determine ending type.
-AgeTable:
-    .byte $7A                       ;Max. 37 hours
-    .byte $16                       ;Max. 6.7 hours
-    .byte $0A                       ;Max. 3.0 hours
-    .byte $04                       ;Best ending. Max. 1.2 hours
-
 ;--------------------------------[ Clear screen data (not used) ]------------------------------------
 
 ClearScreenData:
@@ -2378,13 +2329,7 @@ LCCC2:
     beq samL07
         ldy SamusJumpDsplcmnt
         bit ObjSpeedY
-        bmi samL01
-            cpy #$18
-            bcs samL04
-            lda #an_SamusJump
-            sta ObjAnimResetIndex
-            bcc samL04          ; branch always
-        samL01:
+        bpl samL04 ; This fixes the spinjump height bug
         cpy #$18
         bcc samL04
         lda ObjAnimResetIndex
@@ -2862,12 +2807,8 @@ LCF88:
         jsr LCCB7
         lda SamusAccelY
         bmi RTS_X016
-        lda ObjAnimResetIndex
-        cmp #an_SamusSalto
-        beq RTS_X016
-        stx SamusDir
-        lda Table06+1,x
-        jmp SetSamusAnim
+        stx SamusDir ; This fix makes you be able to turn around while spinjumping.
+        rts
 
     Lx015:
     lda SamusAccelY
@@ -3223,10 +3164,7 @@ LD1F7:
     rts
 Lx042:
     sta SamusHit,y
-    lda MissileToggle
-    beq RTS_X043
-        cpy #$D0
-    RTS_X043:
+    lda #$00
     rts
 
 LD210:
@@ -3379,8 +3317,6 @@ LD306:
 CheckMissileLaunch:
     lda MissileToggle
     beq Exit4       ; exit if Samus not in "missile fire" mode
-    cpy #$D0
-    bne Exit4
     ldx SamusDir
     lda MissileAnims,x
 Lx047:
@@ -3403,8 +3339,6 @@ MissileAnims:
 LD340:
     lda MissileToggle
     beq Exit4
-    cpy #$D0
-    bne Exit4
     lda #$8F
     bne Lx047
 
@@ -4974,8 +4908,6 @@ LDCFC:
     lda #$60
     sta EnData0D,x
     lda RandomNumber1
-    cmp #$10
-    bcc LDD5B
 LDD30:
     and #$07
     tay
@@ -4985,25 +4917,17 @@ LDD30:
     bne Lx138
         ; check if spawning a missile pickup is allowed
         ; fail if the quantity of missile pickups spawned in this room has reached the max
-        ldy MissilePickupQtyMax
-        cpy MissilePickupQtyCur
-        beq LDD5B
         ; fail if Samus's missile capacity is 0
         lda MaxMissiles
         beq LDD5B
         ; allow spawning the missile pickup
-        inc MissilePickupQtyCur
     RTS_X137:
         rts
     Lx138:
         ; drop type is energy pickup or no pickup
         ; check if spawning an energy pickup is allowed
         ; fail if the quantity of energy pickups spawned in this room has reached the max
-        ldy EnergyPickupQtyMax
-        cpy EnergyPickupQtyCur
-        beq LDD5B
         
-        inc EnergyPickupQtyCur
         ; exit if it is not no pickup (energy pickup)
         cmp #$89
         bne RTS_X137
@@ -5026,16 +4950,8 @@ LDD5B:
     ; (BUG! this assumption is false when skipping the minibosses in NARPASSWORD)
     ; therefore, to force the pickup to spawn anyway, reset the quantities
     lda RandomNumber1
-    ; set current quantities to 0
-    ldy #$00
-    sty EnergyPickupQtyCur
-    sty MissilePickupQtyCur
-    ; set max quantities to 1
-    iny
-    sty MissilePickupQtyMax
-    sty EnergyPickupQtyMax
     ; try to spawn the pickup again
-    bne LDD30
+    jmp LDD30
 
 LDD75:
     ; miniboss was just killed
@@ -5188,10 +5104,10 @@ LDD8B_Lx143:
 ItemDropTbl:
     .byte $80                       ;Missile.
     .byte $81                       ;Energy.
-    .byte $89                       ;No item.
+    .byte $81                       ;Energy. Was no item.
     .byte $80                       ;Missile.
     .byte $81                       ;Energy.
-    .byte $89                       ;No item.
+    .byte $80                       ;Missile. Was no item.
     .byte $81                       ;Energy.
     .byte $89                       ;No item.
 
@@ -9178,6 +9094,7 @@ Lx311:
     jmp LF416
 ;--------------------------------------------
 DoHurtEnemy:
+    jsr EnemyReactToSamusWeapon ; Fixes enemies not reacting to Samus' weapons while being hurt.
     dec EnSpecialAttribs,x
     bne Lx313
     ; Preserve upper two bits of EnSpecialAttribs

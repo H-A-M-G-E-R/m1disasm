@@ -1807,7 +1807,7 @@ SongNorfairHeader:
 
 SongKraidHeader:
     SongHeader NoteLengthsTbl@0, $FF, $F0, $00, $00
-    .if (BANK == 4) || (BANK == 5)
+    .if BANK == 4
         .word SongKraidSQ1, SongKraidSQ2, SongKraidTri, $0000
     .else
         .word $0100, $0300, $0500, $0000
@@ -1823,7 +1823,7 @@ SongItemRoomHeader:
 
 SongRidleyHeader:
     SongHeader NoteLengthsTbl@1, $FF, $F0, $01, $01
-    .if (BANK == 4) || (BANK == 5)
+    .if BANK == 5
         .word SongRidleySQ1, SongRidleySQ2, SongRidleyTri, $0000
     .else
         .word $0100, $0300, $0500, $0000
@@ -1871,7 +1871,7 @@ SongBrinstarHeader:
 
 SongTourianHeader:
     SongHeader NoteLengthsTbl@1, $FF, $03, $00, $00
-    .if BANK <= 5
+    .if (BANK == 3) || (BANK == 4) || (BANK == 5)
         .word SongTourianSQ1, SongTourianSQ2, SongTourianTri, $0000
     .else
         .word $0100, $0300, $0500, $0700
@@ -1882,8 +1882,6 @@ SongTourianHeader:
 .include "songs/power_up.asm"
 
 .include "songs/fade_in.asm"
-
-.include "songs/tourian.asm"
 
 ;The following table contains the musical notes used by the music player.  The first byte is
 ;the period high information(3 bits) and the second byte is the period low information(8 bits).
