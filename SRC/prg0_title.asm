@@ -4574,19 +4574,13 @@ AgeTable:
     .byte $0A                       ;Max. 3.0 hours
     .byte $04                       ;Best ending. Max. 1.2 hours
 
-;------------------------------------------[ Area music data ]---------------------------------------
+;----------------------------------------------[ Graphics ]--------------------------------------------
 
-.include "songs/end.asm"
+GFX_IntroSprites:
+    .incbin "common_chr/intro_sprites.chr" ; 89A0 - Intro and end tile patterns.
 
-.include "songs/intro.asm"
-
-.ENDS
-
-;------------------------------------------[ Sound Engine ]------------------------------------------
-
-.SECTION "ROM Bank $000 - Music Engine" BANK 0 SLOT "ROMSwitchSlot" ORGA $B200 FORCE
-
-.include "music_engine.asm"
+GFX_Title:
+    .incbin "common_chr/title.chr" ; 8BE0 - METROID title screen CHR
 
 ;----------------------------------------------[ RESET ]--------------------------------------------
 

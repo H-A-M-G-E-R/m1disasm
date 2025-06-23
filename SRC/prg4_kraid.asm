@@ -730,19 +730,10 @@ TileBlastFrame10:
 
 .include "kraid/metatiles.asm"
 
-;------------------------------------------[ Area music data ]---------------------------------------
+;----------------------------------------------[ Graphics ]--------------------------------------------
 
-.include "songs/kraid.asm"
-
-.include "songs/tourian.asm"
-
-.ENDS
-
-;------------------------------------------[ Sound Engine ]------------------------------------------
-
-.SECTION "ROM Bank $004 - Music Engine" BANK 4 SLOT "ROMSwitchSlot" ORGA $B200 FORCE
-
-.include "music_engine.asm"
+GFX_KraiBG2:
+    .incbin "kraid/bg_chr_2.chr" ; B330 - More Kraid BG CHR
 
 ;----------------------------------------------[ RESET ]--------------------------------------------
 

@@ -862,17 +862,10 @@ TileBlastFrame10:
 
 .include "brinstar/metatiles.asm"
 
-;------------------------------------------[ Area music data ]---------------------------------------
+;----------------------------------------------[ Graphics ]--------------------------------------------
 
-.include "songs/brinstar.asm"
-
-.ENDS
-
-;------------------------------------------[ Sound Engine ]------------------------------------------
-
-.SECTION "ROM Bank $001 - Music Engine" BANK 1 SLOT "ROMSwitchSlot" ORGA $B200 FORCE
-
-.include "music_engine.asm"
+GFX_BrinBG1:
+    .incbin "brinstar/bg_chr_1.chr" ; 9DA0 - Brinstar BG CHR data
 
 ;----------------------------------------------[ RESET ]--------------------------------------------
 

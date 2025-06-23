@@ -1783,105 +1783,75 @@ SongHeaders:
 
 SongMthrBrnRoomHeader:
     SongHeader NoteLengthsTbl@1, $FF, $F5, $00, $00
-    .if BANK == 3
-        .word SongMthrBrnRoomSQ1, SongMthrBrnRoomSQ2, SongMthrBrnRoomTri, $0000
-    .else
-        .word $0100, $0300, $0500, $0000
-    .endif
+    .word SongMthrBrnRoomSQ1, SongMthrBrnRoomSQ2, SongMthrBrnRoomTri, $0000
 
 SongEscapeHeader:
     SongHeader NoteLengthsTbl@1, $FF, $00, $02, $02
-    .if BANK == 3
-        .word SongEscapeSQ1, SongEscapeSQ2, SongEscapeTri, SongEscapeNoise
-    .else
-        .word $0100, $0300, $0500, $0700
-    .endif
+    .word SongEscapeSQ1, SongEscapeSQ2, SongEscapeTri, SongEscapeNoise
 
 SongNorfairHeader:
     SongHeader NoteLengthsTbl@1, $FF, $F0, $04, $04
-    .if BANK == 2
-        .word SongNorfairSQ1, SongNorfairSQ2, SongNorfairTri, SongNorfairNoise
-    .else
-        .word $0100, $0300, $0500, $0700
-    .endif
+    .word SongNorfairSQ1, SongNorfairSQ2, SongNorfairTri, SongNorfairNoise
 
 SongKraidHeader:
     SongHeader NoteLengthsTbl@0, $FF, $F0, $00, $00
-    .if BANK == 4
-        .word SongKraidSQ1, SongKraidSQ2, SongKraidTri, $0000
-    .else
-        .word $0100, $0300, $0500, $0000
-    .endif
+    .word SongKraidSQ1, SongKraidSQ2, SongKraidTri, $0000
 
 SongItemRoomHeader:
     SongHeader NoteLengthsTbl@1, $FF, $03, $00, $00
-    .if BANK <= 5
-        .word SongItemRoomSQ1, SongItemRoomSQ2, SongItemRoomTri, $0000
-    .else
-        .word $0100, $0300, $0500, $0700
-    .endif
+    .word SongItemRoomSQ1, SongItemRoomSQ2, SongItemRoomTri, $0000
 
 SongRidleyHeader:
     SongHeader NoteLengthsTbl@1, $FF, $F0, $01, $01
-    .if BANK == 5
-        .word SongRidleySQ1, SongRidleySQ2, SongRidleyTri, $0000
-    .else
-        .word $0100, $0300, $0500, $0000
-    .endif
+    .word SongRidleySQ1, SongRidleySQ2, SongRidleyTri, $0000
 
 SongEndHeader:
     SongHeader NoteLengthsTbl@2, $00, $00, $02, $01
-    .if BANK == 0
-        .word SongEndSQ1, SongEndSQ2, SongEndTri, SongEndNoise
-    .else
-        .word $0100, $0300, $0500, $0700
-    .endif
+    .word SongEndSQ1, SongEndSQ2, SongEndTri, SongEndNoise
 
 SongIntroHeader:
     SongHeader NoteLengthsTbl@2, $00, $F0, $02, $05
-    .if BANK == 0
-        .word SongIntroSQ1, SongIntroSQ2, SongIntroTri, SongIntroNoise
-    .else
-        .word $0100, $0300, $0500, $0700
-    .endif
+    .word SongIntroSQ1, SongIntroSQ2, SongIntroTri, SongIntroNoise
 
 SongFadeInHeader:
     SongHeader NoteLengthsTbl@1, $00, $F0, $02, $00
-    .if BANK <= 5
-        .word SongFadeInSQ1, SongFadeInSQ2, SongFadeInTri, $0000
-    .else
-        .word $0100, $0300, $0500, $0700
-    .endif
+    .word SongFadeInSQ1, SongFadeInSQ2, SongFadeInTri, $0000
 
 SongPowerUpHeader:
     SongHeader NoteLengthsTbl@0, $00, $F0, $01, $00
-    .if BANK <= 5
-        .word SongPowerUpSQ1, SongPowerUpSQ2, SongPowerUpTri, $0000
-    .else
-        .word $0100, $0300, $0500, $0700
-    .endif
+    .word SongPowerUpSQ1, SongPowerUpSQ2, SongPowerUpTri, $0000
 
 SongBrinstarHeader:
     SongHeader NoteLengthsTbl@1, $FF, $00, $02, $03
-    .if BANK == 1
-        .word SongBrinstarSQ1, SongBrinstarSQ2, SongBrinstarTri, SongBrinstarNoise
-    .else
-        .word $0100, $0300, $0500, $0700
-    .endif
+    .word SongBrinstarSQ1, SongBrinstarSQ2, SongBrinstarTri, SongBrinstarNoise
 
 SongTourianHeader:
     SongHeader NoteLengthsTbl@1, $FF, $03, $00, $00
-    .if (BANK == 3) || (BANK == 4) || (BANK == 5)
-        .word SongTourianSQ1, SongTourianSQ2, SongTourianTri, $0000
-    .else
-        .word $0100, $0300, $0500, $0700
-    .endif
+    .word SongTourianSQ1, SongTourianSQ2, SongTourianTri, $0000
 
 .include "songs/item_room.asm"
 
 .include "songs/power_up.asm"
 
 .include "songs/fade_in.asm"
+
+.include "songs/intro.asm"
+
+.include "songs/brinstar.asm"
+
+.include "songs/norfair.asm"
+
+.include "songs/kraid.asm"
+
+.include "songs/ridley.asm"
+
+.include "songs/tourian.asm"
+
+.include "songs/mthr_brn_room.asm"
+
+.include "songs/escape.asm"
+
+.include "songs/end.asm"
 
 ;The following table contains the musical notes used by the music player.  The first byte is
 ;the period high information(3 bits) and the second byte is the period low information(8 bits).
@@ -2050,11 +2020,3 @@ InitializeMusic:
     sta TriMusicIndexIndex
     sta NoiseMusicIndexIndex
     rts
-
-;Not used.
-    .byte $10, $07, $0E, $1C, $38, $70, $2A, $54, $15, $12, $02, $03, $20, $2C, $B4, $AD
-    .byte $4D, $06, $8D, $8D, $06, $AD, $5E, $06, $A8, $B9, $2A, $BC, $A8, $A2, $00, $B9
-    .byte $61, $BD, $9D, $2B, $06, $C8, $E8, $8A, $C9, $0D, $D0, $F3, $A9, $01, $8D, $40
-    .byte $06, $8D, $41, $06, $8D, $42, $06, $8D, $43, $06, $A9, $00, $8D, $38, $06, $8D
-    .byte $39, $06, $8D, $3A, $06, $8D, $3B, $06, $60, $FF, $00, $00, $00, $00, $00, $00
-    .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00

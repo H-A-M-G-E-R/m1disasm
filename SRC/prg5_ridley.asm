@@ -627,19 +627,10 @@ TileBlastFrame10:
 
 .include "ridley/metatiles.asm"
 
-;------------------------------------------[ Area music data ]---------------------------------------
+;----------------------------------------------[ Graphics ]--------------------------------------------
 
-.include "songs/ridley.asm"
-
-.include "songs/tourian.asm"
-
-.ENDS
-
-;------------------------------------------[ Sound Engine ]------------------------------------------
-
-.SECTION "ROM Bank $005 - Music Engine" BANK 5 SLOT "ROMSwitchSlot" ORGA $B200 FORCE
-
-.include "music_engine.asm"
+GFX_RidlBG:
+    .incbin "ridley/bg_chr.chr" ; B3F0 - More Ridley BG CHR
 
 ;----------------------------------------------[ RESET ]--------------------------------------------
 

@@ -654,17 +654,13 @@ TileBlastFrame10:
 
 .include "norfair/metatiles.asm"
 
-;------------------------------------------[ Area music data ]---------------------------------------
+;----------------------------------------------[ Graphics ]--------------------------------------------
 
-.include "songs/norfair.asm"
+GFX_NorfBG1:
+    .incbin "norfair/bg_chr_1.chr" ; A6F0 - Norfair BG CHR data
 
-.ENDS
-
-;------------------------------------------[ Sound Engine ]------------------------------------------
-
-.SECTION "ROM Bank $002 - Music Engine" BANK 2 SLOT "ROMSwitchSlot" ORGA $B200 FORCE
-
-.include "music_engine.asm"
+GFX_NorfBG2:
+    .incbin "norfair/bg_chr_2.chr" ; A950 - Norfair BG CHR data
 
 ;----------------------------------------------[ RESET ]--------------------------------------------
 

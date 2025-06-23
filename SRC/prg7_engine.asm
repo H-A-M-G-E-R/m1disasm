@@ -216,7 +216,11 @@ NMI:
         jsr WriteScroll                 ;($C29A)Update h/v scroll reg.
         jsr ReadJoyPads                 ;($C215)Read both joypads.
     LC103:
+    lda #$06
+    jsr MMCWriteReg3
     jsr SoundEngine                 ;($B3B4)Update music and SFX.
+    lda CurrentBank
+    jsr MMCWriteReg3
     jsr UpdateAge                   ;($C97E)Update Samus' age.
     ldy #$01                        ; NMI = finished.
     sty NMIStatus                   ;

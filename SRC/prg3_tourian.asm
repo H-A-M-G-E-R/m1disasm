@@ -1767,21 +1767,16 @@ TileBlastFrame10:
 
 .include "tourian/metatiles.asm"
 
-;------------------------------------------[ Area music data ]---------------------------------------
+;----------------------------------------------[ Graphics ]--------------------------------------------
 
-.include "songs/escape.asm"
+GFX_BossBG:
+    .incbin "common_chr/bg_boss_areas.chr" ; A9C0 - Kraid, Ridley, Tourian BG CHR
 
-.include "songs/mthr_brn_room.asm"
+GFX_TourBG:
+    .incbin "tourian/bg_chr.chr" ; ACA0 - Tourian BG CHR
 
-.include "songs/tourian.asm"
-
-.ENDS
-
-;------------------------------------------[ Sound Engine ]------------------------------------------
-
-.SECTION "ROM Bank $003 - Music Engine" BANK 3 SLOT "ROMSwitchSlot" ORGA $B200 FORCE
-
-.include "music_engine.asm"
+GFX_Zebetite:
+    .incbin "tourian/zebetite_chr.chr" ; B2A0 - Zebetite BG CHR
 
 ;----------------------------------------------[ RESET ]--------------------------------------------
 
