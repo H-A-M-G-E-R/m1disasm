@@ -1960,7 +1960,10 @@ UpdateWorld:
     lda #$F4
     Lx003:
         sta SpriteRAM,x
-        jsr Xplus4       ; X = X + 4
+        inx
+        inx
+        inx
+        inx
         bne Lx003
     rts
 
