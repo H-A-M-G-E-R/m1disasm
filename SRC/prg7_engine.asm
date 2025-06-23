@@ -615,16 +615,14 @@ PPUWrite:
     lda ($00),y                     ;Get data byte again.
     and #$3F                        ;Keep lower 6 bits as loop counter.
     tax                             ;
-    bcc PPUWriteLoop                ;If Carry Flag not set, the data is not RLE.
-    iny                             ;Data is RLE, advance to data byte.
-    PPUWriteLoop:
-        bcs LC300                           ;
-            iny                             ;Only inc Y if data is not RLE.
-        LC300:
+    bcs PPUWriteRLE
+    @loopNotRLE:
+        iny
         lda ($00),y                     ;Get data byte.
         sta PPUDATA                     ;Write to PPU.
         dex                             ;Decrease loop counter.
-        bne PPUWriteLoop                ;Keep going until X=0.
+        bne @loopNotRLE                 ;Keep going until X=0.
+    PPUWriteMerge:
     iny                             ;
     jsr AddYToPtr00                 ;($C2A8)Point to next data chunk.
 
@@ -636,6 +634,15 @@ ProcessPPUString:
     lda ($00),y                     ;
     bne PPUWrite                    ;If A is non-zero, PPU data string follows,-->
     jmp WriteScroll                 ;($C29A)Otherwise we're done.
+
+PPUWriteRLE:
+    iny
+    lda ($00),y
+    @loopRLE:
+        sta PPUDATA
+        dex
+        bne @loopRLE
+    beq PPUWriteMerge
 
 ;In: CF = desired PPU address increment (0 = 1, 1 = 32).
 ;Out: PPU control #0 ($2000) updated accordingly.
