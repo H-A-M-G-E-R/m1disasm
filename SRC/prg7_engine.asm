@@ -505,6 +505,7 @@ UpdateTimer:
 ;meaning that its address can be popped from the stack.
 
 ChooseRoutine:
+CommonJump_ChooseRoutine:
     asl                             ;* 2, each ptr is 2 bytes (16-bit).
     sty TempY                       ;Temp storage.
     stx TempX                       ;Temp storage.
@@ -815,6 +816,7 @@ LC3F6:
     rts
 
 Base10Subtract: ;($C3FB)
+CommonJump_Base10Subtract:
     jsr ExtractNibbles              ;($C41D)Separate upper 4 bits and lower 4 bits.
     sbc $01                         ;Subtract lower nibble from number.
     sta $01                         ;
@@ -2327,6 +2329,7 @@ Exit3:
 ;----------------------------------------[ Subtract health ]-----------------------------------------
 
 SubtractHealth:
+CommonJump_SubtractHealth:
     ;Check to see if health needs to be changed. If not, branch to exit.
     lda HealthChange
     ora HealthChange+1.b
@@ -4773,6 +4776,7 @@ LDD75:
     bne LDD5B
 
 LDD8B:
+CommonJump_14:
     ; branch if enemy frame is not blank
     ldx PageIndex
     lda EnAnimFrame,x
@@ -5315,6 +5319,7 @@ ExplodePlacementTbl:
 ;Advance to next frame of enemy's animation. Basically the same as UpdateObjAnim, only for enemies.
 
 UpdateEnemyAnim:
+CommonJump_UpdateEnemyAnim:
     ldx PageIndex                   ;Load index to desired enemy.
     ldy EnStatus,x                  ;
     cpy #enemyStatus_Pickup                        ;Is enemy in the process of dying?-->
@@ -7224,6 +7229,7 @@ LEB4D:
     jsr GetNameTable                ;($EB85)Get name table to place enemy on.
     sta EnHi,x               ;Store name table.
 LEB6E:
+CommonJump_0E:
     ldy EnType,x               ;Load A with index to enemy data.
     asl EnData05,x                     ;*2
     jsr LFB7B
@@ -8762,10 +8768,12 @@ LF40D:
 ;  entry points
 ; Entry Point 1 ; CommonJump_00
 LF410:
+CommonJump_00:
     jsr UpdateEnemyAnim
     jsr CommonEnemyAI
 ; Entry Point 2 ; CommonJump_02
 LF416:
+CommonJump_02:
     ; check if enemy is miniboss
     ldx PageIndex
     lda EnSpecialAttribs,x
@@ -8789,6 +8797,7 @@ Lx301:
 
 ; Entry Point 3 ; CommonJump_01
 LF438:
+CommonJump_01:
     jsr UpdateEnemyAnim
     jmp LF416
 ;-------------------------------------------
@@ -9192,6 +9201,7 @@ InitEnRestingAnimIndex:
     cmp EnResetAnimIndex,x
     beq RTS_X331
 InitEnAnimIndex:
+CommonJump_InitEnAnimIndex:
     sta EnResetAnimIndex,x
 SetEnAnimIndex:
     sta EnAnimIndex,x
@@ -9495,6 +9505,7 @@ DoRestingEnemy_TryBecomingActive:
     jmp LF7B3
 
 GetEnemyTypeTimes2PlusFacingDirectionBit0:
+CommonJump_GetEnemyTypeTimes2PlusFacingDirectionBit0:
     lda EnData05,x
     jmp Lx352
 
@@ -9511,6 +9522,7 @@ Lx352:
     rts
 
 LF852: ; accessed from CommonJump_03
+CommonJump_03:
     txa
     lsr
     lsr
@@ -9520,6 +9532,7 @@ LF852: ; accessed from CommonJump_03
     rts
 
 LF85A:
+CommonJump_07:
     ldy EnType,x
     lda EnemyData0DTbl,y
     sta EnData0D,x
@@ -9535,6 +9548,7 @@ RTS_X354:
 
 
 SpawnFireball:
+CommonJump_SpawnFireball:
     ; exit if bit 4 of EnData05 is set (what does this bit represent?)
     lda EnData05,x
     and #$10
@@ -9818,6 +9832,7 @@ RemoveEnemy:
 ; return carry clear if enemy collided or was removed
 ;        carry set if apply speed
 EnemyBGCollideOrApplySpeed:
+CommonJump_EnemyBGCollideOrApplySpeed:
     ; branch if not in norfair
     lda InArea
     cmp #$11
@@ -10038,6 +10053,7 @@ Exit13:
 ; Sidehopper AI ?
 ; Wavers, too?
 LFB88:
+CommonJump_09:
     ldx PageIndex
     jsr GetEnemyTypeTimes2PlusFacingDirection
     lda EnData1D,x
@@ -10063,6 +10079,7 @@ LFB88:
         sta EnAnimIndex,x
         dec EnAnimIndex,x
     LFBB9:
+    CommonJump_08:
         sta EnResetAnimIndex,x
         jmp ClearEnAnimDelay
     Lx384:
@@ -10073,6 +10090,7 @@ LFB88:
 ;-------------------------------------------------------------------------------
 
 LFBCA:
+CommonJump_0A:
     ldx PageIndex
     jsr GetEnemyTypeTimes2PlusFacingDirection
     lda EnemyActiveAnimIndex,y
@@ -10393,6 +10411,7 @@ UpdateMellow_FD84:
 ; returns are $02, $08, $09, $0B, carry
 ; return carry set if movement was successful, and carry unset if movement failed
 ApplySpeedToPosition:
+CommonJump_ApplySpeedToPosition:
     ; save vertical or horizontal scroll flag to $02
     lda ScrollDir
     and #$02
@@ -10645,6 +10664,7 @@ Exit23:
     rts
 
 DrawTileBlast: ;($FEDC)
+CommonJump_DrawTileBlast:
     lda PPUStrIndex
     cmp #$1F
     bcs Exit23

@@ -18,54 +18,54 @@
 ;-----------------------------------------[ Start of code ]------------------------------------------
 
 ; These first three all jump to different points within the same procedure
-CommonJump_00: ;$8000 (yes anim, yes common AI)
-    jmp LF410
-CommonJump_01: ;$8003 (yes anim, no common AI)
-    jmp LF438
-CommonJump_02: ;$8006 (no anim, no common AI)
-    jmp LF416
-CommonJump_03: ;$8009
-    jmp LF852
-CommonJump_UpdateEnemyAnim: ;$800C
-    jmp UpdateEnemyAnim             ;($E094)
-CommonJump_InitEnAnimIndex: ;$800F
-    jmp InitEnAnimIndex
-CommonJump_GetEnemyTypeTimes2PlusFacingDirectionBit0: ;$8012 (unused?)
-    jmp GetEnemyTypeTimes2PlusFacingDirectionBit0
-CommonJump_07: ;$8015
-    jmp LF85A
-CommonJump_08: ;$8018
-    jmp LFBB9
-CommonJump_09: ;$801B
-    jmp LFB88
-CommonJump_0A: ;$801E
-    jmp LFBCA
-CommonJump_SpawnFireball: ;$8021
-    jmp SpawnFireball
-CommonJump_ChooseRoutine: ;$8024
-    jmp ChooseRoutine               ;($C27C)
-CommonJump_ApplySpeedToPosition: ;$8027
-    jmp ApplySpeedToPosition
-CommonJump_0E: ;$802A
-    jmp LEB6E
-CommonJump_EnemyGetDeltaY: ;$802D
-    jmp EnemyGetDeltaY
-CommonJump_EnemyGetDeltaX: ;$8030
-    jmp EnemyGetDeltaX
-CommonJump_EnemyBGCollideOrApplySpeed: ;$8033
-    jmp EnemyBGCollideOrApplySpeed
-CommonJump_12: ;$8036
-    jmp EnemyGetDeltaY_Negative977B
-CommonJump_13: ;$8039
-    jmp EnemyGetDeltaX_Negative977B
-CommonJump_14: ;$803C
-    jmp LDD8B
-CommonJump_DrawTileBlast: ;$803F
-    jmp DrawTileBlast
-CommonJump_SubtractHealth: ;$8042
-    jmp SubtractHealth              ;($CE92)
-CommonJump_Base10Subtract: ;$8045
-    jmp Base10Subtract              ;($C3FB)
+;CommonJump_00: ;$8000 (yes anim, yes common AI)
+;    jmp LF410
+;CommonJump_01: ;$8003 (yes anim, no common AI)
+;    jmp LF438
+;CommonJump_02: ;$8006 (no anim, no common AI)
+;    jmp LF416
+;CommonJump_03: ;$8009
+;    jmp LF852
+;CommonJump_UpdateEnemyAnim: ;$800C
+;    jmp UpdateEnemyAnim             ;($E094)
+;CommonJump_InitEnAnimIndex: ;$800F
+;    jmp InitEnAnimIndex
+;CommonJump_GetEnemyTypeTimes2PlusFacingDirectionBit0: ;$8012 (unused?)
+;    jmp GetEnemyTypeTimes2PlusFacingDirectionBit0
+;CommonJump_07: ;$8015
+;    jmp LF85A
+;CommonJump_08: ;$8018
+;    jmp LFBB9
+;CommonJump_09: ;$801B
+;    jmp LFB88
+;CommonJump_0A: ;$801E
+;    jmp LFBCA
+;CommonJump_SpawnFireball: ;$8021
+;    jmp SpawnFireball
+;CommonJump_ChooseRoutine: ;$8024
+;    jmp ChooseRoutine               ;($C27C)
+;CommonJump_ApplySpeedToPosition: ;$8027
+;    jmp ApplySpeedToPosition
+;CommonJump_0E: ;$802A
+;    jmp LEB6E
+;CommonJump_EnemyGetDeltaY: ;$802D
+;    jmp EnemyGetDeltaY
+;CommonJump_EnemyGetDeltaX: ;$8030
+;    jmp EnemyGetDeltaX
+;CommonJump_EnemyBGCollideOrApplySpeed: ;$8033
+;    jmp EnemyBGCollideOrApplySpeed
+;CommonJump_12: ;$8036
+;    jmp EnemyGetDeltaY_Negative977B
+;CommonJump_13: ;$8039
+;    jmp EnemyGetDeltaX_Negative977B
+;CommonJump_14: ;$803C
+;    jmp LDD8B
+;CommonJump_DrawTileBlast: ;$803F
+;    jmp DrawTileBlast
+;CommonJump_SubtractHealth: ;$8042
+;    jmp SubtractHealth              ;($CE92)
+;CommonJump_Base10Subtract: ;$8045
+;    jmp Base10Subtract              ;($C3FB)
 
 ; Crawler jump table
 CrawlerMovementRoutinesTable:
@@ -433,6 +433,7 @@ LoadEnemyMovementPtr:
 ;-------------------------------------------------------------------------------
 ; Determines and returns delta y for a given frame in $00
 EnemyGetDeltaY:
+CommonJump_EnemyGetDeltaY:
     jsr LoadTableAt977B
     bpl L824C
         jmp EnemyGetDeltaY_Negative977B
@@ -633,6 +634,7 @@ EnemyGetDeltaY_CaseFA:
 ;-------------------------------------------------------------------------------
 ; Horizontal Movement Related?
 EnemyGetDeltaX:
+CommonJump_EnemyGetDeltaX:
     jsr LoadTableAt977B
     bpl L8320
         jmp EnemyGetDeltaX_Negative977B
@@ -669,6 +671,7 @@ L833C:
 ; Nonsense with counters and velocity to substitute for a lack of subpixels?
 ; Vertical case?
 EnemyGetDeltaY_Negative977B:
+CommonJump_12:
     ldy #$0E
     lda EnAccelY,x
     bmi L835E
@@ -715,6 +718,7 @@ L8376:
 ; Nonsense with counters and velocity to substitute for a lack of subpixels?
 ; Horizontal case?
 EnemyGetDeltaX_Negative977B:
+CommonJump_13:
     lda #$00
     sta $00
     sta $02
@@ -1406,9 +1410,5 @@ WriteDoorBGTiles_Common:
 ; x coordinate of door's background tiles in pixels
 DoorXTable:
     .byte $E8, $10
-
-.byte $60, $AD, $91, $69, $8D, $78, $68, $AD, $92, $69, $8D, $79, $68, $A9
-.byte $00, $85, $00, $85, $02, $AD, $97, $69, $29, $80, $F0, $06, $A5, $00, $09, $80
-.byte $85, $00, $AD, $97, $69, $29
 
 ; EoF
