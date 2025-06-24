@@ -1860,29 +1860,30 @@ SFX_SetTriSFXFlag:
     ldx #TriSFXFlag - NoiseSFXFlag.b
     bne SFX_SetSoundFlag
 
-;Initiate music
-
-PowerUpMusic:
-    lda #sfxMulti_PowerUp
-    bne SFX_SetMultiSFXFlag
-
-IntroMusic:
-    lda #sfxMulti_Intro
-
 SFX_SetMultiSFXFlag:
     ldx #MultiSFXFlag - NoiseSFXFlag.b
     bne SFX_SetSoundFlag
 
+;Initiate music
+
+PowerUpMusic:
+    lda #music_PowerUp
+    bne SetCurrentMusic
+
+IntroMusic:
+    lda #music_Intro
+    bne SetCurrentMusic
+
 MotherBrainMusic:
     lda #music_MotherBrain
-    bne SFX_SetMusicInitFlag
+    bne SetCurrentMusic
 
 TourianMusic:
     lda #music_Tourian
 
-SFX_SetMusicInitFlag:
-    ldx #MusicInitFlag - NoiseSFXFlag.b
-    bne SFX_SetSoundFlag
+SetCurrentMusic:
+    sta CurrentMusic
+    rts
 
 ;--------------------------------------[ Update Samus ]----------------------------------------------
 
@@ -2394,6 +2395,8 @@ LCEBF:
     lda #$00
     sta Health
     sta Health+1
+    ;Stop music.
+    sta CurrentMusic
     ;Death handler.
     lda #sa_Dead
     sta ObjAction
@@ -4035,8 +4038,7 @@ StartMusic:
         lda #music_ItemRoom
     Lx114:
     ;Store music flag info.
-    ora MusicInitFlag
-    sta MusicInitFlag
+    sta CurrentMusic
     rts
 
 ElevatorStop:

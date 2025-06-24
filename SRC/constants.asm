@@ -656,8 +656,8 @@ SQ2InUse               = $0654   ;2=SQ2 channel being used by SFX, 0=not in use
 TriInUse               = $0655   ;3=Triangle channel being used by SFX, 0=not in use
 
 ChannelType            = $065C   ;Stores channel type being processed(0,1,2,3 or 4)
-CurrentMusicRepeat     = $065D   ;Stores flags of music to repeat
-MusicInitIndex         = $065E   ;index for loading $62B thru $637(base=$BD31).
+;CurrentMusicRepeat     = $065D   ;Stores flags of music to repeat
+;MusicInitIndex         = $065E   ;index for loading $62B thru $637(base=$BD31).
 
 NoiseSFXLength         = $0660   ;Stores number of frames to play Noise SFX
 SQ1SFXLength           = $0661   ;Stores number of frames to play SQ1 SFX
@@ -693,7 +693,7 @@ SQ2SFXFlag             = $0682   ;Initialization flags for SQ2 SFX(never used)
 TriSFXFlag             = $0683   ;Initialization flags for triangle SFX
 MultiSFXFlag           = $0684   ;Initialization Flags for SFX and some music
 
-MusicInitFlag          = $0685   ;Music init flags
+PreviousMusic          = $0685   ;Music init flags in vanilla
 
 ScrewAttack0686        = $0686
 
@@ -1102,21 +1102,24 @@ sfxTri_BigEnemyHit     = %00000100
 sfxTri_SamusBall       = %00000010
 sfxTri_BombLaunch      = %00000001
 
-sfxMulti_Intro         = %10000000
-sfxMulti_PowerUp       = %01000000
-sfxMulti_EndMusic      = %00100000
-sfxMulti_IntroMusic    = %00010000
+;sfxMulti_80            = %10000000
+;sfxMulti_40            = %01000000
+;sfxMulti_20            = %00100000
+;sfxMulti_10            = %00010000
 ;sfxMulti_08            = %00001000
 sfxMulti_SamusHit      = %00000100
 sfxMulti_BossHit       = %00000010
 sfxMulti_IncorrectPassword = %00000001
 
-music_RidleyArea       = %10000000
-music_Tourian          = %01000000
-music_ItemRoom         = %00100000
-music_KraidArea        = %00010000
-music_Norfair          = %00001000
-music_Escape           = %00000100
-music_MotherBrain      = %00000010
-music_Brinstar         = %00000001
-
+music_RidleyArea       = $01
+music_Tourian          = $02
+music_ItemRoom         = $03
+music_KraidArea        = $04
+music_Norfair          = $05
+music_Escape           = $06
+music_MotherBrain      = $07
+music_Brinstar         = $08
+music_Intro            = $09
+music_PowerUp          = $0A
+music_EndMusic         = $0B
+music_IntroMusic       = $0C

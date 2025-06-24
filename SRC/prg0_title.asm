@@ -161,9 +161,8 @@ RamValueTbl: ;$80C8
     .byte $00, $00, $00, $00, $00, $00, $C0, $C4
 
 DrawIntroBackground:
-    lda #sfxMulti_IntroMusic        ;Intro music flag.
-    sta ABStatus                    ;Never accessed by game.
-    sta MultiSFXFlag                ;Initiates intro music.
+    lda #music_IntroMusic           ;Intro music.
+    sta CurrentMusic                ;
     jsr ScreenOff                   ;($C439)Turn screen off.
     jsr ClearNameTables             ;($C158)Erase name table data.
     ldx #<PPUString_DrawIntroBackground.b                     ;Lower address of PPU information.
@@ -488,8 +487,8 @@ L82AF:
     sty TitleRoutine                ;Next routine sets up METROID fade in delay.
     lda IntroMusicRestart           ;Check to see if intro music needs to be restarted.-->
     bne L82EA                       ;Branch if not.
-    lda #sfxMulti_IntroMusic        ;
-    sta MultiSFXFlag                ;Restart intro music.
+    lda #$FF                        ;
+    sta PreviousMusic               ;Restart intro music.
     lda #$02                        ;Set restart of intro music after another two cycles-->
     sta IntroMusicRestart           ;of the title routines.
 RTS_82E9:
@@ -3267,8 +3266,8 @@ L9AE4:
     ldy #>LA052.b                     ;the surface of the planet in end of game.
     jsr PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
     jsr NMIOn                       ;($C487)Turn on non-maskable interrupt.
-    lda #sfxMulti_EndMusic          ;Initiate end game music.
-    sta MultiSFXFlag                ;
+    lda #music_EndMusic             ;Initiate end game music.
+    sta CurrentMusic                ;
     lda #$60                        ;Loads Timer3 with a delay of 960 frames-->
     sta Timer3                      ;(16 seconds).
     lda #$36                        ;#$36/#$03 = #$12.  Number of sprites-->

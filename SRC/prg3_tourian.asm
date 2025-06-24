@@ -993,9 +993,8 @@ RTS_9ED5:
     rts
 
 L9ED6:
-    lda MusicInitFlag
-    ora #music_Escape
-    sta MusicInitFlag
+    lda #music_Escape
+    sta CurrentMusic
     lda #$05
     sta MotherBrainStatus
     lda #$80
