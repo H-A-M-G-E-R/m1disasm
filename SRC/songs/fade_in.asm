@@ -1,3 +1,8 @@
+SongFadeInHeader:
+    SongHeader NoteLengthsTbl@1, $00, $F0, $02, $00
+    .word SongFadeInSQ1, SongFadeInSQ2, SongFadeInTri, $0000
+    .byte $34, $34
+
 SongFadeInSQ2:
     SongRepeatSetup $4
         SongNoteLength $0 ;3/32 seconds

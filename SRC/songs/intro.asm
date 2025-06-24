@@ -1,3 +1,8 @@
+SongIntroHeader:
+    SongHeader NoteLengthsTbl@2, $00, $F0, $02, $05
+    .word SongIntroSQ1, SongIntroSQ2, SongIntroTri, SongIntroNoise
+    .byte $B6, $F6
+
 SongIntroSQ2:
     SongRepeatSetup $2
         SongNoteLength $4 ;7/8 seconds

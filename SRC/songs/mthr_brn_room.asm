@@ -1,3 +1,8 @@
+SongMthrBrnRoomHeader:
+    SongHeader NoteLengthsTbl@1, $FF, $F5, $00, $00
+    .word SongMthrBrnRoomSQ1, SongMthrBrnRoomSQ2, SongMthrBrnRoomTri, $0000
+    .byte $92, $96
+
 SongMthrBrnRoomTri:
     SongRepeatSetup $20
         SongNoteLength $A ;3/64 seconds

@@ -1642,68 +1642,6 @@ VolumeEnvelope5:
 ;Byte 5=Volume data for SQ1.
 ;Byte 6=Volume data for SQ2.
 
-SongHeaders:
-
-SongMthrBrnRoomHeader:
-    SongHeader NoteLengthsTbl@1, $FF, $F5, $00, $00
-    .word SongMthrBrnRoomSQ1, SongMthrBrnRoomSQ2, SongMthrBrnRoomTri, $0000
-    .byte $92, $96
-
-SongEscapeHeader:
-    SongHeader NoteLengthsTbl@1, $FF, $00, $02, $02
-    .word SongEscapeSQ1, SongEscapeSQ2, SongEscapeTri, SongEscapeNoise
-    .byte $F4, $F4
-
-SongNorfairHeader:
-    SongHeader NoteLengthsTbl@1, $FF, $F0, $04, $04
-    .word SongNorfairSQ1, SongNorfairSQ2, SongNorfairTri, SongNorfairNoise
-    .byte $34, $34
-
-SongKraidHeader:
-    SongHeader NoteLengthsTbl@0, $FF, $F0, $00, $00
-    .word SongKraidSQ1, SongKraidSQ2, SongKraidTri, $0000
-    .byte $92, $96
-
-SongItemRoomHeader:
-    SongHeader NoteLengthsTbl@1, $FF, $03, $00, $00
-    .word SongItemRoomSQ1, SongItemRoomSQ2, SongItemRoomTri, $0000
-    .byte $92, $96
-
-SongRidleyHeader:
-    SongHeader NoteLengthsTbl@1, $FF, $F0, $01, $01
-    .word SongRidleySQ1, SongRidleySQ2, SongRidleyTri, $0000
-    .byte $B3, $B3
-
-SongEndHeader:
-    SongHeader NoteLengthsTbl@2, $00, $00, $02, $01
-    .word SongEndSQ1, SongEndSQ2, SongEndTri, SongEndNoise
-    .byte $F5, $F6
-
-SongIntroHeader:
-    SongHeader NoteLengthsTbl@2, $00, $F0, $02, $05
-    .word SongIntroSQ1, SongIntroSQ2, SongIntroTri, SongIntroNoise
-    .byte $B6, $F6
-
-SongFadeInHeader:
-    SongHeader NoteLengthsTbl@1, $00, $F0, $02, $00
-    .word SongFadeInSQ1, SongFadeInSQ2, SongFadeInTri, $0000
-    .byte $34, $34
-
-SongPowerUpHeader:
-    SongHeader NoteLengthsTbl@0, $00, $F0, $01, $00
-    .word SongPowerUpSQ1, SongPowerUpSQ2, SongPowerUpTri, $0000
-    .byte $B6, $F6
-
-SongBrinstarHeader:
-    SongHeader NoteLengthsTbl@1, $FF, $00, $02, $03
-    .word SongBrinstarSQ1, SongBrinstarSQ2, SongBrinstarTri, SongBrinstarNoise
-    .byte $34, $34
-
-SongTourianHeader:
-    SongHeader NoteLengthsTbl@1, $FF, $03, $00, $00
-    .word SongTourianSQ1, SongTourianSQ2, SongTourianTri, $0000
-    .byte $92, $96
-
 .include "songs/item_room.asm"
 
 .include "songs/power_up.asm"

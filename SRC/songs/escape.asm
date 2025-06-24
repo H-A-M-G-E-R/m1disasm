@@ -1,3 +1,8 @@
+SongEscapeHeader:
+    SongHeader NoteLengthsTbl@1, $FF, $00, $02, $02
+    .word SongEscapeSQ1, SongEscapeSQ2, SongEscapeTri, SongEscapeNoise
+    .byte $F4, $F4
+
 SongEscapeSQ2:
     SongRepeatSetup $4
         SongNoteLength $3 ;3/4 seconds

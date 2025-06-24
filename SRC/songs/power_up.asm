@@ -1,3 +1,8 @@
+SongPowerUpHeader:
+    SongHeader NoteLengthsTbl@0, $00, $F0, $01, $00
+    .word SongPowerUpSQ1, SongPowerUpSQ2, SongPowerUpTri, $0000
+    .byte $B6, $F6
+
 SongPowerUpSQ1:
     SongNoteLength $3 ;1/2 seconds
     SongNote "C5"

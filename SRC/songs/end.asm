@@ -1,3 +1,8 @@
+SongEndHeader:
+    SongHeader NoteLengthsTbl@2, $00, $00, $02, $01
+    .word SongEndSQ1, SongEndSQ2, SongEndTri, SongEndNoise
+    .byte $F5, $F6
+
 SongEndSQ1:
     SongRepeatSetup $2
         SongNoteLength $4 ;7/8 seconds

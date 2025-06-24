@@ -18,6 +18,11 @@
 
 ;Ridley Music Data
 
+SongRidleyHeader:
+    SongHeader NoteLengthsTbl@1, $FF, $F0, $01, $01
+    .word SongRidleySQ1, SongRidleySQ2, SongRidleyTri, $0000
+    .byte $B3, $B3
+
 SongRidleyTri:
     SongNoteLength $6 ;1 3/16 seconds
     SongNote "E3"

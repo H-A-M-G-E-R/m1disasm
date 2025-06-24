@@ -18,6 +18,11 @@
 
 ;Norfair Music Data
 
+SongNorfairHeader:
+    SongHeader NoteLengthsTbl@1, $FF, $F0, $04, $04
+    .word SongNorfairSQ1, SongNorfairSQ2, SongNorfairTri, SongNorfairNoise
+    .byte $34, $34
+
 SongNorfairSQ1:
     SongRepeatSetup $3
     SongNoteLength $6 ;1 3/16 seconds

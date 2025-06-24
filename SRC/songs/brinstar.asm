@@ -18,6 +18,11 @@
 
 ;Brinstar Music
 
+SongBrinstarHeader:
+    SongHeader NoteLengthsTbl@1, $FF, $00, $02, $03
+    .word SongBrinstarSQ1, SongBrinstarSQ2, SongBrinstarTri, SongBrinstarNoise
+    .byte $34, $34
+
 SongBrinstarSQ1:
     SongRepeatSetup $2
         SongNoteLength $4 ;1 1/2 seconds

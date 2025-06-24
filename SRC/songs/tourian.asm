@@ -1,3 +1,8 @@
+SongTourianHeader:
+    SongHeader NoteLengthsTbl@1, $FF, $03, $00, $00
+    .word SongTourianSQ1, SongTourianSQ2, SongTourianTri, $0000
+    .byte $92, $96
+
 SongTourianSQ2:
     SongNoteLength $4 ;1 1/2 seconds
     SongNote "A2"

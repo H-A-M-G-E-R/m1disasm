@@ -18,6 +18,11 @@
 
 ;Kraid Music Data
 
+SongKraidHeader:
+    SongHeader NoteLengthsTbl@0, $FF, $F0, $00, $00
+    .word SongKraidSQ1, SongKraidSQ2, SongKraidTri, $0000
+    .byte $92, $96
+
 SongKraidSQ1:
     SongNoteLength $8 ;11/64 seconds
     SongRest
