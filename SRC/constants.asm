@@ -297,13 +297,13 @@ MotherBrainStatus      = $98     ;#$00=Mother brain not in room, #$01=Mother bra
                                    ;#$06=Time bomb set, #$07=Time bomb exploded,-->
                                    ;#$08=Initialize mother brain,-->
                                    ;#$09, #$0A=Mother brain already dead.
-MotherBrainHits        = $99     ;Number of times mother brain has been hit. Dies at #$20.
+MotherBrainQtyHits        = $99     ;Number of times mother brain has been hit. Dies at #$20.
 
 MotherBrain9A          = $9A
 MotherBrain9B          = $9B
 MotherBrainAnimFrameTableID = $9C
 MotherBrainNameTable   = $9D
-MotherBrain9E          = $9E
+MotherBrainIsHit       = $9E     ;Was mother brain hit by a missile? #$00=no, #$01=yes
 MotherBrain9F          = $9F
 
 ; 4 slots of 4 bytes each ($A0-$AF)
@@ -425,7 +425,7 @@ ObjAnimIndex           = $0306   ;Current index into ObjectAnimIndexTbl.
 SamusOnElevator        = $0307   ;0=Samus not on elevator, 1=Samus on elevator.
 ObjSpeedY              = $0308   ;MSB set=moving up(#$FA max), MSB clear=moving down(#$05 max).
 ObjSpeedX              = $0309   ;MSB set=moving lft(#$FE max), MSB clear=moving rt(#$01 max).
-SamusHit               = $030A   ;Samus hit by enemy. bit 3: direction samus is hit
+SamusIsHit             = $030A   ;Samus hit by enemy. bit 3: direction samus is hit
 ObjOnScreen            = $030B   ;1=Object on screen, 0=Object beyond screen boundaries.
 ObjHi                  = $030C   ;0=Object on nametable 0, 1=Object on nametable 3.
 ObjY                   = $030D   ;Object y position in room(not actual screen position).
@@ -441,7 +441,18 @@ SamusHorzSpeedMax      = $0316   ;Used to calc maximum horizontal speed Samus ca
 
 ;Elevator RAM.
 ElevatorStatus         = $0320   ;#$01=Elevator present, #$00=Elevator not present.
-Elevator032F           = $032F   ;bit 7 is up(1) or down(0)
+ElevatorAnimFrame      = $0323   ;*2 = Index into FramePtrTable for current animation.
+ElevatorAnimResetIndex = $0325   ;Restart index-1 when AnimIndex finished with last frame.
+ElevatorAnimIndex      = $0326   ;Current index into ObjectAnimIndexTbl.
+ElevatorUnused0328     = $0328   ;when starting to move, #$00 is written, but this is never read
+ElevatorType           = $032F   ;bit 7 is up(1) or down(0)
+                                   ;low nybble is which elevator it is
+                                   ;#$0=Brinstar/Brinstar
+                                   ;#$1=Brinstar/Norfair
+                                   ;#$2=Brinstar/Kraid
+                                   ;#$3=Brinstar/Tourian
+                                   ;#$4=Norfair/Ridley
+                                   ;elevator type #$8F is for the ending elevator
 
 ;Power-up item RAM.
 PowerUpAnimFrame       = $0343   ;*2 = Index into FramePtrTable for current animation.
@@ -466,16 +477,24 @@ RidleyStatueY          = $0370
 DoorStatus             = $0300
 DoorAnimResetIndex     = $0305
 DoorAnimIndex          = $0306
-DoorType               = $0307  ;#$00=red door, #$01=blue door, #$02=10-missile door
-                                  ;#$03=blue door that changes the music
-DoorHit                = $030A  ; bit 2 indicates if the door was hit or not
+DoorType               = $0307   ;#$00=red door, #$01=blue door, #$02=10-missile door
+                                   ;#$03=blue door that changes the music
+DoorIsHit              = $030A   ; bit 2 indicates if the door was hit or not
 DoorHi                 = $030C
 DoorX                  = $030E
-DoorHitPoints          = $030F  ;used as re-close delay for blue doors
+DoorHitPoints          = $030F   ;used as re-close delay for blue doors
 
 
 ;Samus projectile RAM
-ProjectileDieDelay     = $030F
+ProjectileStatus       = $0300
+ProjectileRadY         = $0301   ;Distance in pixels from object center to top or bottom.
+ProjectileRadX         = $0302   ;Distance in pixels from object center to left or right side.
+ProjectileAnimFrame    = $0303   ;*2 = Index into FramePtrTable for current animation.
+ProjectileAnimDelay    = $0304   ;Number of frames to delay between animation frames.
+ProjectileAnimResetIndex = $0305   ;Restart index-1 when AnimIndex finished with last frame.
+ProjectileAnimIndex    = $0306   ;Current index into ObjectAnimIndexTbl.
+Projectile030A         = $030A
+ProjectileDieDelay     = $030F   ;delay until short beam projectile dies
 
 ;-------------------------------------[ Title routine specific ]-------------------------------------
 
@@ -532,6 +551,7 @@ EnExplosionAnimFrame   = $0407
 ;----------------------------------------------------------------------------------------------------
 
 ;Tile respawning
+; 13 slots of 16 bytes each ($0500-$05CF)
 TileBlastRoutine       = $0500
 TileBlastAnimFrame     = $0503
 TileBlastAnimDelay     = $0504
@@ -541,6 +561,12 @@ TileBlastDelay         = $0507
 TileBlastWRAMPtr       = $0508
 ; TileBlastWRAMPtr+1     = $0509
 TileBlastType          = $050A
+
+;Samus projectiles extra RAM for wave beam
+; 3 slots of 16 bytes each ($05D0-$05FF)
+ProjectileWaveInstrID  = $0500   ; instruction id for movement string of wave bullet trajectory
+ProjectileWaveInstrTimer = $0501   ; count frames up to current instruction duration, then increment instr id
+ProjectileWaveDir      = $0502   ; bullet direction, used to get movement string. #$00=right, #$01=left, #$02=up
 
 ;---------------------------------[ Sound engine memory addresses ]----------------------------------
 
@@ -706,9 +732,9 @@ PowerUpBAnimIndex      = $0757   ;Entry into FramePtrTable for item animation.
 ZebetiteStatus         = $0758
 ZebetiteVRAMPtr        = $0759   ;Pointer to top-left tile of Zebetite in the nametable.
 ; ZebetiteVRAMPtr+1      = $075A
-ZebetiteHits           = $075B   ;Number of missile hits dealt to Zebetite. Dies at 8 hits.
+ZebetiteQtyHits        = $075B   ;Number of missile hits dealt to Zebetite. Dies at 8 hits.
 ZebetiteHealingDelay   = $075C   ;Heals 1 hit when counts down from #$40 to #$00.
-ZebetiteJustGotHit     = $075D   ;#$01 if zebetite got hit by a missile this frame, else #$00
+ZebetiteIsHit          = $075D   ;#$01 if zebetite got hit by a missile this frame, else #$00
 ; $075E is unused
 ; $075F is unused
 
@@ -1003,27 +1029,28 @@ sa_FadeIn3             = 23
 sa_FadeIn4             = 24
 sa_Begin               = 255
 
-;Animations
-an_SamusRun            = $00
-an_SamusFront          = $04
-an_SamusStand          = $07
-an_SamusJump           = $0C
-an_SamusSalto          = $0E
-an_SamusRunJump        = $13
-an_SamusRoll           = $16
-an_Bullet              = $1B
-an_SamusFireJump       = $20
-an_SamusFireRun        = $22
-an_SamusPntUp          = $27
-an_Explode             = $32
-an_SamusJumpPntUp      = $35
-an_SamusRunPntUp       = $37
-an_WaveBeam            = $7D
-an_BombTick            = $7F
-an_BombExplode         = $82
-an_MissileLeft         = $8B
-an_MissileRight        = $8D
-an_MissileExplode      = $91
+;once i replace all usages of these constants by (ObjAnim_00 - ObjectAnimIndexTbl) expressions, ->
+;i will rename the ObjAnim to match the names of these constants, and then delete the constants.
+;an_SamusRun            = $00
+;an_SamusFront          = $04
+;an_SamusStand          = $07
+;an_SamusJump           = $0C
+;an_SamusSalto          = $0E
+;an_SamusRunJump        = $13
+;an_SamusRoll           = $16
+;an_Bullet              = $1B
+;an_SamusFireJump       = $20
+;an_SamusFireRun        = $22
+;an_SamusPntUp          = $27
+;an_Explode             = $32
+;an_SamusJumpPntUp      = $35
+;an_SamusRunPntUp       = $37
+;an_WaveBeam            = $7D
+;an_BombTick            = $7F
+;an_BombExplode         = $82
+;an_MissileLeft         = $8B
+;an_MissileRight        = $8D
+;an_MissileExplode      = $91
 
 ;Weapon action handlers.
 wa_RegularBeam         = $01

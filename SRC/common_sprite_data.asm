@@ -7,142 +7,159 @@
 ;frames responsible for animaton Samus, her weapons and other objects.
 ;$F7 means the frame is invisible, $FF means animation ends.
 
+
+
 ObjectAnimIndexTbl:
 
 ;Samus run animation.
-ObjAnim_8572:
+ObjAnim_00: ;$00
     .byte _id_ObjFrame03, _id_ObjFrame04, _id_ObjFrame05, $FF
 
 ;Samus front animation.
-ObjAnim_8576:
+ObjAnim_04: ;$04
     .byte _id_ObjFrame07, $FF
 
 ;Samus jump out of ball animation.
-ObjAnim_8578:
+ObjAnim_06: ;$06
     .byte _id_ObjFrame17
 ;Samus Stand animation.
-ObjAnim_8579:
+ObjAnim_07: ;$07
     .byte _id_ObjFrame08, $FF
 
 ;Samus stand and fire animation.
-ObjAnim_857B:
+ObjAnim_09: ;$09
     .byte _id_ObjFrame22, $FF
 
 ;Samus stand and jump animation.
-ObjAnim_857D:
+ObjAnim_0B: ;$0B
     .byte _id_ObjFrame04
 ;Samus Jump animation.
-ObjAnim_857E:
+ObjAnim_0C: ;$0C
     .byte _id_ObjFrame10, $FF
 
 ;Samus somersault animation.
-ObjAnim_8580:
+ObjAnim_0E: ;$0E
     .byte _id_ObjFrame17, _id_ObjFrame18, _id_ObjFrame19, _id_ObjFrame1A, $FF
 
 ;Samus run and jump animation.
-ObjAnim_8585:
+ObjAnim_13: ;$13
     .byte _id_ObjFrame03, _id_ObjFrame17, $FF
 
 ;Samus roll animation.
-ObjAnim_8588:
+ObjAnim_16: ;$16
     .byte _id_ObjFrame1E, _id_ObjFrame1D, _id_ObjFrame1C, _id_ObjFrame1B, $FF
 
 ;Bullet animation.
-ObjAnim_858D:
+ObjAnim_1B: ;$1B
     .byte _id_ObjFrame28, $FF
 
 ;Bullet hit animation.
-ObjAnim_858F:
+ObjAnim_1D: ;$1D
     .byte _id_ObjFrame2A, $F7, $FF
 
 ;Samus jump and fire animation.
-ObjAnim_8592:
+ObjAnim_20: ;$20
     .byte _id_ObjFrame12, $FF
 
 ;Samus run and fire animation.
-ObjAnim_8594:
+ObjAnim_22: ;$22
     .byte _id_ObjFrame0C, _id_ObjFrame0D, _id_ObjFrame0E, $FF
 
 ;Samus point up and shoot animation.
-ObjAnim_8598:
+ObjAnim_26: ;$26
     .byte _id_ObjFrame30
-
 ;Samus point up animation.
-ObjAnim_8599:
+ObjAnim_27: ;$27
     .byte _id_ObjFrame2B, $FF
 
 ;Door open animation.
-ObjAnim_859B:
-    .byte _id_ObjFrame31, _id_ObjFrame31, _id_ObjFrame33, $F7, $FF
+ObjAnim_DoorOpen: ;$29
+    .byte _id_ObjFrame31, _id_ObjFrame31, _id_ObjFrame33
+ObjAnim_DoorOpen_Reset: ;$2C
+    .byte $F7, $FF
 
 ;Door close animation.
-ObjAnim_85A0:
-    .byte _id_ObjFrame33, _id_ObjFrame33, _id_ObjFrame31, $FF
+ObjAnim_DoorClose: ;$2E
+    .byte _id_ObjFrame33, _id_ObjFrame33
+ObjAnim_DoorClose_Reset: ;$30
+    .byte _id_ObjFrame31, $FF
 
 ;Samus explode animation.
-ObjAnim_85A4: .byte _id_ObjFrame35, $FF
+ObjAnim_SamusExplode: ;$32
+    .byte _id_ObjFrame35, $FF
 
 ;Samus jump and point up animation.
-ObjAnim_85A6: .byte _id_ObjFrame39, _id_ObjFrame38, $FF
+ObjAnim_34: ;$34
+    .byte _id_ObjFrame39
+ObjAnim_35: ;$35
+    .byte _id_ObjFrame38, $FF
 
 ;Samus run and point up animation.
-ObjAnim_85A9:
+ObjAnim_37: ;$37
     .byte _id_ObjFrame40, _id_ObjFrame41, _id_ObjFrame42, $FF
 
 ;Samus run, point up and shoot animation 1.
-ObjAnim_85AD:
+ObjAnim_3B: ;$3B
     .byte _id_ObjFrame46, $FF
 
 ;Samus run, point up and shoot animation 2.
-ObjAnim_85AF:
+ObjAnim_3D: ;$3D
     .byte _id_ObjFrame47, $FF
 
 ;Samus run, point up and shoot animation 3.
-ObjAnim_85B1:
+ObjAnim_3F: ;$3F
     .byte _id_ObjFrame48, $FF
 
-;Samus on elevator animation 1.
-ObjAnim_85B3:
-    .byte _id_ObjFrame07, $F7, $F7, _id_ObjFrame07, $F7, $F7, $F7, _id_ObjFrame07, $F7, $F7, $F7, $F7, _id_ObjFrame07, $F7, $FF
+;Samus front fade out of old area. (plays for only one frame on NES)
+ObjAnim_SamusFadeOutArea: ;$41
+    .byte _id_ObjFrame07, $F7, $F7, _id_ObjFrame07, $F7, $F7, $F7, _id_ObjFrame07, $F7, $F7, $F7, $F7, _id_ObjFrame07
+ObjAnim_SamusFadeOutArea_Reset: ;$4E
+    .byte $F7, $FF
 
-;Samus on elevator animation 2.
-ObjAnim_85C2:
-    .byte _id_ObjFrame23, $F7, $F7, _id_ObjFrame23, $F7, $F7, $F7, _id_ObjFrame23, $F7, $F7, $F7, $F7, _id_ObjFrame23, $F7, $FF
+;Elevator fade out of old area. (plays for only one frame on NES)
+ObjAnim_ElevatorFadeOutArea: ;$50
+    .byte _id_ObjFrame23, $F7, $F7, _id_ObjFrame23, $F7, $F7, $F7, _id_ObjFrame23, $F7, $F7, $F7, $F7, _id_ObjFrame23
+ObjAnim_ElevatorFadeOutArea_Reset: ;$5D
+    .byte $F7, $FF
 
-;Samus on elevator animation 3.
-ObjAnim_85D1:
-    .byte _id_ObjFrame07, $F7, $F7, $F7, $F7, _id_ObjFrame07, $F7, $F7, $F7, _id_ObjFrame07, $F7, $F7, _id_ObjFrame07, $F7, $FF
+;Samus front fade into new area. (plays for only one frame on NES)
+ObjAnim_SamusFadeInArea: ;$5F
+    .byte _id_ObjFrame07, $F7, $F7, $F7, $F7, _id_ObjFrame07, $F7, $F7, $F7, _id_ObjFrame07, $F7, $F7
+ObjAnim_SamusFadeInArea_Reset: ;$6B
+    .byte _id_ObjFrame07, $F7, $FF
 
-;Samus on elevator animation 4.
-ObjAnim_85E0:
-    .byte _id_ObjFrame23, $F7, $F7, $F7, $F7, _id_ObjFrame23, $F7, $F7, $F7, _id_ObjFrame23, $F7, $F7, _id_ObjFrame23, $F7, $FF
+;Elevator fade into new area. (plays for only one frame on NES)
+ObjAnim_ElevatorFadeInArea: ;$6E
+    .byte _id_ObjFrame23, $F7, $F7, $F7, $F7, _id_ObjFrame23, $F7, $F7, $F7, _id_ObjFrame23, $F7, $F7
+ObjAnim_ElevatorFadeInArea_Reset: ;$7A
+    .byte _id_ObjFrame23, $F7, $FF
 
 ;Wave beam animation.
-ObjAnim_85EF:
+ObjAnim_WaveBeam: ;$7D
     .byte _id_ObjFrame4B, $FF
 
 ;Bomb tick animation.
-ObjAnim_85F1:
+ObjAnim_BombTick: ;$7F
     .byte _id_ObjFrame4E, _id_ObjFrame4F, $FF
 
 ;Bomb explode animation.
-ObjAnim_85F4:
+ObjAnim_BombExplode: ;$82
     .byte _id_ObjFrame3C, _id_ObjFrame4A, _id_ObjFrame49, _id_ObjFrame4A, _id_ObjFrame4D, _id_ObjFrame4A, _id_ObjFrame4D, $F7, $FF
 
 ;Missile left animation.
-ObjAnim_85FD:
+ObjAnim_MissileLeft: ;$8B
     .byte _id_ObjFrame26, $FF
 
 ;Missile right animation.
-ObjAnim_85FF:
+ObjAnim_MissileRight: ;$8D
     .byte _id_ObjFrame25, $FF
 
 ;Missile up animation.
-ObjAnim_8601:
+ObjAnim_MissileUp: ;$8F
     .byte _id_ObjFrame27, $FF
 
 ;Missile explode animation.
-ObjAnim_8603:
+ObjAnim_MissileExplode: ;$91
     .byte _id_ObjFrame67, _id_ObjFrame67, _id_ObjFrame67, _id_ObjFrame68, _id_ObjFrame68, _id_ObjFrame69, $F7, $FF
 
 ;----------------------------[ Sprite drawing pointer tables ]--------------------------------------
