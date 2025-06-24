@@ -2758,14 +2758,10 @@ UnusedIntroRoutine8: ;($94DA)
     sta $07
     rts
 
-.ENDS
-
 ;--------------------------------------[ Palette data ]---------------------------------------------
 
 ;The following table points to the palette data
 ;used in the intro and ending portions of the game.
-
-.SECTION "ROM Bank $000 - Palettes" BANK 0 SLOT "ROMSwitchSlot" ORGA $9560 FORCE
 
 bank0_PalPntrTbl:
     .word bank0_Palette00                 ;($9586)

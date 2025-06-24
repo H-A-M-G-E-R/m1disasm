@@ -397,8 +397,15 @@ LC1FF:
     tya                             ;
     asl                             ;* 2, each pal data ptr is 2 bytes (16-bit).
     tay                             ;
-    ldx PalPntrTbl,y                ;X = low byte of PPU data pointer.
-    lda PalPntrTbl+1,y              ;
+    lda CurrentBank
+    beq +
+        ldx PalPntrTbl,y            ;X = low byte of PPU data pointer.
+        lda PalPntrTbl+1,y          ;
+        bne ++
+    +
+        ldx bank0_PalPntrTbl,y
+        lda bank0_PalPntrTbl+1,y
+    ++
     tay                             ;Y = high byte of PPU data pointer.
     lda #$00                        ;Clear A.
     sta PalDataPending              ;Reset palette data pending byte.
