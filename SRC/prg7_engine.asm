@@ -65,9 +65,8 @@ Startup:
     sta MMC1Reg2                    ;Clear bit 2
     sta MMC1Reg2                    ;Clear bit 3
     sta MMC1Reg2                    ;Clear bit 4
+    sta CurrentBank
     jsr MMCWriteReg3                ;($C4FA)Swap to PRG bank #0 at $8000
-    dex                             ;X = $FF
-    txs                             ;S points to end of stack page
 
 ;Clear RAM at $000-$7FF.
     ldy #$07                        ;High byte of start address.
@@ -10776,36 +10775,17 @@ TileBlastAnim7:  .byte $07,$06,$0A,$FE
 TileBlastAnim8:  .byte $07,$06,$0B,$FE
 TileBlastAnim9:  .byte $07,$06,$08,$FE
 
-    .byte $00
-    .byte $00
-
 
 ;-----------------------------------------------[ RESET ]--------------------------------------------
 
 RESET: ;($BFB0)
     ;Disables interrupt.
     sei
-    ;Sets processor to binary mode.
-    cld
-    
-    ;Clear PPU control registers.
-    ldx #$00
-    stx PPUCTRL
-    stx PPUMASK
-    
-    @WaitForVBlank1:
-        lda PPUSTATUS
-        bpl @WaitForVBlank1
-    @WaitForVBlank2:
-        lda PPUSTATUS
-        bpl @WaitForVBlank2
-    
+    dex                             ;X = $FF
+    txs                             ;S points to end of stack page
+
     ;Reset MMC1 chip. (MSB is set).
-    ora #$FF
-    sta MMC1Reg0
-    sta MMC1Reg1
-    sta MMC1Reg2
-    sta MMC1Reg3
+    stx MMC1Reg0
     
     ;($C01A)Does preliminary housekeeping.
     jmp Startup
