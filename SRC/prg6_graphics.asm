@@ -51,18 +51,13 @@ GFX_Font:
 
 .include "music_engine.asm"
 
-;----------------------------------------------[ RESET ]--------------------------------------------
-
-ROMSWITCH_RESET:
-.include "reset.asm"
-
 .ENDS
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------
 
 .SECTION "ROM Bank $006 - Vectors" BANK 6 SLOT "ROMSwitchSlot" ORGA $BFFA FORCE
     .word NMI                       ;($C0D9)NMI vector.
-    .word ROMSWITCH_RESET           ;($FFB0)Reset vector.
-    .word ROMSWITCH_RESET           ;($FFB0)IRQ vector.
+    .word RESET                     ;($FFB0)Reset vector.
+    .word RESET                     ;($FFB0)IRQ vector.
 .ENDS
 

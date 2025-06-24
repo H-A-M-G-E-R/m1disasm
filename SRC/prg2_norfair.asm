@@ -662,18 +662,13 @@ GFX_NorfBG1:
 GFX_NorfBG2:
     .incbin "norfair/bg_chr_2.chr" ; A950 - Norfair BG CHR data
 
-;----------------------------------------------[ RESET ]--------------------------------------------
-
-ROMSWITCH_RESET:
-.include "reset.asm"
-
 .ENDS
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------
 
 .SECTION "ROM Bank $002 - Vectors" BANK 2 SLOT "ROMSwitchSlot" ORGA $BFFA FORCE
     .word NMI                       ;($C0D9)NMI vector.
-    .word ROMSWITCH_RESET           ;($FFB0)Reset vector.
-    .word ROMSWITCH_RESET           ;($FFB0)IRQ vector.
+    .word RESET                     ;($FFB0)Reset vector.
+    .word RESET                     ;($FFB0)IRQ vector.
 .ENDS
 

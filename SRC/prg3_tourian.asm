@@ -1786,18 +1786,13 @@ GFX_TourBG:
 GFX_Zebetite:
     .incbin "tourian/zebetite_chr.chr" ; B2A0 - Zebetite BG CHR
 
-;----------------------------------------------[ RESET ]--------------------------------------------
-
-ROMSWITCH_RESET:
-.include "reset.asm"
-
 .ENDS
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------
 
 .SECTION "ROM Bank $003 - Vectors" BANK 3 SLOT "ROMSwitchSlot" ORGA $BFFA FORCE
     .word NMI                       ;($C0D9)NMI vector.
-    .word ROMSWITCH_RESET           ;($FFB0)Reset vector.
-    .word ROMSWITCH_RESET           ;($FFB0)IRQ vector.
+    .word RESET                     ;($FFB0)Reset vector.
+    .word RESET                     ;($FFB0)IRQ vector.
 .ENDS
 

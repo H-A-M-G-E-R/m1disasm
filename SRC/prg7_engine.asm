@@ -10782,8 +10782,33 @@ TileBlastAnim9:  .byte $07,$06,$08,$FE
 
 ;-----------------------------------------------[ RESET ]--------------------------------------------
 
-ROMFIXED_RESET:
-.include "reset.asm"
+RESET: ;($BFB0)
+    ;Disables interrupt.
+    sei
+    ;Sets processor to binary mode.
+    cld
+    
+    ;Clear PPU control registers.
+    ldx #$00
+    stx PPUCTRL
+    stx PPUMASK
+    
+    @WaitForVBlank1:
+        lda PPUSTATUS
+        bpl @WaitForVBlank1
+    @WaitForVBlank2:
+        lda PPUSTATUS
+        bpl @WaitForVBlank2
+    
+    ;Reset MMC1 chip. (MSB is set).
+    ora #$FF
+    sta MMC1Reg0
+    sta MMC1Reg1
+    sta MMC1Reg2
+    sta MMC1Reg3
+    
+    ;($C01A)Does preliminary housekeeping.
+    jmp Startup
 
 .ENDS
 
@@ -10791,7 +10816,7 @@ ROMFIXED_RESET:
 
 .SECTION "ROM Bank $007 - Vectors" BANK 7 SLOT "ROMFixedSlot" ORGA $FFFA FORCE
     .word NMI                       ;($C0D9)NMI vector.
-    .word ROMFIXED_RESET            ;($FFB0)Reset vector.
-    .word ROMFIXED_RESET            ;($FFB0)IRQ vector.
+    .word RESET                     ;($FFB0)Reset vector.
+    .word RESET                     ;($FFB0)IRQ vector.
 .ENDS
 
