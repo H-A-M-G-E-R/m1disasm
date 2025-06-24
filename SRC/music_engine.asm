@@ -1238,14 +1238,6 @@ DivideTriPeriods:
 
 ;--------------------------------------[ End SFX routines ]-------------------------------------
 
-SetVolumeAndDisableSweep:
-    lda #$7F                        ;
-    sta MusicSQ1Sweep               ;Disable sweep generator on SQ1 and SQ2.
-    sta MusicSQ2Sweep               ;
-    stx SQ1DutyEnvelope             ;Store duty cycle and volume data for SQ1 and SQ2.
-    sty SQ2DutyEnvelope             ;
-    rts
-
 ResetVolumeIndex:
     lda SQ1MusicFrameCount          ;If at the beginning of a new SQ1 note, set-->
     cmp #$01                        ;SQ1VolumeIndex = #$01.
@@ -1579,27 +1571,27 @@ LoadNoiseChannelMusic:
 ;addresses $062B thru $0637.  Base is $BD31.
 
 InitMusicIndexTbl:
-    .byte SongRidleyHeader      - SongHeaders                       ;Ridley area music.
-    .byte SongTourianHeader     - SongHeaders                       ;Tourian music.
-    .byte SongItemRoomHeader    - SongHeaders                       ;Item room music.
-    .byte SongKraidHeader       - SongHeaders                       ;Kraid area music.
-    .byte SongNorfairHeader     - SongHeaders                       ;Norfair music.
-    .byte SongEscapeHeader      - SongHeaders                       ;Escape music.
-    .byte SongMthrBrnRoomHeader - SongHeaders                       ;Mother brain music.
-    .byte SongBrinstarHeader    - SongHeaders                       ;Brinstar music.
-    .byte SongFadeInHeader      - SongHeaders                       ;Fade in music.
-    .byte SongPowerUpHeader     - SongHeaders                       ;Power up music.
-    .byte SongEndHeader         - SongHeaders                       ;End music.
-    .byte SongIntroHeader       - SongHeaders                       ;Intro music.
+    .word SongRidleyHeader                             ;Ridley area music.
+    .word SongTourianHeader                            ;Tourian music.
+    .word SongItemRoomHeader                           ;Item room music.
+    .word SongKraidHeader                              ;Kraid area music.
+    .word SongNorfairHeader                            ;Norfair music.
+    .word SongEscapeHeader                             ;Escape music.
+    .word SongMthrBrnRoomHeader                        ;Mother brain music.
+    .word SongBrinstarHeader                           ;Brinstar music.
+    .word SongFadeInHeader                             ;Fade in music.
+    .word SongPowerUpHeader                            ;Power up music.
+    .word SongEndHeader                                ;End music.
+    .word SongIntroHeader                              ;Intro music.
 
 ;The tables below contain addresses for SFX and music handling routines.
 ;Multi channel Init SFX and music handling routine addresses:
 
 MultiSFXInitRoutineTbl:
-    .word GotoMusic03Init                     ;Fade in music.
-    .word GotoMusic01Init                     ;Power up music.
-    .word GotoMusic05Init                     ;End game music.
-    .word GotoMusic01Init                     ;Intro music.
+    .word MusicInit                     ;Fade in music.
+    .word MusicInit                     ;Power up music.
+    .word MusicInit                     ;End game music.
+    .word MusicInit                     ;Intro music.
     .word RTS_B4EE                     ;No sound.
     .word SamusHitSFXStart                     ;Samus hit init SFX.
     .word BossHitSFXStart                     ;Boss hit init SFX.
@@ -1620,14 +1612,14 @@ MultiSFXContRoutineTbl:
 ;Music handling routine addresses:
 
 MusicRoutineTbl:
-    .word GotoMusic04Init                     ;Ridley area music.
-    .word GotoMusic00Init                     ;Tourian music.
-    .word GotoMusic00Init                     ;Item room music.
-    .word GotoMusic00Init                     ;Kraid area music.
-    .word GotoMusic03Init                     ;Norfair music.
-    .word GotoMusic02Init                     ;Escape music.
-    .word GotoMusic00Init                     ;Mother brain music.
-    .word GotoMusic03Init                     ;Brinstar music.
+    .word MusicInit                     ;Ridley area music.
+    .word MusicInit                     ;Tourian music.
+    .word MusicInit                     ;Item room music.
+    .word MusicInit                     ;Kraid area music.
+    .word MusicInit                     ;Norfair music.
+    .word MusicInit                     ;Escape music.
+    .word MusicInit                     ;Mother brain music.
+    .word MusicInit                     ;Brinstar music.
 
 ;-----------------------------------[ Entry point for music routines ]--------------------------------
 
@@ -1689,58 +1681,9 @@ Add8:
 RTS_BC76:
     rts
 
-GotoMusic00Init:
-    jmp Music00Init                 ;($BCAA)Initialize music 00.
-
-GotoMusic01Init:
-    jmp Music01Init                 ;($BCA4)Initialize music 01.
-
-GotoMusic02Init:
-    jmp Music02Init                 ;($BC9A)Initialize music 02.
-
-GotoMusic03Init:
-    jmp Music03Init                 ;($BC96)Initialize music 03.
-
-GotoMusic04Init:
-    jmp Music04Init                 ;($BC89)Initialize music 04.
-
-GotoMusic05Init:
-    jmp Music05Init                 ;($BC9E)Initialize music 05.
-
-Music04Init:
-    lda #$B3                        ;Duty cycle and volume data for SQ1 and SQ2.
-
-XYMusicInit:
-    tax                             ;Duty cycle and volume data for SQ1.
-    tay                             ;Duty cycle and volume data for SQ2.
-
-LBC8D:
-    jsr SetVolumeAndDisableSweep    ;($B9E4)Set duty cycle and volume data for SQ1 and SQ2.
+MusicInit:
     jsr InitializeMusic             ;($BF19)Setup music registers.
     jmp LoadCurrentMusicFrameData   ;($BAA5)Load info for current frame of music data.
-
-Music03Init:
-    lda #$34                        ;Duty cycle and volume data for SQ1 and SQ2.
-    bne XYMusicInit                 ;Branch always
-
-Music02Init:
-    lda #$F4                        ;Duty cycle and volume data for SQ1 and SQ2.
-    bne XYMusicInit                 ;Branch always
-
-Music05Init:
-    ldx #$F5                        ;Duty cycle and volume data for SQ1.
-    ldy #$F6                        ;Duty cycle and volume data for SQ2.
-    bne LBC8D                       ;Branch always
-
-Music01Init:
-    ldx #$B6                        ;Duty cycle and volume data for SQ1.
-    ldy #$F6                        ;Duty cycle and volume data for SQ2.
-    bne LBC8D                       ;Branch always
-
-Music00Init:
-    ldx #$92                        ;Duty cycle and volume data for SQ1.
-    ldy #$96                        ;Duty cycle and volume data for SQ2.
-    bne LBC8D                       ;Branch always
 
 ;The following address table provides starting addresses of the volume data tables below:
 VolumeEnvelopePtrTable:
@@ -1767,7 +1710,7 @@ VolumeEnvelope5:
 
 ;The init music table loads addresses $062B thru $0637 with the initial data needed to play the
 ;selected music.  The data for each entry in the table have the following format:
-;.byte $xx, $xx, $xx, $xx, $xx : .word $xxxx, $xxxx, $xxxx, $xxxx.
+;.byte $xx, $xx, $xx, $xx, $xx : .word $xxxx, $xxxx, $xxxx, $xxxx : .byte $xx, $xx.
 ;The first five bytes have the following functions:
 ;Byte 0=index to proper note length table.  Will be either #$00, #$0B or #$17.
 ;Byte 1=Repeat music byte. #$00=no repeat, any other value and the music repeats.
@@ -1778,56 +1721,70 @@ VolumeEnvelope5:
 ;Address 1=Base address of SQ2 music data.
 ;Address 2=Base address of triangle music data.
 ;Address 3=Base address of noise music data.
+;Byte 5=Volume data for SQ1.
+;Byte 6=Volume data for SQ2.
 
 SongHeaders:
 
 SongMthrBrnRoomHeader:
     SongHeader NoteLengthsTbl@1, $FF, $F5, $00, $00
     .word SongMthrBrnRoomSQ1, SongMthrBrnRoomSQ2, SongMthrBrnRoomTri, $0000
+    .byte $92, $96
 
 SongEscapeHeader:
     SongHeader NoteLengthsTbl@1, $FF, $00, $02, $02
     .word SongEscapeSQ1, SongEscapeSQ2, SongEscapeTri, SongEscapeNoise
+    .byte $F4, $F4
 
 SongNorfairHeader:
     SongHeader NoteLengthsTbl@1, $FF, $F0, $04, $04
     .word SongNorfairSQ1, SongNorfairSQ2, SongNorfairTri, SongNorfairNoise
+    .byte $34, $34
 
 SongKraidHeader:
     SongHeader NoteLengthsTbl@0, $FF, $F0, $00, $00
     .word SongKraidSQ1, SongKraidSQ2, SongKraidTri, $0000
+    .byte $92, $96
 
 SongItemRoomHeader:
     SongHeader NoteLengthsTbl@1, $FF, $03, $00, $00
     .word SongItemRoomSQ1, SongItemRoomSQ2, SongItemRoomTri, $0000
+    .byte $92, $96
 
 SongRidleyHeader:
     SongHeader NoteLengthsTbl@1, $FF, $F0, $01, $01
     .word SongRidleySQ1, SongRidleySQ2, SongRidleyTri, $0000
+    .byte $B3, $B3
 
 SongEndHeader:
     SongHeader NoteLengthsTbl@2, $00, $00, $02, $01
     .word SongEndSQ1, SongEndSQ2, SongEndTri, SongEndNoise
+    .byte $F5, $F6
 
 SongIntroHeader:
     SongHeader NoteLengthsTbl@2, $00, $F0, $02, $05
     .word SongIntroSQ1, SongIntroSQ2, SongIntroTri, SongIntroNoise
+    .byte $B6, $F6
 
 SongFadeInHeader:
     SongHeader NoteLengthsTbl@1, $00, $F0, $02, $00
     .word SongFadeInSQ1, SongFadeInSQ2, SongFadeInTri, $0000
+    .byte $34, $34
 
 SongPowerUpHeader:
     SongHeader NoteLengthsTbl@0, $00, $F0, $01, $00
     .word SongPowerUpSQ1, SongPowerUpSQ2, SongPowerUpTri, $0000
+    .byte $B6, $F6
 
 SongBrinstarHeader:
     SongHeader NoteLengthsTbl@1, $FF, $00, $02, $03
     .word SongBrinstarSQ1, SongBrinstarSQ2, SongBrinstarTri, SongBrinstarNoise
+    .byte $34, $34
 
 SongTourianHeader:
     SongHeader NoteLengthsTbl@1, $FF, $03, $00, $00
     .word SongTourianSQ1, SongTourianSQ2, SongTourianTri, $0000
+    .byte $92, $96
 
 .include "songs/item_room.asm"
 
@@ -1988,22 +1945,36 @@ InitializeMusic:
     
     ;Find index for music in InitMusicInitIndexTbl.
     lda MusicInitIndex
+    asl
     tay
     lda InitMusicIndexTbl,y
-    tay
-    ldx #$00
+    sta SoundE0
+    lda InitMusicIndexTbl+1,y
+    sta SoundE0+1.b
+    ldy #$00
     
     ;The following loop repeats 13 times to load the initial music addresses -->
     ;(registers $062B thru $0637).
     @loop:
-        lda SongHeaders,y
-        sta NoteLengthTblOffset,x
+        lda (SoundE0),y
+        sta NoteLengthTblOffset,y
         iny
-        inx
-        txa
-        cmp #$0D
+        cpy #$0D
         bne @loop
     
+
+    ;Store duty cycle and volume data for SQ1 and SQ2.
+    lda (SoundE0),y
+    sta SQ1DutyEnvelope
+    iny
+    lda (SoundE0),y
+    sta SQ2DutyEnvelope
+    
+    ;Disable sweep generator on SQ1 and SQ2.
+    lda #$7F
+    sta MusicSQ1Sweep
+    sta MusicSQ2Sweep
+
     ;Resets addresses $0640 thru $0643 to #$01.-->
     ;These addresses are used for counting the number of frames music channels have been playing.
     lda #$01
