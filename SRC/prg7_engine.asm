@@ -8904,7 +8904,7 @@ Lx311:
     jmp LF416
 ;--------------------------------------------
 DoHurtEnemy:
-    jsr EnemyReactToSamusWeapon ; Fixes enemies not reacting to Samus' weapons while being hurt.
+    ;jsr EnemyReactToSamusWeapon ; Fixes enemies not reacting to Samus' weapons while being hurt. Commented out due to a bug, TODO...
     dec EnSpecialAttribs,x
     bne Lx313
     ; Preserve upper two bits of EnSpecialAttribs
