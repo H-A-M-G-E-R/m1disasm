@@ -379,7 +379,7 @@ CheckPalWrite:
     bcc LC1ED                       ;
     jmp EndGamePalWrite             ;($9F54)Write palette data for ending.
 LC1ED:
-    ldy PalDataPending              ;
+    lda PalDataPending              ;
     bne LC1FF                       ;Is palette data pending? If so, branch.
         lda GameMode                    ;
         beq RTS_C1FE                       ;Is game being played? If so, branch to exit.
@@ -393,18 +393,16 @@ LC1ED:
 ;Prepare to write palette data to PPU.
 
 LC1FF:
-    dey                             ;Palette # = PalDataPending - 1.
-    tya                             ;
-    asl                             ;* 2, each pal data ptr is 2 bytes (16-bit).
+    asl                             ;Palette # = (PalDataPending - 1) * 2, each pal data ptr is 2 bytes (16-bit).
     tay                             ;
     lda CurrentBank
     beq +
-        ldx PalPntrTbl,y            ;X = low byte of PPU data pointer.
-        lda PalPntrTbl+1,y          ;
+        ldx PalPntrTbl-2,y          ;X = low byte of PPU data pointer.
+        lda PalPntrTbl-1,y          ;
         bne ++
     +
-        ldx bank0_PalPntrTbl,y
-        lda bank0_PalPntrTbl+1,y
+        ldx bank0_PalPntrTbl-2,y
+        lda bank0_PalPntrTbl-1,y
     ++
     tay                             ;Y = high byte of PPU data pointer.
     lda #$00                        ;Clear A.
