@@ -191,7 +191,6 @@ LC0D3:
 ;Thread-safe bankswitching from https://forums.nesdev.org/viewtopic.php?t=25500
 
 NMI:
-    php                             ;Save processor status, A, X and Y on stack.
     pha                             ;Save A.
     txa                             ;
     pha                             ;Save X.
@@ -230,7 +229,6 @@ NMI:
     pla                             ;Restore X.
     tax                             ;
     pla                             ;restore A.
-    plp                             ;Restore processor status flags.
     rti                             ;Return from NMI.
 
 ;----------------------------------------[ GoMainRoutine ]-------------------------------------------
