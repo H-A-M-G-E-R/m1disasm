@@ -65,7 +65,6 @@ Startup:
     sta MMC1Reg2                    ;Clear bit 2
     sta MMC1Reg2                    ;Clear bit 3
     sta MMC1Reg2                    ;Clear bit 4
-    sta CurrentBank
     jsr MMCWriteReg3                ;($C4FA)Swap to PRG bank #0 at $8000
 
 ;Clear RAM at $000-$7FF.
@@ -189,6 +188,8 @@ LC0D3:
 ;will not be waiting as it is bogged down with excess calculations. This causes
 ;the game to slow down.
 
+;Thread-safe bankswitching from https://forums.nesdev.org/viewtopic.php?t=25500
+
 NMI:
     php                             ;Save processor status, A, X and Y on stack.
     pha                             ;Save A.
@@ -212,11 +213,15 @@ NMI:
         jsr WriteScroll                 ;($C29A)Update h/v scroll reg.
         jsr ReadJoyPads                 ;($C215)Read both joypads.
     LC103:
+    lda CurrentBank
+    pha
     lda #$06
     jsr MMCWriteReg3
     jsr SoundEngine                 ;($B3B4)Update music and SFX.
-    lda CurrentBank
+    pla
     jsr MMCWriteReg3
+    lda #$80
+    sta MMC1Reg0
     jsr UpdateAge                   ;($C97E)Update Samus' age.
     ldy #$01                        ; NMI = finished.
     sty NMIStatus                   ;
@@ -1030,17 +1035,20 @@ CheckSwitch:
     lda #$00                        ;Reset(so that the bank switch won't be performed-->
     sta SwitchPending               ;every succeeding frame too).
     dey                             ;Y now contains the bank to switch to.
-    sty $11
-    sta CurrentBank                 ;
+    sty CurrentMainBank
     jsr MMCWriteReg3                ;Switch bank to 0
     jsr GoBankInit                  ;($C510)Initialize bank switch data.
-    lda $11
-    sta CurrentBank
+    lda CurrentMainBank
     ;fallthrough
 
 ;Loads the lower memory page with the bank specified in A.
 
 MMCWriteReg3:
+    sta CurrentBank
+    pha
+    lda #$80
+    sta MMC1Reg0
+    pla
     sta MMC1Reg3                    ;Write bit 0 of ROM bank #.
     lsr                             ;
     sta MMC1Reg3                    ;Write bit 1 of ROM bank #.
@@ -6496,7 +6504,7 @@ LE733:
     ldy #$00                        ;
     lda ($00),y                     ;Load room number.
     pha
-    lda CurrentBank
+    lda CurrentMainBank
     jsr MMCWriteReg3
     pla
     cmp #$FF                        ;Is it unused?-->

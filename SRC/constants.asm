@@ -94,6 +94,7 @@ NextRoutine            = $20     ;Stores next routine to jump to after WaitTimer
 CurrentBank            = $23     ;0 thru 7. current memory page in lower memory block.
 SwitchPending          = $24     ;Switch memory page. Page # = SwitchPending - 1.
 MMCReg0Cntrl           = $25     ;Stores bits to be loaded into MMC1 Register 0.
+CurrentMainBank        = $26
 ;SwitchUpperBits        = $28     ;Not used in this mod. Was used to store bits 3 and 4 for MMC1 register 3.  Bits-->
                                    ;3 and 4 should always be 0 under normal conditions.
 
