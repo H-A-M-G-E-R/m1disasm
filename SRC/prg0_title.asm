@@ -53,7 +53,29 @@ MainTitleRoutine:
     L8022:
         ;($C1BC)Remove sparkle and crosshair sprites from screen.
         jsr RemoveIntroSprites
+
+        ;Do routine.
         lda TitleRoutine
+        jsr L8027
+
+        ;Use only first 3 bits of byte since the pointer table only has 8 entries.
+        lda IntroStarOffset
+        and #$07
+        ;*2 to find entry in IntroStarPntr table.
+        asl
+        tay
+        ;Write palette data from IntroStarPntr table.
+        lda IntroStarPntr,y
+        ldx IntroStarPntr+1,y
+        jsr ProcessPalPPUString
+        ;Increment index for next palette change every 16th frame.
+        lda FrameCount
+        and #$0F
+        bne +
+        inc IntroStarOffset
+
+        +
+        rts
 L8027:
     jsr ChooseRoutine               ;($C27C)Jump to proper routine below.
     TitleRoutinePtrTable:
@@ -169,7 +191,7 @@ DrawIntroBackground:
     ldy #>PPUString_DrawIntroBackground.b                     ;Upper address of PPU information.
     jsr PreparePPUProcess_          ;($C20E) Writes background of intro screen to name tables.
     lda #$01                        ;
-    sta PalDataPending              ;Prepare to load palette data.
+    jsr WriteTitlePal               ;Write palette 0.
     sta SpareMemC5                  ;Not accessed by game.
     lda PPUCTRL_ZP                  ;
     and #$FC                        ;Switch to name table 0
@@ -651,12 +673,6 @@ PPUString_DrawIntroBackground:
 
     .byte $00                       ;End PPU string write.
 
-;The following data does not appear to be used.
-    .byte $46, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $20, $00, $00, $00, $00, $00, $00
-    .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-    .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-
 ;The following error message is diplayed if the player enters an incorrect password.
 L8759:
     .stringmap charmap, "ERROR TRY AGAIN"
@@ -665,12 +681,6 @@ L8759:
 ;screen, the following fifteen blanks spaces are used to cover it up.
 L8768:
     .stringmap charmap, "               "
-
-;Not used.
-    .byte $79, $87, $00, $00, $00, $00, $00, $00, $01, $00, $00, $00, $00, $00, $02, $00
-    .byte $00, $03, $00, $00, $00, $00, $00, $00, $01, $00, $00, $00, $00, $00, $02, $00
-    .byte $00, $03, $A1, $87, $A2, $87, $A5, $87, $A8, $87, $00, $18, $CC, $00, $18, $CD
-    .byte $00, $18, $CE, $00
 
 LoadSparkleData:
     ldx #$0A
@@ -1209,8 +1219,8 @@ LoadPalData:
     lda PalSelectTbl,y
     cmp #$FF
     beq @RTS
-    ;Prepare to write palette data.
-    sta PalDataPending
+    ;Write palette data.
+    jsr WriteTitlePal
     inc PalDataIndex
 @RTS:
     rts
@@ -1230,55 +1240,13 @@ FlashIntroScreen:
     sta FlashScreen                 ;screen flash control address.
     beq RTS_8ABC                    ;Branch always.
 L8AB8:
-    sta PalDataPending              ;Store palette change data.
+    jsr WriteTitlePal               ;Write palette data.
     inc ScreenFlashPalIndex         ;Increment index into table below.
 RTS_8ABC:
     rts
 
 ScreenFlashPalTbl:
     .byte $11, $01, $11, $01, $11, $11, $01, $11, $01, $FF
-
-;----------------------------------[ Intro star palette routines ]-----------------------------------
-
-StarPalSwitch:
-    ;Change star palette every 16th frame.
-    lda FrameCount
-    and #$0F
-    bne RTS_8AD2
-    ;Is any other PPU data waiting? If so, exit.
-    lda PPUStrIndex
-    beq L8AD3
-RTS_8AD2:
-    rts
-
-L8AD3:
-    ;Prepare to write to the sprite palette starting at address $3F19.
-    lda #$19
-    sta $00
-    lda #$3F
-    sta $01
-    ;Use only first 3 bits of byte since the pointer table only has 8 entries.
-    lda IntroStarOffset
-    and #$07
-    ;*2 to find entry in IntroStarPntr table.
-    asl
-    tay
-    ;Stores starting address of palette data to write into $02 and $03 from IntroStarPntr table.
-    lda IntroStarPntr,y
-    sta $02
-    lda IntroStarPntr+1,y
-    sta $03
-    ;Increment index for next palette change.
-    inc IntroStarOffset
-    jsr PrepPPUPaletteString        ;($C37E)Prepare and write new palette data.
-    ;Prepare another write to the sprite palette. This time, starting at address $3F1D.
-    lda #$1D
-    sta $00
-    lda #$3F
-    sta $01
-    iny
-    jsr AddYToPtr02                 ;($C2B3)Find new data base of palette data.
-    jmp PrepPPUPaletteString        ;($C37E)Prepare and write new palette data.
 
 ;The following table is a list of pointers into the table below. It contains
 ;the palette data for the twinkling stars in the intro scene.  The palette data
@@ -1292,14 +1260,22 @@ IntroStarPntr:
 ;scene to give the stars a twinkling effect. All entries in the table are
 ;non-repeating.
 
-IntroStarPal0:  .byte $03, $0F, $02, $13, $00, $03, $00, $34, $0F, $00
-IntroStarPal1:  .byte $03, $06, $01, $23, $00, $03, $0F, $34, $09, $00
-IntroStarPal2:  .byte $03, $16, $0F, $23, $00, $03, $0F, $24, $1A, $00
-IntroStarPal3:  .byte $03, $17, $0F, $13, $00, $03, $00, $04, $28, $00
-IntroStarPal4:  .byte $03, $17, $01, $14, $00, $03, $10, $0F, $28, $00
-IntroStarPal5:  .byte $03, $16, $02, $0F, $00, $03, $30, $0F, $1A, $00
-IntroStarPal6:  .byte $03, $06, $12, $0F, $00, $03, $30, $04, $09, $00
-IntroStarPal7:  .byte $03, $0F, $12, $14, $00, $03, $10, $24, $0F, $00
+IntroStarPal0:  PPUString $3F19, $0F, $02, $13, $0F, $00, $34, $0F
+    .byte $00
+IntroStarPal1:  PPUString $3F19, $06, $01, $23, $0F, $0F, $34, $09
+    .byte $00
+IntroStarPal2:  PPUString $3F19, $16, $0F, $23, $0F, $0F, $24, $1A
+    .byte $00
+IntroStarPal3:  PPUString $3F19, $17, $0F, $13, $0F, $00, $04, $28
+    .byte $00
+IntroStarPal4:  PPUString $3F19, $17, $01, $14, $0F, $10, $0F, $28
+    .byte $00
+IntroStarPal5:  PPUString $3F19, $16, $02, $0F, $0F, $30, $0F, $1A
+    .byte $00
+IntroStarPal6:  PPUString $3F19, $06, $12, $0F, $0F, $30, $04, $09
+    .byte $00
+IntroStarPal7:  PPUString $3F19, $0F, $12, $14, $0F, $10, $24, $0F
+    .byte $00
 
 ;----------------------------------------------------------------------------------------------------
 
@@ -1311,7 +1287,7 @@ DoFadeOut:
     cmp #$FF
     beq @RTS
         ;Store new palette data.
-        sta PalDataPending
+        jsr WriteTitlePal
         inc FadeDataIndex
     @RTS:
     rts
@@ -1693,11 +1669,7 @@ IncrementToNextItem:
     cpy #$84                        ;7 extra item slots in unique item history.
     bcc L8D95                       ;Loop until all unique item history checked.
     lda $00                         ;
-    cmp #$06                        ;Ensure the Tank Count does not exceed 6-->
-    bcc L8DB7                       ;tanks. Then stores the number of-->
-        lda #$06                        ;energy tanks found in TankCount.
-    L8DB7:
-    sta TankCount                   ;
+    sta TankCount                   ;Store the number of energy tanks found in TankCount.
     lda #$00                        ;
     ldy $02                         ;
     beq L8DC6                       ;Branch if no missiles found.
@@ -2017,7 +1989,7 @@ StartContinueScreen1B:
     ldy #$00                        ;
     sty StartContinue               ;Set selection sprite at START.
     lda #$0D                        ;
-    sta PalDataPending              ;Change palette and title routine.
+    jsr WriteTitlePal               ;Change palette and title routine.
     lda #_id_ChooseStartContinue.b  ;Next routine is ChooseStartContinue.
     sta TitleRoutine                ;
 
@@ -2069,7 +2041,7 @@ LoadPasswordScreen:
     jsr InitGFX7                    ;($C6D6)Loads the font for the password.
     jsr DisplayInputCharacters      ;($940B)Write password character to screen.
     lda #$13                        ;
-    sta PalDataPending              ;Change palette.
+    jsr WriteTitlePal               ;Change palette.
     lda #$00                        ;
     sta InputRow                    ;Sets character select cursor to-->
     sta InputColumn                 ;upper left character (0).
@@ -2432,7 +2404,7 @@ DisplayPassword:
     jsr PasswordToScreen            ;($93C6)Displays password on screen.
     jsr WaitNMIPass                 ;($C42C)Wait for NMI to end.
     lda #$13                        ;
-    sta PalDataPending              ;Change palette.
+    jsr WriteTitlePal               ;Change palette.
     inc TitleRoutine                ;
     jmp ScreenOn                    ;($C447)Turn screen on.
 
@@ -2905,15 +2877,6 @@ bank0_Palette12:
 
     .byte $00                       ;End Palette13 data.
 
-EndGamePal0B:
-    PPUString $3F00, \
-        $0F, $2C, $2C, $2C, $0F, $2C, $2C, $2C, $0F, $2C, $2C, $2C, $0F, $2C, $2C, $2C
-
-EndGamePal0C:
-    PPUStringRepeat $3F10, $0F, $10
-
-    .byte $00                       ;End EndGamePal0C data.
-
 UpdateCrossMissileCoords: ;($981E)
     lda IntroSprXRun,x             ;Load sprite run(sprite x component).
     jsr CalcDisplacement            ;($9871)Calculate sprite displacement in x direction.
@@ -3233,12 +3196,20 @@ EndGame:
     lda FrameCount                  ;
     and #$0F                        ;Changes star palettes every 16th frame.
     bne L9AC0                       ;
-    inc PalDataPending              ;
-    lda PalDataPending              ;Reset palette data to #$01 after it-->
+    inc IntroStarOffset             ;
+    lda IntroStarOffset             ;Reset palette data to #$01 after it-->
     cmp #$09                        ;reaches #$09.
-    bne L9AC0                       ;
+    bne +                           ;
     lda #$01                        ;
-    sta PalDataPending              ;
+    sta IntroStarOffset             ;
+    +
+    jsr EndGamePalWrite
+    lda SamusGear
+    and #gr_VARIA
+    beq +
+    lda #$0D                        ;Load Varia Suit palette if Samus has Varia.
+    jsr EndGamePalWrite             ;
+    +
 L9AC0:
     lda RoomPtr                     ;RoomPtr used in end of game to determine-->
     jsr ChooseRoutine               ;($C27C)which subroutine to run below.
@@ -3279,8 +3250,15 @@ L9AE4:
     sta EndMsgWrite                 ;initialized to #$00.
     sta HideShowEndMsg              ;
     sta CreditPageNumber            ;
+    sta IntroStarOffset             ;
     lda #$01                        ;
-    sta PalDataPending              ;Change palette.
+    jsr EndGamePalWrite             ;Change palette.
+    lda SamusGear
+    and #gr_VARIA
+    beq +                           ;
+    lda #$0D                        ;Load Varia Suit palette if Samus has Varia.
+    jsr EndGamePalWrite             ;
+    +
     lda #$08                        ;
     sta ClrChangeCounter            ;Initialize ClrChangeCounter with #$08.
     inc RoomPtr                     ;
@@ -3363,9 +3341,6 @@ SamusWave:
     ;Load Timer3 with 160 frame delay (2.6 seconds).
     lda #$10
     sta Timer3
-    ;Change palette
-    lda #$08
-    sta PalDataPending
     ;Increment RoomPtr
     inc RoomPtr
     rts
@@ -3400,20 +3375,33 @@ EndFadeOut:
     lda Timer3                      ;If 160 frame delay from last routine has not-->
     bne L9BEF                       ;yet expired, branch.
     lda IsCredits                   ;
-    bne L9BDB                       ;Branch always.
+    bne L9BDB                       ;Branch if fade out is happening.
 
-        lda #$08                        ;*This code does not appear to be used.
-        sta PalDataPending              ;*Change palette.
-        inc IsCredits                   ;*Increment IsCredits.
+        lda #$08
+        sta IntroStarOffset
+        inc IsCredits               ;Increment IsCredits (start fade out).
 
     L9BDB:
     lda FrameCount                  ;
     and #$07                        ;Every seventh frame, increment the palette info-->
     bne L9BEF                       ;If PalDataPending is not equal to #$0C, keep-->
-    inc PalDataPending              ;incrementing every seventh frame until it does.-->
-    lda PalDataPending              ;This creates the fade out effect.
+    inc IntroStarOffset             ;incrementing every seventh frame until it does.-->
+    lda IntroStarOffset             ;This creates the fade out effect.
     cmp #$0C                        ;
-    bne L9BEF                       ;
+    beq +                           ;
+        tay
+        lda SamusGear
+        and #gr_VARIA
+        beq ++
+        tya
+        clc                         ;Load Varia Suit palette if Samus has Varia.
+        adc #$05                    ;
+        tay
+        ++
+        tya
+        jsr EndGamePalWrite
+        beq L9BEF                   ;Branch always.
+    +
         lda #$10                        ;After fadeout complete, load Timer3 with 160 frame-->
         sta Timer3                      ;delay(2.6 seconds) and increment RoomPtr.
         inc RoomPtr                     ;
@@ -3433,8 +3421,8 @@ RollCredits:
     jsr ScreenOff                   ;($C439)When 20 frames left in Timer3,-->
     jsr ClearNameTable0             ;($C16D)clear name table 0 and sprites.-->
     jsr EraseAllSprites             ;($C1A3)prepares screen for credits.
-    lda #$0D                        ;
-    sta PalDataPending              ;Change to proper palette for credits.
+    lda #$0C                        ;
+    jsr EndGamePalWrite             ;Change to proper palette for credits.
     jsr ScreenOn                    ;($C447)Turn screen on.
     jmp WaitNMIPass_                ;($C43F)Wait for NMI to end.
 L9C17:
@@ -3843,30 +3831,19 @@ EndStarDataTable:
     .byte $73, $26, $23, $E7
     .byte $0C, $26, $22, $AA
 
+WriteTitlePal:
+    asl
+    tay
+    lda bank0_PalPntrTbl-2,y
+    ldx bank0_PalPntrTbl-1,y
+    jmp ProcessPalPPUString
+
 EndGamePalWrite:
-    lda PalDataPending              ;If no palette data pending, branch to exit.
-    beq RTS_9F80                       ;
-    cmp #$0C                        ;If PalDataPending has loaded last palette,-->
-    beq RTS_9F80                       ;branch to exit.
-    cmp #$0D                        ;Once end palettes have been cycled through,-->
-    bne L9F64                       ;start over.
-        ldy #$00                        ;
-        sty PalDataPending              ;
-    L9F64:
-    asl                             ;* 2, pointer is two bytes.
-    tay                             ;
-    lda EndGamePalPntrTbl-1,y       ;High byte of PPU data pointer.
-    ldx EndGamePalPntrTbl-2,y       ;Low byte of PPU data pointer.
-    tay                             ;
-    jsr PreparePPUProcess_          ;($C20E)Prepare to write data string to PPU.
-    lda #$3F                        ;
-    sta PPUADDR                  ;
-    lda #$00                        ;
-    sta PPUADDR                  ;Set PPU address to $3F00.
-    sta PPUADDR                  ;
-    sta PPUADDR                  ;Set PPU address to $0000.
-RTS_9F80:
-    rts
+    asl
+    tay
+    lda EndGamePalPntrTbl-2,y
+    ldx EndGamePalPntrTbl-1,y
+    jmp ProcessPalPPUString
 
 ;The following pointer table is used by the routine above to
 ;find the proper palette data during the EndGame routine.
@@ -3883,8 +3860,11 @@ EndGamePalPntrTbl:
     .word EndGamePal08              ;($A013)
     .word EndGamePal09              ;($A02E)
     .word EndGamePal0A              ;($A049)
-    .word EndGamePal0A              ;($A049)
     .word EndGamePal0B              ;($9806)
+    .word EndGamePal0C
+    .word EndGamePal0D
+    .word EndGamePal0E
+    .word EndGamePal0A
 
 EndGamePal00:
     PPUString $3F00, \
@@ -3936,25 +3916,48 @@ EndGamePal07:
 
 EndGamePal08:
     PPUString $3F0C, \
-        $0F, $18, $08, $07
-    PPUString $3F10, \
-        $0F, $26, $05, $07, $0F, $26, $05, $07, $0F, $01, $01, $05, $0F, $13, $1C, $0C
+        $0F, $18, $08, $07, $0F, $26, $05, $07, $0F, $26, $05, $07, $0F, $01, $01, $05, $0F, $13, $1C, $0C
 
     .byte $00                       ;End EndGamePal08 data.
 
 EndGamePal09:
     PPUString $3F0C, \
-        $0F, $08, $07, $0F
-    PPUString $3F10, \
-        $0F, $06, $08, $0F, $0F, $06, $08, $0F, $0F, $00, $10, $0F, $0F, $01, $0C, $0F
+        $0F, $08, $07, $0F, $0F, $06, $08, $0F, $0F, $06, $08, $0F, $0F, $00, $10, $0F, $0F, $01, $0C, $0F
 
     .byte $00                       ;End EndGamePal09 data.
 
 EndGamePal0A:
-    PPUStringRepeat $3F0C, $0F, $04
-    PPUStringRepeat $3F10, $0F, $10
+    PPUString $3F0C, \
+        $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F
 
     .byte $00                       ;End EndGamePal0A data.
+
+EndGamePal0B:
+    PPUString $3F00, \
+        $0F, $2C, $2C, $2C, $0F, $2C, $2C, $2C, $0F, $2C, $2C, $2C, $0F, $2C, $2C, $2C, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F
+
+    .byte $00                       ;End EndGamePal0B data.
+
+;Ending Varia Suit palette (suit and suitless).
+EndGamePal0C:
+    PPUString $3F10, \
+        $0F, $16, $19, $35, $0F, $36, $15, $19
+
+    .byte $00
+
+;Ending Varia Suit fade-out 1
+EndGamePal0D:
+    PPUString $3F0C, \
+        $0F, $18, $08, $07, $0F, $26, $05, $09, $0F, $26, $05, $09, $0F, $01, $01, $05, $0F, $13, $1C, $0C
+
+    .byte $00
+
+;Ending Varia Suit fade-out 2
+EndGamePal0E:
+    PPUString $3F0C, \
+        $0F, $08, $07, $0F, $0F, $06, $08, $0F, $0F, $06, $08, $0F, $0F, $00, $10, $0F, $0F, $01, $0C, $0F
+
+    .byte $00
 
 ;The following data writes the end game background graphics.
 

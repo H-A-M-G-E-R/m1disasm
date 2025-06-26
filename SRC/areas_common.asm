@@ -1294,7 +1294,7 @@ UpdateDoor_LetSamusIn:
     lda PalToggle
     eor #$07
     sta PalToggle
-    sta PalDataPending
+    jsr WriteAreaPal
 L8CA7:
     ; increment door status to "scroll"
     inc DoorStatus,x

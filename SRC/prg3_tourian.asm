@@ -899,7 +899,7 @@ L9E31:
 L9E36:
     jsr L9E43
     lda L9E41,y
-    sta PalDataPending
+    jsr WriteAreaPal
     jmp L9E31
 
 L9E41:  .byte $08, $07
@@ -919,9 +919,11 @@ L9E43:
 ;-------------------------------------------------------------------------------
 L9E52:
     jsr L9E43
-    lda L9E41,y
-    sta PalDataPending
     tya
+    pha
+    lda L9E41,y
+    jsr WriteAreaPal
+    pla
     asl
     asl
     sta ScrollY
@@ -941,9 +943,8 @@ L9E52:
     sta MotherBrainStatus
     lda #$28
     sta MotherBrain9F
-    lda NoiseSFXFlag
-    ora #sfxNoise_SilenceMusic
-    sta NoiseSFXFlag
+    lda #$00
+    sta CurrentMusic
 L9E83:
     jmp L9E2E
 
@@ -969,7 +970,7 @@ L9E86:
     lda PPUStrIndex
     bne L9EB5
         lda L9EFF+1,y
-        sta $1C
+        jsr WriteAreaPal
     L9EB5:
     ldy MotherBrainStatus
     dey
@@ -1129,7 +1130,7 @@ L9FC0:
     lda #$0A
     sta MotherBrainStatus
     lda #$01
-    sta PalDataPending
+    jsr WriteAreaPal
 RTS_9FD9:
     rts
 
@@ -1481,7 +1482,7 @@ LA1E7:
     lda #$0C
     sta Timer3
     lda #$0B
-    sta PalDataPending
+    jsr WriteAreaPal
 RTS_A237:
     rts
 

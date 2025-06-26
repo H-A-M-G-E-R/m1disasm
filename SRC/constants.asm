@@ -86,7 +86,7 @@ RetrigDelay2           = $19     ;The retriggering of held down buttons.
 
 NMIStatus              = $1A     ;0=NMI in progress. anything else, NMI not in progress.
 PPUDataPending         = $1B     ;1=not PPU data pending, 1=data pending.
-PalDataPending         = $1C     ;Pending palette data. Palette # = PalDataPending - 1.
+;PalDataPending         = $1C    ;Not used in this mod. Was pending palette data. Palette # = PalDataPending - 1.
 GameMode               = $1D     ;0 = Game is playing, 1 = At title/password screen
 MainRoutine            = $1E     ;5 = Game paused, 3 = Game engine running
 TitleRoutine           = $1F     ;Stores title routine number currently running.
@@ -400,6 +400,8 @@ MotherBrain010D        = $010D
 
 MissileToggle          = $010E   ;0=fire bullets, 1=fire missiles.
 SamusHurt010F          = $010F
+
+PalRam                 = $0110   ;$0110 thru $012F
 
 ;-----------------------------------------[ Sprite RAM ]---------------------------------------------
 

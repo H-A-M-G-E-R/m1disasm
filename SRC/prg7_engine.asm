@@ -206,7 +206,28 @@ NMI:
         beq LC0F4                       ;Branch if mode=Play.
             jsr NMIScreenWrite              ;($9A07)Write end message on screen(If appropriate).
         LC0F4:
-        jsr CheckPalWrite               ;($C1E0)Check if palette data pending.
+
+        ; Update palettes
+        ldx PPUSTATUS                   ;Reset PPU address latch.
+        lda PPUCTRL_ZP                  ;
+        and #$FB                        ;PPU increment = 1.
+        sta PPUCTRL_ZP                  ;
+        sta PPUCTRL                     ;Store control bits in PPU.
+        lda #$3F                        ;PPU address = $3F00 (color 0).
+        sta PPUADDR                     ;
+        lda #$00                        ;
+        sta PPUADDR                     ;
+        tax
+        -
+            lda PalRam,x                ;
+            sta PPUDATA                 ;Write $20 colors to PPU.
+            inx                         ;
+            lda PalRam,x                ;
+            sta PPUDATA                 ;
+            inx                         ;
+            cpx #$20                    ;
+            bne -                       ;
+
         jsr CheckPPUWrite               ;($C2CA)check if data needs to be written to PPU.
         jsr WritePPUCtrl                ;($C44D)Update $2000 & $2001.
         jsr WriteScroll                 ;($C29A)Update h/v scroll reg.
@@ -371,49 +392,43 @@ ClearRAM_33_DF:
         bcc LC1D8                       ;Loop until all desired addresses are cleared.
     rts
 
-;--------------------------------[ Check and prepare palette write ]---------------------------------
-
-CheckPalWrite:
-    lda GameMode                    ;
-    beq LC1ED                       ;Is game being played? If so, branch to exit.
-    lda TitleRoutine                ;
-    cmp #$1D                        ;Is Game at ending sequence? If not, branch
-    bcc LC1ED                       ;
-    jmp EndGamePalWrite             ;($9F54)Write palette data for ending.
-LC1ED:
-    lda PalDataPending              ;
-    bne LC1FF                       ;Is palette data pending? If so, branch.
-        lda GameMode                    ;
-        beq RTS_C1FE                       ;Is game being played? If so, branch to exit.
-        lda TitleRoutine                ;
-        cmp #$15                        ;Is intro playing? If not, branch.
-        bcs RTS_C1FE                       ;
-        jmp StarPalSwitch               ;($8AC7)Cycles palettes for intro stars twinkle.
-        RTS_C1FE:
-        rts                             ;Exit when no palette data pending.
-
-;Prepare to write palette data to PPU.
-
-LC1FF:
-    asl                             ;Palette # = (PalDataPending - 1) * 2, each pal data ptr is 2 bytes (16-bit).
-    tay                             ;
-    lda CurrentBank
-    beq +
-        ldx PalPntrTbl-2,y          ;X = low byte of PPU data pointer.
-        lda PalPntrTbl-1,y          ;
-        bne ++
-    +
-        ldx bank0_PalPntrTbl-2,y
-        lda bank0_PalPntrTbl-1,y
-    ++
-    tay                             ;Y = high byte of PPU data pointer.
-    lda #$00                        ;Clear A.
-    sta PalDataPending              ;Reset palette data pending byte.
+;----------------------------------[ Write PPU string to palette ]-----------------------------------
 
 PreparePPUProcess_:
     stx $00                         ;Lower byte of pointer to PPU string.
     sty $01                         ;Upper byte of pointer to PPU string.
     jmp ProcessPPUString            ;($C30C)Write data string to PPU.
+
+WriteAreaPal:
+    asl                             ;Palette # = (A - 1) * 2, each pal data ptr is 2 bytes (16-bit).
+    tay                             ;
+    lda PalPntrTbl-2,y
+    ldx PalPntrTbl-1,y
+
+ProcessPalPPUString:
+    sta $00
+    stx $01
+    ldy #$01
+    @loopStrings:
+        lda ($00),y                     ;
+        tax                             ;X = start
+        iny                             ;
+        lda ($00),y                     ;
+        sta $02                         ;$02 = # of colors to write
+        @loopColors:
+            iny
+            lda ($00),y
+            sta PalRam,x
+            inx
+            dec $02
+            bne @loopColors
+        iny
+        lda ($00),y
+        beq @rts
+        iny
+        bne @loopStrings
+    @rts:
+    rts
 
 ;----------------------------------------[Read joy pad status ]--------------------------------------
 
@@ -718,60 +733,6 @@ EndPPUString:
     pla                             ;Remove last return address from stack and jump out of-->
 RTS_C37D:
     rts                             ;PPU writing routines.
-
-;The following routine is only used by the intro routine to load the sprite
-;palette data for the twinkling stars. The following memory addresses are used:
-;$00-$01 Destination address for PPU write, $02-$03 Source address for PPU data,
-;$04 Temp storage for PPU data byte, $05 PPU data string counter byte,
-;$06 Temp storage for index byte.
-
-PrepPPUPaletteString:
-    ldy #$01                        ;
-    sty PPUDataPending              ;Indicate data waiting to be written to PPU.
-    dey                             ;
-    beq LC3BC                       ;Branch always
-
-LC385:
-    sta $04                         ;$04 now contains next data byte to be put into the PPU string.
-    lda $01                         ;High byte of staring address to write PPU data
-    jsr WritePPUByte                ;($C36B)Put data byte into PPUDataString.
-    lda $00                         ;Low byte of starting address to write PPU data.
-    jsr WritePPUByte                ;($C36B)Put data byte into PPUDataString.
-    lda $04                         ;A now contains next data byte to be put into the PPU string.
-    jsr SeparateControlBits         ;($C3C6)Break control byte into two bytes.
-
-    bit $04                         ;Check to see if RLE bit is set in control byte.-->
-    bvc WritePaletteStringByte      ;If not set, branch to load byte. Else increment index-->
-    iny                             ;to find repeating data byte.
-
-WritePaletteStringByte:
-    bit $04                         ;Check if RLE bit is set (again). if set, load same-->
-    bvs LC3A0                           ;byte over and over again until counter = #$00.
-        iny                             ;Non-repeating data byte. Increment for next byte.
-    LC3A0:
-    lda ($02),y                     ;
-    jsr WritePPUByte                ;($C36B)Put data byte into PPUDataString.
-    sty $06                         ;Temporarily store data index.
-    ldy #$01                        ;PPU address increment = 1.
-    bit $04                         ;If MSB set in control bit, it looks like this routine might-->
-    bpl LC3AF                           ;have been used for a software control vertical mirror, but-->
-                                        ;the starting address has already been written to the PPU-->
-                                        ;string so this section has no effect whether the MSB is set-->
-                                        ;or not. The PPU is always incremented by 1.
-        ldy #$20                        ;PPU address increment = 32.
-    LC3AF:
-    jsr AddYToPtr00                 ;($C2A8)Set next PPU write address.(Does nothing, already set).
-    ldy $06                         ;Restore data index to Y.
-    dec $05                         ;Decrement counter byte.
-    bne WritePaletteStringByte      ;If more bytes to write, branch to write another byte.
-    stx PPUStrIndex                 ;Store total length, in bytes, of PPUDataString.
-    iny                             ;Move to next data byte(should be #$00).
-
-LC3BC:
-    ldx PPUStrIndex                 ;X now contains current length of PPU data string.
-    lda ($02),y                     ;
-    bne LC385                       ;Is PPU string done loading (#$00)? If so exit,-->
-    jsr EndPPUString                ;($C376)else branch to process PPU byte.
 
 SeparateControlBits:
     sta $04                         ;Store current byte
@@ -1157,8 +1118,8 @@ AreaInit:
 ;------------------------------------------[ MoreInit ]---------------------------------------------
 
 MoreInit:
-    ldy #$01                        ;
-    sty PalDataPending              ;Palette data pending = yes.
+    lda #$01                        ;
+    jsr WriteAreaPal                ;Write area palette 0.
     ldx #$FF                        ;
     stx SpareMem75                  ;$75 Not referenced ever again in the game.
     inx                             ;X=0.
@@ -1235,8 +1196,8 @@ MoreInit:
         bne Lx001
 
     stx DoorPalChangeDir
-    inx          ; X = 1
-    stx PalDataPending
+    lda #$01                        ;
+    jsr WriteAreaPal                ;Write area palette 0.
     stx SpareMem30                  ;Not accessed by game.
     inc MainRoutine                 ;SamusInit is next routine to run.
     jmp ScreenOn
@@ -1469,7 +1430,8 @@ SamusIntro:
     cmp SamusFadeInTimeTbl-20,y     ;sa_FadeIn0 is beginning of table.
     bne LCA00                           ;Every time Timer3 equals one of the entries in the table-->
         inc ObjAction                   ;below, change the palette used to color Samus.
-        sty PalDataPending              ;
+        tya                             ;
+        jsr WriteAreaPal                ;
     LCA00:
     lda FrameCount                  ;Is game currently on an odd frame?-->
     lsr                             ;If not, branch to exit.
@@ -1747,7 +1709,7 @@ SelectSamusPal: ;$CB73
         clc
         adc #$17                        ;Add #$17 to the pal # to reach "no suit"-palettes.
     @endIf:
-    sta PalDataPending              ;Palette will be written next NMI.
+    jsr WriteAreaPal                ;Palette will be written next NMI.
     
     ;Restore the contents of y.
     pla
@@ -2298,8 +2260,8 @@ Lx009:
 CheckHealthBeep:
     ; beep if health < 17
     ldy Health+1
-    dey
-    bmi Lx010
+    beq Lx010
+    dey 
     bne Lx011
     lda Health
     cmp #$70
@@ -3984,13 +3946,13 @@ ElevatorD8BF:
     lda PalToggle
     eor #$07
     sta PalToggle
-    ; if in tourian, load palette 1, else load palette PalToggle
+    ; if in tourian, load palette 0, else load palette PalToggle-1
     ldy InArea
     cpy #$12
     bcc @endIf_D
         lda #$01
     @endIf_D:
-    sta PalDataPending
+    jsr WriteAreaPal
     jsr WaitNMIPass_
     ; update samus palette
     jsr SelectSamusPal
@@ -4468,11 +4430,7 @@ MissileEnergyTank:
         bne LDBE3                       ;Branch always.
 
     LDC00:
-    lda TankCount                   ;
-    cmp #$06                        ;Has Samus got 6 energy tanks?-->
-    beq LDC0A                       ;If so, she can't have any more.-->
-        inc TankCount                   ;Otherwise give her a new tank.
-    LDC0A:
+    inc TankCount                   ;Give her a new tank.
     lda TankCount                   ;
     jsr Amul16                      ;Get tank count and shift into upper nibble.
     ora #$09                        ;
@@ -5433,20 +5391,21 @@ LE14A:
 
 ;Display full/empty energy tanks.
     sta $03                         ;Temp store tank count.
-    lda #$40                        ;X coord of right-most energy tank.
-    sta $00                         ;Energy tanks are drawn from right to left.
-    ldy #$6F                        ;"Full energy tank" tile.
+    ldy #$00                        ;Tank index.
+    lda #$6F                        ;"Full energy tank" tile.
+    sta $00                         ;
     lda Health+1                    ;
     jsr Adiv16                      ;($C2BF)/16. A contains # of full energy tanks.
     sta $01                         ;Storage of full tanks.
     bne AddTanks                    ;Branch if at least 1 tank is full.
-    dey                             ;Else switch to "empty energy tank" tile.
+    dec $00                         ;Else switch to "empty energy tank" tile.
 
 AddTanks:
     jsr AddOneTank                  ;($E17B)Add energy tank to display.
+    iny
     dec $01                         ;Any more full energy tanks left?-->
     bne LE16C                           ;If so, then branch.-->
-        dey                             ;Otherwise, switch to "empty energy tank" tile.
+        dec $00                         ;Otherwise, switch to "empty energy tank" tile.
     LE16C:
     dec $03                         ;done all tanks?-->
     bne AddTanks                    ;if not, loop to do another.
@@ -5470,17 +5429,14 @@ SPRWriteDigit:
 ;Add energy tank to Samus' data display.
 
 AddOneTank:
-    lda #$17                        ;Y coord-1.
+    lda EnergyTankYPositions,y      ;Y coord-1.
     sta SpriteRAM,x                 ;
-    tya                             ;Tile value.
+    lda $00                         ;Tile value.
     sta SpriteRAM+1,x               ;
     lda #$01                        ;Palette #.
     sta SpriteRAM+2,x               ;
-    lda $00                         ;X coord.
+    lda EnergyTankXPositions,y      ;X coord.
     sta SpriteRAM+3,x               ;
-    sec                             ;
-    sbc #$0A                        ;Find x coord of next energy tank.
-    sta $00                         ;
 
 ;-----------------------------------------[ Add 4 to x ]---------------------------------------------
 
@@ -5490,6 +5446,14 @@ Xplus4:
     inx                             ;Add 4 to value stored in X.
     inx                             ;
     rts                             ;
+
+EnergyTankXPositions:
+    .byte $18,$22,$2C,$36
+    .byte $18,$22,$2C,$36
+
+EnergyTankYPositions:
+    .byte $17,$17,$17,$17
+    .byte $0D,$0D,$0D,$0D
 
 ;------------------------------------[ Convert hex to decimal ]--------------------------------------
 
