@@ -8743,7 +8743,7 @@ CommonJump_00:
 ; Entry Point 2 ; CommonJump_02
 LF416:
 CommonJump_02:
-    ; check if enemy is miniboss
+    ; check if enemy is tough
     ldx PageIndex
     lda EnSpecialAttribs,x
     bpl Lx301
@@ -9100,10 +9100,13 @@ ExplodeEnemy:
     ; set status to explode
     lda #enemyStatus_Explode
     sta EnStatus,x
+    ; preserve special attributes for tough enemy explosion fix
+    lda $0A
+    sta EnSpecialAttribs,x
     
     ; branch if enemy is a miniboss
-    bit $0A
-    bvs Lx327
+    and #$40
+    bne Lx327
     ; branch if enemy was not hit by the regular beam
     lda EnWeaponAction,x
     cmp #wa_RegularBeam+1.b
@@ -9506,7 +9509,7 @@ CommonJump_07:
     lda EnemyData0DTbl,y
     sta EnData0D,x
     lda EnemyHitPointTbl,y          ;($962B)
-    bmi Lx353 ; BUGFIX: tough rippers and squeepts now doesn't bug out their immunity
+    bmi Lx353 ; BUGFIX: tough rippers and squeepts now don't bug out their immunity
     ldy EnSpecialAttribs,x
     bpl Lx353 ; Check MSB of enemyAttr, double health if set
         asl
@@ -9929,7 +9932,14 @@ Lx377:
         sta $05
         jsr LFA41
     Lx378:
+    ; BUGFIX: tough enemies' explosions now use the correct palette
+    lda EnSpecialAttribs,x
+    bpl +
+        lda #$83
+        bne ++
+    +
     lda #$80
+    ++
     sta ObjectCntrl
     lda #$03
     jmp LF97E
