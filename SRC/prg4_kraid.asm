@@ -94,14 +94,6 @@ AreaPointers:
 AreaRoutine:
     jmp AreaRoutineStub ; Just an RTS
 
-;The following routine returns the two's complement of the value stored in A.
-TwosComplement_:
-    eor #$FF
-    clc
-    adc #$01
-RTS_95CB:
-    rts
-
 L95CC:
     .byte $1D                       ;Kraid's room.
 AreaMusicFlag:
@@ -142,20 +134,20 @@ ChooseEnemyAIRoutine:
     jsr CommonJump_ChooseRoutine
         .word SidehopperFloorAIRoutine ; 00 - sidehopper
         .word SidehopperCeilingAIRoutine ; 01 - ceiling sidehopper
-        .word RTS_95CB ; 02 - unused enemy type that doesn't properly clear itself
+        .word AreaRoutineStub ; 02 - unused enemy type that doesn't properly clear itself
         .word RipperAIRoutine ; 03 - ripper
         .word SkreeAIRoutine ; 04 - skree
         .word CrawlerAIRoutine ; 05 - crawler
-        .word RTS_95CB ; 06 - same as 2
+        .word AreaRoutineStub ; 06 - same as 2
         .word PipeBugAIRoutine ; 07 - geega
         .word KraidAIRoutine ; 08 - kraid
         .word KraidLintAIRoutine ; 09 - kraid lint
         .word KraidNailAIRoutine ; 0a - kraid nail
-        .word RTS_95CB ; 0b - same as 2
-        .word RTS_95CB ; 0c - same as 2
-        .word RTS_95CB ; 0d - same as 2
-        .word RTS_95CB ; 0e - same as 2
-        .word RTS_95CB ; 0f - same as 2
+        .word AreaRoutineStub ; 0b - same as 2
+        .word AreaRoutineStub ; 0c - same as 2
+        .word AreaRoutineStub ; 0d - same as 2
+        .word AreaRoutineStub ; 0e - same as 2
+        .word AreaRoutineStub ; 0f - same as 2
 
 EnemyDeathAnimIndex:
     .byte EnAnim_27 - EnAnimTbl, EnAnim_27 - EnAnimTbl

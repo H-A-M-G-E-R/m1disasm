@@ -65,7 +65,7 @@ L9923:
     sec
     sbc ObjY
     bpl L9940
-        jsr TwosComplement_
+        jsr TwosComplement
     L9940:
     cmp #$10
     bcs L9949

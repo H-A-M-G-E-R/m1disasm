@@ -28,7 +28,7 @@ RioAIRoutine:
     ; branch if Samus is under enemy
     bpl RioBranch
         ; negate a
-        jsr TwosComplement_
+        jsr TwosComplement
     RioBranch:
     ; a now contains the y distance between Samus and the enemy
     ; branch if Samus is not within a block's distance 

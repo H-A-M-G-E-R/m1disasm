@@ -97,14 +97,6 @@ GotoUpdateBullet_CollisionWithMotherBrain:
 AreaRoutine:
     jmp L9B25                       ;Area specific routine.
 
-;The following routine returns the two's complement of the value stored in A.
-TwosComplement_:
-    eor #$FF
-    clc
-    adc #$01
-Exit__:
-    rts
-
 L95CC:
     .byte $FF                       ;Not used.
 AreaMusicFlag:
@@ -553,7 +545,7 @@ L9BC8:
     sta EnAnimDelay,y
     sta EnMovementIndex,y
     pla
-    jsr TwosComplement_
+    jsr TwosComplement
     tax
     sta EnData0A,y
     ora #$02
@@ -842,7 +834,7 @@ MotherBrainStatusHandler:
     lda MotherBrainStatus
     beq RTS_9DF1
     jsr CommonJump_ChooseRoutine
-        .word Exit__    ;#$00=Mother brain not in room,
+        .word RTS_9DF1  ;#$00=Mother brain not in room,
         .word L9E22     ;#$01=Mother brain in room
         .word L9E36     ;#$02=Mother brain hit
         .word L9E52     ;#$03=Mother brain dying
@@ -852,7 +844,7 @@ MotherBrainStatusHandler:
         .word L9FC0     ;#$07=Time bomb exploded
         .word L9F02     ;#$08=Initialize mother brain
         .word L9FDA     ;#$09
-        .word Exit__    ;#$0A=Mother brain already dead.
+        .word RTS_9DF1  ;#$0A=Mother brain already dead.
 RTS_9DF1:
     rts
 
@@ -870,7 +862,7 @@ L9DF2:
     sec
     sbc #$80
     bpl L9E0E
-        jsr TwosComplement_
+        jsr TwosComplement
     L9E0E:
     cmp #$20
     bcs RTS_9DF1

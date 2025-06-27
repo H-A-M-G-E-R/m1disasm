@@ -41,7 +41,7 @@ MetroidAIRoutine:
     bpl L983B
         ; negate y max speed
         pla
-        jsr TwosComplement_
+        jsr TwosComplement
         pha
         ; get absolute value of y speed
         lda #$00
@@ -67,7 +67,7 @@ MetroidAIRoutine:
     bpl L985F
         ; negate x speed
         pla
-        jsr TwosComplement_
+        jsr TwosComplement
         pha
         ; get absolute value of x speed
         lda #$00
@@ -231,7 +231,7 @@ L98A9:
     ; negate offset if latch's sign of x speed is positive
     plp
     bmi L9956
-        jsr TwosComplement_
+        jsr TwosComplement
     L9956:
     sta Temp05_SpeedX
     ; load Samus position

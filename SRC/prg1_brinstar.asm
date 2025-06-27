@@ -89,13 +89,6 @@ AreaPointers:
 AreaRoutine: ; L95C3
     jmp AreaRoutineStub ; Just an RTS
 
-;The following routine returns the two's complement of the value stored in A.
-TwosComplement_:
-    eor #$FF
-    clc
-    adc #$01
-    rts
-
 ; area init data
     .byte $FF                       ;Not used.
 AreaMusicFlag:

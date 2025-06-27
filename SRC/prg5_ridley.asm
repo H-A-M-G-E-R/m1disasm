@@ -103,13 +103,6 @@ AreaPointers:
 AreaRoutine:
     jmp RTS_Polyp                       ;Area specific routine.
 
-;The following routine returns the two's complement of the value stored in A.
-TwosComplement_:
-    eor #$FF
-    clc
-    adc #$01
-    rts
-
 L95CC:
     .byte $12                       ;Ridley's room.
 AreaMusicFlag:
