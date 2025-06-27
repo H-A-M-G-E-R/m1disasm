@@ -2973,6 +2973,9 @@ InitBullet:
     sta ProjectileRadY,y
     sta ProjectileRadX,y
     lda #ObjAnim_1B - ObjectAnimIndexTbl.b
+    bit SamusGear
+    bpl InitObjAnimIndex ; branch if Samus doesn't have Ice Beam
+    lda #ObjAnim_IceBullet - ObjectAnimIndexTbl.b
 
 InitObjAnimIndex:
     sta ObjAnimResetIndex,x
@@ -3260,7 +3263,7 @@ DoOneProjectile:
         .word ExitSub     ;($C45C) rts
         .word UpdateBullet          ; regular beam
         .word UpdateWaveBullet      ; wave beam
-        .word UpdateIceBullet       ; ice beam
+        .word UpdateBullet          ; ice beam
         .word BulletExplode         ; bullet/missile explode
         .word BombInit              ; lay bomb
         .word BombCountdown         ; lay bomb
@@ -3411,14 +3414,6 @@ WaveBulletTrajectoryVertical:
     SignMagSpeed $01,  7, -3
     .byte $FF
 
-; UpdateIceBullet
-; ===============
-
-UpdateIceBullet:
-    lda #$81
-    sta ObjectCntrl
-    jmp UpdateBullet
-
 ; BulletExplode
 ; =============
 ; bullet/missile explode
@@ -3448,6 +3443,10 @@ LD5E4:
     bne Lx076
     lda #ObjAnim_MissileExplode - ObjectAnimIndexTbl.b
 Lx076:
+    cpy #wa_IceBeam
+    bne +
+    lda #ObjAnim_IceBulletHit - ObjectAnimIndexTbl.b
+    +
     jsr InitObjAnimIndex
     lda #wa_BulletExplode
 Lx077:

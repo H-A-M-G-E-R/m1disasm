@@ -162,6 +162,14 @@ ObjAnim_MissileUp: ;$8F
 ObjAnim_MissileExplode: ;$91
     .byte _id_ObjFrame67, _id_ObjFrame67, _id_ObjFrame67, _id_ObjFrame68, _id_ObjFrame68, _id_ObjFrame69, $F7, $FF
 
+;Ice bullet animation.
+ObjAnim_IceBullet:
+    .byte _id_ObjFrameIceBullet, $FF
+
+;Ice bullet hit animation.
+ObjAnim_IceBulletHit:
+    .byte _id_ObjFrameIceBulletHit, $F7, $FF
+
 ;----------------------------[ Sprite drawing pointer tables ]--------------------------------------
 
 ;The above animation pointers provide an index into the following table
@@ -208,7 +216,7 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame26
     PtrTableEntry ObjFramePtrTable, ObjFrame27
     PtrTableEntry ObjFramePtrTable, ObjFrame28
-    PtrTableEntry ObjFramePtrTable, ObjFrame29
+    PtrTableEntry ObjFramePtrTable, ObjFrameIceBulletHit
     PtrTableEntry ObjFramePtrTable, ObjFrame2A
     PtrTableEntry ObjFramePtrTable, ObjFrame2B
     PtrTableEntry ObjFramePtrTable, ObjFrame2C
@@ -273,6 +281,7 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame67
     PtrTableEntry ObjFramePtrTable, ObjFrame68
     PtrTableEntry ObjFramePtrTable, ObjFrame69
+    PtrTableEntry ObjFramePtrTable, ObjFrameIceBullet
 
 ;The following table provides pointers to data used for the placement of the sprites that make up
 ;Samus and other non-enemy objects.
@@ -989,9 +998,20 @@ ObjFrame28:
     .byte $FF
 
 ;Bullet hit.
-ObjFrame29:
 ObjFrame2A:
     .byte ($0 << 4) + _id_ObjPlace4, $00, $00
+    .byte $04
+    .byte $FF
+
+;Ice bullet fire.
+ObjFrameIceBullet:
+    .byte ($1 << 4) + _id_ObjPlace4, $02, $02
+    .byte $30
+    .byte $FF
+
+;Ice bullet hit.
+ObjFrameIceBulletHit:
+    .byte ($1 << 4) + _id_ObjPlace4, $00, $00
     .byte $04
     .byte $FF
 
