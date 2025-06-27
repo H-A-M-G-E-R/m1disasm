@@ -58,8 +58,8 @@
 ;    jmp EnemyGetDeltaY_Negative977B
 ;CommonJump_13: ;$8039
 ;    jmp EnemyGetDeltaX_Negative977B
-;CommonJump_14: ;$803C
-;    jmp LDD8B
+;CommonJump_DrawEnemy: ;$803C
+;    jmp DrawEnemy
 ;CommonJump_DrawTileBlast: ;$803F
 ;    jmp DrawTileBlast
 ;CommonJump_SubtractHealth: ;$8042

@@ -586,7 +586,7 @@ L9C31:
     sta EnHi+$E0
     lda #$E0
     sta PageIndex
-    jmp CommonJump_14
+    jmp CommonJump_DrawEnemy
 
 L9C4D:
     ldy #$00
@@ -1210,12 +1210,12 @@ LA041:
     ldy MotherBrainAnimFrameTableID
     lda LA06D,y
     sta EnAnimFrame+$E0
-    jsr CommonJump_14
+    jsr CommonJump_DrawEnemy
     lda MotherBrain9B
     bmi RTS_A06C
     lda LA06D+4
     sta EnAnimFrame+$E0
-    jsr CommonJump_14
+    jsr CommonJump_DrawEnemy
 RTS_A06C:
     rts
 
@@ -1494,7 +1494,7 @@ LA238:
     sta PageIndex
     lda SpritePagePos
     pha
-    jsr CommonJump_14
+    jsr CommonJump_DrawEnemy
     pla
     cmp SpritePagePos
     beq RTS_A28A
