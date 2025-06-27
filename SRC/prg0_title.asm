@@ -3259,8 +3259,13 @@ L9AE4:
     jsr NMIOn                       ;($C487)Turn on non-maskable interrupt.
     lda #music_EndMusic             ;Initiate end game music.
     sta CurrentMusic                ;
-    lda #$60                        ;Loads Timer3 with a delay of 960 frames-->
-    sta Timer3                      ;(16 seconds).
+    .if BUILDTARGET == "NES_NTSC"
+        ;Loads Timer3 with a delay of 960 frames (16 seconds).
+        lda #$60
+    .elif BUILDTARGET == "NES_PAL"
+        lda #$38
+    .endif
+    sta Timer3
     lda #$36                        ;#$36/#$03 = #$12.  Number of sprites-->
     sta SpriteByteCounter           ;used to draw end graphic of Samus.
     lda #$00                        ;
@@ -3292,9 +3297,14 @@ ShowEndSamus:
         rts
 
     L9B26:
-    cmp #$50                        ;After 160 frames have passed-->
-    bne L9B2D                       ;(2.6 seconds), write end message.
-        inc EndMsgWrite                 ;
+    .if BUILDTARGET == "NES_NTSC"
+        ;After 160 frames have passed (2.6 seconds), write end message.
+        cmp #$50
+    .elif BUILDTARGET == "NES_PAL"
+        cmp #$30
+    .endif
+    bne L9B2D
+        inc EndMsgWrite
         rts
 
     L9B2D:
@@ -3358,8 +3368,12 @@ SamusWave:
     ;If 160 frame timer from previous routine has not expired, branch(waves for 2.6 seconds).
     lda Timer3
     bne L9BA2
-    ;Load Timer3 with 160 frame delay (2.6 seconds).
-    lda #$10
+    .if BUILDTARGET == "NES_NTSC"
+        ;Load Timer3 with 160 frame delay (2.6 seconds).
+        lda #$10
+    .elif BUILDTARGET == "NES_PAL"
+        lda #$08
+    .endif
     sta Timer3
     ;Increment RoomPtr
     inc RoomPtr
@@ -3422,7 +3436,12 @@ EndFadeOut:
         jsr EndGamePalWrite
         beq L9BEF                   ;Branch always.
     +
-        lda #$10                        ;After fadeout complete, load Timer3 with 160 frame-->
+        .if BUILDTARGET == "NES_NTSC"
+            ;After fadeout complete, load Timer3 with 160 frame delay(2.6 seconds) and increment RoomPtr.
+            lda #$10
+        .elif BUILDTARGET == "NES_PAL"
+            lda #$08
+        .endif
         sta Timer3                      ;delay(2.6 seconds) and increment RoomPtr.
         inc RoomPtr                     ;
     L9BEF:

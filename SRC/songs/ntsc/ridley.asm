@@ -19,7 +19,7 @@
 ;Ridley Music Data
 
 SongRidleyHeader:
-    SongHeader NoteLengthsTbl@1, $FF, $F0, $01, $01
+    SongHeader NoteLengthsTbl@6, $FF, $F0, $01, $01
     .word SongRidleySQ1, SongRidleySQ2, SongRidleyTri, $0000
     .byte $B3, $B3
 

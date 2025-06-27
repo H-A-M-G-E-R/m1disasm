@@ -1,5 +1,5 @@
 SongTourianHeader:
-    SongHeader NoteLengthsTbl@1, $FF, $03, $00, $00
+    SongHeader NoteLengthsTbl@6, $FF, $03, $00, $00
     .word SongTourianSQ1, SongTourianSQ2, SongTourianTri, $0000
     .byte $92, $96
 

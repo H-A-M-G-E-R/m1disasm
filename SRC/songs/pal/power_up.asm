@@ -1,5 +1,5 @@
 SongPowerUpHeader:
-    SongHeader NoteLengthsTbl@0, $00, $F0, $01, $00
+    SongHeader NoteLengthsTbl@3, $00, $F0, $01, $00
     .word SongPowerUpSQ1, SongPowerUpSQ2, SongPowerUpTri, $0000
     .byte $B6, $F6
 

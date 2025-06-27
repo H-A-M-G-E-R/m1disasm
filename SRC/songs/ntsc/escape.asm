@@ -1,5 +1,5 @@
 SongEscapeHeader:
-    SongHeader NoteLengthsTbl@1, $FF, $00, $02, $02
+    SongHeader NoteLengthsTbl@6, $FF, $00, $02, $02
     .word SongEscapeSQ1, SongEscapeSQ2, SongEscapeTri, SongEscapeNoise
     .byte $F4, $F4
 

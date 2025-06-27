@@ -19,7 +19,7 @@
 ;Brinstar Music
 
 SongBrinstarHeader:
-    SongHeader NoteLengthsTbl@1, $FF, $00, $02, $03
+    SongHeader NoteLengthsTbl@5, $FF, $00, $02, $03
     .word SongBrinstarSQ1, SongBrinstarSQ2, SongBrinstarTri, SongBrinstarNoise
     .byte $34, $34
 
@@ -48,6 +48,8 @@ SongBrinstarSQ1:
         SongNote "C4"
         SongNote "G3"
         SongNote "C4"
+        SongNoteLength $B
+        SongRest
         SongNoteLength $3 ;3/4 seconds
         SongNote "F4"
         SongNote "D4"
@@ -63,6 +65,8 @@ SongBrinstarSQ1:
     SongNote "C4"
     SongNote "A#3"
     SongNote "C4"
+    SongNoteLength $B
+    SongRest
     SongNoteLength $2 ;3/8 seconds
     SongNote "D4"
     SongNote "F4"
@@ -76,6 +80,8 @@ SongBrinstarSQ1:
     SongNote "C3"
     SongNote "A#3"
     SongNote "C3"
+    SongNoteLength $B
+    SongRest
     SongNoteLength $2 ;3/8 seconds
     SongNote "D3"
     SongNote "F3"
@@ -84,6 +90,8 @@ SongBrinstarSQ1:
     SongNote "C3"
     SongNote "F3"
     SongNote "A3"
+    SongNoteLength $B
+    SongRest
     SongNoteLength $3 ;3/4 seconds
     SongNote "B3"
     SongNote "A3"
@@ -97,6 +105,8 @@ SongBrinstarSQ1:
     SongNote "G3"
     SongNote "F3"
     SongNote "D#3"
+    SongNoteLength $B
+    SongRest
     SongNoteLength $2 ;3/8 seconds
     SongNote "F3"
     SongNote "A#3"
@@ -105,6 +115,8 @@ SongBrinstarSQ1:
     SongNote "F3"
     SongNote "A#4"
     SongNote "D4"
+    SongNoteLength $B
+    SongRest
     SongNoteLength $4 ;1 1/2 seconds
     SongNote "D4"
     SongNoteLength $3 ;3/4 seconds
@@ -120,24 +132,32 @@ SongBrinstarSQ2:
         SongNote "G2"
         SongNote "D2"
         SongNote "G2"
+        SongNoteLength $B
+        SongRest
         SongNoteLength $2 ;3/8 seconds
         SongNote "G2"
         SongNoteLength $9 ;1/8 seconds
         SongNote "G2"
         SongNote "D2"
         SongNote "G2"
+        SongNoteLength $B
+        SongRest
         SongNoteLength $2 ;3/8 seconds
         SongNote "A#2"
         SongNoteLength $9 ;1/8 seconds
         SongNote "A#2"
         SongNote "F2"
         SongNote "A#2"
+        SongNoteLength $B
+        SongRest
         SongNoteLength $2 ;3/8 seconds
         SongNote "A#2"
         SongNoteLength $9 ;1/8 seconds
         SongNote "A#2"
         SongNote "F2"
         SongNote "A#2"
+        SongNoteLength $B
+        SongRest
     SongRepeat
     SongRepeatSetup $3
         SongNoteLength $4 ;1 1/2 seconds
@@ -175,6 +195,8 @@ SongBrinstarSQ2:
     SongNote "A4"
     SongNote "G4"
     SongNote "A4"
+    SongNoteLength $B
+    SongRest
     SongNoteLength $3 ;3/4 seconds
     SongNote "A#4"
     SongNoteLength $2 ;3/8 seconds
@@ -183,12 +205,16 @@ SongBrinstarSQ2:
     SongNote "C4"
     SongNote "F4"
     SongNote "G4"
+    SongNoteLength $B
+    SongRest
     SongNoteLength $6 ;1 3/16 seconds
     SongNote "A4"
     SongNoteLength $9 ;1/8 seconds
     SongNote "A4"
     SongNote "G4"
     SongNote "A4"
+    SongNoteLength $B
+    SongRest
     SongNoteLength $3 ;3/4 seconds
     SongNote "A#4"
     SongNoteLength $2 ;3/8 seconds
@@ -197,6 +223,8 @@ SongBrinstarSQ2:
     SongNote "F4"
     SongNote "A#4"
     SongNote "C5"
+    SongNoteLength $B
+    SongRest
     SongNoteLength $4 ;1 1/2 seconds
     SongNote "D5"
     SongNoteLength $3 ;3/4 seconds
@@ -208,6 +236,8 @@ SongBrinstarSQ2:
     SongNote "D#5"
     SongNote "D5"
     SongNote "C5"
+    SongNoteLength $B
+    SongRest
     SongNoteLength $3 ;3/4 seconds
     SongNote "D5"
     SongNoteLength $2 ;3/8 seconds
@@ -216,6 +246,8 @@ SongBrinstarSQ2:
     SongNote "A#4"
     SongNote "D5"
     SongNote "F5"
+    SongNoteLength $B
+    SongRest
     SongNoteLength $4 ;1 1/2 seconds
     SongNote "F#5"
     SongNote "F#5"
@@ -232,24 +264,32 @@ SongBrinstarTri:
         SongNote "G3"
         SongNote "G4"
         SongNote "D4"
+        SongNoteLength $B
+        SongRest
         SongNoteLength $2 ;3/8 seconds
         SongNote "G3"
         SongNoteLength $9 ;1/8 seconds
         SongNote "G3"
         SongNote "D4"
         SongNote "G3"
+        SongNoteLength $B
+        SongRest
         SongNoteLength $2 ;3/8 seconds
         SongNote "A#3"
         SongNoteLength $9 ;1/8 seconds
         SongNote "A#3"
         SongNote "F4"
         SongNote "A#3"
+        SongNoteLength $B
+        SongRest
         SongNoteLength $2 ;3/8 seconds
         SongNote "A#3"
         SongNoteLength $9 ;1/8 seconds
         SongNote "A#3"
         SongNote "F4"
         SongNote "A#3"
+        SongNoteLength $B
+        SongRest
     SongRepeat
     SongRepeatSetup $4
         SongNoteLength $2 ;3/8 seconds
@@ -258,12 +298,16 @@ SongBrinstarTri:
         SongNote "D4"
         SongNote "G3"
         SongNote "G3"
+        SongNoteLength $B
+        SongRest
     SongRepeat
     SongRepeatSetup $10
         SongNoteLength $9 ;1/8 seconds
         SongNote "C3"
         SongNote "G3"
         SongNote "C3"
+        SongNoteLength $B
+        SongRest
         SongNoteLength $2 ;3/8 seconds
         SongNote "C3"
     SongRepeat
@@ -274,24 +318,32 @@ SongBrinstarTri:
         SongNote "D#3"
         SongNote "C3"
         SongNote "D#3"
+        SongNoteLength $B
+        SongRest
         SongNoteLength $2 ;3/8 seconds
         SongNote "D#3"
         SongNoteLength $9 ;1/8 seconds
         SongNote "D#3"
         SongNote "C3"
         SongNote "D#3"
+        SongNoteLength $B
+        SongRest
         SongNoteLength $2 ;3/8 seconds
         SongNote "D3"
         SongNoteLength $9 ;1/8 seconds
         SongNote "D3"
         SongNote "A#2"
         SongNote "D3"
+        SongNoteLength $B
+        SongRest
         SongNoteLength $2 ;3/8 seconds
         SongNote "D3"
         SongNoteLength $9 ;1/8 seconds
         SongNote "D3"
         SongNote "A#2"
         SongNote "D3"
+        SongNoteLength $B
+        SongRest
     SongRepeat
     SongNoteLength $2 ;3/8 seconds
     SongNote "G3"
@@ -308,12 +360,16 @@ SongBrinstarTri:
     SongNote "Ab3"
     SongNote "Eb3"
     SongNote "C3"
+    SongNoteLength $B
+    SongRest
     SongNoteLength $2 ;3/8 seconds
     SongNote "Ab2"
     SongNoteLength $9 ;1/8 seconds
     SongNote "C4"
     SongNote "Bb3"
     SongNote "Ab3"
+    SongNoteLength $B
+    SongRest
     SongNoteLength $2 ;3/8 seconds
     SongNote "Eb3"
     SongNote "D3"
@@ -323,19 +379,41 @@ SongBrinstarTri:
     SongNote "A3"
     SongNote "A3"
     SongNote "A3"
-    SongRepeatSetup $C
+    SongRepeatSetup $3
         SongNoteLength $9 ;1/8 seconds
         SongNote "A3"
     SongRepeat
+    SongNoteLength $B
+    SongRest
+    SongRepeatSetup $3
+        SongNoteLength $9 ;1/8 seconds
+        SongNote "A3"
+    SongRepeat
+    SongNoteLength $B
+    SongRest
+    SongRepeatSetup $3
+        SongNoteLength $9 ;1/8 seconds
+        SongNote "A3"
+    SongRepeat
+    SongNoteLength $B
+    SongRest
+    SongRepeatSetup $3
+        SongNoteLength $9 ;1/8 seconds
+        SongNote "A3"
+    SongRepeat
+    SongNoteLength $B
+    SongRest
 
 SongBrinstarNoise:
     SongRepeatSetup $28
         SongNoteLength $2 ;3/8 seconds
-        .byte <DrumBeat01SFXData
-        .byte <DrumBeat01SFXData
-        .byte <DrumBeat01SFXData
+        .byte DrumBeat01SFXData - SFXData
+        .byte DrumBeat01SFXData - SFXData
+        .byte DrumBeat01SFXData - SFXData
         SongNoteLength $9 ;1/8 seconds
-        .byte <DrumBeat01SFXData
-        .byte <DrumBeat01SFXData
-        .byte <DrumBeat01SFXData
+        .byte DrumBeat01SFXData - SFXData
+        .byte DrumBeat01SFXData - SFXData
+        .byte DrumBeat01SFXData - SFXData
+        SongNoteLength $B
+        .byte DrumBeat00SFXData - SFXData
     SongRepeat

@@ -1,5 +1,5 @@
 SongItemRoomHeader:
-    SongHeader NoteLengthsTbl@1, $FF, $03, $00, $00
+    SongHeader NoteLengthsTbl@5, $FF, $03, $00, $00
     .word SongItemRoomSQ1, SongItemRoomSQ2, SongItemRoomTri, $0000
     .byte $92, $96
 

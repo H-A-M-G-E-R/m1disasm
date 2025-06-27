@@ -1,5 +1,5 @@
 SongIntroHeader:
-    SongHeader NoteLengthsTbl@2, $00, $F0, $02, $05
+    SongHeader NoteLengthsTbl@7, $00, $F0, $02, $05
     .word SongIntroSQ1, SongIntroSQ2, SongIntroTri, SongIntroNoise
     .byte $B6, $F6
 

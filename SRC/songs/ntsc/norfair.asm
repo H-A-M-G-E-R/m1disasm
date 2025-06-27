@@ -19,7 +19,7 @@
 ;Norfair Music Data
 
 SongNorfairHeader:
-    SongHeader NoteLengthsTbl@1, $FF, $F0, $04, $04
+    SongHeader NoteLengthsTbl@6, $FF, $F0, $04, $04
     .word SongNorfairSQ1, SongNorfairSQ2, SongNorfairTri, SongNorfairNoise
     .byte $34, $34
 

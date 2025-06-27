@@ -1,5 +1,5 @@
 SongFadeInHeader:
-    SongHeader NoteLengthsTbl@1, $00, $F0, $02, $00
+    SongHeader NoteLengthsTbl@6, $00, $F0, $02, $00
     .word SongFadeInSQ1, SongFadeInSQ2, SongFadeInTri, $0000
     .byte $34, $34
 

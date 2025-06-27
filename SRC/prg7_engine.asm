@@ -555,7 +555,6 @@ WriteScroll:
 ;----------------------------------[ Add y index to stored addresses ]-------------------------------
 
 ;Add Y to pointer at $0000.
-
 AddYToPtr00:
     tya                             ;
     clc                             ;Add value stored in Y to lower address-->
@@ -567,7 +566,6 @@ AddYToPtr00:
     rts
 
 ;Add Y to pointer at $0002
-
 AddYToPtr02:
     tya                             ;
     clc                             ;Add value stored in Y to lower address-->
@@ -1241,10 +1239,16 @@ DestroyEnemies: ; LC8BB
 ; Code that sets up Samus, when the game is first started.
 
 SamusInit:
-    lda #$08                        ;
-    sta MainRoutine                 ;SamusIntro will be executed next frame.
-    lda #$2C                        ;440 frames to fade in Samus(7.3 seconds).
-    sta Timer3                      ;
+    ;SamusIntro will be executed next frame.
+    lda #$08
+    sta MainRoutine
+    .if BUILDTARGET == "NES_NTSC"
+        ;440 frames to fade in Samus(7.3 seconds).
+        lda #$2C
+    .elif BUILDTARGET == "NES_PAL"
+        lda #$26
+    .endif
+    sta Timer3
     jsr IntroMusic                  ;($CBFD)Start the intro music.
     ldy #sa_FadeIn0                 ;
     sty ObjAction                   ;Set Samus status as fading onto screen.
@@ -1307,7 +1311,12 @@ GameEngine:
         lda #$00                        ;
         sta MiniBossKillDelayFlag       ;Reset delay indicators.
         sta PowerUpDelayFlag            ;
-        lda #$18                        ;Set timer for 240 frames(4 seconds).
+        .if BUILDTARGET == "NES_NTSC"
+            ;Set timer for 240 frames(4 seconds).
+            lda #$18
+        .elif BUILDTARGET == "NES_PAL"
+            lda #$15
+        .endif
         ldx #$03                        ;GameEngine routine to run after delay expires
         jsr SetTimer                    ;($C4AA)Set delay timer and game engine routine.
     LC95F:
