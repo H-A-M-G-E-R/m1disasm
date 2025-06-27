@@ -1271,8 +1271,6 @@ SamusInit:
         ldy #$2F                        ;to down. and set PPU for horizontal mirroring.
     Lx002:
     sty MirrorCntrl                 ;
-    sty MissilePickupQtyMax
-    sty EnergyPickupQtyMax
     lda AreaSamusY                       ;Samus' initial vertical position
     sta ObjY                        ;
     lda #$80                        ;Samus' initial horizontal position
@@ -7006,11 +7004,17 @@ SetupRoom:
     lda RoomNumber                  ;Room number to load.
     asl                             ;*2(for loading address of room pointer).
     tay                             ;
+    bcc +
+        inc RoomPtrTable+1.b            ;If MSB set, get second half of RoomPtrTable.
+    +
     lda (RoomPtrTable),y            ;Low byte of 16-bit room pointer.-->
     sta RoomPtr                     ;Base copied from $959A to $3B.
     iny                             ;
     lda (RoomPtrTable),y            ;High byte of 16-bit room pointer.-->
-    sta RoomPtr+1.b                   ;Base copied from $959B to $3C.
+    sta RoomPtr+1.b                 ;Base copied from $959B to $3C.
+    bcc +
+        dec RoomPtrTable+1.b            ;If MSB set, restore RoomPtrTable.
+    +
     ldy #$00                        ;
     lda (RoomPtr),y                 ;First byte of room data.
     sta RoomPal                     ;store initial palette # to fill attrib table with.
@@ -7067,11 +7071,17 @@ LEA8D:
     txa                             ;Restore structure pointer to A.
     asl                             ;*2. Structure pointers are two bytes in size.
     tay                             ;
+    bcc +
+        inc StructPtrTable+1.b          ;If MSB set, get upper half of StructPtrTable.
+    +
     lda (StructPtrTable),y          ;Low byte of 16-bit structure ptr.
     sta StructPtr                   ;
     iny                             ;
     lda (StructPtrTable),y          ;High byte of 16-bit structure ptr.
-    sta StructPtr+1.b                 ;
+    sta StructPtr+1.b               ;
+    bcc +
+        dec StructPtrTable+1.b          ;If MSB set, restore StructPtrTable.
+    +
     jsr DrawStruct                  ;($EF8C)Draw one structure.
     lda #$03                        ;Move to next set of structure data.
     jsr AddToRoomPtr                ;($EAC0)Add A to room data pointer.
@@ -7883,8 +7893,15 @@ LEF3F:
     inc $10                         ;Increase struct data index.
     ldy $10                         ;Load struct data index into Y.
     lda (StructPtr),y               ;Get macro number.
-    asl                             ;
     asl                             ;A=macro number * 4. Each macro is 4 bytes long.
+    bcc +
+        inc MacroPtr+1.b                ;If MSB set, add $200 to MacroPtr.
+        inc MacroPtr+1.b                ;
+    +
+    asl
+    bcc +
+        inc MacroPtr+1.b                ;If second MSB set, add $100 to MacroPtr.
+    +
     sta $11                         ;Store macro index.
     ldx #$03                        ;Prepare to copy four tile numbers.
 LEF4B:
@@ -7895,6 +7912,8 @@ LEF4B:
     sta ($00),y                     ;Write tile number to room RAM.
     dex                             ;Done four tiles yet?-->
     bpl LEF4B                       ;If not, loop to do another.
+    lda AreaPointers+7              ;Restore MacroPtr+1.
+    sta MacroPtr+1.b                ;
     jsr UpdateAttrib                ;($EF9E)Update attribute table if necessary
     ldy #$02                        ;Macro width(in tiles).
     jsr AddYToPtr00                 ;($C2A8)Add 2 to pointer to move to next macro.

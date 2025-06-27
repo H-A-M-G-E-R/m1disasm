@@ -1020,14 +1020,6 @@ SamusEnterDoor:
     bne RTS_8B6C                    ;door status is 0, but door data information has been-->
     ldy SamusDoorData               ;written. If both conditions are met, Samus has just-->
     beq RTS_8B6C                    ;entered a door.
-    sta MissilePickupQtyCur         ;
-    sta EnergyPickupQtyCur          ;Reset current missile and energy power-up counters.
-    lda RandomNumber1               ;
-    and #$0F                        ;Randomly recalculate max missile pickups(16 max, 0 min).
-    sta MissilePickupQtyMax         ;
-    asl                             ;
-    ora #$40                        ;*2 for energy pickups and set bit 6(128 max, 64 min).
-    sta EnergyPickupQtyMax          ;
     lda PPUCTRL_ZP                  ;
     eor #$01                        ;
     and #$01                        ;Erase name table door data for new room.

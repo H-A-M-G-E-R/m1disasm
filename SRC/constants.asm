@@ -287,13 +287,13 @@ DoorPalChangeDir       = $91    ;When Samus enters a palette change room, this s
 
 MetroidOnSamus         = $92     ;#$01=Metroid on Samus, #$00=Metroid not on Samus.
 
-MissilePickupQtyMax    = $93     ;Maximum missile drops that can be picked up. Randomly-->
+;MissilePickupQtyMax    = $93     ;Maximum missile drops that can be picked up. Randomly-->
                                    ;recalculated whenever Samus goes through a door.
-EnergyPickupQtyMax     = $94     ;Maximum energy drops that can be picked up. Randomly-->
+;EnergyPickupQtyMax     = $94     ;Maximum energy drops that can be picked up. Randomly-->
                                    ;recalculated whenever Samus goes through a door.
-MissilePickupQtyCur    = $95     ;Number of missile drops currently collected by Samus-->
+;MissilePickupQtyCur    = $95     ;Number of missile drops currently collected by Samus-->
                                    ;Reset to 0 when Samus goes through a door.
-EnergyPickupQtyCur     = $96     ;Number of energy drops currently collected by Samus-->
+;EnergyPickupQtyCur     = $96     ;Number of energy drops currently collected by Samus-->
                                    ;Reset to 0 when Samus goes through a door.
 
 CannonIndex            = $97     ;Current cannon being processed
