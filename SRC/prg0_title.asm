@@ -4658,63 +4658,63 @@ InitGFX7: ; Load Password Font
 
 GFXInfo:
     .byte bank(GFX_Samus)          ;[SPR]Samus, items.             Entry 0.
-        .word GFX_Samus, $0000, $09A0
+        .word GFX_Samus, $1000, $09A0
     .byte bank(GFX_EndingSprites)  ;[SPR]Samus in ending.          Entry 1.
-        .word GFX_EndingSprites, $0000, $0520
+        .word GFX_EndingSprites, $1000, $0520
     .byte bank(GFX_TheEndFont)     ;[BGR]Partial font, "The End".  Entry 2.
-        .word GFX_TheEndFont, $1000, $0400
+        .word GFX_TheEndFont, $0000, $0400
     .byte bank(GFX_BrinBG1)        ;[BGR]Brinstar rooms.           Entry 3.
-        .word GFX_BrinBG1, $1000, $0150
+        .word GFX_BrinBG1, $0000, $0150
     .byte bank(GFX_CREBG1)         ;[BGR]Common Room Elements      Entry 4.
-        .word GFX_CREBG1, $1200, $0450
+        .word GFX_CREBG1, $0200, $0450
     .byte bank(GFX_CREBG2)         ;[BGR]More CRE                  Entry 5.
-        .word GFX_CREBG2, $1800, $0800
+        .word GFX_CREBG2, $0800, $0800
     .byte bank(GFX_BrinstarSprites);[SPR]Brinstar enemies.         Entry 6.
-        .word GFX_BrinstarSprites, $0C00, $0400
+        .word GFX_BrinstarSprites, $1C00, $0400
     .byte bank(GFX_NorfBG1)        ;[BGR]Norfair rooms.            Entry 7.
-        .word GFX_NorfBG1, $1000, $0260
+        .word GFX_NorfBG1, $0000, $0260
     .byte bank(GFX_NorfBG2)        ;[BGR]More Norfair rooms.       Entry 8.
-        .word GFX_NorfBG2, $1700, $0070
+        .word GFX_NorfBG2, $0700, $0070
     .byte bank(GFX_NorfairSprites) ;[SPR]Norfair enemies.          Entry 9.
-        .word GFX_NorfairSprites, $0C00, $0400
+        .word GFX_NorfairSprites, $1C00, $0400
     .byte bank(GFX_BossBG)         ;[BGR]Boss areas (Kr, Rd, Tr)   Entry 10. (0A)
-        .word GFX_BossBG, $1000, $02E0
+        .word GFX_BossBG, $0000, $02E0
     .byte bank(GFX_TourBG)         ;[BGR]Tourian rooms.            Entry 11. (0B)
-        .word GFX_TourBG, $1200, $0600
+        .word GFX_TourBG, $0200, $0600
     .byte bank(GFX_Zebetite)       ;[BGR]Mother Brain room.        Entry 12. (0C)
-        .word GFX_Zebetite, $1900, $0090
+        .word GFX_Zebetite, $0900, $0090
     .byte bank(GFX_TourianFont)    ;[BGR]Misc. object.             Entry 13. (0D)
-        .word GFX_TourianFont, $1D00, $0300
+        .word GFX_TourianFont, $0D00, $0300
     .byte bank(GFX_TourianSprites) ;[SPR]Tourian enemies.          Entry 14. (0E)
-        .word GFX_TourianSprites, $0C00, $0400
+        .word GFX_TourianSprites, $1C00, $0400
     .byte bank(GFX_KraiBG2)        ;[BGR]More Kraid Rooms          Entry 15. (0F)
-        .word GFX_KraiBG2, $1700, $00C0
+        .word GFX_KraiBG2, $0700, $00C0
     .byte bank(GFX_KraiBG3)        ;[BGR]More Kraid Rooms          Entry 16. (10)
-        .word GFX_KraiBG3, $1E00, $0200
+        .word GFX_KraiBG3, $0E00, $0200
     .byte bank(GFX_KraidSprites)   ;[SPR]Miniboss I enemies.       Entry 17. (11)
-        .word GFX_KraidSprites, $0C00, $0400
+        .word GFX_KraidSprites, $1C00, $0400
     .byte bank(GFX_RidlBG)         ;[BGR]More Ridley Rooms         Entry 18. (12)
-        .word GFX_RidlBG, $1700, $00C0
+        .word GFX_RidlBG, $0700, $00C0
     .byte bank(GFX_RidleySprites)  ;[SPR]Miniboss II enemies.      Entry 19. (13)
-        .word GFX_RidleySprites, $0C00, $0400
+        .word GFX_RidleySprites, $1C00, $0400
     .byte bank(GFX_IntroSprites)   ;[SPR]Intro/End sprites.        Entry 20. (14)
-        .word GFX_IntroSprites, $0C00, $0100
+        .word GFX_IntroSprites, $1C00, $0100
     .byte bank(GFX_Title)          ;[BGR]Title.                    Entry 21. (15)
-        .word GFX_Title, $1400, $0500
+        .word GFX_Title, $0400, $0500
     .byte bank(GFX_Solid)          ;[BGR]Solid tiles.              Entry 22. (16)
-        .word GFX_Solid, $1FC0, $0040
-    .byte bank(GFX_Font)           ;[BGR]Complete font.            Entry 23. (17)
-        .word GFX_Font, $1000, $0400
-    .byte bank(GFX_Font)           ;[BGR]Ingame HUD font.          Entry 24. (18)
-        .word GFX_Font, $0A00, $00A0
-    .byte bank(GFX_Solid)          ;[BGR]Solid tiles.              Entry 25. (19)
         .word GFX_Solid, $0FC0, $0040
+    .byte bank(GFX_Font)           ;[BGR]Complete font.            Entry 23. (17)
+        .word GFX_Font, $0000, $0400
+    .byte bank(GFX_Font)           ;[BGR]Ingame HUD font.          Entry 24. (18)
+        .word GFX_Font, $1A00, $00A0
+    .byte bank(GFX_Solid)          ;[BGR]Solid tiles.              Entry 25. (19)
+        .word GFX_Solid, $1FC0, $0040
     .byte bank(GFX_Font)           ;[BGR]Tourian font.             Entry 26. (1A)
-        .word GFX_Font, $1D00, $02A0
+        .word GFX_Font, $0D00, $02A0
     .byte bank(GFX_SamusSuitless)  ;[SPR]Suitless Samus.           Entry 27. (1B)
-        .word GFX_SamusSuitless, $0000, $07B0
+        .word GFX_SamusSuitless, $1000, $07B0
     .byte bank(GFX_ExclamationPoint)  ;[BGR]Exclaimation point.       Entry 28. (1C)
-        .word GFX_ExclamationPoint, $1F40, $0010
+        .word GFX_ExclamationPoint, $0F40, $0010
 
 ;--------------------------------[ Pattern table loading routines ]---------------------------------
 

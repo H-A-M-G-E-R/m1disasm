@@ -120,11 +120,11 @@ LC057:
 
     ;NMI = enabled
     ;Sprite size = 8x8
-    ;BG pattern table address = $1000
-    ;SPR pattern table address = $0000
+    ;BG pattern table address = $0000
+    ;SPR pattern table address = $1000
     ;PPU address increment = 1
     ;Name table address = $2000
-    lda #PPUCTRL_VBLKNMI_ON | PPUCTRL_OBJH_8 | PPUCTRL_BG_1000 | PPUCTRL_OBJ_0000 | PPUCTRL_INCR_FWD | PPUCTRL_NMTBL_2000.b
+    lda #PPUCTRL_VBLKNMI_ON | PPUCTRL_OBJH_8 | PPUCTRL_BG_0000 | PPUCTRL_OBJ_1000 | PPUCTRL_INCR_FWD | PPUCTRL_NMTBL_2000.b
     sta PPUCTRL
     sta PPUCTRL_ZP
 
