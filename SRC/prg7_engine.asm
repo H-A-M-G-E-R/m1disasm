@@ -2007,12 +2007,6 @@ LCCC2:
         samL02:
         cpy #$20
         bcc samL04
-        lda Joy1Status
-        and #BUTTON_UP
-        beq samL03
-            lda #ObjAnim_35 - ObjectAnimIndexTbl.b
-            sta ObjAnimResetIndex
-        samL03:
         bit Joy1Status
         bmi samL04
         jsr StopVertMovement
@@ -2545,8 +2539,6 @@ Lx019:
     lda Joy1Status
     and #BUTTON_UP     ; UP pressed?
     beq Lx020      ; branch if not
-        lda #ObjAnim_35 - ObjectAnimIndexTbl.b
-        sta ObjAnimResetIndex
         lda #sa_PntJump.b      ; "jumping & pointing up" handler
         sta ObjAction
     Lx020:
@@ -2622,6 +2614,19 @@ Table04:
     .byte $35
 
 LD09C:
+    lda Joy1Status
+    and #BUTTON_UP
+    beq +
+        lda #ObjAnim_35 - ObjectAnimIndexTbl.b
+        sta ObjAnimResetIndex
+        bne ++
+    +
+    lda ObjAnimResetIndex
+    cmp #ObjAnim_35 - ObjectAnimIndexTbl.b
+    bne ++
+        lda #ObjAnim_0C - ObjectAnimIndexTbl.b
+        sta ObjAnimResetIndex
+    ++
     lda Joy1Change
     ora Joy1Retrig
     asl
@@ -2688,7 +2693,8 @@ SamusRoll:
         jsr ApplySpeedToPosition
         jsr LD638
         jsr StopHorzMovement
-        dec ObjAnimIndex
+        lda #ObjAnim_06 - ObjectAnimIndexTbl.b
+        sta ObjAnimIndex
         jsr StopVertMovement
         lda #$04
         jmp LD144
