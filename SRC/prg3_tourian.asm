@@ -112,8 +112,12 @@ AreaSamusMapPosX:
     .byte $03   ;Samus start x coord on world map.
 AreaSamusMapPosY:
     .byte $04   ;Samus start y coord on world map.
+AreaSamusX:
+    .byte $80   ;Samus start horizontal screen position.
 AreaSamusY:
     .byte $6E   ;Samus start vertical screen position.
+AreaScrollDir:
+    .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
 
 AreaPalToggle:
     .byte $06

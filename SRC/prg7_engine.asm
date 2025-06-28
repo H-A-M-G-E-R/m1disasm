@@ -1264,16 +1264,15 @@ SamusInit:
     stx $8B
     stx $8E
     ldy #$27
-    lda InArea
-    and #$0F
-    beq Lx002                       ;Branch if Samus starting in Brinstar.
-        lsr ScrollDir                   ;If not in Brinstar, change scroll direction from left-->
-        ldy #$2F                        ;to down. and set PPU for horizontal mirroring.
+    lda AreaScrollDir
+    sta ScrollDir
+    bne Lx002
+        ldy #$2F                        ;If scrolling vertically, set PPU for horizontal mirroring.
     Lx002:
     sty MirrorCntrl                 ;
     lda AreaSamusY                       ;Samus' initial vertical position
     sta ObjY                        ;
-    lda #$80                        ;Samus' initial horizontal position
+    lda AreaSamusX                  ;Samus' initial horizontal position
     sta ObjX                        ;
     lda PPUCTRL_ZP                  ;
     and #$01                        ;Set Samus' name table position to current name table-->
