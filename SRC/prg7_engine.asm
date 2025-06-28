@@ -812,16 +812,6 @@ ExtractNibbles:
 
 ;---------------------------[ NMI and PPU control routines ]--------------------------------
 
-; Wait for the NMI to end.
-WaitNMIPass:
-    ;Indicate currently in NMI.
-    jsr ClearNMIStat
-    @loop:
-        ;Wait for NMI to end before continuing.
-        lda NMIStatus
-        beq @loop
-    rts
-
 ClearNMIStat: ;($C434)
     ;Clear NMI byte to indicate the game is currently running NMI routines.
     lda #$00
@@ -838,7 +828,8 @@ WriteAndWait: ;($C43D)
     ;Update value to be loaded into PPU control register.
     sta PPUMASK_ZP
 
-WaitNMIPass_:
+; Wait for the NMI to end.
+WaitNMIPass:
     ;Indicate currently in NMI.
     jsr ClearNMIStat
     @loop:
@@ -3962,7 +3953,7 @@ ElevatorD8BF:
         lda #$01
     @endIf_D:
     jsr WriteAreaPal
-    jsr WaitNMIPass_
+    jsr WaitNMIPass
     ; update samus palette
     jsr SelectSamusPal
     ;($D92C)Start music.

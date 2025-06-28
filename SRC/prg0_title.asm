@@ -3463,7 +3463,7 @@ RollCredits:
     lda #$0C                        ;
     jsr EndGamePalWrite             ;Change to proper palette for credits.
     jsr ScreenOn                    ;($C447)Turn screen on.
-    jmp WaitNMIPass_                ;($C43F)Wait for NMI to end.
+    jmp WaitNMIPass                 ;($C43F)Wait for NMI to end.
 L9C17:
     lda CreditPageNumber            ;If first page of credits has not started to-->
     bne L9C1D                       ;roll, start it now, else branch.
