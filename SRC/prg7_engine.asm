@@ -2624,7 +2624,7 @@ LD09C:
     lda ObjAnimResetIndex
     cmp #ObjAnim_35 - ObjectAnimIndexTbl.b
     bne ++
-        lda #ObjAnim_0C - ObjectAnimIndexTbl.b
+        lda #ObjAnim_20 - ObjectAnimIndexTbl.b
         sta ObjAnimResetIndex
     ++
     lda Joy1Change
