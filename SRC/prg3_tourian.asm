@@ -935,8 +935,7 @@ L9E52:
     sta MotherBrainStatus
     lda #$28
     sta MotherBrain9F
-    lda #$00
-    sta CurrentMusic
+    jsr SilenceMusic
 L9E83:
     jmp L9E2E
 
@@ -1468,9 +1467,7 @@ LA1E7:
     sta MotherBrainQtyHits
     lda #$07
     sta MotherBrainStatus
-    lda NoiseSFXFlag
-    ora #sfxNoise_SilenceMusic
-    sta NoiseSFXFlag
+    jsr SilenceMusic
     lda #$0C
     sta Timer3
     lda #$0B

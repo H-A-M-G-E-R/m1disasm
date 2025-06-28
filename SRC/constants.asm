@@ -1091,7 +1091,7 @@ sfxNoise_BombExplode   = %00010000
 sfxNoise_SamusWalk     = %00001000
 sfxNoise_SpitFlame     = %00000100
 sfxNoise_PauseMusic    = %00000010
-sfxNoise_SilenceMusic  = %00000001
+;sfxNoise_01            = %00000001
 
 sfxSQ1_MissilePickup   = %10000000
 sfxSQ1_EnergyPickup    = %01000000

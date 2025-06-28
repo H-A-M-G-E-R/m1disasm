@@ -325,10 +325,6 @@ SoundEngine:
     ;This syncs the APU's frame counter with the PPU.
     lda #APU_5STEP | APU_IRQDISABLE.b
     sta JOY2
-    ;is bit zero is set in NoiseSFXFlag(Silence music)?  If yes, branch.
-    lda NoiseSFXFlag
-    lsr
-    bcs LB3EB
     ;Is game paused?  If yes, branch.
     lda MainRoutine
     cmp #$05

@@ -1410,9 +1410,7 @@ GoPassword:
     sta TitleRoutine                ;
     lda #$00+1                        ;
     sta SwitchPending               ;Prepare to switch to intro memory page.
-    lda NoiseSFXFlag                ;
-    ora #sfxNoise_SilenceMusic      ;Silence music.
-    sta NoiseSFXFlag                ;
+    jsr SilenceMusic                ;Silence music.
     jmp ScreenOff                   ;($C439)Turn off screen.
 
 ;-----------------------------------------[ Samus intro ]--------------------------------------------
@@ -1727,10 +1725,6 @@ SelectSamusPal: ;$CB73
 
 ;Initiate sound effects.
 
-SilenceMusic:
-    lda #sfxNoise_SilenceMusic
-    bne SFX_SetNoiseSFXFlag
-
 PauseMusic:
     lda #sfxNoise_PauseMusic
     bne SFX_SetNoiseSFXFlag
@@ -1841,6 +1835,10 @@ SFX_SetMultiSFXFlag:
     bne SFX_SetSoundFlag
 
 ;Initiate music
+
+SilenceMusic:
+    lda #$00
+    bne SetCurrentMusic
 
 PowerUpMusic:
     lda #music_PowerUp
