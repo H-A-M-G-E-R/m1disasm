@@ -179,10 +179,8 @@ WaitNMIEnd:
         ;If nonzero, NMI has ended. Else keep waiting.
         tay
         lda NMIStatus
-        bne LC0D3
         beq WaitNMIEnd
 
-LC0D3:
     ;($C000)Update pseudo random numbers.
     jsr RandomNumbers
     ;($C0BC)Jump to top of subroutine.
