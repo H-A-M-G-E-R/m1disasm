@@ -163,22 +163,30 @@ LC057:
 ;The main loop runs all the routines that take place outside of the NMI.
 
 MainLoop:
-    jsr CheckSwitch                 ;($C4DE)Check to see if memory page needs to be switched.
-    jsr UpdateTimer                 ;($C266)Update Timers 1, 2 and 3.
-    jsr GoMainRoutine               ;($C114)Go to main routine for updating game.
-    inc FrameCount                  ;Increment frame counter.
-    lda #$00                        ;
-    sta NMIStatus                   ;Wait for next NMI to end.
-
+    ;($C4DE)Check to see if memory page needs to be switched.
+    jsr CheckSwitch
+    ;($C266)Update Timers 1, 2 and 3.
+    jsr UpdateTimer
+    ;($C114)Go to main routine for updating game.
+    jsr GoMainRoutine
+    ;Increment frame counter.
+    inc FrameCount
+    
+    ;Wait for next NMI to end.
+    lda #$00
+    sta NMIStatus
 WaitNMIEnd:
-    tay                             ;
-    lda NMIStatus                   ;
-    bne LC0D3                       ;If nonzero, NMI has ended. Else keep waiting.
-    beq WaitNMIEnd                  ;
+        ;If nonzero, NMI has ended. Else keep waiting.
+        tay
+        lda NMIStatus
+        bne LC0D3
+        beq WaitNMIEnd
 
 LC0D3:
-    jsr RandomNumbers               ;($C000)Update pseudo random numbers.
-    jmp MainLoop                    ;($C0BC)Jump to top of subroutine.
+    ;($C000)Update pseudo random numbers.
+    jsr RandomNumbers
+    ;($C0BC)Jump to top of subroutine.
+    jmp MainLoop
 
 ;-------------------------------------[ Non-Maskable Interrupt ]-------------------------------------
 
@@ -191,66 +199,88 @@ LC0D3:
 ;Thread-safe bankswitching from https://forums.nesdev.org/viewtopic.php?t=25500
 
 NMI:
-    pha                             ;Save A.
-    txa                             ;
-    pha                             ;Save X.
-    tya                             ;
-    pha                             ;Save Y.
-    lda #$00                        ;
-    sta OAMADDR                  ;Sprite RAM address = 0.
-    lda #$02                        ;
-    sta OAMDMA                   ;Transfer page 2 ($200-$2FF) to Sprite RAM.
-    lda NMIStatus                   ;
-    bne LC103                       ;Skip if the frame couldn't finish in time.
-        lda GameMode                    ;
-        beq LC0F4                       ;Branch if mode=Play.
-            jsr NMIScreenWrite              ;($9A07)Write end message on screen(If appropriate).
+    ;Save A.
+    pha
+    ;Save X.
+    txa
+    pha
+    ;Save Y.
+    tya
+    pha
+    ;Sprite RAM address = 0.
+    lda #$00
+    sta OAMADDR
+    ;Transfer page 2 ($200-$2FF) to Sprite RAM.
+    lda #$02
+    sta OAMDMA
+    ;Skip if the frame couldn't finish in time.
+    lda NMIStatus
+    bne LC103
+        ;Branch if mode=Play.
+        lda GameMode
+        beq LC0F4
+            ;($9A07)Write end message on screen(If appropriate).
+            jsr NMIScreenWrite
         LC0F4:
-
-        ; Update palettes
-        ldx PPUSTATUS                   ;Reset PPU address latch.
-        lda PPUCTRL_ZP                  ;
-        and #$FB                        ;PPU increment = 1.
-        sta PPUCTRL_ZP                  ;
-        sta PPUCTRL                     ;Store control bits in PPU.
-        lda #$3F                        ;PPU address = $3F00 (color 0).
-        sta PPUADDR                     ;
-        lda #$00                        ;
-        sta PPUADDR                     ;
+        ;Update palettes
+        ;Reset PPU address latch.
+        ldx PPUSTATUS
+        ;PPU increment = 1.
+        lda PPUCTRL_ZP
+        and #$FB
+        sta PPUCTRL_ZP
+        ;Store control bits in PPU.
+        sta PPUCTRL
+        ;PPU address = $3F00 (color 0).
+        lda #$3F
+        sta PPUADDR
+        lda #$00
+        sta PPUADDR
         tax
         -
-            lda PalRam,x                ;
-            sta PPUDATA                 ;Write $20 colors to PPU.
-            inx                         ;
-            lda PalRam,x                ;
-            sta PPUDATA                 ;
-            inx                         ;
-            cpx #$20                    ;
-            bne -                       ;
-
-        jsr CheckPPUWrite               ;($C2CA)check if data needs to be written to PPU.
-        jsr WritePPUCtrl                ;($C44D)Update $2000 & $2001.
-        jsr WriteScroll                 ;($C29A)Update h/v scroll reg.
-        jsr ReadJoyPads                 ;($C215)Read both joypads.
+            ;Write $20 colors to PPU.
+            lda PalRam,x
+            sta PPUDATA
+            inx
+            lda PalRam,x
+            sta PPUDATA
+            inx
+            cpx #$20
+            bne -
+        ;($C2CA)check if data needs to be written to PPU.
+        jsr CheckPPUWrite
+        ;($C44D)Update $2000 & $2001.
+        jsr WritePPUCtrl
+        ;($C29A)Update h/v scroll reg.
+        jsr WriteScroll
+        ;($C215)Read both joypads.
+        jsr ReadJoyPads
     LC103:
+    ;($B3B4)Update music and SFX.
     lda CurrentBank
     pha
     lda #$06
     jsr MMCWriteReg3
-    jsr SoundEngine                 ;($B3B4)Update music and SFX.
+    jsr SoundEngine
     pla
     jsr MMCWriteReg3
     lda #$80
     sta MMC1Reg0
-    jsr UpdateAge                   ;($C97E)Update Samus' age.
-    ldy #$01                        ; NMI = finished.
-    sty NMIStatus                   ;
-    pla                             ;Restore Y.
-    tay                             ;
-    pla                             ;Restore X.
-    tax                             ;
-    pla                             ;restore A.
-    rti                             ;Return from NMI.
+    ;($C97E)Update Samus' age.
+    jsr UpdateAge
+    ; NMI = finished.
+    ldy #$01
+    sty NMIStatus
+    ;Restore Y.
+    pla
+    tay
+    ;Restore X.
+    pla
+    tax
+    ;Restore A.
+    pla
+    ;Return from NMI.
+    rti
 
 ;----------------------------------------[ GoMainRoutine ]-------------------------------------------
 
@@ -260,49 +290,67 @@ NMI:
 ;is executed.
 
 GoMainRoutine:
-    lda GameMode                    ;0 if game is running, 1 if at intro screen.
-    beq LC11B                       ;Branch if mode=Play.
-        jmp MainTitleRoutine            ;Jump to $8000, where a routine similar to the one-->
-                                        ;below is executed, only using TitleRoutine instead
-                                        ;of MainRoutine as index into a jump table.
-    LC11B:
-    lda Joy1Change                  ;
-    and #BUTTON_START               ;Has START been pressed?-->
-    beq LC13C                       ;if not, execute current routine as normal.
+    ;0 if game is running, 1 if at intro screen.
+    ;Branch if mode=Play.
+    lda GameMode
+    beq @endIf_A
+        ;Jump to $8000, where a routine similar to the one below is executed,-->
+        ;only using TitleRoutine instead of MainRoutine as index into a jump table.
+        jmp MainTitleRoutine
+    @endIf_A:
+    
+    ;Has START been pressed? If not, execute current routine as normal.
+    lda Joy1Change
+    and #BUTTON_START
+    beq @endIf_B
 
-    lda MainRoutine                 ;
-    cmp #$03                        ;Is game engine running?-->
-    beq LC12F                       ;If yes, check for routine #5 (pause game).
-        cmp #$05                        ;Is game paused?-->
-        bne LC13C                       ;If not routine #5 either, don't care about START being pressed.
-        lda #$03                        ;Otherwise, switch to routine #3 (game engine).
-        bne LC131                       ;Branch always.
-    LC12F:
-           lda #$05                        ;Switch to pause routine.
-    LC131:
-    sta MainRoutine                 ;(MainRoutine = 5 if game paused, 3 if game engine running).
-    lda GamePaused                  ;
-    eor #$01                        ;Toggle game paused.
-    sta GamePaused                  ;
-    jsr PauseMusic                  ;($CB92)Silences music while game paused.
+    ;START was pressed
+    ;Is game engine running?-->
+    lda MainRoutine
+    cmp #_id_GameEngine.b
+    beq @else_C
+        ;Game engine is not running
+        ;Is game paused? If it isn't, don't care about START being pressed.
+        cmp #_id_PauseMode.b
+        bne @endIf_B
+        ;Game is paused
+        ;Switch to Game engine.
+        lda #_id_GameEngine.b
+        bne @endIf_C ;Branch always.
+    @else_C:
+        ;Game engine is running
+        ;Switch to pause routine.
+        lda #_id_PauseMode.b
+    @endIf_C:
+    ;(MainRoutine = 5 if game paused, 3 if game engine running).
+    sta MainRoutine
+    ;Toggle game paused.
+    lda GamePaused
+    eor #$01
+    sta GamePaused
+    ;($CB92)Silences music while game paused.
+    jsr PauseMusic
 
-LC13C:
-    lda MainRoutine                 ;
-    jsr ChooseRoutine               ;($C27C)Use MainRoutine as index into routine table below.
-        .word AreaInit                  ;($C801)Area init.
-        .word MoreInit                  ;($C81D)More area init.
-        .word SamusInit                 ;($C8D1)Samus init.
-        .word GameEngine                ;($C92B)Game engine.
-        .word PrepareGameOver           ;($C9A6)Display GAME OVER.
-        .word PauseMode                 ;($C9B1)Pause game.
-        .word GoPassword                ;($C9C4)Display password.
-        .word IncrementRoutine          ;($C155)Just advances to next routine in table.
-        .word SamusIntro                ;($C9D7)Intro.
-        .word WaitTimer                 ;($C494)Delay.
+@endIf_B:
+    ;Use MainRoutine as index into routine table below.
+    lda MainRoutine
+    jsr ChooseRoutine
+    MainRoutinePtrTable:
+        PtrTableEntry MainRoutinePtrTable, AreaInit                  ;($C801)Area init.
+        PtrTableEntry MainRoutinePtrTable, MoreInit                  ;($C81D)More area init.
+        PtrTableEntry MainRoutinePtrTable, SamusInit                 ;($C8D1)Samus init.
+        PtrTableEntry MainRoutinePtrTable, GameEngine                ;($C92B)Game engine.
+        PtrTableEntry MainRoutinePtrTable, PrepareGameOver           ;($C9A6)Display GAME OVER.
+        PtrTableEntry MainRoutinePtrTable, PauseMode                 ;($C9B1)Pause game.
+        PtrTableEntry MainRoutinePtrTable, GoPassword                ;($C9C4)Display password.
+        PtrTableEntry MainRoutinePtrTable, IncrementRoutine          ;($C155)Just advances to next routine in table.
+        PtrTableEntry MainRoutinePtrTable, SamusIntro                ;($C9D7)Intro.
+        PtrTableEntry MainRoutinePtrTable, WaitTimer                 ;($C494)Delay.
 
 IncrementRoutine:
-    inc MainRoutine                 ;Increment to next routine in above table.
-    rts                             ;
+    ;Increment to next routine in above table.
+    inc MainRoutine
+    rts
 
 ;-------------------------------------[ Clear name tables ]------------------------------------------
 
@@ -311,7 +359,7 @@ ClearNameTables:
     lda GameMode                    ;
     beq LC165                       ;Branch if mode = Play.
     lda TitleRoutine                ;
-    cmp #$1D                        ;If running the end game routine, clear-->
+    cmp #_id_EndGame.b                        ;If running the end game routine, clear-->
     beq LC169                       ;name table 2, else clear name table 1.
 LC165:
     lda #$02                        ;Name table to clear + 1 (name table 1).
@@ -348,7 +396,7 @@ ClearNameTable:
         bne LC195                       ;Loops until the desired name table is cleared.-->
         dex                             ;It also clears the associated attribute table.
         bne LC195                       ;
-    rts                             ;
+    rts
 
 ;The following table is used by the above routine for finding
 ;the high byte of the proper name table to clear.
@@ -916,26 +964,35 @@ NMIOn:
 ;is playing.
 
 WaitTimer:
-    lda Timer3                      ;Exit if timer hasn't hit zero yet
-    bne RTS_C4A9                           ;
-    lda NextRoutine                 ;Set GameOver as next routine.
-    cmp #$04                        ;
-    beq SetMainRoutine              ;Set GoPassword as main routine.
-    cmp #$06                        ;
-    beq SetMainRoutine              ;
-    jsr StartMusic                  ;($D92C)Assume power up was picked up and GameEngine-->
-    lda NextRoutine                 ;is next routine. Start area music before exiting.
+    ;Exit if timer hasn't hit zero yet
+    lda Timer3
+    bne RTS_C4A9
+    
+    lda NextRoutine
+    ;Set GameOver as next routine.
+    cmp #_id_PrepareGameOver
+    beq SetMainRoutine
+    ;Set GoPassword as main routine.
+    cmp #_id_GoPassword
+    beq SetMainRoutine
+    ;($D92C)Assume power up was picked up and GameEngine is next routine. Start area music before exiting.
+    jsr StartMusic
+    lda NextRoutine
 
 SetMainRoutine:
-    sta MainRoutine                 ;Set next routine to run.
+    ;Set next routine to run.
+    sta MainRoutine
 RTS_C4A9:
     rts
 
 SetTimer:
-    sta Timer3                      ;Set Timer3. Frames to wait is value stored in A*10.
-    stx NextRoutine                 ;Save routine to jump to after Timer3 expires.
-    lda #$09                        ;Next routine to run is WaitTimer.
-    bne SetMainRoutine              ;Branch always.
+    ;Set Timer3. Frames to wait is value stored in A*10.
+    sta Timer3
+    ;Save routine to jump to after Timer3 expires.
+    stx NextRoutine
+    ;Next routine to run is WaitTimer.
+    lda #_id_WaitTimer.b
+    bne SetMainRoutine ;Branch always.
 
 ;-----------------------------------[ PPU mirroring routines ]---------------------------------------
 
@@ -978,8 +1035,9 @@ PrepPPUMirror:
 ;the bank to switch to, plus one.
 
 CheckSwitch:
-    ldy SwitchPending               ;
-    beq RTS_C50F                           ;Exit if zero(no bank switch issued). else Y contains bank#+1.
+    ;Exit if zero(no bank switch issued). else Y contains bank#+1.
+    ldy SwitchPending
+    beq RTS_C50F
     lda #$00                        ;Reset(so that the bank switch won't be performed-->
     sta SwitchPending               ;every succeeding frame too).
     dey                             ;Y now contains the bank to switch to.
@@ -1008,6 +1066,8 @@ MMCWriteReg3:
     sta MMC1Reg3                    ;Write bit 4 of ROM bank #.
 RTS_C50F:
     rts
+
+;--------------------------------[ Pattern table loading routines ]---------------------------------
 
 ;Y contains the GFX header to fetch from the table above, GFXInfo.
 
@@ -1231,7 +1291,7 @@ DestroyEnemies: ; LC8BB
 
 SamusInit:
     ;SamusIntro will be executed next frame.
-    lda #$08
+    lda #_id_SamusIntro.b
     sta MainRoutine
     .if BUILDTARGET == "NES_NTSC"
         ;440 frames to fade in Samus(7.3 seconds).
@@ -1336,10 +1396,9 @@ UpdateAge:
     lda GameMode
     bne RTS_C9A5
     
-    ;Is game engine running?
+    ;Exit if game engine is notrunning.
     lda MainRoutine
-    cmp #$03
-    ;If not, don't update age.
+    cmp #_id_GameEngine.b
     bne RTS_C9A5
     
     ;Only update age when FrameCount is zero-->
@@ -1371,24 +1430,35 @@ RTS_C9A5:
 ;-------------------------------------------[ Game over ]--------------------------------------------
 
 PrepareGameOver:
-    lda #$1C                        ;GameOver is the next routine to run.
-    sta TitleRoutine                ;
-    lda #$00+1                        ;
-    sta SwitchPending               ;Prepare to switch to title memory page.
-    jmp ScreenOff                   ;($C439)Turn screen off.
+    ;GameOver is the next routine to run.
+    lda #_id_GameOver.b
+    sta TitleRoutine
+    ;Prepare to switch to title memory page.
+    lda #$00+1
+    sta SwitchPending
+    ;($C439)Turn screen off.
+    jmp ScreenOff
 
 ;------------------------------------------[ Pause mode ]--------------------------------------------
 
 PauseMode:
-    lda Joy2Status                  ;Load buttons currently being pressed on joypad 2.
-    and #$88                        ;
-    eor #$88                        ;both A & UP pressed?-->
-    bne Exit14                      ;Exit if not.
-    ldy EndTimer+1                  ;
-    iny                             ;Is escape timer active?-->
-    bne Exit14                      ;Sorry, can't quit if this is during escape scence.
-    sta GamePaused                  ;Clear pause game indicator.
-    inc MainRoutine                 ;Display password is the next routine to run.
+    ;Load buttons currently being pressed on joypad 2.
+    lda Joy2Status
+    ; Exit if not both A & UP pressed.
+    and #BUTTON_A | BUTTON_UP.b
+    eor #BUTTON_A | BUTTON_UP.b
+    bne Exit14
+    
+    ;Is escape timer active?
+    ;Sorry, can't quit if this is during escape scence.
+    ldy EndTimer+1
+    iny
+    bne Exit14
+    
+    ;Clear pause game indicator.
+    sta GamePaused
+    ;Display password is the next routine to run.
+    inc MainRoutine
 
 Exit14:
     rts                             ;Exit for routines above and below.
@@ -1396,7 +1466,7 @@ Exit14:
 ;------------------------------------------[ GoPassword ]--------------------------------------------
 
 GoPassword:
-    lda #$19                        ;DisplayPassword is next routine to run.
+    lda #_id_DisplayPassword.b                        ;DisplayPassword is next routine to run.
     sta TitleRoutine                ;
     lda #$00+1                        ;
     sta SwitchPending               ;Prepare to switch to intro memory page.
@@ -1416,7 +1486,7 @@ SamusIntro:
         sta ObjAction                   ;
         jsr StartMusic                  ;($D92C)Start main music.
         jsr SelectSamusPal              ;($CB73)Select proper Samus palette.
-        lda #$03                        ;
+        lda #_id_GameEngine.b
         sta MainRoutine                 ;Game engine will be called next frame.
     ;Still fading in.
     LC9F2:
@@ -1447,13 +1517,16 @@ SamusFadeInTimeTbl:
 ;---------------------------------[ Check if game engine running ]-----------------------------------
 
 IsEngineRunning:
-    ldy MainRoutine                 ;If Samus is fading in or the wait timer is-->
-    cpy #$07                        ;active, return from routine.
-    beq RTS_CA22                           ;
-    cpy #$03                        ;Is game engine running?
-    beq SwitchBank                  ;If yes, branch to SwitchBank.
+    ;If Samus is fading in or the wait timer is active, return from routine.
+    ldy MainRoutine
+    cpy #_id_IncrementRoutine.b
+    beq RTS_CA22
+    ;Is game engine running? If yes, branch to SwitchBank.
+    cpy #_id_GameEngine.b
+    beq SwitchBank
 RTS_CA22:
-    rts                             ;Exit if can't switch bank.
+    ;Exit if can't switch bank.
+    rts
 
 ;-----------------------------------------[ Switch bank ]--------------------------------------------
 
@@ -1491,9 +1564,10 @@ AccessSavedGame:
         lda #$01                        ;Indicate this saved game has been erased.-->
         sta SamusData02,y                     ;Saved game 0=$780C, saved game 1=$781C, saved game 2=$782C.
     LCA4C:
-    lda MainRoutine                 ;
-    cmp #$01                        ;If initializing the area at the start of the game, branch-->
-    beq LoadGameData                ;to load Samus' saved game info.
+    ;If initializing the area at the start of the game, branch to load Samus' saved game info.
+    lda MainRoutine
+    cmp #_id_MoreInit.b
+    beq LoadGameData
 
 SaveGameData:
     ;Save game based on current area Samus is in. Don't know why.
@@ -1955,9 +2029,9 @@ SetSamusRun:
     cmp #ObjAnim_07 - ObjectAnimIndexTbl.b
     beq LCCBX
     inx
-    cmp #$27
+    cmp #ObjAnim_27 - ObjectAnimIndexTbl.b
     beq LCCBX
-        lda #$04
+        lda #ObjAnim_04 - ObjectAnimIndexTbl.b
         jsr SetSamusNextAnim
     LCCBX:
     lda RunAnimationTbl,x
@@ -2162,10 +2236,10 @@ LCDD7:
 
 ; Table used by above subroutine
 Table05:
-    .byte $3F
-    .byte $3B
-    .byte $3D
-    .byte $3F
+    .byte ObjAnim_3F - ObjectAnimIndexTbl.b
+    .byte ObjAnim_3B - ObjectAnimIndexTbl.b
+    .byte ObjAnim_3D - ObjectAnimIndexTbl.b
+    .byte ObjAnim_3F - ObjectAnimIndexTbl.b
 
 CheckHealthStatus: ;($CDFA)
     ;Has Samus been hit?
@@ -2892,7 +2966,7 @@ FireWeaponForwards:
     bne LD269
     jsr SFX_BulletFire
 LD269:
-    ldy #$09
+    ldy #ObjAnim_09 - ObjectAnimIndexTbl.b
 LD26B:
     tya
     jmp SetSamusNextAnim
@@ -3463,22 +3537,22 @@ Lx078:
     lda #$00
     beq Lx077   ; branch always
 
-GotoLE81E:
-    jmp LE81E
+GotoProjectileHitDoor:
+    jmp ProjectileHitDoor
 
 ; bullet <--> background crash detection
 UpdateBullet_CollisionWithBG:
     jsr GetObjCoords
     ; get tile id that bullet touches
     ldy #$00
-    lda ($04),y
+    lda (Temp04_CartRAMPtr),y
     ; branch if tile id < #$A0 (solid tiles)
     cmp #$A0
     bcs LD624
     ; tile is air
     jsr GotoUpdateBullet_CollisionWithMotherBrain
     cmp #$4E
-    beq GotoLE81E
+    beq GotoProjectileHitDoor
     jsr LD651
     bcc RTS_X081
     clc
@@ -3512,12 +3586,12 @@ RTS_X081:
 LD651:
     ldy InArea
     cpy #$10
-    beq Lx082
+    beq @Brinstar
         cmp #$70
-        bcs RTS_X083
-    Lx082:
+        bcs @RTS
+    @Brinstar:
     cmp #$80
-RTS_X083:
+@RTS:
     rts
 
 BombInit:
@@ -3563,9 +3637,9 @@ Lx086:
 
 LD6A7:
     jsr GetObjCoords
-    lda $04
+    lda Temp04_CartRAMPtr
     sta $0A
-    lda $05
+    lda Temp04_CartRAMPtr+1.b
     sta $0B
     ldx PageIndex
     ldy ProjectileDieDelay,x
@@ -3577,15 +3651,15 @@ LD6A7:
     jsr LD78B
     txa
     bne Lx087
-    lda $04
+    lda Temp04_CartRAMPtr
     and #$20
     beq Exit6
 Lx087:
-    lda $05
+    lda Temp04_CartRAMPtr+1.b
     and #$03
     cmp #$03
     bne Lx088
-    lda $04
+    lda Temp04_CartRAMPtr
     cmp #$C0
     bcc Lx088
     lda ScrollDir
@@ -3605,15 +3679,15 @@ Lx089:
     jsr LD77F
     txa
     bne Lx090
-        lda $04
+        lda Temp04_CartRAMPtr
         and #$20
         bne Exit6
     Lx090:
-    lda $05
+    lda Temp04_CartRAMPtr+1.b
     and #$03
     cmp #$03
     bne Lx091
-        lda $04
+        lda Temp04_CartRAMPtr
         cmp #$C0
         bcc Lx091
         lda ScrollDir
@@ -3630,11 +3704,11 @@ Lx092:
         jsr LD78B
         txa
         bne Lx093
-            lda $04
+            lda Temp04_CartRAMPtr
             lsr
             bcc Exit7
         Lx093:
-        lda $04
+        lda Temp04_CartRAMPtr
         and #$1F
         cmp #$1E
         bcc Lx094
@@ -3643,9 +3717,9 @@ Lx092:
             beq Exit7
             lda #$1E
             jsr LD77F
-            lda $05
+            lda Temp04_CartRAMPtr+1.b
             eor #$04
-            sta $05
+            sta Temp04_CartRAMPtr+1.b
         Lx094:
         jmp LD76A
     Lx095:
@@ -3655,11 +3729,11 @@ Lx092:
     jsr LD77F
     txa
     bne Lx096
-        lda $04
+        lda Temp04_CartRAMPtr
         lsr
         bcs Exit7
     Lx096:
-    lda $04
+    lda Temp04_CartRAMPtr
     and #$1F
     cmp #$02
     bcs LD76A
@@ -3668,14 +3742,14 @@ Lx092:
     beq Exit7
     lda #$1E
     jsr LD78B
-    lda $05
+    lda Temp04_CartRAMPtr+1.b
     eor #$04
-    sta $05
+    sta Temp04_CartRAMPtr+1.b
 LD76A:
     txa
     pha
     ldy #$00
-    lda ($04),y
+    lda (Temp04_CartRAMPtr),y
     jsr LD651
     bcc Lx097
         cmp #$A0
@@ -3690,7 +3764,7 @@ Exit7:
 LD77F:
     clc
     adc $0A
-    sta $04
+    sta Temp04_CartRAMPtr
     lda $0B
     adc #$00
     jmp LD798
@@ -3700,13 +3774,13 @@ LD78B:
     lda $0A
     sec
     sbc $00
-    sta $04
+    sta Temp04_CartRAMPtr
     lda $0B
     sbc #$00
 LD798:
     and #$07
     ora #$60
-    sta $05
+    sta Temp04_CartRAMPtr+1.b
 RTS_X098:
     rts
 
@@ -3910,7 +3984,7 @@ ElevatorD8BF:
     cmp #$8F
     bne @endIf_A
         ; Samus made it! YAY!
-        lda #$07
+        lda #_id_IncrementRoutine.b
         sta MainRoutine
         inc AtEnding
         ldy #$00
@@ -4754,19 +4828,25 @@ CommonJump_DrawEnemy:
 ; (255 if it overflows)
 
 AddToMaxMissiles:
-    pha                             ;Temp storage of # of missiles to add.
+    ;Temp storage of quantity of missiles to add.
+    pha
+    ; add to current missile count
     clc
     adc MissileCount
-    bcc Lx141
+    bcc @endIf_A
+        ; cap at 255
         lda #$FF
-    Lx141:
+    @endIf_A:
     sta MissileCount
     pla
+    ; add to max missile count
     clc
     adc MaxMissiles
-    bcc RTS_X142
+    bcc @endIf_B
+        ; cap at 255
         lda #$FF
-    RTS_X142:  sta MaxMissiles
+    @endIf_B:
+    sta MaxMissiles
     rts
 
 DrawEnemy_NotBlank:
@@ -6582,7 +6662,7 @@ LE7E6:
     ldy #$00
     lda ($04),y     ; get tile value
     cmp #$4E
-    beq LE81E
+    beq ProjectileHitDoor
     jsr GotoUpdateBullet_CollisionWithMotherBrain
     jsr LD651
     bcc Exit16      ; CF = 0 if tile # < $80 (solid tile)... CRASH!!!
@@ -6613,51 +6693,54 @@ Lx202:
 Exit16:
     rts
 
-LE81E:
+; bullet/missile hits a door
+
+ProjectileHitDoor:
     ldx UpdatingProjectile
     beq ClcExit
     ldx #$06
-    Lx203:
-        lda $05
+    ; go through all doors
+    @loop:
+        lda Temp04_CartRAMPtr+1.b
         eor DoorCartRAMPtr+1.b,x
         and #$04
-        bne Lx206
-        lda $04
+        bne @next
+        lda Temp04_CartRAMPtr
         eor DoorCartRAMPtr,x
         and #$1F
-        bne Lx206
+        bne @next
         txa
         jsr Amul8       ; * 8
         ora #$80
         tay
-        lda ObjAction,y
-        beq Lx206
-        lda $0307,y
+        lda DoorStatus,y
+        beq @next
+        lda DoorType,y
         lsr
-        bcs Lx205
+        bcs @blueDoor
             ldx PageIndex
             lda ObjAction,x
-            eor #$0B
-            beq Lx204
+            eor #wa_Missile
+            beq @hitByMissile
                 lda ObjAction,x
-                eor #$04
+                eor #wa_BulletExplode
                 bne GotoSFX_Metal
                 lda ObjAnimResetIndex,x
                 eor #$91
                 bne GotoSFX_Metal
-            Lx204:
+            @hitByMissile:
             lda TriSFXFlag
             ora #sfxTri_SamusBall
             sta TriSFXFlag
-        Lx205:
+        @blueDoor:
         lda #$04
-        sta SamusIsHit,y
+        sta DoorIsHit,y
         bne ClcExit
-    Lx206:
+    @next:
         dex
         dex
-    bpl Lx203
-    lda $04
+    bpl @loop
+    lda Temp04_CartRAMPtr
     jsr Adiv8       ; / 8
     and #$01
     tax
@@ -7296,10 +7379,10 @@ SpawnDoorRoutine:
     ldx LEC00,y
     pla          ; retrieve door info
     and #$03
-    sta $0307,x     ; door palette
+    sta DoorType,x     ; door type
     tya
     pha
-    lda $0307,x
+    lda DoorType,x
     cmp #$01
     beq Lx232
     cmp #$03

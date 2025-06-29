@@ -23,6 +23,9 @@
 
 ;---------------------------------------------[ Export ]---------------------------------------------
 
+.export _id_StartContinueScreen15
+.export _id_DisplayPassword
+.export _id_GameOver
 .export _id_EndGame
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
@@ -691,7 +694,7 @@ PPUString_DrawIntroBackground:
     PPUString $2669, \
         "              M510"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 ;The following error message is diplayed if the player enters an incorrect password.
 L8759:
@@ -827,7 +830,7 @@ DoSparkleSpriteCoord:
     sta SparkleSprXChange,x         ;Store amount to move spite in x direction.
     inc IntroSprIndex,x             ;
     inc IntroSprIndex,x             ;Add two to find index for next data byte.
-    rts                             ;
+    rts
 
 NibbleSubtract:
     cmp #$08                        ;If bit 3 is set, nibble is a negative number-->
@@ -1906,7 +1909,7 @@ FourLowerAndFiveThruTwo:
     lsr                             ;bits 5 thru 2 to lower four bits.
     lsr                             ;
     ora $00                         ;Combine the two bytes together.
-    rts                             ;
+    rts
 
 TwoLowerAndSixLower:
     lda PasswordChar,y              ;Shifts two lower bits to two higest bits-->
@@ -2439,7 +2442,7 @@ L937F:
     ;Turn color on to display password characters.
     PPUStringRepeat $23D8, $55, $20
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 WaitForSTART:
     lda Joy1Change                  ;Waits for START to be ressed proceed-->
@@ -2468,7 +2471,7 @@ L93B9:
     PPUString $218C, \
         "GAME OVER"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 
 PasswordToScreen:
@@ -2786,116 +2789,97 @@ bank0_PalPntrTbl:
 bank0_Palette00:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette01 info.
+    PPUStringEnd
 
 bank0_Palette01:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $35, $35, $04, $0F, $35, $14, $04, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette02 info.
+    PPUStringEnd
 
 bank0_Palette02:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $39, $39, $09, $0F, $39, $29, $09, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette03 info.
+    PPUStringEnd
 
 bank0_Palette03:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $36, $36, $06, $0F, $36, $15, $06, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette04 info.
+    PPUStringEnd
 
 bank0_Palette04:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $27, $27, $12, $0F, $27, $21, $12, $0F, $16, $1A, $27, $0F, $31, $20, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette05 info.
+    PPUStringEnd
 
 bank0_Palette05:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $01, $01, $0F, $0F, $01, $0F, $0F, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette06 info.
+    PPUStringEnd
 
 bank0_Palette06:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $01, $01, $0F, $0F, $01, $01, $0F, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette07 info.
+    PPUStringEnd
 
 bank0_Palette07:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $02, $02, $01, $0F, $02, $02, $01, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette08 info.
+    PPUStringEnd
 
 bank0_Palette08:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $02, $02, $01, $0F, $02, $01, $01, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette09 info.
+    PPUStringEnd
 
 bank0_Palette09:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $12, $12, $02, $0F, $12, $12, $02, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette0A info.
+    PPUStringEnd
 
 bank0_Palette0A:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $11, $11, $02, $0F, $11, $02, $02, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette0B info.
+    PPUStringEnd
 
 bank0_Palette0B:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $31, $31, $01, $0F, $31, $11, $01, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette0C info.
+    PPUStringEnd
 
 bank0_Palette0C:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $12, $30, $21, $0F, $27, $28, $29, $0F, $31, $31, $01, $0F, $16, $2A, $27, $0F, $12, $30, $21, $0F, $27, $24, $2C, $0F, $15, $21, $38
-
-    .byte $00                       ;End Palette0D info.
+    PPUStringEnd
 
 bank0_Palette0D:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $12, $12, $01, $0F, $12, $02, $01, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette0E info.
+    PPUStringEnd
 
 bank0_Palette0E:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $02, $02, $0F, $0F, $02, $01, $0F, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette0F info.
+    PPUStringEnd
 
 bank0_Palette0F:
     PPUString $3F00, \
         $0F, $28, $18, $08, $0F, $29, $1B, $1A, $0F, $01, $01, $0F, $0F, $01, $0F, $0F, $0F, $16, $1A, $27, $0F, $37, $3A, $1B, $0F, $17, $31, $37, $0F, $32, $22, $12
-
-    .byte $00                       ;End Palette10 info.
+    PPUStringEnd
 
 bank0_Palette10:
     PPUString $3F00, \
         $30, $28, $18, $08, $30, $29, $1B, $1A, $30, $30, $30, $30, $30, $30, $30, $30, $30, $16, $1A, $27, $30, $37, $3A, $1B, $30, $17, $31, $37, $30, $32, $22, $12
-
-    .byte $00                       ;End Palette11 info.
+    PPUStringEnd
 
 bank0_Palette11:
     PPUString $3F00, \
         $0F, $30, $30, $21
-
-    .byte $00                       ;End Palette12 info.
+    PPUStringEnd
 
 bank0_Palette12:
     PPUString $3F00, \
         $0F, $30, $30, $0F, $0F, $2A, $2A, $21, $0F, $31, $31, $0F, $0F, $2A, $2A, $21
-
-    .byte $00                       ;End Palette13 data.
+    PPUStringEnd
 
 UpdateCrossMissileCoords: ;($981E)
     lda IntroSprXRun,x             ;Load sprite run(sprite x component).
@@ -3063,7 +3047,7 @@ L9984:
     PPUString $21EC, \
         "CONTINUE"
 
-    .byte $00               ;End PPU string write
+    PPUStringEnd
 
 ;The following pointer table is used to find the start
 ;of each row on the password screen in the data below.
@@ -3098,7 +3082,7 @@ L99E3:
     ;Writes to attribute table 0 starting at address $23DA.
     PPUStringRepeat $23DA, $F0, $04
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 ;----------------------------------------[ Ending routines ]-----------------------------------------
 
@@ -3908,68 +3892,57 @@ EndGamePalPntrTbl:
 EndGamePal00:
     PPUString $3F00, \
         $0F, $21, $11, $02, $0F, $29, $1B, $1A, $0F, $27, $28, $29, $0F, $28, $18, $08, $0F, $16, $19, $27, $0F, $36, $15, $17, $0F, $12, $21, $20, $0F, $35, $12, $16
-
-    .byte $00                       ;End EndGamePal00 data.
+    PPUStringEnd
 
 EndGamePal01:
     PPUString $3F18, \
         $0F, $10, $20, $30, $0F, $0F, $0F, $0F
-
-    .byte $00                       ;End EndGamePal01 data.
+    PPUStringEnd
 
 EndGamePal02:
     PPUString $3F18, \
         $0F, $12, $22, $32, $0F, $0B, $1B, $2B
-
-    .byte $00                       ;End EndGamePal02 data.
+    PPUStringEnd
 
 EndGamePal03:
     PPUString $3F18, \
         $0F, $14, $24, $34, $0F, $09, $19, $29
-
-    .byte $00                       ;End EndGamePal03 data.
+    PPUStringEnd
 
 EndGamePal04:
     PPUString $3F18, \
         $0F, $16, $26, $36, $0F, $07, $17, $27
-
-    .byte $00                       ;End EndGamePal04 data.
+    PPUStringEnd
 
 EndGamePal05:
     PPUString $3F18, \
         $0F, $18, $28, $38, $0F, $05, $15, $25
-
-    .byte $00                       ;End EndGamePal05 data.
+    PPUStringEnd
 
 EndGamePal06:
     PPUString $3F18, \
         $0F, $1A, $2A, $3A, $0F, $03, $13, $13
-
-    .byte $00                       ;End EndGamePal06 data.
+    PPUStringEnd
 
 EndGamePal07:
     PPUString $3F18, \
         $0F, $1C, $2C, $3C, $0F, $01, $11, $21
-
-    .byte $00                       ;End EndGamePal07 data.
+    PPUStringEnd
 
 EndGamePal08:
     PPUString $3F0C, \
         $0F, $18, $08, $07, $0F, $26, $05, $07, $0F, $26, $05, $07, $0F, $01, $01, $05, $0F, $13, $1C, $0C
-
-    .byte $00                       ;End EndGamePal08 data.
+    PPUStringEnd
 
 EndGamePal09:
     PPUString $3F0C, \
         $0F, $08, $07, $0F, $0F, $06, $08, $0F, $0F, $06, $08, $0F, $0F, $00, $10, $0F, $0F, $01, $0C, $0F
-
-    .byte $00                       ;End EndGamePal09 data.
+    PPUStringEnd
 
 EndGamePal0A:
     PPUString $3F0C, \
         $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F
-
-    .byte $00                       ;End EndGamePal0A data.
+    PPUStringEnd
 
 EndGamePal0B:
     PPUString $3F00, \
@@ -4068,7 +4041,7 @@ LA052:
     PPUString $2BA7, \
         " MAIN PROGRAMMERS "
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 ;The following pointer table is accessed by the NMIScreenWrite routine.
 ;It is used to locate the start of the PPU strings below.
@@ -4085,7 +4058,7 @@ LA1C2:
     PPUString $20C3, \
         "YOU FULFILED YOUR MISSION."
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 LA1EB:
     ;Writes end message on name table 0 in row $2100 (9th row from top).
@@ -4096,7 +4069,7 @@ LA1EB:
     PPUString $2142, \
         "SPACE."
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 LA20F:
     ;Writes end message on name table 0 in row $2180 (13th row from top).
@@ -4107,7 +4080,7 @@ LA20F:
     PPUString $21C2, \
         "THE OTHER METROID."
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 LA240:
     ;Writes end message on name table 0 in row $2200 (18th row from top).
@@ -4118,7 +4091,7 @@ LA240:
     PPUString $2242, \
         "SPACE!"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 ;The following pointer table is accessed by the NMIScreenWrite routine.
 ;It is used to locate the start of the PPU strings below.
@@ -4133,7 +4106,7 @@ LA26D:
     ;Erases end message on name table 0 in row $20C0 (7th row from top).
     PPUStringRepeat $20C3, " ", $1A
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 LA276:
     ;Erases end message on name table 0 in row $2100 (9th row from top).
@@ -4142,7 +4115,7 @@ LA276:
     ;Erases end message on name table 0 in row $2140 (11th row from top).
     PPUStringRepeat $2142, " ", $0A
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 LA27F:
     ;Erases end message on name table 0 in row $2180 (13th row from top).
@@ -4151,7 +4124,7 @@ LA27F:
     ;Erases end message on name table 0 in row $21C0 (15th row from top).
     PPUStringRepeat $21C2, " ", $12
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 LA288:
     ;Erases end message on name table 0 in row $2200 (18th row from top).
@@ -4160,7 +4133,7 @@ LA288:
     ;Erases end message on name table 0 in row $2240 (19th row from top).
     PPUStringRepeat $2242, " ", $0A
 
-    .byte $00                       ;End PPU string write
+    PPUStringEnd
 
 ;The following table is used by the LoadCredits routine to load the end credits on the screen.
 
@@ -4218,7 +4191,7 @@ PPUString_Credits00:
     ;Clears attribute table 0 starting at $23C0.
     PPUStringRepeat $23C0, $00, $20
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits01:
     ;Writes credits on name table 0 in row $2060 (4th row from top)
@@ -4229,10 +4202,10 @@ PPUString_Credits01:
     PPUString $20AB, \
         "GPZ SENGOKU"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits02:
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits03:
     ;Writes credits on name table 0 in row $2160 (12th row from top).
@@ -4242,21 +4215,21 @@ PPUString_Credits03:
     ;Clears attribute table 0 starting at $23E0
     PPUStringRepeat $23E0, $00, $20
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 ;Writes credits on name table 0 in row $21E0 (16th row from top).
 PPUString_Credits04:
     PPUString $21EB, \
         "M.HOUDAI"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits05:
     ;Writes credits on name table 0 in row $22A0 (22nd row from top).
     PPUString $22A7, \
         "SPECIAL THANKS  TO"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits06:
     ;Writes credits on name table 0 in row $22E0 (24nd row from top).
@@ -4267,7 +4240,7 @@ PPUString_Credits06:
     PPUString $232E, \
         "SUMI"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits07:
     ;Writes credits on name table 0 in row $2360 (28nd row from top).
@@ -4278,7 +4251,7 @@ PPUString_Credits07:
     PPUString $23AD, \
         "KACHO"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits08:
     ;Writes credits on name table 2 in row $2820 (2nd row from top).
@@ -4288,7 +4261,7 @@ PPUString_Credits08:
     PPUString $286C, \
         "HYAKKAN"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits09:
     ;Writes credits on name table 2 in row $28A0 (6th row from top).
@@ -4298,14 +4271,14 @@ PPUString_Credits09:
     ;Writes credits on name table 2 in row $28E0 (8th row from top).
     PPUStringRepeat $28E8, " ", $0F
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits0A:
     ;Writes credits on name table 2 in row $2920 (10th row from top).
     PPUString $292C, \
         "HARADA "
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits0B:
     ;Writes credits on name table 2 in row $2960 (12th row from top).
@@ -4315,14 +4288,14 @@ PPUString_Credits0B:
     ;Writes credits on name table 2 in row $29A0 (14th row from top).
     PPUStringRepeat $29A8, " ", $0F
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits0C:
     ;Writes credits on name table 2 in row $29E0 (16th row from top).
     PPUString $29EA, \
         "CONVERTED BY"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits0D:
     ;Writes credits on name table 2 in row $2A20 (18th row from top).
@@ -4332,7 +4305,7 @@ PPUString_Credits0D:
     ;Writes credits on name table 2 in row $2A60 (20th row from top).
     PPUStringRepeat $2A67, " ", $11
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits0E:
     ;Writes credits on name table 2 in row $2AE0 (24th row from top).
@@ -4343,20 +4316,20 @@ PPUString_Credits0E:
     PPUString $2B28, \
         "   MAKOTO KANOH"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits0F:
     ;Writes credits on name table 2 in row $2BA0 (bottom row).
     PPUStringRepeat $2BA6, " ", $13
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits10:
     ;Writes credits on name table 0 in row $2020 (2nd row from the top).
     PPUString $202B, \
         "DIRECTED BY"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits11:
     ;Writes credits on name table 0 in row $2060 (4th row from the top).
@@ -4366,7 +4339,7 @@ PPUString_Credits11:
     ;Writes credits on name table 0 in row $20A0 (6th row from the top).
     PPUStringRepeat $20AA, " ", $0E
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits12:
     ;Writes credits on name table 0 in row $2120 (10th row from the top).
@@ -4377,13 +4350,13 @@ PPUString_Credits12:
     PPUString $2168, \
         "  SATORU OKADA   "
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits13:
     ;Writes credits on name table 0 in row $21E0 (16th row from the top).
     PPUStringRepeat $21E6, " ", $18
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits14:
     ;Writes credits on name table 0 in row $2220 (18th row from the top).
@@ -4394,7 +4367,7 @@ PPUString_Credits14:
     PPUString $226A, \
         "GUNPEI YOKOI"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits15:
     ;Writes credits on name table 0 in row $22A0 (22nd row from the top).
@@ -4403,7 +4376,7 @@ PPUString_Credits15:
     ;Writes credits on name table 0 in row $22E0 (24th row from the top).
     PPUStringRepeat $22E8, " ", $0F
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits16:
     ;Writes credits on name table 0 in row $2320 (26th row from the top).
@@ -4413,7 +4386,7 @@ PPUString_Credits16:
     PPUString $234B, \
         "COPYRIGHT"
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits17:
     ;Writes credits on name table 0 in row $2360 (28th row from the top).
@@ -4426,7 +4399,7 @@ PPUString_Credits17:
     ;Writes credits on name table 0 in row $23A0 (bottom row).
     PPUStringRepeat $23A8, " ", $0F
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits18:
     ;Writes credits on name table 2 in row $2800 (top row)
@@ -4436,57 +4409,57 @@ PPUString_Credits18:
     ;Writes credits on name table 2 in row $2860 (4th row from top).
     PPUStringRepeat $2866, " ", $11
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits19:
     ;Writes credits on name table 2 in row $28A0 (6th row from top).
     PPUStringRepeat $28AA, " ", $0C
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits1A:
     ;Writes credits on name table 2 in row $2920 (10th row from top).
     PPUStringRepeat $2926, " ", $1B
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits1B:
     ;Writes credits on name table 2 in row $2960 (12th row from top).
     PPUStringRepeat $2967, " ", $12
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits1C:
     ;Writes credits on name table 2 in row $29E0 (16th row from top).
     PPUStringRepeat $29E6, " ", $14
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits1D:
     ;Writes credits on name table 2 in row $2A20 (18th row from top).
     PPUStringRepeat $2A28, " ", $15
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits1E:
     ;Writes credits on name table 2 in row $2AE0 (24th row from top).
     PPUStringRepeat $2AE6, " ", $10
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits1F:
     ;Writes credits on name table 2 in row $2B20 (26th row from top).
     PPUStringRepeat $2B29, " ", $0E
 
 PPUString_Credits20:
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 ;Writes the top half of 'The End' on name table 0 in row $2020 (2nd row from top).
 PPUString_Credits21:
     PPUString $2026, \
         "     ", $24, $25, $26, $27, "  ", $2C, $2D, $2E, $2F, "     "
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 ;Writes the bottom half of 'The End' on name table 0 in row $2040 (3rd row from top).
 PPUString_Credits22:
@@ -4496,19 +4469,19 @@ PPUString_Credits22:
     ;Writes credits on name table 0 in row $2060 (4th row from top).
     PPUStringRepeat $206A, " ", $0C
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits23:
     ;Writes credits on name table 0 in row $2120 (10th row from top).
     PPUStringRepeat $2126, " ", $13
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits24:
     ;Writes credits on name table 0 in row $2160 (12th row from top).
     PPUStringRepeat $216A, " ", $0C
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits25:
     ;Writes credits on name table 0 in row $2180 (13th row from top).
@@ -4519,10 +4492,10 @@ PPUString_Credits28:
     ;Writes credits on name table 0 in row $2220 (18th row from top).
     PPUStringRepeat $2226, " ", $0B
 
-    .byte $00                       ;End PPU string write.
+    PPUStringEnd
 
 PPUString_Credits29:
-    .byte $00                       ;End PPU block write.
+    PPUStringEnd
 
 ;Code I moved from bank 7 to free up space in there
 

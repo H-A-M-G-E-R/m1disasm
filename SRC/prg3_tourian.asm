@@ -964,7 +964,7 @@ L9E86:
         bne L9E98
     lda PPUStrIndex
     bne L9EB5
-        lda L9EFF+1,y
+        lda L9F00,y
         jsr WriteAreaPal
     L9EB5:
     ldy MotherBrainStatus
@@ -1015,7 +1015,10 @@ L9EF9:
     tax
     rts
 
-L9EFF: .byte $60, $09, $0A
+    ; unused
+    rts
+
+L9F00: .byte $09, $0A
 
 ;-------------------------------------------------------------------------------
 L9F02:
@@ -1648,17 +1651,17 @@ TileBlastFrame01:
     .byte $FF, $FF
     .byte $FF, $FF
 
-TileBlastFrame02:
+TileBlastFrame02: ; GET OU
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $E0, $DE, $ED, $FF, $E8, $EE
 
-TileBlastFrame03:
+TileBlastFrame03: ; T FAST!
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $ED, $FF, $DF, $DA, $EC, $ED, $F4, $FF
 
-TileBlastFrame04:
+TileBlastFrame04: ; TIME
     .byte $28
     .byte $FF, $FF, $FF, $FF, $ED, $E2, $E6, $DE
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
@@ -1684,12 +1687,12 @@ TileBlastFrame07:
     .byte $FF, $FF
     .byte $FF, $FF
 
-TileBlastFrame08:
+TileBlastFrame08: ; TIME B
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $ED, $E2, $E6, $DE, $FF, $DB
 
-TileBlastFrame09:
+TileBlastFrame09: ; OMB SET
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $E8, $E6, $DB, $FF, $EC, $DE, $ED, $FF
