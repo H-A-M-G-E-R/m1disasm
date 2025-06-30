@@ -103,104 +103,134 @@ DoorSFXData:
 ;processed: 0=Noise, 1=SQ1, 3=Tri, 4=Multiple channels.
 
 NoiseSFXInitPointers:
-    .word NoiseSFXInitRoutineTbl, LoadNoiseSFXContFlags              ;Noise init SFX         (1st).
+    .word NoiseSFXInitRoutineTbl ;Noise init SFX         (1st).
     .byte $00
 
 NoiseSFXContPointers:
-    .word NoiseSFXContRoutineTbl, RTS_B4EE              ;Noise continue SFX     (2nd).
+    .word NoiseSFXContRoutineTbl ;Noise continue SFX     (2nd).
     .byte $00
 
 SQ1SFXInitPointers:
-    .word SQ1SFXInitRoutineTbl, LoadSQ1SFXContFlags              ;SQ1 init SFX           (5th).
+    .word SQ1SFXInitRoutineTbl ;SQ1 init SFX           (5th).
     .byte $01
 
 SQ1SFXContPointers:
-    .word SQ1SFXContRoutineTbl, RTS_B4EE              ;SQ2 continue SFX       (6th).
+    .word SQ1SFXContRoutineTbl ;SQ2 continue SFX       (6th).
     .byte $01
 
 TriSFXInitPointers:
-    .word TriSFXInitRoutineTbl, LoadTriSFXContFlags              ;Triangle init SFX      (7th).
+    .word TriSFXInitRoutineTbl ;Triangle init SFX      (7th).
     .byte $03
 
 TriSFXContPointers:
-    .word TriSFXContRoutineTbl, RTS_B4EE              ;Triangle continue SFX  (8th).
+    .word TriSFXContRoutineTbl ;Triangle continue SFX  (8th).
     .byte $03
 
 MultiSFXInitPointers:
-    .word MultiSFXInitRoutineTbl, LoadMultiSFXContFlags              ;Multi init SFX         (3rd).
+    .word MultiSFXInitRoutineTbl ;Multi init SFX         (3rd).
     .byte $04
 
 MultiSFXContPointers:
-    .word MultiSFXContRoutineTbl, GotoLoadSQ1SFXInitFlags              ;Multi continue SFX     (4th).
+    .word MultiSFXContRoutineTbl ;Multi continue SFX     (4th).
     .byte $04
 
 ;The tables below contain addresses for SFX handling routines.
 
 ;Noise Init SFX handling routine addresses:
 NoiseSFXInitRoutineTbl:
-    .word RTS_B4EE                     ;No sound.
-    .word ScrewAttackSFXStart                     ;Screw attack init SFX.
-    .word MissileLaunchSFXStart                     ;Missile launch init SFX.
-    .word BombExplodeSFXStart                     ;Bomb explode init SFX.
-    .word SamusWalkSFXStart                     ;Samus walk init SFX.
+    .word LoadNoiseSFXContFlags
+    .word RTS_B3B3                     ;No sound.
+    .word RTS_B3B3                     ;No sound.
     .word SpitFlameSFXStart                     ;Spit flame init SFX.
-    .word RTS_B4EE                     ;No sound.
-    .word RTS_B4EE                     ;No sound.
+    .word SamusWalkSFXStart                     ;Samus walk init SFX.
+    .word BombExplodeSFXStart                     ;Bomb explode init SFX.
+    .word MissileLaunchSFXStart                     ;Missile launch init SFX.
+    .word ScrewAttackSFXStart                     ;Screw attack init SFX.
+    .word RTS_B3B3                     ;No sound.
 
 ;Noise Continue SFX handling routine addresses:
 NoiseSFXContRoutineTbl:
-    .word RTS_B4EE                     ;No sound.
-    .word ScrewAttackSFXContinue                     ;Screw attack continue SFX.
-    .word MissileLaunchSFXContinue                     ;Missile launch continue SFX.
-    .word NoiseSFXContinue                     ;Bomb explode continue SFX.
-    .word NoiseSFXContinue                     ;Samus walk continue SFX.
+    .word RTS_B3B3
+    .word RTS_B3B3                     ;No sound.
+    .word RTS_B3B3                     ;No sound.
     .word SpitFlameSFXContinue                     ;Spit flame continue SFX.
-    .word RTS_B4EE                     ;No sound.
-    .word RTS_B4EE                     ;No sound.
+    .word NoiseSFXContinue                     ;Samus walk continue SFX.
+    .word NoiseSFXContinue                     ;Bomb explode continue SFX.
+    .word MissileLaunchSFXContinue                     ;Missile launch continue SFX.
+    .word ScrewAttackSFXContinue                     ;Screw attack continue SFX.
+    .word RTS_B3B3                     ;No sound.
 
 ;SQ1 Init SFX handling routine addresses:
 SQ1SFXInitRoutineTbl:
-    .word MissilePickupSFXStart                     ;Missile pickup init SFX.
-    .word EnergyPickupSFXStart                     ;Energy pickup init SFX.
-    .word MetalSFXStart                     ;Metal init SFX.
-    .word BulletFireSFXStart                     ;Bullet fire init SFX.
-    .word BirdOutOfHoleSFXStart                     ;Bird out of hole init SFX.
-    .word EnemyHitSFXStart                     ;Enemy hit init SFX.
-    .word SamusJumpSFXStart                     ;Samus jump init SFX.
+    .word LoadSQ1SFXContFlags
     .word WaveBeamSFXStart                     ;Wave beam init SFX.
+    .word SamusJumpSFXStart                     ;Samus jump init SFX.
+    .word EnemyHitSFXStart                     ;Enemy hit init SFX.
+    .word BirdOutOfHoleSFXStart                     ;Bird out of hole init SFX.
+    .word BulletFireSFXStart                     ;Bullet fire init SFX.
+    .word MetalSFXStart                     ;Metal init SFX.
+    .word EnergyPickupSFXStart                     ;Energy pickup init SFX.
+    .word MissilePickupSFXStart                     ;Missile pickup init SFX.
 
 ;SQ1 Continue SFX handling routine addresses:
 SQ1SFXContRoutineTbl:
-    .word MissilePickupSFXContinue                     ;Missile pickup continue SFX.
-    .word EnergyPickupSFXContinue                     ;Energy pickup continue SFX.
-    .word SQ1SFXContinue                     ;Metal continue SFX.
-    .word BulletFireSFXContinue                     ;Bullet fire continue SFX.
-    .word SQ1SFXContinue                     ;Bird out of hole continue SFX.
-    .word SQ1SFXContinue                     ;Enemy hit continue SFX.
-    .word SQ1SFXContinue                     ;Samus jump continue SFX.
+    .word RTS_B3B3
     .word WaveBeamSFXContinue                     ;Wave beam continue SFX.
+    .word SQ1SFXContinue                     ;Samus jump continue SFX.
+    .word SQ1SFXContinue                     ;Enemy hit continue SFX.
+    .word SQ1SFXContinue                     ;Bird out of hole continue SFX.
+    .word BulletFireSFXContinue                     ;Bullet fire continue SFX.
+    .word SQ1SFXContinue                     ;Metal continue SFX.
+    .word EnergyPickupSFXContinue                     ;Energy pickup continue SFX.
+    .word MissilePickupSFXContinue                     ;Missile pickup continue SFX.
 
 ;Triangle init handling routine addresses:
 TriSFXInitRoutineTbl:
-    .word SamusDieSFXStart                     ;Samus die init SFX.
-    .word DoorOpenCloseSFXStart                     ;Door open close init SFX.
-    .word MetroidHitSFXStart                     ;Metroid hit init SFX.
-    .word StatueRaiseSFXStart                     ;Statue raise init SFX.
-    .word BeepSFXStart                     ;Beep init SFX.
-    .word BigEnemyHitSFXStart                     ;Big enemy hit init SFX.
-    .word SamusToBallSFXStart                     ;Samus to ball init SFX.
+    .word LoadTriSFXContFlags
     .word BombLaunchSFXStart                     ;Bomb launch init SFX.
+    .word SamusToBallSFXStart                     ;Samus to ball init SFX.
+    .word BigEnemyHitSFXStart                     ;Big enemy hit init SFX.
+    .word BeepSFXStart                     ;Beep init SFX.
+    .word StatueRaiseSFXStart                     ;Statue raise init SFX.
+    .word MetroidHitSFXStart                     ;Metroid hit init SFX.
+    .word DoorOpenCloseSFXStart                     ;Door open close init SFX.
+    .word SamusDieSFXStart                     ;Samus die init SFX.
 
 ;Triangle continue handling routine addresses:
 TriSFXContRoutineTbl:
-    .word SamusDieSFXContinue                     ;Samus die continue SFX.
-    .word DoorOpenCloseSFXContinue                     ;Door open close continue SFX.
-    .word MetroidHitSFXContinue                     ;Metroid hit continue SFX.
-    .word StatueRaiseSFXContinue                     ;Statue raise continue SFX.
-    .word BeepSFXContinue                     ;Beep continue SFX.
-    .word BigEnemyHitSFXContinue                     ;Big enemy hit continue SFX.
-    .word SamusToBallSFXContinue                     ;Samus to ball continue SFX.
+    .word RTS_B3B3
     .word BombLaunchSFXContinue                     ;Bomb launch continue SFX.
+    .word SamusToBallSFXContinue                     ;Samus to ball continue SFX.
+    .word BigEnemyHitSFXContinue                     ;Big enemy hit continue SFX.
+    .word BeepSFXContinue                     ;Beep continue SFX.
+    .word StatueRaiseSFXContinue                     ;Statue raise continue SFX.
+    .word MetroidHitSFXContinue                     ;Metroid hit continue SFX.
+    .word DoorOpenCloseSFXContinue                     ;Door open close continue SFX.
+    .word SamusDieSFXContinue                     ;Samus die continue SFX.
+
+;Multi channel init SFX handling routine addresses:
+MultiSFXInitRoutineTbl:
+    .word LoadMultiSFXContFlags
+    .word IncorrectPasswordSFXStart                     ;Incorrect password init SFX.
+    .word BossHitSFXStart                     ;Boss hit init SFX.
+    .word SamusHitSFXStart                     ;Samus hit init SFX.
+    .word RTS_B3B3                     ;No sound. Was fade in music in vanilla.
+    .word RTS_B3B3                     ;No sound. Was power up music in vanilla.
+    .word RTS_B3B3                     ;No sound. Was end game music in vanilla.
+    .word RTS_B3B3                     ;No sound. Was intro music in vanilla.
+    .word RTS_B3B3                     ;No sound.
+
+;Multi channel continue SFX handling routine addresses:
+MultiSFXContRoutineTbl:
+    .word GotoLoadSQ1SFXInitFlags
+    .word IncorrectPasswordSFXContinue                     ;Incorrect password continue SFX.
+    .word BossHitSFXContinue                     ;Boss hit continue SFX.
+    .word SamusHitSFXContinue                     ;Samus hit continue SFX.
+    .word RTS_B3B3                     ;No sound.
+    .word RTS_B3B3                     ;No sound.
+    .word RTS_B3B3                     ;No sound.
+    .word RTS_B3B3                     ;No sound.
+    .word RTS_B3B3                     ;No sound.
 
 LoadNoiseSFXInitFlags:
     lda NoiseSFXFlag                ;Load A with Noise init SFX flags, (1st SFX cycle).
@@ -249,6 +279,7 @@ LoadMultiSFXContFlags:
 
 GotoLoadSQ1SFXInitFlags:
     jsr LoadSQ1SFXInitFlags         ;($B329)Check for SQ1 init flags.
+RTS_GotoLoadSQ1SFXInitFlags:
     rts
 
 LoadSQ1ChannelSFX:                      ;Used to determine which sound registers to change-->
@@ -280,9 +311,8 @@ LoadSFXRegisters:
     lda (SoundE2),y                 ;Load A with SFX data byte.
     sta (SoundE0),y                 ;Store A in SFX register.
     iny                             ;
-    tya                             ;The four registers associated with each sound-->
-    cmp #$04                        ;channel are loaded one after the other (the loop-->
-    bne LoadSFXRegisters            ;repeats four times).
+    cpy #$04                        ;The four registers associated with each sound-->
+    bne LoadSFXRegisters            ;channel are loaded one after the other (the loop repeats four times).
     rts
 
 PauseSFX:
@@ -366,18 +396,12 @@ CheckRepeatMusic:
     beq InitializeSoundAddresses
     jmp RepeatMusic
 
-CheckMusicFlags: ;($B3FC)
-    lda CurrentMusic                ;Loads A with current music flags and compares it-->
-    cmp CurrentSFXFlags             ;with current SFX flags.  If both are equal,-->
-    beq LB40A                       ;just clear music counters, else clear everything.
-
 InitializeSoundAddresses:
     ;Jumps to all subroutines needed to reset all sound addresses in order to start playing music.
     jsr ClearMusicAndSFXAddresses
     jsr ClearSounds
 LB40A:
-    jsr ClearSpecialAddresses
-    rts
+    jmp ClearSpecialAddresses
 
 ;Clears addresses used for repeating music, pausing music and controlling triangle length.
 ClearSpecialAddresses: ;($B40E)
@@ -439,6 +463,7 @@ SelectSFXRoutine_Noise:
     jsr LoadNoiseChannelSFX         ;($B370)Prepare to load noise channel with data.
 SelectSFXRoutine_Common:
     ;Set continuation flags for this SFX.
+    tya
     jsr UpdateContFlags
     ;Indicate sound channel is in use.
     txa
@@ -452,23 +477,19 @@ SelectSFXRoutine_Common:
     sta WriteMultiChannelData
     rts
 
-UpdateContFlags: ;($B493)
-    ;Loads X register with sound channel just changed.
-    ldx ChannelType
-    ;Clear existing continuation SFX flags for that channel.
-    lda NoiseContSFX,x
-    and #$00 ; was this value non-zero at some point in development?
-    ;Load new continuation flags.
-    ora CurrentSFXFlags
-    ;Save results.
-    sta NoiseContSFX,x
-    rts
-
 ClearCurrentSFXFlags:
     ;Once SFX has completed, this block clears the SFX flag from the current flag register.
     lda #$00
     sta CurrentSFXFlags
-    beq UpdateContFlags
+
+UpdateContFlags: ;($B493)
+    ;Loads X register with sound channel just changed.
+    ldx ChannelType
+    ;Load new continuation flags.
+    lda CurrentSFXFlags
+    ;Save results.
+    sta NoiseContSFX,x
+    rts
 
 IncrementSFXFrame:
     ;Load SFX channel number.
@@ -493,51 +514,26 @@ CheckSFXFlag:
     stx SoundE4
     ldy #>NoiseSFXInitPointers.b
     sty SoundE4+1.b
-    ;Y=0 for counting loop ahead.
+    ;Loads either SFXInitPointers into $E0-$E1
     ldy #$00
-    LB4C8:
-        ;Loads either SFXInitPointers or SFXContPointers into $E0-$E3
-        lda (SoundE4),y
-        sta SoundE0,y
-        iny
-        tya
-        ;Loop repeats four times to load the values.
-        cmp #$04
-        bne LB4C8
+    lda (SoundE4),y
+    sta SoundE0
+    iny
+    lda (SoundE4),y
+    sta SoundE0+1.b
+    iny
+    ;Load channel type.
     lda (SoundE4),y
     sta ChannelType                 ;#$00=SQ1,#$01=SQ2,#$02=Triangle,#$03=Noise
-    ;Set y to 0 for counting loop ahead.
-    ldy #$00
-    ;Push current SFX flags on stack.
     lda CurrentSFXFlags
-    pha
-    LB4DE:
-        ;This portion of the routine loops a maximum of eight times looking for
-        ;any SFX flags that have been set in the current SFX cycle.
-        asl CurrentSFXFlags
-        ;If a flag is found, Branch to SFXFlagFound for further processing
-        bcs SFXFlagFound
-        ;no flags are set, continue to next SFX cycle.
-        iny
-        iny
-        tya
-        cmp #$10
-        bne LB4DE
-
-;Restore original data in CurrentSFXFlags.
-RestoreSFXFlags:
-    pla
-    sta CurrentSFXFlags
-RTS_B4EE:
-    rts
-
-SFXFlagFound:
+    asl
+    tay
     lda (SoundE0),y                 ;This routine stores the starting address of the-->
     sta SoundE2                     ;specific SFX handling routine for the SFX flag-->
     iny                             ;found.  The address is stored in registers-->
     lda (SoundE0),y                 ;$E2 and $E3.
-    sta SoundE2+1.b                   ;
-    jmp RestoreSFXFlags             ;($B4EA)Restore original data in CurrentSFXFlags.
+    sta SoundE2+1.b                 ;
+    rts
 
 ;-----------------------------------[ SFX Handling Routines ]---------------------------------------
 
@@ -1067,7 +1063,7 @@ EndTriSFX:
     sta TriInUse                    ;Allows music to use triangle channel.
     lda #$18                        ;
     sta TRI_HI                      ;Set length index to #$03.
-    jsr ClearCurrentSFXFlags        ;($B4A2)Clear all SFX flags.
+    jmp ClearCurrentSFXFlags        ;($B4A2)Clear all SFX flags.
 
 RTS_MusicBranch04:
     rts                             ;Exit from for multiple routines.
@@ -1263,8 +1259,7 @@ LoadSQ1SQ2Channels:
     ldx #$00                        ;Load SQ1 channel data.
     jsr WriteSQCntrl0               ;($BA41)Write Cntrl0 data.
     inx                             ;Load SQ2 channel data.
-    jsr WriteSQCntrl0               ;($BA41)Write Cntrl0 data.
-    rts
+    jmp WriteSQCntrl0               ;($BA41)Write Cntrl0 data.
 
 WriteSQCntrl0:
     ;Load SQ channel volume data. If zero, branch to exit.
@@ -1351,12 +1346,10 @@ LBA99:
     bne LBA7D                       ;Branch always.
 
 GotoCheckRepeatMusic:
-    jsr CheckRepeatMusic            ;($B3F0)Resets music flags if music repeats.
-    rts
+    jmp CheckRepeatMusic            ;($B3F0)Resets music flags if music repeats.
 
 GotoLoadSQ1SQ2Channels:
-    jsr LoadSQ1SQ2Channels          ;($BA37)Load SQ1 and SQ2 channel data.
-    rts
+    jmp LoadSQ1SQ2Channels          ;($BA37)Load SQ1 and SQ2 channel data.
 
 LoadCurrentMusicFrameData:
     lda CurrentMusic
@@ -1573,31 +1566,6 @@ InitMusicIndexTbl:
     .word SongPowerUpHeader                            ;Power up music.
     .word SongEndHeader                                ;End music.
     .word SongIntroHeader                              ;Intro music.
-
-;The tables below contain addresses for SFX and music handling routines.
-;Multi channel Init SFX and music handling routine addresses:
-
-MultiSFXInitRoutineTbl:
-    .word RTS_B4EE                     ;No sound. Was fade in music in vanilla.
-    .word RTS_B4EE                     ;No sound. Was power up music in vanilla.
-    .word RTS_B4EE                     ;No sound. Was end game music in vanilla.
-    .word RTS_B4EE                     ;No sound. Was intro music in vanilla.
-    .word RTS_B4EE                     ;No sound.
-    .word SamusHitSFXStart                     ;Samus hit init SFX.
-    .word BossHitSFXStart                     ;Boss hit init SFX.
-    .word IncorrectPasswordSFXStart                     ;Incorrect password init SFX.
-
-;Multi channel continue SFX handling routine addresses:
-
-MultiSFXContRoutineTbl:
-    .word RTS_B4EE                     ;No sound.
-    .word RTS_B4EE                     ;No sound.
-    .word RTS_B4EE                     ;No sound.
-    .word RTS_B4EE                     ;No sound.
-    .word RTS_B4EE                     ;No sound.
-    .word SamusHitSFXContinue                     ;Samus hit continue SFX.
-    .word BossHitSFXContinue                     ;Boss hit continue SFX.
-    .word IncorrectPasswordSFXContinue                     ;Incorrect password continue SFX.
 
 ;The following address table provides starting addresses of the volume data tables below:
 VolumeEnvelopePtrTable:

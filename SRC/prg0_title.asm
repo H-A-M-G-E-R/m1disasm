@@ -1484,9 +1484,8 @@ CheckPassword:
         jmp InitializeGame              ;($92D4)Preliminary housekeeping before game starts.
     L8C69:
     ;Set IncorrectPassword SFX flag.
-    lda MultiSFXFlag
-    ora #sfxMulti_IncorrectPassword 
-    sta MultiSFXFlag
+    lda #sfxMulti_IncorrectPassword 
+    jsr SFX_SetMultiSFXFlag
     ;Set Timer3 time for 120 frames (2 seconds).
     lda #$0C
     sta Timer3
@@ -2037,9 +2036,7 @@ L90EB:
     lda StartContinue               ;
     eor #$01                        ;Chooses between START and CONTINUE-->
     sta StartContinue               ;on game select screen.
-    lda TriSFXFlag                  ;
-    ora #sfxTri_Beep                ;Set SFX flag for select being pressed.-->
-    sta TriSFXFlag                  ;Uses triangle channel.
+    jsr SFX_Beep                    ;Set SFX flag for select being pressed. Uses triangle channel.
 L90FF:
     ldy StartContinue               ;
     lda StartContTbl,y              ;Get y pos of selection sprite.
@@ -2136,9 +2133,7 @@ EnterPassword:
     L9193:
     
     ;Initiate BombLaunch SFX if a character has been written to the screen.
-    lda TriSFXFlag
-    ora #sfxTri_BombLaunch
-    sta TriSFXFlag
+    jsr SFX_BombLaunch
     ;Check to see if password cursor is on character 19 thru 24.  If not, branch.
     lda PasswordCursor
     cmp #$12
@@ -2253,9 +2248,7 @@ CheckBackspace:
     and #$0F                        ;If no directional buttons are in-->
     beq L9297                       ;retrigger mode, branch.
     pha                             ;Temp storage of A.
-    lda TriSFXFlag                  ;Initiate BeepSFX when the player pushes-->
-    ora #sfxTri_Beep                ;a button on the directional pad.
-    sta TriSFXFlag                  ;
+    jsr SFX_Beep                    ;Initiate BeepSFX when the player pushes a button on the directional pad.
     pla                             ;Restore A.
     lsr                             ;Put status of right directional button in carry bit.
     bcc L926C                       ;Branch if right button has not been pressed.

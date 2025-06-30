@@ -1083,42 +1083,42 @@ enemyStatus_Pickup     = 5
 enemyStatus_Hurt       = 6
 ; greater than 6 is the same as no enemy
 
-;Sound flags
-;sfxNoise_80            = %10000000
-sfxNoise_ScrewAttack   = %01000000
-sfxNoise_MissileLaunch = %00100000
-sfxNoise_BombExplode   = %00010000
-sfxNoise_SamusWalk     = %00001000
-sfxNoise_SpitFlame     = %00000100
-sfxNoise_PauseMusic    = %00000010
-;sfxNoise_01            = %00000001
+;Sound indices (higher index = higher priority)
+;sfxNoise_08            = $08
+sfxNoise_ScrewAttack   = $07
+sfxNoise_MissileLaunch = $06
+sfxNoise_BombExplode   = $05
+sfxNoise_SamusWalk     = $04
+sfxNoise_SpitFlame     = $03
+sfxNoise_PauseMusic    = $02
+;sfxNoise_01            = $01
 
-sfxSQ1_MissilePickup   = %10000000
-sfxSQ1_EnergyPickup    = %01000000
-sfxSQ1_Metal           = %00100000
-sfxSQ1_BulletFire      = %00010000
-sfxSQ1_OutOfHole       = %00001000
-sfxSQ1_EnemyHit        = %00000100
-sfxSQ1_SamusJump       = %00000010
-sfxSQ1_WaveFire        = %00000001
+sfxSQ1_MissilePickup   = $08
+sfxSQ1_EnergyPickup    = $07
+sfxSQ1_Metal           = $06
+sfxSQ1_BulletFire      = $05
+sfxSQ1_OutOfHole       = $04
+sfxSQ1_EnemyHit        = $03
+sfxSQ1_SamusJump       = $02
+sfxSQ1_WaveFire        = $01
 
-sfxTri_SamusDie        = %10000000
-sfxTri_Door            = %01000000
-sfxTri_MetroidHit      = %00100000
-sfxTri_StatueRaise     = %00010000
-sfxTri_Beep            = %00001000
-sfxTri_BigEnemyHit     = %00000100
-sfxTri_SamusBall       = %00000010
-sfxTri_BombLaunch      = %00000001
+sfxTri_SamusDie        = $08
+sfxTri_Door            = $07
+sfxTri_MetroidHit      = $06
+sfxTri_StatueRaise     = $05
+sfxTri_Beep            = $04
+sfxTri_BigEnemyHit     = $03
+sfxTri_SamusBall       = $02
+sfxTri_BombLaunch      = $01
 
-;sfxMulti_80            = %10000000
-;sfxMulti_40            = %01000000
-;sfxMulti_20            = %00100000
-;sfxMulti_10            = %00010000
-;sfxMulti_08            = %00001000
-sfxMulti_SamusHit      = %00000100
-sfxMulti_BossHit       = %00000010
-sfxMulti_IncorrectPassword = %00000001
+;sfxMulti_08            = $08
+;sfxMulti_07            = $07
+;sfxMulti_06            = $06
+;sfxMulti_05            = $05
+;sfxMulti_04            = $04
+sfxMulti_SamusHit      = $03
+sfxMulti_BossHit       = $02
+sfxMulti_IncorrectPassword = $01
 
 music_RidleyArea       = $01
 music_Tourian          = $02

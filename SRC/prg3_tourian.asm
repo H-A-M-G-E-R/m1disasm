@@ -938,9 +938,7 @@ L9E83:
 
 ;-------------------------------------------------------------------------------
 L9E86:
-    lda #sfxNoise_BombExplode
-    ora NoiseSFXFlag
-    sta NoiseSFXFlag
+    jsr SFX_BombExplode
     jsr LA072
     inc MotherBrain9A
     jsr L9E43
@@ -1111,9 +1109,7 @@ L9F69:
 
 ;-------------------------------------------------------------------------------
 L9FC0:
-    lda #sfxNoise_BombExplode
-    ora NoiseSFXFlag
-    sta NoiseSFXFlag
+    jsr SFX_BombExplode
     lda Timer3
     bne RTS_9FD9
     lda #$08
@@ -1142,9 +1138,7 @@ RTS_9FEC:
 L9FED:
     lda MotherBrainIsHit
     beq RTS_A01A
-    lda MultiSFXFlag
-    ora #sfxMulti_BossHit
-    sta MultiSFXFlag
+    jsr SFX_BossHit
     inc MotherBrainQtyHits
     lda MotherBrainQtyHits
     cmp #$20
@@ -1456,9 +1450,7 @@ LA1E7:
     lda FrameCount
     and #$1F
     bne LA216
-        lda SQ1SFXFlag
-        ora #sfxSQ1_OutOfHole
-        sta SQ1SFXFlag
+        jsr SFX_OutOfHole
     LA216:
     lda EndTimer
     ora EndTimer+1

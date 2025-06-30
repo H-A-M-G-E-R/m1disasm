@@ -1803,8 +1803,11 @@ SFX_MissileLaunch:
     lda #sfxNoise_MissileLaunch
 
 SFX_SetNoiseSFXFlag:
-    ldx #NoiseSFXFlag - NoiseSFXFlag.b
-    beq SFX_SetSoundFlag
+    cmp NoiseSFXFlag
+    bcc +
+    sta NoiseSFXFlag
+    +
+    rts
 
 SFX_OutOfHole:
     lda #sfxSQ1_OutOfHole
@@ -1838,8 +1841,11 @@ SFX_MissilePickup:
     lda #sfxSQ1_MissilePickup
 
 SFX_SetSQ1SFXFlag:
-    ldx #SQ1SFXFlag - NoiseSFXFlag.b
-    bne SFX_SetSoundFlag
+    cmp SQ1SFXFlag
+    bcc +
+    sta SQ1SFXFlag
+    +
+    rts
 
 SFX_WaveFire:
     lda #sfxSQ1_WaveFire
@@ -1874,11 +1880,10 @@ SFX_SamusDie:
     bne SFX_SetTriSFXFlag
 
 SFX_SetSQ2SFXFlag:
-    ldx #SQ2SFXFlag - NoiseSFXFlag.b
-
-SFX_SetSoundFlag:
-    ora NoiseSFXFlag,x
-    sta NoiseSFXFlag,x
+    cmp SQ2SFXFlag
+    bcc +
+    sta SQ2SFXFlag
+    +
     rts
 
 SFX_SamusBall:
@@ -1889,12 +1894,18 @@ SFX_Beep:
     lda #sfxTri_Beep
 
 SFX_SetTriSFXFlag:
-    ldx #TriSFXFlag - NoiseSFXFlag.b
-    bne SFX_SetSoundFlag
+    cmp TriSFXFlag
+    bcc +
+    sta TriSFXFlag
+    +
+    rts
 
 SFX_SetMultiSFXFlag:
-    ldx #MultiSFXFlag - NoiseSFXFlag.b
-    bne SFX_SetSoundFlag
+    cmp MultiSFXFlag
+    bcc +
+    sta MultiSFXFlag
+    +
+    rts
 
 ;Initiate music
 
@@ -4286,9 +4297,8 @@ LDA7C:
     lda ObjAnimIndex,x
     beq Lx128
     dec KraidStatueY-$60,x
-    lda TriSFXFlag
-    ora #sfxTri_StatueRaise
-    sta TriSFXFlag
+    lda #sfxTri_StatueRaise
+    jsr SFX_SetTriSFXFlag
 Lx128:
     lda #$00
     sta ObjAnimIndex,x
@@ -6727,9 +6737,7 @@ ProjectileHitDoor:
                 eor #$91
                 bne GotoSFX_Metal
             @hitByMissile:
-            lda TriSFXFlag
-            ora #sfxTri_SamusBall
-            sta TriSFXFlag
+            jsr SFX_SamusBall
         @blueDoor:
         lda #$04
         sta DoorIsHit,y
