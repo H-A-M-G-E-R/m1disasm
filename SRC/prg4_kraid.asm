@@ -86,8 +86,6 @@ L95CC:
     .byte $1D                       ;Kraid's room.
 AreaMusicFlag:
     .byte music_KraidArea           ;Kraid's hideout music init flag.
-AreaEnemyDamage:
-    .word $0200                     ;Base damage caused by area enemies.
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:
@@ -161,6 +159,26 @@ EnemyDeathAnimIndex:
 
 EnemyHitPointTbl:
     .byte $08, $08, $00, $FF, $02, $02, $00, $01, $60, $FF, $FF, $00, $00, $00, $00, $00
+
+; Base damage caused by area enemies.
+; Normal, tough
+EnemyDamageTbl:
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
+    .byte $20, $20
 
 EnemyRestingAnimIndex:
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl

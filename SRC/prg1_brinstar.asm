@@ -86,8 +86,6 @@ AreaRoutine: ; L95C3
     .byte $FF                       ;Not used.
 AreaMusicFlag:
     .byte music_Brinstar            ;Brinstar music init flag.
-AreaEnemyDamage:
-    .word $0080                     ;Base damage caused by area enemies.
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:
@@ -163,6 +161,26 @@ EnemyDeathAnimIndex:
 
 EnemyHitPointTbl:
     .byte $08, $08, $04, $FF, $02, $02, $04, $01, $20, $FF, $FF, $04, $01, $00, $00, $00
+
+; Base damage caused by area enemies.
+; Normal, tough
+EnemyDamageTbl:
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
+    .byte $08, $08
 
 ; ResetAnimIndex table for resting enemy
 EnemyRestingAnimIndex:

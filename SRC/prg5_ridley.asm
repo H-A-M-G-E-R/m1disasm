@@ -86,8 +86,6 @@ L95CC:
     .byte $12                       ;Ridley's room.
 AreaMusicFlag:
     .byte music_RidleyArea          ;Ridley hideout music init flag.
-AreaEnemyDamage:
-    .word $0240                     ;Base damage caused by area enemies.
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:
@@ -161,6 +159,26 @@ EnemyDeathAnimIndex:
 
 EnemyHitPointTbl:
     .byte $08, $08, $08, $08, $01, $01, $02, $01, $01, $8C, $FF, $FF, $08, $06, $FF, $00
+
+; Base damage caused by area enemies.
+; Normal, tough
+EnemyDamageTbl:
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
+    .byte $24, $24
 
 EnemyRestingAnimIndex:
     .byte EnAnim_1D - EnAnimTbl, EnAnim_1D - EnAnimTbl

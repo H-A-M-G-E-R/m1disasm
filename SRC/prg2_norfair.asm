@@ -86,8 +86,6 @@ L95CC:
     .byte $FF                       ;Not used.
 AreaMusicFlag:
     .byte music_Norfair             ;Norfair music init flag.
-AreaEnemyDamage:
-    .word $0100                     ;Base damage caused by area enemies.
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:
@@ -162,6 +160,26 @@ EnemyDeathAnimIndex:
 
 EnemyHitPointTbl:
     .byte $08, $08, $FF, $01, $01, $01, $02, $01, $01, $20, $FF, $FF, $08, $06, $FF, $00
+
+; Base damage caused by area enemies.
+; Normal, tough
+EnemyDamageTbl:
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
+    .byte $10, $10
 
 EnemyRestingAnimIndex:
     .byte EnAnim_22 - EnAnimTbl, EnAnim_22 - EnAnimTbl

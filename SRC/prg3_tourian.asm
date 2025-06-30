@@ -94,8 +94,6 @@ L95CC:
     .byte $FF                       ;Not used.
 AreaMusicFlag:
     .byte music_Tourian             ;Tourian music init flag.
-AreaEnemyDamage:
-    .word $0300                     ;Base damage caused by area enemies.
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:
@@ -171,6 +169,26 @@ EnemyDeathAnimIndex:
 
 EnemyHitPointTbl:
     .byte $FF, $FF, $01, $FF, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+
+; Base damage caused by area enemies.
+; Normal, tough
+EnemyDamageTbl:
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
+    .byte $30, $30
 
 EnemyRestingAnimIndex:
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl

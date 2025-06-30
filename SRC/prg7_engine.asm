@@ -8316,11 +8316,11 @@ Lx269:
 ; enemy fireball <--> samus detection
 Lx275:
     ; get samus coord data
-    ldx #$00
-    jsr GetObject0CoordData
-    ldy #$60
+    ldy #$00
+    jsr GetObject1CoordData
+    ldx #$60
     Lx276:
-        lda EnStatus,y
+        lda EnStatus,x
         beq Lx277
         cmp #$05
         beq Lx277
@@ -8331,12 +8331,15 @@ Lx275:
         jsr IsSamusDead
         beq Lx277
         
-        jsr DistFromObj0ToEn1
-        jsr Object1_F162
+        jsr DistFromEn0ToObj1
+        jsr Object0_F152
         jsr LF1FA
         jsr CollisionDetectionFireball_F2ED
     Lx277:
-        jsr Yplus16
+        txa
+        clc
+        adc #$10
+        tax
         cmp #$C0
         bne Lx276
 
@@ -8641,18 +8644,14 @@ Lx292:
 Lx293:
     rts
 
-LF2DF:
-    lda $10
-    ora EnData04,y
-    sta EnData04,y
-    rts
-
 LF2E8:
     jsr LF340
     bne Lx292
 CollisionDetectionFireball_F2ED:
     bcs RTS_X294
-    jsr LF2DF
+    lda $10
+    ora EnData04,x
+    sta EnData04,x
     tya
     pha
     jsr IsScrewAttackActive         ;($CD9C)Check if screw attack active.
@@ -8662,13 +8661,32 @@ CollisionDetectionFireball_F2ED:
     lda #$80
     sta SamusHurt010F
     jsr LF332
-    jsr LF270
+    jsr LF27B
 LF306:
     ; apply enemy base damage
-    lda AreaEnemyDamage
+    txa
+    pha
+
+    lda EnSpecialAttribs,x
+    php
+    ; X = EnType * 2
+    lda EnType,x
+    asl
+    tax
+    ; increment X if enemy is tough
+    plp
+    bpl +
+    inx
+    +
+    lda EnemyDamageTbl,x
+    jsr Amul16
     sta HealthChange
-    lda AreaEnemyDamage+1
+    lda EnemyDamageTbl,x
+    jsr Adiv16
     sta HealthChange+1.b
+
+    pla
+    tax
 RTS_X294:
     rts
 
