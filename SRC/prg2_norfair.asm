@@ -25,16 +25,6 @@
 
 .include "areas_common.asm"
 
-;------------------------------------------[ Graphics data ]-----------------------------------------
-
-;Norfair enemy tile patterns.
-GFX_NorfairSprites:
-    .incbin "norfair/sprite_tiles.chr"
-
-;Tourian enemy tile patterns.
-GFX_TourianSprites:
-    .incbin "tourian/sprite_tiles.chr"
-
 ;----------------------------------------------------------------------------------------------------
 
 PalPntrTbl:
@@ -658,6 +648,14 @@ GFX_NorfBG1:
 
 GFX_NorfBG2:
     .incbin "norfair/bg_chr_2.chr" ; A950 - Norfair BG CHR data
+
+;Norfair enemy tile patterns.
+GFX_NorfairSprites:
+    .incbin "norfair/sprite_tiles.chr"
+
+;Tourian enemy tile patterns.
+GFX_TourianSprites:
+    .incbin "tourian/sprite_tiles.chr"
 
 .ENDS
 

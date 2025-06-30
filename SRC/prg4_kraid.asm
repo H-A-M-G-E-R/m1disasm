@@ -25,18 +25,6 @@
 
 .include "areas_common.asm"
 
-;------------------------------------------[ Graphics data ]-----------------------------------------
-
-;Samus end tile patterns.
-GFX_EndingSprites:
-    .incbin "ending/sprite_tiles.chr"
-
-;Unused tile patterns (needed so the Palette Pointer Table, etc. below are properly aligned)
-    .incbin "kraid/unused_tiles.chr"
-
-GFX_KraiBG3:
-    .incbin "kraid/bg_chr_3.chr" ; 9360 - Misc Kraid BG CHR
-
 ;----------------------------------------------------------------------------------------------------
 
 PalPntrTbl:
@@ -730,6 +718,13 @@ TileBlastFrame10:
 
 GFX_KraiBG2:
     .incbin "kraid/bg_chr_2.chr" ; B330 - More Kraid BG CHR
+
+;Samus end tile patterns.
+GFX_EndingSprites:
+    .incbin "ending/sprite_tiles.chr"
+
+GFX_KraiBG3:
+    .incbin "kraid/bg_chr_3.chr" ; 9360 - Misc Kraid BG CHR
 
 .ENDS
 
