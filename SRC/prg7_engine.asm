@@ -6755,11 +6755,13 @@ ProjectileHitDoor:
     tax
     inc Statue0366,x
 
-BulletHitMissileDoor:
-    jsr SFX_Metal
 ClcExit:
     clc
     rts
+
+BulletHitMissileDoor:
+    jsr SFX_Metal
+    jmp ClcExit
 
 ObjectCheckMoveLeft:
     ldx PageIndex
