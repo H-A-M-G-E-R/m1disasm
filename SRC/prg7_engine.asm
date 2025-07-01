@@ -6735,10 +6735,10 @@ ProjectileHitDoor:
             beq @hitByMissile
                 lda ObjAction,x
                 eor #wa_BulletExplode
-                bne GotoSFX_Metal
+                bne BulletHitMissileDoor
                 lda ObjAnimResetIndex,x
                 eor #$91
-                bne GotoSFX_Metal
+                bne BulletHitMissileDoor
             @hitByMissile:
             jsr SFX_SamusBall
         @blueDoor:
@@ -6755,12 +6755,11 @@ ProjectileHitDoor:
     tax
     inc Statue0366,x
 
+BulletHitMissileDoor:
+    jsr SFX_Metal
 ClcExit:
     clc
     rts
-
-GotoSFX_Metal:
-    jmp SFX_Metal
 
 ObjectCheckMoveLeft:
     ldx PageIndex
