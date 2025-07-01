@@ -1911,7 +1911,7 @@ SFX_SetMultiSFXFlag:
 
 SilenceMusic:
     lda #$00
-    bne SetCurrentMusic
+    beq SetCurrentMusic
 
 PowerUpMusic:
     lda #music_PowerUp
