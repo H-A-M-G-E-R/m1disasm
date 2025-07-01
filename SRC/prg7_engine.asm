@@ -1329,7 +1329,7 @@ SamusInit:
     lda PPUCTRL_ZP                  ;
     and #$01                        ;Set Samus' name table position to current name table-->
     sta ObjHi                       ;active in PPU.
-    lda #$90                        ;
+    lda #$99                        ;
     sta Health                      ;Starting health is-->
     lda TankCount                   ;full...
     jsr Amul16                      ;
