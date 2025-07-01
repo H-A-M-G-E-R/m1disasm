@@ -60,7 +60,7 @@ PalPntrTbl:
 AreaPointers:
     .word SpecItmsTbl               ;($A20D)Beginning of special items table.
     .word RmPtrTbl                  ;($A17F)Beginning of room pointer table.
-    .word StrctPtrTbl               ;($A1D3)Beginning of structure pointer table.
+    .word $0000                     ;($A1D3)Was beginning of structure pointer table.
     .word MacroDefs                 ;($AB23)Beginning of macro definitions.
     .word EnFramePtrTable1          ;($9BF0)Address table into enemy animation data. Two-->
     .word EnFramePtrTable2          ;($9CF0)tables needed to accommodate all entries.
@@ -599,12 +599,6 @@ TileBlastFrame10:
 
 .include "ridley/palettes.asm"
 
-;----------------------------[ Room and structure pointer tables ]-----------------------------------
-
-.include "ridley/room_ptrs.asm"
-
-.include "ridley/structure_ptrs.asm"
-
 ;-----------------------------------[ Special items table ]-----------------------------------------
 
 .include "ridley/items.asm"
@@ -612,10 +606,6 @@ TileBlastFrame10:
 ;-----------------------------------------[ Room definitions ]---------------------------------------
 
 .include "ridley/rooms.asm"
-
-;---------------------------------------[ Structure definitions ]------------------------------------
-
-.include "ridley/structures.asm"
 
 ;----------------------------------------[ Macro definitions ]---------------------------------------
 

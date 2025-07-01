@@ -60,7 +60,7 @@ PalPntrTbl:
 AreaPointers:
     .word SpecItmsTbl               ;($A83B)Beginning of special items table.
     .word RmPtrTbl                  ;($A7D1)Beginning of room pointer table.
-    .word StrctPtrTbl               ;($A7FB)Beginning of structure pointer table.
+    .word $0000                     ;($A7FB)Was beginning of structure pointer table.
     .word MacroDefs                 ;($AE49)Beginning of macro definitions.
     .word EnFramePtrTable1          ;($A42C)Address table into enemy animation data. Two-->
     .word EnFramePtrTable2          ;($A52C)tables needed to accommodate all entries.
@@ -1753,12 +1753,6 @@ TileBlastFrame10:
 
 .include "tourian/palettes.asm"
 
-;----------------------------[ Room and structure pointer tables ]-----------------------------------
-
-.include "tourian/room_ptrs.asm"
-
-.include "tourian/structure_ptrs.asm"
-
 ;------------------------------------[ Special items table ]-----------------------------------------
 
 .include "tourian/items.asm"
@@ -1766,10 +1760,6 @@ TileBlastFrame10:
 ;-----------------------------------------[ Room definitions ]---------------------------------------
 
 .include "tourian/rooms.asm"
-
-;---------------------------------------[ Structure definitions ]------------------------------------
-
-.include "tourian/structures.asm"
 
 ;----------------------------------------[ Macro definitions ]---------------------------------------
 

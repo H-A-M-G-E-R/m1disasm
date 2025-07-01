@@ -60,7 +60,7 @@ PalPntrTbl:
 AreaPointers:
     .word SpecItmsTbl               ;($A3D6)Beginning of special items table.
     .word RmPtrTbl                  ;($A314)Beginning of room pointer table.
-    .word StrctPtrTbl               ;($A372)Beginning of structure pointer table.
+    .word $0000                     ;($A372)Was beginning of structure pointer table.
     .word MacroDefs                 ;($AEF0)Beginning of macro definitions.
     .word EnFramePtrTable1          ;($9DE0)Pointer table into enemy animation data. Two-->
     .word EnFramePtrTable2          ;($9EE0)tables needed to accommodate all entries.
@@ -848,12 +848,6 @@ TileBlastFrame10:
 
 .include "brinstar/palettes.asm"
 
-;----------------------------[ Room and structure pointer tables ]-----------------------------------
-
-.include "brinstar/room_ptrs.asm"
-
-.include "brinstar/structure_ptrs.asm"
-
 ;------------------------------------[ Special items table ]-----------------------------------------
 
 .include "brinstar/items.asm"
@@ -861,10 +855,6 @@ TileBlastFrame10:
 ;-----------------------------------------[ Room definitions ]---------------------------------------
 
 .include "brinstar/rooms.asm"
-
-;---------------------------------------[ Structure definitions ]------------------------------------
-
-.include "brinstar/structures.asm"
 
 ;----------------------------------------[ Macro definitions ]---------------------------------------
 

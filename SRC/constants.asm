@@ -932,6 +932,7 @@ IntroSprYDir           = $6EAF   ;MSB set=decrease sprite y pos, else increase s
 ;----------------------------------------------------------------------------------------------------
 
 ;WorldMapRAM            = $7000   ;Not used in this mod. Vanilla: Thru $73FF. The map is 1Kb in size (1024 bytes).
+DecompressedRoomBuffer = $7000   ;$7000-$7130+
 
 MetroidRepelSpeed      = $77F0   ;$77F0 for negative, $77F1 for positive
 MetroidAccel           = $77F2   ;$77F2-$77F3 for red metroid, $77F4-$77F5 for green metroid
