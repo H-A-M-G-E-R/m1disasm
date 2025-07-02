@@ -8052,11 +8052,10 @@ Lx269:
     LF09F:
         ; check next enemy if enemy slot is empty
         lda EnStatus,x
-        beq Lx270
-            ; check next enemy if enemy is currently exploding
-            cmp #enemyStatus_Explode
-        Lx270:
         beq NextEnemy      ; next slot
+        ; check next enemy if enemy is currently exploding
+        cmp #enemyStatus_Explode
+        beq NextEnemy
         
         ; skip projectile collision if enemy is a pickup
         jsr Object0_F152
@@ -8085,10 +8084,14 @@ Lx269:
             jsr Yplus16          ; next projectile slot
             bne Lx271
     Lx274:
-        ; check next enemy if samus has i-frames
         ldy #$00
+        ; check next enemy if samus has i-frames, unless it's a pickup (fix added by me)
+        lda EnStatus,x
+        cmp #enemyStatus_Pickup
+        beq +
         lda SamusBlink
         bne NextEnemy
+        +
         ; check next enemy if samus is dead
         jsr IsSamusDead
         beq NextEnemy
