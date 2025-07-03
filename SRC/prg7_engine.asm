@@ -172,6 +172,7 @@ MainLoop:
     jsr UpdateTimer
     ;($C114)Go to main routine for updating game.
     jsr GoMainRoutine
+    jsr Rainbow
     ;Increment frame counter.
     inc FrameCount
     
@@ -188,6 +189,26 @@ WaitNMIEnd:
     jsr RandomNumbers
     ;($C0BC)Jump to top of subroutine.
     jmp MainLoop
+
+Rainbow:
+    lda FrameCount
+    and #$07
+    bne @RTS
+    ldx #$1F
+    @loop:
+        ldy PalRam,x
+        lda RainbowColorTbl,y
+        sta PalRam,x
+        dex
+        bpl @loop
+@RTS:
+    rts
+
+RainbowColorTbl:
+    .byte $00,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$01,$0D,$0E,$0F
+    .byte $10,$12,$13,$14,$15,$16,$17,$18,$19,$1A,$1B,$1C,$11,$1D,$1E,$1F
+    .byte $20,$22,$23,$24,$25,$26,$27,$28,$29,$2A,$2B,$2C,$21,$2D,$2E,$2F
+    .byte $30,$32,$33,$34,$35,$36,$37,$38,$39,$3A,$3B,$3C,$31,$3D,$3E,$3F
 
 ;-------------------------------------[ Non-Maskable Interrupt ]-------------------------------------
 
