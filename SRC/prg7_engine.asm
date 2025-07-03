@@ -1180,11 +1180,11 @@ MoreInit:
     txa                             ;A=0.
 
     LC830:
-        cpx #$65                        ;Check to see if more RAM to clear in $7A thru $DE.
+        cpx #(SoundE0-1)-SpareMem7A.b   ;Check to see if more RAM to clear in $7A thru $DE. (should clear $DF, off-by-one bug?)
         bcs LC836                           ;
-            sta $7A,x                       ;Clear RAM $7A thru $DE.
+            sta SpareMem7A.b,x              ;Clear RAM $7A thru $DE.
         LC836:
-        cpx #$FF                        ;Check to see if more RAM to clear in $300 thru $3FE.
+        cpx #$FF                        ;Check to see if more RAM to clear in $300 thru $3FE. (off-by-one bug)
         bcs LC83D                           ;
             sta ObjAction,x                 ;Clear RAM $300 thru $3FE.
         LC83D:
@@ -1313,8 +1313,8 @@ SamusInit:
     stx Mem0738
     stx EndTimer                    ;Set end timer bytes to #$FF as-->
     stx EndTimer+1.w                  ;escape timer not currently active.
-    stx $8B
-    stx $8E
+    stx RinkaSpawnerStatus
+    stx RinkaSpawnerStatus+3.b
     ldy #$27
     lda AreaScrollDir
     sta ScrollDir
@@ -2259,7 +2259,7 @@ CheckHealthStatus: ;($CDFA)
     and #$20
     ;If not, branch to check if still blinking from recent hit.
     beq Lx006
-        ;Samus has been hit. Set blink for 32 frames.
+        ;Samus has been hit. Set blink for 50 frames.
         lda #$32
         sta SamusBlink
         ; default to no knockback
@@ -2681,13 +2681,13 @@ RTS_X028:
 ; Table used by above subroutine
 
 Table06:
-    .byte $0C
-    .byte $0C
-    .byte $0C
+    .byte ObjAnim_0C - ObjectAnimIndexTbl
+    .byte ObjAnim_0C - ObjectAnimIndexTbl
+    .byte ObjAnim_0C - ObjectAnimIndexTbl
 Table04:
-    .byte $35
-    .byte $35
-    .byte $35
+    .byte ObjAnim_35 - ObjectAnimIndexTbl
+    .byte ObjAnim_35 - ObjectAnimIndexTbl
+    .byte ObjAnim_35 - ObjectAnimIndexTbl
 
 LD09C:
     lda Joy1Status
@@ -3047,10 +3047,10 @@ Lx044:
 ; Table used by above subroutine
 
 Table09:
-    .byte $26, $26
-    .byte $34, $34
-    .byte $01, $FF
-    .byte $EC, $F0
+    .byte ObjAnim_26 - ObjectAnimIndexTbl, ObjAnim_26 - ObjectAnimIndexTbl
+    .byte ObjAnim_34 - ObjectAnimIndexTbl, ObjAnim_34 - ObjectAnimIndexTbl
+    .byte  $01, -$01
+    .byte -$14, -$10
 
 InitBullet:
     tya
@@ -3627,9 +3627,9 @@ BombCountdown:
     dec ProjectileDieDelay,x
     bne Lx085
     ; countdown is over, time to explode
-    lda #$37
+    lda #ObjAnim_37 - ObjectAnimIndexTbl.b ; ?
     ldy ObjAction,x
-    cpy #$09
+    cpy #wa_BombCount
     bne Lx084
         lda #ObjAnim_BombExplode - ObjectAnimIndexTbl.b
     Lx084:
@@ -3935,10 +3935,10 @@ ElevatorMove:
     @endIf_A:
     cmp #$83
     ; move until Y coord = $83
-    bne Lx105
+    bne @endIf_D
         ; increment elevator routine to ElevatorScrollY
         inc ObjAction,x
-    Lx105:
+    @endIf_D:
     jmp DrawElevator
 
 ElevatorScrollY:
@@ -4117,11 +4117,11 @@ ElevatorStop:
     sta ObjAction,x
     ; switch elevator direction
     lda ElevatorType-$20,x
-    eor #$80        
+    eor #$80
     sta ElevatorType-$20,x
-    ; branch if elevator is now going up
+    ; branch if elevator is now on the lower floor
     bmi Lx115
-        ; elevator is now going down
+        ; elevator is now on the upper floor
         ; toggle scrolling to horizontal
         jsr ToggleScroll
         sta MirrorCntrl
@@ -7520,7 +7520,6 @@ Lx237:
     jmp EnemyLoop   ; do next room object
 
 ZebHole:
-LEC57:
     ldx #$20
     Lx238:
         txa
@@ -7555,71 +7554,75 @@ Lx239:
     bne Lx237
 
 OnNameTable0:
-LEC93:
     lda PPUCTRL_ZP                   ;
     eor #$01                        ;If currently on name table 0,-->
     and #$01                        ;return #$01. Else return #$00.
     tay                             ;
     rts
 
+; Despawn offscreen room sprites to make room for new room sprites.
 UpdateRoomSpriteInfo:
-LEC9B:
     ldx ScrollDir
     dex
     ldy #$00
     jsr UpdateDoorData              ;($ED51)Update name table 0 door data.
     iny
     jsr UpdateDoorData              ;($ED51)Update name table 3 door data.
+    ; If the enemy is in the opposite nametable and is offscreen, delete it.
     ldx #$50
     jsr GetNameTable                ;($EB85)
     tay
-    Lx240:
+    @loop_enemies:
         tya
         eor EnHi,x
         lsr
-        bcs Lx241
+        bcs @dontDeleteEnemy
         lda EnData05,x
         and #$02
-        bne Lx241
+        bne @dontDeleteEnemy
         sta EnStatus,x
-    Lx241:
+    @dontDeleteEnemy:
         jsr Xminus16
-        bpl Lx240
+        bpl @loop_enemies
+    ; same thing with mellows
     ldx #$18
-    Lx242:
+    @loop_mellows:
         tya
         eor MellowHi,x
         lsr
-        bcs Lx243
+        bcs @dontDeleteMellow
             lda #$00
             sta MellowStatus,x
-        Lx243:
+        @dontDeleteMellow:
         txa
         sec
         sbc #$08
         tax
-        bpl Lx242
+        bpl @loop_mellows
+    ; doors
     jsr LED65
     jsr LED5B
     jsr GetNameTable                ;(EB85)
     asl
     asl
     tay
+    ; tile blasts
     ldx #$C0
-    Lx244:
+    @loop_tileBlasts:
         tya
         eor TileBlastWRAMPtr+1,x
         and #$04
-        bne Lx245
+        bne @dontDeleteTileBlast
             sta TileBlastRoutine,x
-        Lx245:
+        @dontDeleteTileBlast:
         jsr Xminus16
         cmp #$F0
-        bne Lx244
+        bne @loop_tileBlasts
     tya
     lsr
     lsr
     tay
+    ; non-beam projectiles
     ldx #$D0
     jsr LED7A
     ldx #$E0
@@ -7627,11 +7630,13 @@ LEC9B:
     ldx #$F0
     jsr LED7A
     tya
+    ; elevator
     sec
     sbc ObjHi+$20
     bne Lx246
         sta ElevatorStatus
     Lx246:
+    ; unused RAM $0700-$0723
     ldx #$1E
     Lx247:
         lda $0704,x
@@ -7644,11 +7649,13 @@ LEC9B:
         sbc #$06
         tax
         bpl Lx247
-    cpy $036C
+    ; statues
+    cpy StatueHi
     bne Lx249
         lda #$00
-        sta $0360
+        sta StatueStatus
     Lx249:
+    ; zeb holes
     ldx #$18
     Lx250:
         tya
@@ -7662,10 +7669,12 @@ LEC9B:
         sbc #$08
         tax
         bpl Lx250
+    ; power-ups
     ldx #$00
     jsr LED8C
     ldx #$08
     jsr LED8C
+    ; tourian stuff
     jmp GotoL9C6F
 
 UpdateDoorData:
@@ -7697,7 +7706,7 @@ LED65:
 
 LED7A:
     lda ObjAction,x
-    cmp #$05
+    cmp #wa_BulletExplode+1.b
     bcc RTS_X254
     tya
     eor ObjHi,x
@@ -8027,7 +8036,7 @@ CollisionDetection:
         tax
         bpl Lx261
 
-; doors <--> bullet/missile/bomb detection
+; doors <--> samus detection
     ldx #$B0
     Lx267:
         ; check next door if this door is not closed
