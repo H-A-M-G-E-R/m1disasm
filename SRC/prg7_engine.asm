@@ -1356,8 +1356,8 @@ DestroyEnemies: ; LC8BB
 ; Code that sets up Samus, when the game is first started.
 
 SamusInit:
-    ;SamusIntro will be executed next frame.
-    lda #_id_SamusIntro.b
+    ;GameEngine will be executed next frame.
+    lda #_id_GameEngine.b
     sta MainRoutine
     .if BUILDTARGET == "NES_NTSC"
         ;440 frames to fade in Samus(7.3 seconds).
@@ -1367,8 +1367,10 @@ SamusInit:
     .endif
     sta Timer3
     jsr IntroMusic                  ;($CBFD)Start the intro music.
-    ldy #sa_FadeIn0                 ;
+    ldy #sa_FadeIn                  ;
     sty ObjAction                   ;Set Samus status as fading onto screen.
+    lda #20
+    sta ObjectCounter
     ldx #$00
     stx SamusBlink
     dex                             ;X = $FF
@@ -1542,8 +1544,7 @@ GoPassword:
 ;-----------------------------------------[ Samus intro ]--------------------------------------------
 
 SamusIntro:
-    jsr EraseAllSprites             ;($C1A3)Clear all sprites off screen.
-    ldy ObjAction                   ;Load Samus' fade in status.
+    ldy ObjectCounter               ;Load Samus' fade in status.
     lda Timer3                      ;
     bne LC9F2                           ;Branch if Intro still playing.
         ;Fade in complete.
@@ -1552,15 +1553,13 @@ SamusIntro:
         sta ObjAction                   ;
         jsr StartMusic                  ;($D92C)Start main music.
         jsr SelectSamusPal              ;($CB73)Select proper Samus palette.
-        lda #_id_GameEngine.b
-        sta MainRoutine                 ;Game engine will be called next frame.
     ;Still fading in.
     LC9F2:
     cmp #$1F                        ;When 310 frames left of intro, display Samus.
     bcs Exit14                      ;Branch if not time to start drawing Samus.
     cmp SamusFadeInTimeTbl-20,y     ;sa_FadeIn0 is beginning of table.
     bne LCA00                           ;Every time Timer3 equals one of the entries in the table-->
-        inc ObjAction                   ;below, change the palette used to color Samus.
+        inc ObjectCounter               ;below, change the palette used to color Samus.
         tya                             ;
         jsr WriteAreaPal                ;
     LCA00:
@@ -1569,10 +1568,8 @@ SamusIntro:
     bcc Exit14                      ;Only display Samus on odd frames [the blink effect].
     lda #ObjAnim_04 - ObjectAnimIndexTbl.b              ;Samus front animation is animation to display.-->
     jsr SetSamusAnim                ;($CF6B)while fading in.
-    lda #$00                        ;
-    sta SpritePagePos               ;Samus sprites start at Sprite00RAM.
-    sta PageIndex                   ;Samus RAM is first set of RAM.
-    jmp AnimDrawObject              ;($DE47)Draw Samus on screen.
+    lda #$01
+    jmp SetSamusData
 
 ;The following table marks the time remaining in Timer3 when a palette change should occur during
 ;the Samus fade-in sequence. This creates the fade-in effect.
@@ -2029,6 +2026,7 @@ GoSamusHandler: ;($CC1A)
         .word SamusDead                 ;($D41A)Dead.
         .word SamusDead2                ;($D41F)More dead.
         .word SamusElevator             ;($D423)Samus on elevator.
+        .word SamusIntro                ;Samus fade in.
 
 ;---------------------------------------[ Samus standing ]-------------------------------------------
 
@@ -2430,6 +2428,8 @@ IsSamusDead:
     beq Exit3
     ;Samus not dead. Clear zero flag.
     cmp #$FF
+    beq Exit3
+    cmp #sa_FadeIn
 Exit3:
     rts                             ;Exit for routines above and below.
 
