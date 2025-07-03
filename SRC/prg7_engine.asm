@@ -216,7 +216,9 @@ NMI:
     sta OAMDMA
     ;Skip if the frame couldn't finish in time.
     lda NMIStatus
-    bne LC103
+    beq +
+        jmp LC103
+    +
         ;Branch if mode=Play.
         lda GameMode
         beq LC0F4
@@ -232,22 +234,85 @@ NMI:
         sta PPUCTRL_ZP
         ;Store control bits in PPU.
         sta PPUCTRL
-        ;PPU address = $3F00 (color 0).
+        ;PPU address = $3F11 (color $11).
         lda #$3F
         sta PPUADDR
+        lda #$11
+        sta PPUADDR
+
+        ;Write sprite palettes to PPU.
+        lda PalRam+$11
+        sta PPUDATA
+        lda PalRam+$12
+        sta PPUDATA
+        lda PalRam+$13
+        sta PPUDATA
+
+        sta PPUDATA
+        lda PalRam+$15
+        sta PPUDATA
+        lda PalRam+$16
+        sta PPUDATA
+        lda PalRam+$17
+        sta PPUDATA
+
+        sta PPUDATA
+        lda PalRam+$19
+        sta PPUDATA
+        lda PalRam+$1A
+        sta PPUDATA
+        lda PalRam+$1B
+        sta PPUDATA
+
+        sta PPUDATA
+        lda PalRam+$1D
+        sta PPUDATA
+        lda PalRam+$1E
+        sta PPUDATA
+        lda PalRam+$1F
+        sta PPUDATA
+
+        ;Write backdrop color to PPU.
+        lda PalRam+0
+        sta PPUDATA
+
+        ;Write BG palettes to PPU.
+        lda PalRam+1
+        sta PPUDATA
+        lda PalRam+2
+        sta PPUDATA
+        lda PalRam+3
+        sta PPUDATA
+
+        sta PPUDATA
+        lda PalRam+5
+        sta PPUDATA
+        lda PalRam+6
+        sta PPUDATA
+        lda PalRam+7
+        sta PPUDATA
+
+        sta PPUDATA
+        lda PalRam+9
+        sta PPUDATA
+        lda PalRam+$A
+        sta PPUDATA
+        lda PalRam+$B
+        sta PPUDATA
+
+        sta PPUDATA
+        lda PalRam+$D
+        sta PPUDATA
+        lda PalRam+$E
+        sta PPUDATA
+        lda PalRam+$F
+        sta PPUDATA
+
+        ;Workaround for palette corruption bug (https://www.nesdev.org/wiki/PPU_registers#Palette_corruption).
         lda #$00
         sta PPUADDR
-        tax
-        -
-            ;Write $20 colors to PPU.
-            lda PalRam,x
-            sta PPUDATA
-            inx
-            lda PalRam,x
-            sta PPUDATA
-            inx
-            cpx #$20
-            bne -
+        sta PPUADDR
+
         ;($C2CA)check if data needs to be written to PPU.
         jsr CheckPPUWrite
         ;($C44D)Update $2000 & $2001.
