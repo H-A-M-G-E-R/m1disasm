@@ -8065,6 +8065,7 @@ CollisionDetection:
         jsr IsSamusDead
         beq Lx262
         lda SamusBlink
+        ora DoorEntryStatus
         bne Lx262
         ldy #$00
         jsr CollisionDetectionMellow_F149
@@ -8159,11 +8160,12 @@ Lx269:
             bne Lx271
     Lx274:
         ldy #$00
-        ; check next enemy if samus has i-frames, unless it's a pickup (fix added by me)
+        ; check next enemy if samus has i-frames or in door, unless it's a pickup (fix added by me)
         lda EnStatus,x
         cmp #enemyStatus_Pickup
         beq +
         lda SamusBlink
+        ora DoorEntryStatus
         bne NextEnemy
         +
         ; check next enemy if samus is dead
@@ -8188,8 +8190,9 @@ Lx275:
         beq Lx277
         cmp #$05
         beq Lx277
-        ; check next fireball if samus has i-frames
+        ; check next fireball if samus has i-frames or in door
         lda SamusBlink
+        ora DoorEntryStatus
         bne Lx277
         ; check next fireball if samus is dead
         jsr IsSamusDead
