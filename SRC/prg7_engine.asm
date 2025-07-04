@@ -313,6 +313,8 @@ NMI:
         sta PPUADDR
         sta PPUADDR
 
+        ;Check if attribute table needs to be updated while scrolling.
+        jsr UpdateAttrTable
         ;($C2CA)check if data needs to be written to PPU.
         jsr CheckPPUWrite
         ;($C44D)Update $2000 & $2001.
@@ -1274,15 +1276,9 @@ MoreInit:
 
     lda AreaPalToggle               ; Get ??? Something to do with palette switch
     sta PalToggle
-    lda #$FF
-    sta RoomNumber                  ;Room number = $FF(undefined room).
     jsr CopyAreaPointers    ; copy pointers from ROM to RAM
     jsr GetRoomNum                  ;($E720)Put room number at current map pos in $5A.
-    LC86F:
-        jsr SetupRoom                   ;($EA2B)
-        ldy RoomNumber  ; load room number
-        iny
-        bne LC86F
+    jsr SetupRoom                   ;($EA2B)
 
     ldy CartRAMPtr+1.b
     sty $01
@@ -6286,16 +6282,16 @@ RTS_X173:
 CheckUpdateNameTable:
     jsr SetupRoom
     ; return if new room loaded
-    ldx RoomNumber
-    inx
-    bne RTS_X173
+    bcc RTS_X173
 
     lda ScrollDir
     and #$02
     bne @horizontal
-        jmp CheckUpdateNameTableVertical
+        jsr CheckUpdateNameTableVertical
+        jmp CheckUpdateAttrTableVertical
     @horizontal:
-    jmp CheckUpdateNameTableHorizontal
+    jsr CheckUpdateNameTableHorizontal
+    jmp CheckUpdateAttrTableHorizontal
 
 Table11:
     .byte $07
@@ -6313,8 +6309,7 @@ WRAMAddrs:
 
 GetNameAddrs:
     jsr GetNameTable                ;($EB85)Get current name table number.
-    and #$01                        ;Update name table 0 or 3.
-    tay                             ;
+    tay                             ;Update name table 0 or 3.
     lda PPUAddrs,y                  ;Get high PPU addr of nametable(dest).
     ldx WRAMAddrs,y                 ;Get high cart RAM addr of nametable(src).
     rts
@@ -6355,8 +6350,6 @@ UpdateNameTable:
     txa
     ora $01
     sta $01
-    lda $00
-    sta $02
     lda ScrollDir
     lsr             ; A = 0 if vertical scrolling, 1 if horizontal
     tax
@@ -6369,7 +6362,7 @@ UpdateNameTable:
     ; PPU starting address = $03.02
     lda $03
     jsr WritePPUByte                ;($C36B)Put data byte into PPUDataString.
-    lda $02
+    lda $00
     jsr WritePPUByte
     ; Control byte = $04
     lda $04
@@ -6395,42 +6388,150 @@ Table01:
     .byte $20                       ;Horizontal write. PPU inc = 1, length = 32 tiles.
     .byte $9E                       ;Vertical write... PPU inc = 32, length = 30 tiles.
 
-;---------------------------------[Write PPU attribute table data ]----------------------------------
+CheckUpdateAttrTableHorizontal:
+    ; Avoid redundant name table updates by checking if ScrollDir = TempScrollDir.
+    ldx ScrollDir
+    cpx TempScrollDir
+    bne +
+    lda ScrollX
+    and #$1F
+    cmp UpdateAttrTableCheckTbl-2,x
+    bne +
+FlagUpdateAttrTableHorizontal:
+    lda ScrollX
+    jsr Adiv32
+    ora #$C0
+    sta AttrTableUpdatePending
+--
+    jsr GetNameTable
+    sta AttrTableUpdateNameTable
++
+-
+    rts
 
-WritePPUAttribTbl:
-    ldx #$C0                        ;Low byte of First row of attribute table.
-    lda RoomNumber                  ;
-    cmp #$F2                        ;Is this the second pass through the routine?-->
-    beq LE5EC                       ;If so, branch.
-        ldx #$E0                        ;Low byte of second row of attribute table.
-    LE5EC:
-    stx $00                         ;$0000=RoomRAM atrrib table starting address.
-    stx $02                         ;$0002=PPU attrib table starting address.
-    jsr GetNameAddrs                ;($E564)Get name table addr and corresponding RoomRAM addr.
-    ora #$03                        ;#$23 for attrib table 0, #$2F for attrib table 3.
-    sta $03                         ;Store results.
-    txa                             ;move high byte of RoomRAM to A.
-    ora #$03                        ;#$63 for RoomRAMA, #$67 for RoomRAMB(Attrib tables).
-    sta $01                         ;Store results.
-    lda #$01                        ;
-    sta PPUDataPending              ;Data pending = YES.
-    ldx PPUStrIndex                 ;Load current index into PPU strng to append data.
-    lda $03                         ;Store high byte of starting address(attrib table).
-    jsr WritePPUByte                ;($C36B)Put data byte into PPUDataString.
-    lda $02                         ;Store low byte of starting address(attrib table).
-    jsr WritePPUByte                ;($C36B)Put data byte into PPUDataString.
-    lda #$20                        ;Length of data to write(1 row of attrib data).
-    sta $04                         ;
-    jsr WritePPUByte                ;($C36B)Write control byte. Horizontal write.
-    ldy #$00                        ;Reset index into data string.
-    LE616:
-        lda ($00),y                     ;Get data byte.
-        jsr WritePPUByte                ;($C36B)Put data byte into PPUDataString.
-        iny                             ;Increment to next attrib data byte.
-        dec $04                         ;
-        bne LE616                           ;Loop until all attrib data loaded into PPU.
-    stx PPUStrIndex                 ;Store updated PPU string index.
-    jsr EndPPUString                ;($C376)Append end marker(#$00) and exit writing routines.
+CheckUpdateAttrTableVertical:
+; Avoid redundant name table updates by checking if ScrollDir = TempScrollDir.
+    ldx ScrollDir
+    cpx TempScrollDir
+    bne -
+    lda ScrollY
+    cmp #SCRN_VY-1.b
+    beq FlagUpdateAttrTableVertical
+    and #$1F
+    cmp UpdateAttrTableCheckTbl,x
+    bne -
+FlagUpdateAttrTableVertical:
+    lda ScrollY
+    lsr
+    lsr
+    and #$F8
+    ora #$40
+    sta AttrTableUpdatePending
+    bne --
+
+UpdateAttrTableCheckTbl:
+    .byte $1F,$00
+
+UpdateAttrTable:
+    lda AttrTableUpdatePending
+    beq -
+    bpl @vertical
+    ; $02.$00 = PPU attr byte addr
+    sta $00
+    ldy AttrTableUpdateNameTable
+    lda @PPUAddrs,y
+    sta $02
+    ; $01 = cart RAM attr byte addr high
+    lda @WRAMAddrs,y
+    sta $01
+
+    ; PPU increment = 32.
+    lda PPUCTRL_ZP
+    ora #$04
+    sta PPUCTRL_ZP
+    ; Store control bits in PPU.
+    sta PPUCTRL
+
+    lda #$00
+    sta AttrTableUpdatePending
+    clc
+    @loop_horizontal:
+        ; PPU address = $02.$00.
+        lda $02
+        sta PPUADDR
+        lda $00
+        sta PPUADDR
+
+        ldy #$00
+        lda ($00),y
+        sta PPUDATA
+        ldy #$20
+        lda ($00),y
+        sta PPUDATA
+
+        ; increment addresses by 1 32px row
+        lda $00
+        adc #$08
+        sta $00
+        cmp #$E0
+        bcc @loop_horizontal
+
+    rts
+
+    @vertical:
+    ora #$80
+    sta $00
+    ldy AttrTableUpdateNameTable
+    lda @WRAMAddrs,y
+    sta $01
+
+    ; PPU increment = 1.
+    lda PPUCTRL_ZP
+    and #$FB
+    sta PPUCTRL_ZP
+    sta PPUCTRL
+
+    lda @PPUAddrs,y
+    sta PPUADDR
+    lda $00
+    sta PPUADDR
+
+    ldy #$00
+    sty AttrTableUpdatePending
+
+    lda ($00),y
+    sta PPUDATA
+    iny
+    lda ($00),y
+    sta PPUDATA
+    iny
+    lda ($00),y
+    sta PPUDATA
+    iny
+    lda ($00),y
+    sta PPUDATA
+    iny
+    lda ($00),y
+    sta PPUDATA
+    iny
+    lda ($00),y
+    sta PPUDATA
+    iny
+    lda ($00),y
+    sta PPUDATA
+    iny
+    lda ($00),y
+    sta PPUDATA
+
+    rts
+
+@PPUAddrs:
+    .byte $23
+    .byte $2F
+
+@WRAMAddrs:
+    .byte >RoomRAMA+$03
+    .byte >RoomRAMB+$03
 
 ;----------------------------------------------------------------------------------------------------
 
@@ -7145,26 +7246,6 @@ SelectRoomRAM:
     sta CartRAMPtr+1.b                ;
     lda #$00                        ;
     sta CartRAMPtr                  ;Save two byte pointer to start of proper room RAM.
-    rts                             ;
-
-;------------------------------------[ write attribute table data ]----------------------------------
-
-AttribTableWrite:
-    lda RoomNumber                  ;
-    and #$0F                        ;Determine what row of PPU attribute table data, if any,-->
-    inc RoomNumber                  ;to load from RoomRAM into PPU.
-    jsr ChooseRoutine               ;Determine when to write to the PPU attribute table.
-        .word ExitSub                   ;($C45C)Rts.
-        .word WritePPUAttribTbl         ;($E5E2)Write first row of PPU attrib data.
-        .word ExitSub                   ;($C45C)Rts.
-        .word WritePPUAttribTbl         ;($E5E2)Write second row of PPU attrib data.
-        .word RoomFinished              ;($EA26)Finished writing attribute table data.
-
-;-----------------------------------[ Finished writing room data ]-----------------------------------
-
-RoomFinished:
-    lda #$FF                        ;No more tasks to perform on current room.-->
-    sta RoomNumber                  ;Set RoomNumber to #$FF.
 RTS_EA2A:
     rts
 
@@ -7174,8 +7255,6 @@ SetupRoom:
     lda RoomNumber                  ;Room number.
     cmp #$FF                        ;
     beq RTS_EA2A                           ;Branch to exit if room is undefined.
-    cmp #$F0                        ;
-    bcs AttribTableWrite                          ;Branch if time to write PPU attribute table data.
     jsr UpdateRoomSpriteInfo        ;($EC9B)Update which sprite belongs on which name table.
 
     jsr ScanForItems                ;($ED98)Set up any special items.
@@ -7322,15 +7401,21 @@ EnemyStart:
         .word ZebHole                   ;($EC57)Regenerating enemies(such as Zeb).
 
 EndOfRoom:
-    ldx #$F0                        ;Prepare for PPU attribute table write.
-    stx RoomNumber                  ;
+    lda #$FF
+    sta RoomNumber
     lda ScrollDir                   ;
     sta TempScrollDir               ;Make temp copy of ScrollDir.
     and #$02                        ;Check if scrolling left or right.
     bne Lx224                           ;
-        jmp LE57C
+        jsr LE57C
+        jsr FlagUpdateAttrTableVertical
+        clc
+        rts
     Lx224:
-    jmp LE70C
+    jsr LE70C
+    jsr FlagUpdateAttrTableHorizontal
+    clc
+    rts
 
 LoadEnemy:
     jsr GetEnemyData                ;($EB0C)Get enemy data from room data.

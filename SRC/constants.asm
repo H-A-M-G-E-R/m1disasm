@@ -93,6 +93,7 @@ RetrigDelay2           = $19     ;The retriggering of held down buttons.
 NMIStatus              = $1A     ;0=NMI in progress. anything else, NMI not in progress.
 PPUDataPending         = $1B     ;1=not PPU data pending, 1=data pending.
 ;PalDataPending         = $1C    ;Not used in this mod. Was pending palette data. Palette # = PalDataPending - 1.
+AttrTableUpdatePending = $1C
 GameMode               = $1D     ;0 = Game is playing, 1 = At title/password screen
 MainRoutine            = $1E     ;5 = Game paused, 3 = Game engine running
 TitleRoutine           = $1F     ;Stores title routine number currently running.
@@ -101,6 +102,7 @@ CurrentBank            = $23     ;0 thru 7. current memory page in lower memory 
 SwitchPending          = $24     ;Switch memory page. Page # = SwitchPending - 1.
 MMCReg0Cntrl           = $25     ;Stores bits to be loaded into MMC1 Register 0.
 CurrentMainBank        = $26
+AttrTableUpdateNameTable = $27
 ;SwitchUpperBits        = $28     ;Not used in this mod. Was used to store bits 3 and 4 for MMC1 register 3.  Bits-->
                                    ;3 and 4 should always be 0 under normal conditions.
 
