@@ -139,3 +139,14 @@ JumpByRTSToMovementRoutine:
     lda CrawlerMovementRoutinesTable,y
     pha
     rts
+
+; Crawler jump table
+CrawlerMovementRoutinesTable:
+    .word EnemyMoveOnePixelRight-1
+    .word EnemyMoveOnePixelLeft-1
+    .word EnemyMoveOnePixelDown-1
+    .word EnemyMoveOnePixelDown-1
+    .word EnemyMoveOnePixelLeft-1
+    .word EnemyMoveOnePixelRight-1
+    .word EnemyMoveOnePixelUp-1
+    .word EnemyMoveOnePixelUp-1

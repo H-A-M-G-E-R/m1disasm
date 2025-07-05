@@ -67,17 +67,6 @@
 ;CommonJump_Base10Subtract: ;$8045
 ;    jmp Base10Subtract              ;($C3FB)
 
-; Crawler jump table
-CrawlerMovementRoutinesTable:
-    .word EnemyMoveOnePixelRight-1
-    .word EnemyMoveOnePixelLeft-1
-    .word EnemyMoveOnePixelDown-1
-    .word EnemyMoveOnePixelDown-1
-    .word EnemyMoveOnePixelLeft-1
-    .word EnemyMoveOnePixelRight-1
-    .word EnemyMoveOnePixelUp-1
-    .word EnemyMoveOnePixelUp-1
-
 ;-------------------------------------------------------------------------------
 ; A common enemy AI/movement routine
 ; called by F410 in the engine, via CommonJump_00
