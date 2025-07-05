@@ -325,7 +325,7 @@ NMI:
     ;($B3B4)Update music and SFX.
     lda CurrentBank
     pha
-    lda #$06
+    lda #:SoundEngine.b
     jsr MMCWriteReg3
     jsr SoundEngine
     pla
@@ -1188,7 +1188,7 @@ LoadGFX:
     jsr CopyGFXBlock                ;($C7D5)Copy graphics into pattern tables.
     
     ;Switch back to the previous bank.
-    lda #$00
+    lda #:GFXInfo.b
     jmp MMCWriteReg3
 
 
@@ -6659,7 +6659,7 @@ GetRoomNum:
                                     ;through the door(horizontal scrolling only).
 
 LE733:
-    lda #$00
+    lda #:WorldMap.b
     jsr MMCWriteReg3
     lda SamusMapPosY                ;Map pos y.
     jsr Amul16                      ;($C2C5)Multiply by 16.
