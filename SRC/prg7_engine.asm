@@ -612,20 +612,28 @@ RTS_C265:
 ;OVER is displayed, to mention a few examples.
 
 UpdateTimer:
-    ldx #$01                        ;First timer to decrement is Timer2.
-    dec TimerDelay                  ;
-    bpl DecTimer                    ;
-        lda #$09                        ;TimerDelay hits #$00 every 10th frame.
-        sta TimerDelay                  ;Reset TimerDelay after it hits #$00.
-        ldx #$02                        ;Decrement Timer3 every 10 frames.
-
-    DecTimer:
-        lda Timer1,x                    ;
-        beq LC278                       ;Don't decrease if timer is already zero.
-            dec Timer1,x                    ;
-        LC278:
-        dex                             ;Timer1 and Timer2 decremented every frame.
-        bpl DecTimer                    ;
+    ; Default to only decrementing Timer2 and Timer1.
+    ldx #$01
+    ; branch if timer delay is not zero
+    dec TimerDelay
+    bpl @endIf_A
+        ;TimerDelay hits #$00 every 10th frame.
+        ;Reset TimerDelay after it hits #$00.
+        lda #$09
+        sta TimerDelay
+        ;Decrement Timer3 every 10 frames.
+        ldx #$02
+    @endIf_A:
+    
+    ; decrement the chosen timers
+    @loop_decTimer:
+        ;Don't decrease if timer is already zero.
+        lda Timer1,x
+        beq @endIf_B
+            dec Timer1,x
+        @endIf_B:
+        dex
+        bpl @loop_decTimer
     rts
 
 ;-----------------------------------------[ Choose routine ]-----------------------------------------
@@ -637,33 +645,43 @@ UpdateTimer:
 
 ChooseRoutine:
 CommonJump_ChooseRoutine:
-    asl                             ;* 2, each ptr is 2 bytes (16-bit).
-    sty TempY                       ;Temp storage.
-    stx TempX                       ;Temp storage.
-    tay                             ;
-    iny                             ;
-    pla                             ;Low byte of ptr table address.
-    sta CodePtr                     ;
-    pla                             ;High byte of ptr table address.
-    sta CodePtr+1.b                   ;
-    lda (CodePtr),y                 ;Low byte of code ptr.
-    tax                             ;
-    iny                             ;
-    lda (CodePtr),y                 ;High byte of code ptr.
-    sta CodePtr+1.b                   ;
-    stx CodePtr                     ;
-    ldx TempX                       ;Restore X.
-    ldy TempY                       ;Restore Y.
+    ;* 2, each ptr is 2 bytes (16-bit).
+    asl
+    ;Temp storage. (not pushed to stack, because stack needs to be accessed)
+    sty TempY
+    stx TempX
+    ; y = a+1
+    tay
+    iny
+    ;load ptr table address from stack
+    pla
+    sta CodePtr
+    pla
+    sta CodePtr+1.b
+    ;Low byte of routine ptr
+    lda (CodePtr),y
+    tax
+    ;High byte of routine ptr.
+    iny
+    lda (CodePtr),y
+    ; save routine ptr to CodePtr
+    sta CodePtr+1.b
+    stx CodePtr
+    ;Restore X and Y.
+    ldx TempX
+    ldy TempY
     jmp (CodePtr)
 
 ;--------------------------------------[ Write to scroll registers ]---------------------------------
 
 WriteScroll:
-    lda PPUSTATUS                   ;Reset scroll register flip/flop
-    lda ScrollX                     ;
-    sta PPUSCROLL                   ;
-    lda ScrollY                     ;X and Y scroll offsets are loaded serially.
-    sta PPUSCROLL                   ;
+    ;Reset scroll register flip/flop
+    lda PPUSTATUS
+    ;X and Y scroll offsets are loaded serially.
+    lda ScrollX
+    sta PPUSCROLL
+    lda ScrollY
+    sta PPUSCROLL
     rts
 
 ;----------------------------------[ Add y index to stored addresses ]-------------------------------
@@ -1336,17 +1354,18 @@ CopyAreaPointers:
 DestroyEnemies: ; LC8BB
     lda #$00
     tax
-    LC8BF:
+    @loop:
         cpx #$48
-        bcs LC89X
-            ; what is this doing?
+        bcs @endIf_A
+            ; clear $97-$DE
             sta CannonIndex,x
-        LC89X:
+        @endIf_A:
+        ; clear enemy ram ($0300-$03FF)
         sta EnStatus,x
         pha
         pla
         inx
-        bne LC8BF
+        bne @loop
     ;Force Samus to have no Metroid stuck to her.
     stx MetroidOnSamus
     jmp GotoClearAllMetroidLatches
@@ -1388,20 +1407,24 @@ SamusInit:
     bne Lx002
         ldy #$2F                        ;If scrolling vertically, set PPU for horizontal mirroring.
     Lx002:
-    sty MirrorCntrl                 ;
-    lda AreaSamusY                       ;Samus' initial vertical position
-    sta ObjY                        ;
-    lda AreaSamusX                  ;Samus' initial horizontal position
-    sta ObjX                        ;
-    lda PPUCTRL_ZP                  ;
-    and #$01                        ;Set Samus' name table position to current name table-->
-    sta ObjHi                       ;active in PPU.
-    lda #$99                        ;
-    sta Health                      ;Starting health is-->
-    lda TankCount                   ;full...
-    jsr Amul16                      ;
-    ora #$09                        ;
-    sta Health+1                    ;
+    sty MirrorCntrl
+    ;Samus' initial vertical position
+    lda AreaSamusY
+    sta ObjY
+    ;Samus' initial horizontal position
+    lda AreaSamusX
+    sta ObjX
+    ;Set Samus' name table position to current name table active in PPU.
+    lda PPUCTRL_ZP
+    and #$01
+    sta ObjHi
+    ;Starting health is full...
+    lda #$99
+    sta Health
+    lda TankCount
+    jsr Amul16
+    ora #$09
+    sta Health+1
 RTS_C92A:
     rts
 
@@ -1755,8 +1778,8 @@ SavedDataBaseAddr:
         bcc LCAEB                           ;the proper base address for this saved game data. (save-->
             inc $01                         ;slot 0 = $69B4, save slot 1 = $69F4, save slot 2 = $6A34).
         LCAEB:
-        dex                             ;
-        bne LCAE0                       ;
+        dex
+        bne LCAE0
 RTS_CAEE:
     rts
 
@@ -3025,7 +3048,7 @@ FireWeaponForwards:
     ora SamusDir
     and #$03
     tax
-    lda BulletOffsetXTable,x
+    lda BulletForwardsOffsetXTable,x
     sta Temp05_SpeedX
     lda #$FA
     sta Temp04_SpeedY
@@ -3048,9 +3071,9 @@ LD26B:
     tya
     jmp SetSamusNextAnim
 
-BulletOffsetXTable:
-    .byte  $0C, -$0C
-    .byte  $08, -$08
+BulletForwardsOffsetXTable:
+    .byte  $0C, -$0C ;weapon action id is even (wave beam)
+    .byte  $08, -$08 ;weapon action id is odd (power beam, ice beam, missiles)
 BulletSpeedXTable:
     .byte  $04, -$04
 
@@ -3077,13 +3100,13 @@ FireWeaponUpwards:
     sta ObjOnScreen,y
     jsr CheckVerticalMissileLaunch
     ldx SamusDir
-    lda Table09+4,x
-    sta $05
+    lda BulletUpwardsOffsetXTable,x
+    sta Temp05_SpeedX
     lda ObjAction,y
     and #$01
     tax
-    lda Table09+6,x
-    sta $04
+    lda BulletUpwardsOffsetYTable,x
+    sta Temp04_SpeedY
     jsr BulletD306
     lda SamusGear
     and #gr_LONGBEAM
@@ -3114,7 +3137,10 @@ Lx044:
 Table09:
     .byte ObjAnim_26 - ObjectAnimIndexTbl, ObjAnim_26 - ObjectAnimIndexTbl
     .byte ObjAnim_34 - ObjectAnimIndexTbl, ObjAnim_34 - ObjectAnimIndexTbl
+
+BulletUpwardsOffsetXTable:
     .byte  $01, -$01
+BulletUpwardsOffsetYTable:
     .byte -$14, -$10
 
 InitBullet:

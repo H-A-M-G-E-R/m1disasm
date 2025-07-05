@@ -454,7 +454,7 @@ L9A27:
 L9B25:
     jsr UpdateAllCannons
     jsr MotherBrainStatusHandler
-    jsr LA1E7
+    jsr UpdateEndTimer
     jsr LA238
     jsr ZebetiteA28B
     jmp LA15E
@@ -606,9 +606,9 @@ Cannon_ShootFireball:
     sta EnResetAnimIndex,y
     sta EnAnimIndex,y
     ; store offset into temp
-    lda CannonFireballXOffsetTable,x
+    lda CannonFireballXOffsetTable-2,x
     sta Temp05_SpeedX
-    lda CannonFireballYOffsetTable,x
+    lda CannonFireballYOffsetTable-2,x
     sta Temp04_SpeedY
     ; store cannon position into temp
     ldx CannonIndex
@@ -634,7 +634,7 @@ CannonFireballAnimTable:
 
 DrawCannon_Normal:
     ldy CannonAngle,x
-    lda L9DC6,y
+    lda CannonAnimFrameTable,y
 DrawCannon_Escape:
     sta EnAnimFrame+$E0
     lda CannonY,x
@@ -897,18 +897,24 @@ CannonInstrList3: .byte $02, $03, $FC, $04, $03, $FF
 CannonInstrList4: .byte $06, $05, $FC, $04, $05, $FF
 ; cannon instr list 5 means the cannon won't do anything
 
-L9DC6:  .byte $06, $07, $08, $09, $0A, $0B
+CannonAnimFrameTable:
+    .byte _id_EnFrame06
+    .byte _id_EnFrame07
+    .byte _id_EnFrame08
+    .byte _id_EnFrame09
+    .byte _id_EnFrame0A
+    .byte _id_EnFrame0B
+    .byte _id_EnFrame0C
+    .byte _id_EnFrame0D
 
 CannonFireballXOffsetTable:
-    .byte $0C ; cannon instr #$FE : diagonal right
-    .byte $0D ; cannon instr #$FD : diagonal left
-    .byte $09 ; cannon instr #$FC : straight down
+    .byte $09 ; cannon instr #$FE : diagonal right
+    .byte $F7 ; cannon instr #$FD : diagonal left
+    .byte $00 ; cannon instr #$FC : straight down
 CannonFireballYOffsetTable:
-    .byte $F7 ; cannon instr #$FE : diagonal right
-    .byte $00 ; cannon instr #$FD : diagonal left
-    .byte $09 ; cannon instr #$FC : straight down
-
-    .byte $09, $0B
+    .byte $09 ; cannon instr #$FE : diagonal right
+    .byte $09 ; cannon instr #$FD : diagonal left
+    .byte $0B ; cannon instr #$FC : straight down
 
 ;-------------------------------------------------------------------------------
 ; This is code:
@@ -916,17 +922,17 @@ MotherBrainStatusHandler:
     lda MotherBrainStatus
     beq RTS_9DF1
     jsr CommonJump_ChooseRoutine
-        .word RTS_9DF1  ;#$00=Mother brain not in room,
-        .word L9E22     ;#$01=Mother brain in room
-        .word L9E36     ;#$02=Mother brain hit
-        .word L9E52     ;#$03=Mother brain dying
-        .word L9E86     ;#$04=Mother brain dissapearing
-        .word L9F02     ;#$05=Mother brain gone
-        .word L9F49     ;#$06=Time bomb set,
-        .word L9FC0     ;#$07=Time bomb exploded
-        .word L9F02     ;#$08=Initialize mother brain
-        .word L9FDA     ;#$09
-        .word RTS_9DF1  ;#$0A=Mother brain already dead.
+        .word RTS_9DF1    ;#$00=Mother brain not in room,
+        .word MotherBrain_9E22     ;#$01=Mother brain in room
+        .word MotherBrain_9E36     ;#$02=Mother brain hit
+        .word MotherBrain_9E52     ;#$03=Mother brain dying
+        .word MotherBrain_9E86     ;#$04=Mother brain dissapearing
+        .word MotherBrain_9F02_05     ;#$05=Mother brain gone
+        .word MotherBrain_9F49     ;#$06=Time bomb set,
+        .word MotherBrain_9FC0     ;#$07=Time bomb exploded
+        .word MotherBrain_9F02_08     ;#$08=Initialize mother brain
+        .word MotherBrain_9FDA     ;#$09
+        .word RTS_9DF1    ;#$0A=Mother brain already dead.
 RTS_9DF1:
     rts
 
@@ -957,45 +963,51 @@ L9DF2:
     jmp CommonJump_SubtractHealth
 
 ;-------------------------------------------------------------------------------
-L9E22:
+MotherBrain_9E22:
     jsr L9DF2
     jsr L9FED
     jsr LA01B
     jsr LA02E
 L9E2E:
     jsr LA041
-L9E31:
+ClearMotherBrainIsHit:
     lda #$00
     sta MotherBrainIsHit
     rts
 
 ;-------------------------------------------------------------------------------
-L9E36:
-    jsr L9E43
-    lda L9E41,y
+MotherBrain_9E36:
+    jsr UpdateMotherBrainFlashDelay
+    lda MotherBrainFlashPalettesTable,y
     jsr WriteAreaPal
-    jmp L9E31
+    jmp ClearMotherBrainIsHit
 
-L9E41:  .byte $08, $07
+MotherBrainFlashPalettesTable:
+    .byte $08, $07
 
-L9E43:
-    dec MotherBrain9F
+UpdateMotherBrainFlashDelay:
+    ; decrement delay
+    dec MotherBrainFlashDelay
+    ; branch if delay is not zero
     bne L9E4B
+        ; flash delay is zero, mother brain stops flashing
+        ; change state of mother brain to idle
         lda #$01
         sta MotherBrainStatus
     L9E4B:
-    lda MotherBrain9F
+    ; save bit 1 of delay to y
+    lda MotherBrainFlashDelay
     and #$02
     lsr
     tay
     rts
 
 ;-------------------------------------------------------------------------------
-L9E52:
-    jsr L9E43
+MotherBrain_9E52:
+    jsr UpdateMotherBrainFlashDelay
     tya
     pha
-    lda L9E41,y
+    lda MotherBrainFlashPalettesTable,y
     jsr WriteAreaPal
     pla
     asl
@@ -1016,17 +1028,17 @@ L9E52:
     lda #$04
     sta MotherBrainStatus
     lda #$28
-    sta MotherBrain9F
+    sta MotherBrainFlashDelay
     jsr SilenceMusic
 L9E83:
     jmp L9E2E
 
 ;-------------------------------------------------------------------------------
-L9E86:
+MotherBrain_9E86:
     jsr SFX_BombExplode
     jsr LA072
     inc MotherBrain9A
-    jsr L9E43
+    jsr UpdateMotherBrainFlashDelay
     ldx #$00
     L9E98:
         lda EnStatus,x
@@ -1050,7 +1062,7 @@ L9E86:
     lda #$04
     sta MotherBrainStatus
     lda #$1C
-    sta MotherBrain9F
+    sta MotherBrainFlashDelay
     ldy MotherBrainQtyHits
     inc MotherBrainQtyHits
     cpy #$04
@@ -1060,7 +1072,7 @@ L9E86:
         jmp L9ED6
 
     L9ED3:
-    lsr MotherBrain9F
+    lsr MotherBrainFlashDelay
 RTS_9ED5:
     rts
 
@@ -1097,7 +1109,8 @@ L9EF9:
 L9F00: .byte $09, $0A
 
 ;-------------------------------------------------------------------------------
-L9F02:
+MotherBrain_9F02_05:
+MotherBrain_9F02_08:
     lda MotherBrainQtyHits
     bmi L9F33
         cmp #$08
@@ -1134,7 +1147,7 @@ RTS_9F38:
 L9F39:  .byte $00, $40, $08, $48, $80, $C0, $88, $C8
 L9F41:  .byte $08, $02, $09, $03, $0A, $04, $0B, $05
 
-L9F49:
+MotherBrain_9F49:
     jsr L9F69
     bcs RTS_9F64
     lda #$00
@@ -1193,7 +1206,7 @@ L9F69:
     jmp CommonJump_DrawTileBlast
 
 ;-------------------------------------------------------------------------------
-L9FC0:
+MotherBrain_9FC0:
     jsr SFX_BombExplode
     lda Timer3
     bne RTS_9FD9
@@ -1207,7 +1220,7 @@ RTS_9FD9:
     rts
 
 ;-------------------------------------------------------------------------------
-L9FDA:
+MotherBrain_9FDA:
     jsr L9F69
     bcs RTS_9FEC
     lda MotherBrainNameTable
@@ -1241,7 +1254,7 @@ L9FED:
     lda #$80
 LA016:
     sty MotherBrainStatus
-    sta MotherBrain9F
+    sta MotherBrainFlashDelay
 RTS_A01A:
     rts
 
@@ -1524,39 +1537,53 @@ RinkaSpawnPosTbl:
     .byte $BA, $BA
 
 ;-------------------------------------------------------------------------------
-LA1E7:
+UpdateEndTimer:
+    ; exit if timer is inactive
     ldy EndTimer+1
     iny
-    beq RTS_A237
+    beq @RTS
+    
+    ; BCD decrement low byte of timer
     lda EndTimer
     sta $03
     lda #$01
     sec
     jsr CommonJump_Base10Subtract
     sta EndTimer
+    ; BCD decrement high byte of timer if overflow
     lda EndTimer+1
     sta $03
     lda #$00
     jsr CommonJump_Base10Subtract
     sta EndTimer+1
+    
+    ; play alarm sound effect every 32 frames
     lda FrameCount
     and #$1F
-    bne LA216
+    bne @endIf_A
         jsr SFX_OutOfHole
-    LA216:
+    @endIf_A:
     lda EndTimer
     ora EndTimer+1
-    bne RTS_A237
+    bne @RTS
+    
+    ; timer became zero, the time bomb exploded and samus failed to escape in time
+    ; disable timer
     dec EndTimer+1
+    ; reset mother brain health
     sta MotherBrainQtyHits
+    ; set mother brain state to bomb exploded
     lda #$07
     sta MotherBrainStatus
+    ; silence music
     jsr SilenceMusic
+    ; set timer for 120 frames (2 seconds)
     lda #$0C
     sta Timer3
+    ; set palette to all white
     lda #$0B
     jsr WriteAreaPal
-RTS_A237:
+@RTS:
     rts
 
 ;-------------------------------------------------------------------------------
