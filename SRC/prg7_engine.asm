@@ -9970,14 +9970,7 @@ Lx377:
         sta $05
         jsr LFA41
     Lx378:
-    ; BUGFIX: tough enemies' explosions now use the correct palette
-    lda EnSpecialAttribs,x
-    bpl +
-        lda #$83
-        bne ++
-    +
     lda #$80
-    ++
     sta ObjectCntrl
     lda #$03
     jmp AnimDrawEnemy
