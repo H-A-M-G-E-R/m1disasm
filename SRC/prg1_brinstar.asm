@@ -182,6 +182,9 @@ EnemyDamageTbl:
     .byte $08, $08
     .byte $08, $08
 
+MellowDamage:
+    .word $0080
+
 ; ResetAnimIndex table for resting enemy
 EnemyRestingAnimIndex:
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl

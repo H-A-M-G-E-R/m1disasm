@@ -180,6 +180,9 @@ EnemyDamageTbl:
     .byte $20, $20
     .byte $20, $20
 
+MellowDamage:
+    .word $0200
+
 EnemyRestingAnimIndex:
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
     .byte EnAnim_0B - EnAnimTbl, EnAnim_0B - EnAnimTbl

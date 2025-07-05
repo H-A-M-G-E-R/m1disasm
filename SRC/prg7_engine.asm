@@ -8477,7 +8477,16 @@ Lx287:
     Lx288:
     ldy #$00
     jsr LF338
-    jmp LF306
+    lda SamusHurt010F
+    cmp #$C0
+    beq +
+        jmp LF306
+    +
+    lda MellowDamage
+    sta HealthChange
+    lda MellowDamage+1.w
+    sta HealthChange+1.b
+    rts
 Lx289:
     lda #wa_ScrewAttack
     sta EnWeaponAction,x
