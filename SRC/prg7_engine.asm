@@ -4862,7 +4862,8 @@ LDD30:
     lda ItemDropTbl,y
     sta EnAnimFrame,x
     cmp #$80
-    bne Lx138
+    bne RTS_X137
+    ;bne Lx138
         ; check if spawning a missile pickup is allowed
         ; fail if the quantity of missile pickups spawned in this room has reached the max
         ; fail if Samus's missile capacity is 0
@@ -4871,17 +4872,18 @@ LDD30:
         ; allow spawning the missile pickup
     RTS_X137:
         rts
-    Lx138:
+    ;Lx138:
         ; drop type is energy pickup or no pickup
         ; check if spawning an energy pickup is allowed
         ; fail if the quantity of energy pickups spawned in this room has reached the max
         
-        ; exit if it is not no pickup (energy pickup)
-        cmp #$89
-        bne RTS_X137
+        ; exit if it is not big energy (small energy pickup)
+        ;cmp #$89
+        ;bne RTS_X137
         
-        lsr $00
-        bcs RTS_X137
+        ; fail if enemy can't drop big energy
+        ;lsr $00
+        ;bcs RTS_X137
 
 LDD5B:
     ; pickup failed to spawn
@@ -5059,12 +5061,12 @@ DrawEnemy_NotBlank:
 ItemDropTbl:
     .byte $80                       ;Missile.
     .byte $81                       ;Energy.
-    .byte $81                       ;Energy. Was no item.
+    .byte $89                       ;No item / big energy.
     .byte $80                       ;Missile.
     .byte $81                       ;Energy.
-    .byte $80                       ;Missile. Was no item.
+    .byte $80                       ;Missile. Was no item / big energy.
     .byte $81                       ;Energy.
-    .byte $89                       ;No item.
+    .byte $89                       ;No item / big energy.
 
 ;------------------------------------[ Object drawing routines ]-------------------------------------
 
@@ -8861,8 +8863,10 @@ LF483:
     pla
     ; branch if EnType is non-zero (health pickup from a metroid)
     bne Lx306
+    ;Increase Health by 20.
     dex
     pla
+    ; branch if small health pickup
     cmp #$81
     bne Lx305
     ;Increase Health by 5.
