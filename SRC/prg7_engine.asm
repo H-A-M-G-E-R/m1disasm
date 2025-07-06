@@ -59,7 +59,7 @@ RandomNumbers: ;$C000
 RESET:
     ;Disables interrupt.
     sei
-    dex                             ;X = $FF
+    ldx #$FF
     txs                             ;S points to end of stack page
 
     ;Reset MMC1 chip. (MSB is set).
