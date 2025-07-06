@@ -54,9 +54,17 @@ RandomNumbers: ;$C000
     lda RandomNumber1
     rts
 
-;------------------------------------------[ Startup ]----------------------------------------------
+;-----------------------------------------------[ RESET ]--------------------------------------------
 
-Startup:
+RESET:
+    ;Disables interrupt.
+    sei
+    dex                             ;X = $FF
+    txs                             ;S points to end of stack page
+
+    ;Reset MMC1 chip. (MSB is set).
+    stx MMC1Reg0
+
     lda #$00
     sta MMC1Reg1                    ;Clear bit 0. MMC1 is serial controlled
     sta MMC1Reg1                    ;Clear bit 1
@@ -10784,21 +10792,6 @@ TileBlastAnim6:  .byte $07,$06,$09,$FE
 TileBlastAnim7:  .byte $07,$06,$0A,$FE
 TileBlastAnim8:  .byte $07,$06,$0B,$FE
 TileBlastAnim9:  .byte $07,$06,$08,$FE
-
-
-;-----------------------------------------------[ RESET ]--------------------------------------------
-
-RESET: ;($BFB0)
-    ;Disables interrupt.
-    sei
-    dex                             ;X = $FF
-    txs                             ;S points to end of stack page
-
-    ;Reset MMC1 chip. (MSB is set).
-    stx MMC1Reg0
-    
-    ;($C01A)Does preliminary housekeeping.
-    jmp Startup
 
 .ENDS
 
