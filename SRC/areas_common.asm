@@ -1276,6 +1276,7 @@ UpdateDoor_LetSamusIn:
     eor #$07
     sta PalToggle
     jsr WriteAreaPal
+    jsr SelectSamusPal
 L8CA7:
     ; increment door status to "scroll"
     inc DoorStatus,x

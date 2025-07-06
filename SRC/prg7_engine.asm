@@ -4139,7 +4139,6 @@ ElevatorD8BF:
         lda #$01
     @endIf_D:
     jsr WriteAreaPal
-    jsr WaitNMIPass
     ; update samus palette
     jsr SelectSamusPal
     ;($D92C)Start music.
