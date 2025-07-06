@@ -62,9 +62,6 @@ RESET:
     ldx #$FF
     txs                             ;S points to end of stack page
 
-    ;Reset MMC1 chip. (MSB is set).
-    stx MMC1Reg0
-
     lda #$00
     sta MMC1Reg1                    ;Clear bit 0. MMC1 is serial controlled
     sta MMC1Reg1                    ;Clear bit 1
@@ -4534,7 +4531,7 @@ CheckOneItem:
     bcc RTS_DB36                       ;If so, branch to exit.
     lda PowerUpType,x               ;
     and #$0F                        ;Load power up type byte and keep only bits 0 thru 3.
-    ora #_id_ObjFrame50.b           ;Set bits 4 and 6.
+    adc #_id_ObjFrame50-1.b         ;Set bits 4 and 6.
     sta PowerUpAnimFrame            ;Save index to find object animation.
     lda FrameCount                  ;
     lsr                             ;Color affected every other frame.
