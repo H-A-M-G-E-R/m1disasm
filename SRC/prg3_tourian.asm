@@ -455,9 +455,9 @@ L9B25:
     jsr UpdateAllCannons
     jsr MotherBrainStatusHandler
     jsr UpdateEndTimer
-    jsr LA238
+    jsr DrawEndTimerEnemy
     jsr ZebetiteA28B
-    jmp LA15E
+    jmp UpdateAllRinkaSpawners
 
 ;-------------------------------------------------------------------------------
 UpdateAllCannons:
@@ -721,21 +721,21 @@ L9C6F:
     beq L9CC3
     cmp #$0A
     beq L9CC3
-    lda MotherBrainNameTable
+    lda MotherBrainHi
     eor $02
     lsr
     bcs L9CC3
     lda #$00
     sta MotherBrainStatus
 L9CC3:
-    lda MotherBrain010D
+    lda EndTimerEnemyIsEnabled
     beq RTS_9CD5
-    lda MotherBrain010C
+    lda EndTimerEnemyHi
     eor $02
     lsr
     bcs RTS_9CD5
     lda #$00
-    sta MotherBrain010D
+    sta EndTimerEnemyIsEnabled
 RTS_9CD5:
     rts
 
@@ -801,15 +801,15 @@ SpawnMotherBrainRoutine:
     lda #$01
     sta MotherBrainStatus
     jsr GetNameTable_
-    sta MotherBrainNameTable
+    sta MotherBrainHi
     eor #$01
     tax
     lda L9D3C
     ora DoorOnNameTable3,x
     sta DoorOnNameTable3,x
     lda #$20
-    sta MotherBrain9A
-    sta MotherBrain9B
+    sta MotherBrainAnimBrainDelay
+    sta MotherBrainAnimEyeDelay
     rts
 
 L9D3B:  .byte $02
@@ -937,15 +937,18 @@ RTS_9DF1:
     rts
 
 ;-------------------------------------------------------------------------------
-L9DF2:
+MotherBrain_9E22_CollideWithSamus:
+    ; exit if samus is not in the same nametable as mother brain
     lda ObjHi
-    eor MotherBrainNameTable
+    eor MotherBrainHi
     bne RTS_9DF1
+    ; exit if samus x pos is not in range #$48 to #$76 inclusive
     lda ObjX
     sec
     sbc #$48
     cmp #$2F
     bcs RTS_9DF1
+    ; exit if samus y pos is not in range #$61 to #$9F inclusive
     lda ObjY
     sec
     sbc #$80
@@ -954,6 +957,9 @@ L9DF2:
     L9E0E:
     cmp #$20
     bcs RTS_9DF1
+    
+    ; samus is touching mother brain
+    ; deal 20 damage to samus
     lda #$00
     sta HealthChange
     lda #$02
@@ -964,12 +970,12 @@ L9DF2:
 
 ;-------------------------------------------------------------------------------
 MotherBrain_9E22:
-    jsr L9DF2
-    jsr L9FED
-    jsr LA01B
-    jsr LA02E
+    jsr MotherBrain_9E22_CollideWithSamus
+    jsr MotherBrain_9E22_HandleBeingHit
+    jsr MotherBrain_9E22_UpdateAnimBrain
+    jsr MotherBrain_9E22_UpdateAnimEye
 L9E2E:
-    jsr LA041
+    jsr MotherBrain_DrawSprites
 ClearMotherBrainIsHit:
     lda #$00
     sta MotherBrainIsHit
@@ -1022,7 +1028,7 @@ MotherBrain_9E52:
     L9E68:
         tya
         sta EnStatus,x
-        jsr L9EF9
+        jsr Xplus16
         cpx #$C0
         bne L9E68
     lda #$04
@@ -1037,7 +1043,7 @@ L9E83:
 MotherBrain_9E86:
     jsr SFX_BombExplode
     jsr LA072
-    inc MotherBrain9A
+    inc MotherBrainAnimBrainDelay
     jsr UpdateMotherBrainFlashDelay
     ldx #$00
     L9E98:
@@ -1047,7 +1053,7 @@ MotherBrain_9E86:
             lda #$00
             sta EnStatus,x
         L9EA4:
-        jsr L9EF9
+        jsr Xplus16
         cmp #$40
         bne L9E98
     lda PPUStrIndex
@@ -1058,7 +1064,7 @@ MotherBrain_9E86:
     ldy MotherBrainStatus
     dey
     bne RTS_9ED5
-    sty MotherBrain9A
+    sty MotherBrainAnimBrainDelay
     lda #$04
     sta MotherBrainStatus
     lda #$1C
@@ -1085,18 +1091,22 @@ L9ED6:
     sta MotherBrainQtyHits
     rts
 
-L9EE7:
+; high nybble of a is y position
+; low nybble of a is x position
+SpawnRinka_InitPositionXY:
     pha
+    ; y position = (high nybble * #$10) + #$07
     and #$F0
     ora #$07
     sta EnY,x
     pla
+    ; x position = (low nybble * #$10) + #$07
     jsr Amul16_
     ora #$07
     sta EnX,x
     rts
 
-L9EF9:
+Xplus16:
     txa
     clc
     adc #$10
@@ -1123,7 +1133,7 @@ MotherBrain_9F02_08:
         adc #$42
         sta TileBlastWRAMPtr
         php
-        lda MotherBrainNameTable
+        lda MotherBrainHi
         asl
         asl
         plp
@@ -1156,9 +1166,9 @@ MotherBrain_9F49:
     sta EndTimer
     sta EndTimer+1
     lda #$01
-    sta MotherBrain010D
-    lda MotherBrainNameTable
-    sta MotherBrain010C
+    sta EndTimerEnemyIsEnabled
+    lda MotherBrainHi
+    sta EndTimerEnemyHi
 RTS_9F64:
     rts
 
@@ -1179,7 +1189,7 @@ L9F69:
     sta SamusOnElevator,x
     lda #$03
     sta ObjAction,x
-    lda MotherBrainNameTable
+    lda MotherBrainHi
     sta ObjHi,x
     lda #$10
     sta ObjX,x
@@ -1196,7 +1206,7 @@ L9F69:
     sta TileBlastAnimFrame
     lda #$40
     sta TileBlastWRAMPtr
-    lda MotherBrainNameTable
+    lda MotherBrainHi
     asl
     asl
     ora #$61
@@ -1223,109 +1233,145 @@ RTS_9FD9:
 MotherBrain_9FDA:
     jsr L9F69
     bcs RTS_9FEC
-    lda MotherBrainNameTable
-    sta MotherBrain010C
+    lda MotherBrainHi
+    sta EndTimerEnemyHi
     ldy #$01
-    sty MotherBrain010D
+    sty EndTimerEnemyIsEnabled
     dey
     sty MotherBrainStatus
 RTS_9FEC:
     rts
 
 ;-------------------------------------------------------------------------------
-L9FED:
+MotherBrain_9E22_HandleBeingHit:
+    ; exit if mother brain was not hit
     lda MotherBrainIsHit
-    beq RTS_A01A
+    beq @RTS
+    
+    ; play boss hit sfx
     jsr SFX_BossHit
+    ; increment mother brain hits quantity
     inc MotherBrainQtyHits
+    ; exit if hits quantity is less than 32
     lda MotherBrainQtyHits
     cmp #$20
-    ldy #$02
-    lda #$10
-    bcc LA016
-    ldx #$00
-    LA007:
-        lda #$00
-        sta TileBlastRoutine,x
-        jsr L9EF9
-        cmp #$D0
-        bne LA007
-    iny
-    lda #$80
-LA016:
+    ldy #$02 ; default mb status to hit
+    lda #$10 ; default mb flash time to 16 frames
+    bcc @notDead
+        ; hits quantity is 32 or greater
+        ; mother brain must start to die
+        
+        ; clear all tile blasts
+        ldx #$00
+        @loop:
+            lda #$00
+            sta TileBlastRoutine,x
+            jsr Xplus16
+            cmp #$D0
+            bne @loop
+        ; set mother brain status to dying
+        iny
+        ; set flashing delay to 128 frames
+        lda #$80
+    @notDead:
     sty MotherBrainStatus
     sta MotherBrainFlashDelay
-RTS_A01A:
+@RTS:
     rts
 
 ;-------------------------------------------------------------------------------
-LA01B:
-    dec MotherBrain9A
-    bne RTS_A02D
+MotherBrain_9E22_UpdateAnimBrain:
+    ; decrement brain delay
+    dec MotherBrainAnimBrainDelay
+    ; exit if brain delay is not zero
+    bne @RTS
+    
+    ; set brain frame to one of four randomly chosen frames from MotherBrainAnimFrameTable
     lda RandomNumber1
     and #$03
     sta MotherBrainAnimFrameTableID
+    
+    ; set brain delay depending on how many hits are left until mother brain dies
     lda #$20
     sec
     sbc MotherBrainQtyHits
     lsr
-    sta MotherBrain9A
-RTS_A02D:
+    sta MotherBrainAnimBrainDelay
+@RTS:
     rts
 
 ;-------------------------------------------------------------------------------
-LA02E:
-    dec MotherBrain9B
-    lda MotherBrain9B
+MotherBrain_9E22_UpdateAnimEye:
+    ; decrement eye delay
+    dec MotherBrainAnimEyeDelay
+    ; exit if eye delay is not #$00 or #$80
+    lda MotherBrainAnimEyeDelay
     asl
-    bne RTS_A040
+    bne @RTS
+    
+    ; set eye delay depending on how many hits are left until mother brain dies
+    ; also toggle bit 7 of eye delay
     lda #$20
     sec
     sbc MotherBrainQtyHits
     ora #$80
-    eor MotherBrain9B
-    sta MotherBrain9B
-RTS_A040:
+    eor MotherBrainAnimEyeDelay
+    sta MotherBrainAnimEyeDelay
+@RTS:
     rts
 
 ;-------------------------------------------------------------------------------
-LA041:
+MotherBrain_DrawSprites:
+    ; set PageIndex to mother brain enemy slot
     lda #$E0
     sta PageIndex
-    lda MotherBrainNameTable
+    ; set mother brain enemy pos to hardcoded constants
+    lda MotherBrainHi
     sta EnHi+$E0
     lda #$70
     sta EnY+$E0
     lda #$48
     sta EnX+$E0
+    ; update mother brain anim frame
     ldy MotherBrainAnimFrameTableID
-    lda LA06D,y
+    lda MotherBrainAnimFrameTable,y
     sta EnAnimFrame+$E0
+    ; draw mother brain enemy
     jsr CommonJump_DrawEnemy
-    lda MotherBrain9B
-    bmi RTS_A06C
-    lda LA06D+4
-    sta EnAnimFrame+$E0
-    jsr CommonJump_DrawEnemy
-RTS_A06C:
+    
+    ; branch if bit 7 of eye delay is set
+    lda MotherBrainAnimEyeDelay
+    bmi @endIf_A
+        ; bit 7 is not set, eyes are open
+        ; draw the eyes of mother brain
+        lda MotherBrainAnimFrameTable+4
+        sta EnAnimFrame+$E0
+        jsr CommonJump_DrawEnemy
+    @endIf_A:
     rts
 
 ; animation frame id table
-LA06D:
-    .byte $13, $14, $15, $16
-    .byte $17
+MotherBrainAnimFrameTable:
+; pulsations on the brain
+    .byte _id_EnFrame13
+    .byte _id_EnFrame14
+    .byte _id_EnFrame15
+    .byte _id_EnFrame16
+
+; mother brain's eyes
+    .byte _id_EnFrame17
 
 LA072:
     ldy MotherBrainQtyHits
     beq RTS_A086
     lda LA0C0,y
     clc
-    adc MotherBrain9A
+    adc MotherBrainAnimBrainDelay
     tay
     lda LA0A3,y
     cmp #$FF
     bne LA087
-    dec MotherBrain9A
+    dec MotherBrainAnimBrainDelay
 RTS_A086:
     rts
 
@@ -1333,7 +1379,7 @@ LA087:
     adc #$44
     sta TileBlastWRAMPtr
     php
-    lda MotherBrainNameTable
+    lda MotherBrainHi
     asl
     asl
     ora #$61
@@ -1365,7 +1411,7 @@ LA0C6:
     LA0D9:
         lda TileBlastRoutine,x
         beq LA0E7
-            jsr L9EF9
+            jsr Xplus16
             cmp #$D0
             bne LA0D9
             beq LA13E
@@ -1461,52 +1507,77 @@ RTS_A15D:
     rts
 
 ;-------------------------------------------------------------------------------
-LA15E:
+UpdateAllRinkaSpawners:
+    ; exit if timer is active
     ldy EndTimer+1
     iny
     bne RTS_A1DA
+    
+    ; run subroutine for the second rinka spawner
     ldy #$03
-    jsr LA16B
-        ldy #$00
-    LA16B:
+    jsr @subroutine
+    
+    ; run subroutine for the first rinka spawner
+    ldy #$00
+@subroutine:
     sty PageIndex
+    
+    ; exit if rinka spawner is inactive
     lda RinkaSpawnerStatus,y
     bmi RTS_A15D
+    
+    ; exit if RinkaSpawnerHi == bit 0 of FrameCount
+    ; (maybe to alternate which rinka spawner is processed each frame?)
     lda RinkaSpawnerHi,y
     eor FrameCount
     lsr
     bcc RTS_A15D
+    
+    ; exit if mother brain is dying or dead
     lda MotherBrainStatus
     cmp #$04
     bcs RTS_A15D
+    
+    ; exit if framecount modulo 8 is not 0 or 1
     lda FrameCount
     and #$06
     bne RTS_A15D
+    
+    ; attempt to spawn a rinka
+    ; search for an open enemy slot in the first three enemy slots
     ldx #$20
-    LA188:
+    @loop:
+        ; use slot if no enemy in slot or enemy is invisible
         lda EnStatus,x
-        beq LA19C
+        beq @slotFound
         lda EnData05,x
         and #$02
-        beq LA19C
+        beq @slotFound
+        ; slot occupied, try next slot
         txa
         sec
         sbc #$10
         tax
-        bpl LA188
+        bpl @loop
+    ; no open slot found, exiting
     rts
 
-LA19C:
-    lda #$01
+@slotFound:
+    ; set rinka status to resting
+    lda #enemyStatus_Resting
     sta EnStatus,x
+    ; set rinka enemy type to rinka
     lda #$04
     sta EnType,x
+    ; init more rinka stuff idk
     lda #$00
     sta EnSpecialAttribs,x
     sta EnData04,x
     jsr CommonJump_0E
+    ; set rinka frame to nothing (it will fade into view)
     lda #$F7
     sta EnAnimFrame,x
+    ; init rinka position
     ldy PageIndex
     lda RinkaSpawnerHi,y
     sta EnHi,x
@@ -1515,7 +1586,8 @@ LA19C:
     ora RinkaSpawnerStatus,y
     tay
     lda RinkaSpawnPosTbl,y
-    jsr L9EE7
+    jsr SpawnRinka_InitPositionXY
+    ; increment rinka spawner position id
     ldx PageIndex
     inc RinkaSpawnerPosIndex,x
     lda RinkaSpawnerPosIndex,x
@@ -1587,26 +1659,34 @@ UpdateEndTimer:
     rts
 
 ;-------------------------------------------------------------------------------
-LA238:
-    lda MotherBrain010D
+; the end timer that is part of the "TIME BOMB SET" message
+DrawEndTimerEnemy:
+    ; exit if end timer enemy is not enabled
+    lda EndTimerEnemyIsEnabled
     beq RTS_A28A
-    lda MotherBrain010C
+
+    ; attempt to draw end timer enemy sprite
+    lda EndTimerEnemyHi
     sta EnHi+$E0
     lda #$84
     sta EnY+$E0
     lda #$64
     sta EnX+$E0
-    lda #$1A
+    lda #_id_EnFrame1A.b
     sta EnAnimFrame+$E0
     lda #$E0
     sta PageIndex
+    ; remember page pos for later
     lda SpritePagePos
     pha
     jsr CommonJump_DrawEnemy
+    ; exit if past page pos is the same as current page pos (sprite failed to draw)
     pla
     cmp SpritePagePos
     beq RTS_A28A
+    
     tax
+    ; set tile of hundreds digit
     lda EndTimer+1
     lsr
     lsr
@@ -1615,11 +1695,13 @@ LA238:
     ror
     and #$0F
     ora #$A0
-    sta SpriteRAM+$01,x
+    sta SpriteRAM+($00<<2)+$01,x
+    ; set tile of tens digit
     lda EndTimer+1
     and #$0F
     ora #$A0
-    sta SpriteRAM+$05,x
+    sta SpriteRAM+($01<<2)+$01,x
+    ; set tile of ones digit
     lda EndTimer
     lsr
     lsr
@@ -1628,7 +1710,7 @@ LA238:
     ror
     and #$0F
     ora #$A0
-    sta SpriteRAM+$09,x
+    sta SpriteRAM+($02<<2)+$01,x
 RTS_A28A:
     rts
 

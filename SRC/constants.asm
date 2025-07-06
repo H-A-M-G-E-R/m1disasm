@@ -326,12 +326,13 @@ MotherBrainStatus      = $98     ;#$00=Mother brain not in room, #$01=Mother bra
                                    ;#$06=Time bomb set, #$07=Time bomb exploded,-->
                                    ;#$08=Initialize mother brain,-->
                                    ;#$09, #$0A=Mother brain already dead.
-MotherBrainQtyHits        = $99     ;Number of times mother brain has been hit. Dies at #$20.
+MotherBrainQtyHits     = $99     ;Number of times mother brain has been hit. Dies at #$20.
 
-MotherBrain9A          = $9A
-MotherBrain9B          = $9B
-MotherBrainAnimFrameTableID = $9C
-MotherBrainNameTable   = $9D
+MotherBrainAnimBrainDelay = $9A     ; delay until next brain frame. depends on mother brain health
+MotherBrainAnimEyeDelay = $9B     ; delay until eye opens or closes. depends on mother brain health
+                                    ; bit7=is eye open? #%0=yes, #%1=no
+MotherBrainAnimFrameTableID = $9C     ; current id in MotherBrainAnimFrameTable for the brain pulsations
+MotherBrainHi          = $9D
 MotherBrainIsHit       = $9E     ;Was mother brain hit by a missile? #$00=no, #$01=yes
 MotherBrainFlashDelay  = $9F     ;Delay until mother brain no longer flashes from being hit.
 
@@ -423,8 +424,8 @@ PowerUpDelayFlag       = $0109   ;Initiate power up music and delay after item p
 EndTimer               = $010A   ;Lower byte of end game escape timer.
 ; EndTimer+1             = $010B   ;Upper byte of end game escape timer.
 
-MotherBrain010C        = $010C
-MotherBrain010D        = $010D
+EndTimerEnemyHi        = $010C
+EndTimerEnemyIsEnabled = $010D   ;the end timer in the "TIME BOMB SET" message. #$00=no, #$01=yes
 
 MissileToggle          = $010E   ;0=fire bullets, 1=fire missiles.
 SamusHurt010F          = $010F
