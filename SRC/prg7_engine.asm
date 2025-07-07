@@ -2881,8 +2881,7 @@ CheckBombLaunch:
     ora Joy1Retrig
     asl             ; bit 7 = status of FIRE button
     bpl RTS_X036    ; exit if FIRE not pressed
-    lda ObjSpeedY
-    ora SamusOnElevator
+    lda SamusOnElevator
     bne RTS_X036
     ldx #$D0        ; try object slot D
     lda ObjAction,x
