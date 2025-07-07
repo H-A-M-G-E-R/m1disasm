@@ -202,7 +202,7 @@ NMI:
     lda #$00
     sta OAMADDR
     ;Transfer page 2 ($200-$2FF) to Sprite RAM.
-    lda #$02
+    lda #>SpriteRAM.b
     sta OAMDMA
     ;Skip if the frame couldn't finish in time.
     lda NMIStatus
@@ -4833,7 +4833,7 @@ LDD30:
     tay
     lda ItemDropTbl,y
     sta EnAnimFrame,x
-    cmp #$80
+    cmp #_id_EnFrame80.b
     bne RTS_X137
     ;bne Lx138
         ; check if spawning a missile pickup is allowed
@@ -4850,7 +4850,7 @@ LDD30:
         ; fail if the quantity of energy pickups spawned in this room has reached the max
         
         ; exit if it is not big energy (small energy pickup)
-        ;cmp #$89
+        ;cmp #_id_EnFrame89.b
         ;bne RTS_X137
         
         ; fail if enemy can't drop big energy
