@@ -1506,8 +1506,8 @@ PrepareGameOver:
 ;------------------------------------------[ Pause mode ]--------------------------------------------
 
 PauseMode:
-    ;Load buttons currently being pressed on joypad 2.
-    lda Joy2Status
+    ;Load buttons currently being pressed on joypad 1.
+    lda Joy1Status
     ; Exit if not both A & UP pressed.
     and #BUTTON_A | BUTTON_UP.b
     eor #BUTTON_A | BUTTON_UP.b
