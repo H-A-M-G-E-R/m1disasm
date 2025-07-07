@@ -110,24 +110,5 @@ JOY2                   = $4017   ;Joypad2/APU common control 2 register.
 
 ;----------------------------------------------------------------------------------------------------
 
-;Writing to any of these addresses or any address in between will write configuration bits to the MMC chip.
-MMC1Reg0               = $8000
-MMC1Reg1               = $A000
-MMC1Reg2               = $C000
-MMC1Reg3               = $E000
-
-    MMC1_0_MIRROR_1LOWER   = %00000
-    MMC1_0_MIRROR_1UPPER   = %00001
-    MMC1_0_MIRROR_VERTI    = %00010
-    MMC1_0_MIRROR_HORIZ    = %00011
-    MMC1_0_PRGFIXED_8000   = %00000
-    MMC1_0_PRGFIXED_C000   = %00100
-    MMC1_0_PRGBANK_32K     = %00000
-    MMC1_0_PRGBANK_16K     = %01000
-    MMC1_0_CHRBANK_8K      = %00000
-    MMC1_0_CHRBANK_4K      = %10000
-
-;----------------------------------------------------------------------------------------------------
-
 SCRN_VX                = 256
 SCRN_VY                = 240

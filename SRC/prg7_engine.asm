@@ -63,17 +63,10 @@ RESET:
     txs                             ;S points to end of stack page
 
     lda #$00
-    sta MMC1Reg1                    ;Clear bit 0. MMC1 is serial controlled
-    sta MMC1Reg1                    ;Clear bit 1
-    sta MMC1Reg1                    ;Clear bit 2
-    sta MMC1Reg1                    ;Clear bit 3
-    sta MMC1Reg1                    ;Clear bit 4
-    sta MMC1Reg2                    ;Clear bit 0
-    sta MMC1Reg2                    ;Clear bit 1
-    sta MMC1Reg2                    ;Clear bit 2
-    sta MMC1Reg2                    ;Clear bit 3
-    sta MMC1Reg2                    ;Clear bit 4
     jsr MMCWriteReg3                ;($C4FA)Swap to PRG bank #0 at $8000
+
+    lda #$80                        ;
+    sta $A001                       ;Enable MMC3 PRG RAM
 
 ;Clear RAM at $000-$7FF.
     ldy #$07                        ;High byte of start address.
@@ -107,14 +100,6 @@ LC057:
         cpx #$60                        ;If not, do another page.
         bcs LC060                       ;
 
-
-    ;Vertical mirroring.
-    ;H/V mirroring (As opposed to one-screen mirroring).
-    ;Switch low PRGROM area during a page switch.
-    ;16KB PRGROM switching enabled.
-    ;8KB CHRROM switching enabled.
-    lda #MMC1_0_MIRROR_VERTI | MMC1_0_PRGFIXED_C000 | MMC1_0_PRGBANK_16K | MMC1_0_CHRBANK_8K.b
-    sta MMCReg0Cntrl
 
     ldy #$00                        ;
     sty ScrollX                     ;ScrollX = 0
@@ -335,8 +320,6 @@ NMI:
     jsr SoundEngine
     pla
     jsr MMCWriteReg3
-    lda #$80
-    sta MMC1Reg0
     ;($C97E)Update Samus' age.
     jsr UpdateAge
     ; NMI = finished.
@@ -1095,25 +1078,12 @@ SetPPUMirror:
     lsr                             ;Move bit 3 to bit 0 position.
     lsr                             ;
     and #$01                        ;Remove all other bits.
-    sta $00                         ;Store at address $00.
-    lda MMCReg0Cntrl                ;
-    and #$FE                        ;Load MMCReg0Cntrl and remove bit 0.
-    ora $00                         ;Replace bit 0 with stored bit at $00.
-    sta MMCReg0Cntrl                ;
-    sta MMC1Reg0                    ;
-    lsr                             ;
-    sta MMC1Reg0                    ;
-    lsr                             ;
-    sta MMC1Reg0                    ;
-    lsr                             ;Load new configuration data serially-->
-    sta MMC1Reg0                    ;into MMC1Reg0.
-    lsr                             ;
-    sta MMC1Reg0                    ;
+    sta $A000                       ;Set the MMC3 nametable arrangement register.
     rts                             ;
 
 PrepPPUMirror:
     lda MirrorCntrl                 ;Load MirrorCntrl into A.
-    jmp SetPPUMirror                ;($C4B6)Set mirroring through MMC1 chip.
+    jmp SetPPUMirror                ;($C4B6)Set mirroring through MMC3 chip.
 
 ;-----------------------------[ Switch bank and init bank routines ]---------------------------------
 
@@ -1140,19 +1110,17 @@ CheckSwitch:
 
 MMCWriteReg3:
     sta CurrentBank
+    lda #$06                        ;Select bank at $8000-$9FFF
+    sta $8000                       ;
+    lda CurrentBank
+    asl                             ;Because PRG banks are half the size compared to MMC1
+    sta $8001                       ;Switch bank to CurrentBank * 2 at $8000-$9FFF
     pha
-    lda #$80
-    sta MMC1Reg0
+    lda #$07                        ;Select bank at $A000-$BFFF
+    sta $8000                       ;
     pla
-    sta MMC1Reg3                    ;Write bit 0 of ROM bank #.
-    lsr                             ;
-    sta MMC1Reg3                    ;Write bit 1 of ROM bank #.
-    lsr                             ;
-    sta MMC1Reg3                    ;Write bit 2 of ROM bank #.
-    lsr                             ;
-    sta MMC1Reg3                    ;Write bit 3 of ROM bank #.
-    lsr                             ;
-    sta MMC1Reg3                    ;Write bit 4 of ROM bank #.
+    adc #$01
+    sta $8001                       ;Switch bank to CurrentBank * 2 + 1 at $A000-$BFFF
 RTS_C50F:
     rts
 
