@@ -5030,14 +5030,14 @@ DrawEnemy_NotBlank:
 ;This is the EnFrame of the drop.
 
 ItemDropTbl:
-    .byte $80                       ;Missile.
-    .byte $81                       ;Energy.
-    .byte $89                       ;No item / big energy.
-    .byte $80                       ;Missile.
-    .byte $81                       ;Energy.
-    .byte $80                       ;Missile. Was no item / big energy.
-    .byte $81                       ;Energy.
-    .byte $89                       ;No item / big energy.
+    .byte _id_EnFrame80                       ;Missile.
+    .byte _id_EnFrame81                       ;Energy.
+    .byte _id_EnFrame89                       ;No item / big energy.
+    .byte _id_EnFrame80                       ;Missile.
+    .byte _id_EnFrame81                       ;Energy.
+    .byte _id_EnFrame80                       ;Missile. Was no item / big energy.
+    .byte _id_EnFrame81                       ;Energy.
+    .byte _id_EnFrame89                       ;No item / big energy.
 
 ;------------------------------------[ Object drawing routines ]-------------------------------------
 
