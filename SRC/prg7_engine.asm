@@ -1218,7 +1218,7 @@ AreaInit:
     and #BUTTON_A | BUTTON_B.b        ;Stores status of both the A and B buttons.
     sta ABStatus                    ;Appears to never be accessed.
     jsr EraseAllSprites             ;($C1A3)Clear all sprite info.
-    lda #$10                        ;Prepare to load Brinstar memory page.
+    lda #$00                        ;Prepare to load Brinstar memory page.
     jsr IsEngineRunning             ;($CA18)Check to see if ok to switch lower memory page.
 
 ;------------------------------------------[ MoreInit ]---------------------------------------------
@@ -1593,7 +1593,6 @@ RTS_CA22:
 
 SwitchBank:
     sta InArea                      ;Save current area Samus is in.
-    and #$0F                        ;
     tay                             ;Use 4 LSB to load switch pending offset from BankTable table.
     lda BankTable,y                 ;Base is $CA30.
     sta SwitchPending               ;Store switch data.
@@ -3664,7 +3663,6 @@ RTS_X081:
 ; Blast tile ids are #$80-$9F in Brinstar and #$70-$9F in other areas
 CheckBlastTile:
     ldy InArea
-    cpy #$10
     beq @Brinstar
         cmp #$70
         bcs @RTS
@@ -4093,7 +4091,6 @@ ElevatorD8BF:
     @endIf_B:
     ; destination area is now in the low nybble of y
     ; load destination area bank
-    ora #$10
     jsr IsEngineRunning
     ; toggle palette
     lda PalToggle
@@ -4101,7 +4098,7 @@ ElevatorD8BF:
     sta PalToggle
     ; if in tourian, load palette 0, else load palette PalToggle-1
     ldy InArea
-    cpy #$12
+    cpy #$02
     bcc @endIf_D
         lda #$01
     @endIf_D:
@@ -4799,7 +4796,7 @@ LDCF5:
 LDCFC:
     ; Branch ahead if not in Tourian
     lda InArea 
-    cmp #$13
+    cmp #$03
     bne Lx135
         ; we are in tourian
         ; never turn into a drop if enemy is a ??? or a rinka
@@ -4861,7 +4858,7 @@ LDD5B:
     ; if not in tourian, remove enemy
     ldx PageIndex
     lda InArea
-    cmp #$13
+    cmp #$03
     beq Lx140
     Lx139:
         jmp RemoveEnemy                  ;($FA18)Free enemy data slot.
@@ -4879,8 +4876,6 @@ LDD75:
     ; play item get music
     jsr PowerUpMusic
     ; trigger kill delay
-    lda InArea
-    and #$0F
     sta MiniBossKillDelayFlag
     ; make corresponding miniboss statue blink
     lsr
@@ -7114,7 +7109,7 @@ Lx220:
     lda $05
     sta TileBlastWRAMPtr+1,x
     lda InArea
-    cmp #$11                        ; In Norfair?
+    cmp #$01                        ; In Norfair?
     bne Lx221
     cpy #$76                        ; Special case for the four-small-bubbles breakable block
     bne Lx221
@@ -9816,7 +9811,7 @@ EnemyBGCollideOrApplySpeed:
 CommonJump_EnemyBGCollideOrApplySpeed:
     ; branch if not in norfair
     lda InArea
-    cmp #$11
+    cmp #$01
     bne Lx368
         ; we are in norfair
         ; branch if enemy is active, frozen or hurt

@@ -1608,7 +1608,7 @@ LoadPasswordData:
     
     ;Extract first 5 bits from PasswordByte08 and use it to determine starting area.
     lda PasswordByte+$08
-    and #$3F
+    and #$0F ; so existing passwords work correctly
     sta InArea
     
     ;Load Samus' age.
@@ -2334,7 +2334,6 @@ InitializeGame:
     sta ObjAnimFrame                ;Set animframe index. changed by initializing routines.
     ldx #$01                        ;x is the index into the position tables below.
     lda InArea                      ;Load starting area.
-    and #$0F                        ;
     bne L92F9                       ;If in area other than Brinstar, get second item in tables.
         dex                             ;Starting in Brinstar. Get first item in each table.
     L92F9:
@@ -2358,9 +2357,7 @@ InitializeGame:
     jsr ScreenNmiOff                ;($C45D)Turn off screen.
     jsr LoadSamusGFX                ;($C5DC)Load Samus GFX into pattern table.
     jsr NMIOn                       ;($C487)Turn on the non-maskable interrupt.
-    lda InArea                      ;Load area Samus is to start in.
-    and #$0F                        ;
-    tay                             ;
+    ldy InArea                      ;Load area Samus is to start in.
     lda BankTable,y                 ;Change to proper memory page.
     sta SwitchPending               ;
 RTS_9324:

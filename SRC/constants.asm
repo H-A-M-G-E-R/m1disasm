@@ -242,8 +242,8 @@ UpdatingProjectile     = $71     ;#$01=Projectile update in process. #$00=not in
 SamusKnockbackDir      = $72     ;#$00=Push Samus left when hit, #$01=Push right, #$FF=No push.
                                     ; i think there may something more to this variable, but im not sure what
 SamusKnockbackIsBomb   = $73     ;bit 7: 0=samus was hurt, 1=samus was bombed
-InArea                 = $74     ;#$10(or #$00)=Brinstar, #$11=Norfair, #$12=Kraid hideout,-->
-                                   ;#$13=Tourian, #$14=Ridley hideout.
+InArea                 = $74     ;#$00=Brinstar, #$01=Norfair, #$02=Kraid hideout,-->
+                                   ;#$03=Tourian, #$04=Ridley hideout.
 
 SpareMem75             = $75     ;Initialized to #$FF in AreaInit. Not used.
 PalToggle              = $76
