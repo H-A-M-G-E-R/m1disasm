@@ -669,31 +669,31 @@ EnFrame1B:
     .byte $FF
 
 EnFrame1C:
-    .byte ($3 << 4) + _id_ObjPlace9, $04, $08
+    .byte ($2 << 4) + _id_ObjPlace9, $04, $08
     .byte $F6
     .byte $F7
     .byte $FF
 
 EnFrame1D:
-    .byte ($3 << 4) + _id_ObjPlace9, $04, $08
+    .byte ($2 << 4) + _id_ObjPlace9, $04, $08
     .byte $E7
     .byte $F7
     .byte $FF
 
 EnFrame1E:
-    .byte OAMDATA_HFLIP + ($3 << 4) + _id_ObjPlace9, $04, $08
+    .byte OAMDATA_HFLIP + ($2 << 4) + _id_ObjPlace9, $04, $08
     .byte $F6
     .byte $F7
     .byte $FF
 
 EnFrame1F:
-    .byte OAMDATA_HFLIP + ($3 << 4) + _id_ObjPlace9, $04, $08
+    .byte OAMDATA_HFLIP + ($2 << 4) + _id_ObjPlace9, $04, $08
     .byte $E7
     .byte $F7
     .byte $FF
 
 EnFrame20:
-    .byte ($3 << 4) + _id_ObjPlace1, $00, $00
+    .byte ($2 << 4) + _id_ObjPlace1, $00, $00
     .byte $F6
     .byte $F7
     .byte $FF
