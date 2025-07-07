@@ -677,8 +677,7 @@ ObjFrame05:
 ObjFrame07:
     .byte ($0 << 4) + _id_ObjPlace0, $0F, $04
     .byte $09
-    .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $09
+    .byte $0A
     .byte $FD, OAMDATA_PRIORITY + $0
     .byte $FE
     .byte $19
