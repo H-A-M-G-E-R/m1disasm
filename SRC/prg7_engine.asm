@@ -202,8 +202,26 @@ NMI:
     lda #$00
     sta OAMADDR
     ;Transfer page 2 ($200-$2FF) to Sprite RAM.
-    lda #>SpriteRAM.b
-    sta OAMDMA
+    ldy #>SpriteRAM.b
+    sty OAMDMA
+
+    ;Set SPR CHR banks so Samus would use the correct GFX during lag frames.
+    sty $8000
+    lda CHRBank2
+    sta $8001
+    iny
+    sty $8000
+    lda CHRBank3
+    sta $8001
+    iny
+    sty $8000
+    lda CHRBank4
+    sta $8001
+    iny
+    sty $8000
+    lda CHRBank5
+    sta $8001
+
     ;Skip if the frame couldn't finish in time.
     lda NMIStatus
     beq +
@@ -310,7 +328,7 @@ NMI:
         ;($C29A)Update h/v scroll reg.
         jsr WriteScroll
 
-        ;Set CHR banks.
+        ;Set BG CHR banks.
         ldy #$00
         sty $8000
         lda CHRBank0
@@ -318,22 +336,6 @@ NMI:
         iny
         sty $8000
         lda CHRBank1
-        sta $8001
-        iny
-        sty $8000
-        lda CHRBank2
-        sta $8001
-        iny
-        sty $8000
-        lda CHRBank3
-        sta $8001
-        iny
-        sty $8000
-        lda CHRBank4
-        sta $8001
-        iny
-        sty $8000
-        lda CHRBank5
         sta $8001
 
         ;($C215)Read both joypads.
