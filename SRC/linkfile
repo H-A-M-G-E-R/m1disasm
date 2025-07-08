@@ -8,7 +8,7 @@ out/prg2_norfair.o
 out/prg3_tourian.o
 out/prg4_kraid.o
 out/prg5_ridley.o
-out/prg6_graphics.o
+out/prg6_audio.o
 out/prg7_engine.o
 out/chr.o
 

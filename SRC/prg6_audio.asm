@@ -13,7 +13,7 @@
 
 ;Hosted on wiki.metroidconstruction.com, with possible additions by wiki contributors.
 
-;Graphics data (memory page 6)
+;Sound engine and data (memory page 6)
 
 .include "hardware.asm"
 .include "constants.asm"

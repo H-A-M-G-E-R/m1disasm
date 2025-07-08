@@ -19,7 +19,7 @@ banks = [
     "prg3_tourian",
     "prg4_kraid",
     "prg5_ridley",
-    "prg6_graphics",
+    "prg6_audio",
     "prg7_engine",
     "chr"
 ]
