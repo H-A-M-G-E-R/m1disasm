@@ -4558,6 +4558,8 @@ InitEndGFX:
     .byte EndingSPR/$400+3
 
 InitTitleGFX:
+    lda #TitleSPR/$400.b
+    sta CHRBank2
     jsr LoadAreaGFX
     .byte TitleBG/$400
     .byte TitleBG/$400+2
