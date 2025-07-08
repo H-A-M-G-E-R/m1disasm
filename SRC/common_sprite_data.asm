@@ -258,6 +258,48 @@ ObjPlacePtrTable:
     PtrTableEntry ObjPlacePtrTable, ObjPlaceD
     PtrTableEntry ObjPlacePtrTable, ObjPlaceE
 
+SamusCHRBankTable:
+    .byte SamusSuitGFX0/$400 ; ObjFrame03
+    .byte SamusSuitGFX1/$400 ; ObjFrame04
+    .byte SamusSuitGFX2/$400 ; ObjFrame05
+    .byte SamusSuitGFX4/$400 ; ObjFrame07
+    .byte SamusSuitGFX5/$400 ; ObjFrame08
+    .byte SamusSuitGFX0/$400 ; ObjFrame0C
+    .byte SamusSuitGFX1/$400 ; ObjFrame0D
+    .byte SamusSuitGFX2/$400 ; ObjFrame0E
+    .byte SamusSuitGFX6/$400 ; ObjFrame10
+    .byte SamusSuitGFX6/$400 ; ObjFrame12
+    .byte SamusSuitGFX7/$400 ; ObjFrame17
+    .byte SamusSuitGFX7/$400 ; ObjFrame18
+    .byte SamusSuitGFX7/$400 ; ObjFrame19
+    .byte SamusSuitGFX7/$400 ; ObjFrame1A
+    .byte SamusSuitGFX7/$400 ; ObjFrame1B
+    .byte SamusSuitGFX7/$400 ; ObjFrame1C
+    .byte SamusSuitGFX7/$400 ; ObjFrame1D
+    .byte SamusSuitGFX7/$400 ; ObjFrame1E
+    .byte SamusSuitGFX5/$400 ; ObjFrame22
+    .byte $00 ; ObjFrame23
+    .byte $00 ; ObjFrame25
+    .byte $00 ; ObjFrame26
+    .byte $00 ; ObjFrame27
+    .byte $00 ; ObjFrame28
+    .byte $00 ; ObjFrameIceBulletHit
+    .byte $00 ; ObjFrame2A
+    .byte SamusSuitGFX5/$400 ; ObjFrame2B
+    .byte SamusSuitGFX5/$400 ; ObjFrame30
+    .byte $00 ; ObjFrame31
+    .byte $00 ; ObjFrame33
+    .byte SamusSuitGFX4/$400 ; ObjFrame35
+    .byte SamusSuitGFX6/$400 ; ObjFrame38
+    .byte SamusSuitGFX6/$400 ; ObjFrame39
+    .byte $00 ; ObjFrame3C
+    .byte SamusSuitGFX0/$400 ; ObjFrame40
+    .byte SamusSuitGFX3/$400 ; ObjFrame41
+    .byte SamusSuitGFX3/$400 ; ObjFrame42
+    .byte SamusSuitGFX0/$400 ; ObjFrame46
+    .byte SamusSuitGFX3/$400 ; ObjFrame47
+    .byte SamusSuitGFX3/$400 ; ObjFrame48
+
 ;------------------------------[ Sprite placement data tables ]-------------------------------------
 
 ;Sprite placement data. The placement data is grouped into two byte segments. The first byte is the
@@ -628,86 +670,86 @@ ObjFrame03:
     .byte $01
     .byte $FD, OAMDATA_PRIORITY + $0
     .byte $FE
-    .byte $41
-    .byte $40
+    .byte $02
+    .byte $03
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $20
-    .byte $21
+    .byte $04
+    .byte $05
     .byte $FE
     .byte $FE
-    .byte $31
+    .byte $06
     .byte $FF
 
 ;Samus run.
 ObjFrame04:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace0, $0F, $04
-    .byte $02
-    .byte $03
+    .byte $00
+    .byte $01
     .byte $FD, OAMDATA_PRIORITY + $0
     .byte $FE
-    .byte $43
-    .byte $42
+    .byte $02
+    .byte $03
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $22
-    .byte $23
+    .byte $04
+    .byte $05
     .byte $FE
-    .byte $32
-    .byte $33
-    .byte $34
+    .byte $06
+    .byte $07
+    .byte $08
     .byte $FF
 
 ;Samus run.
 ObjFrame05:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace0, $0F, $04
-    .byte $05
-    .byte $06
+    .byte $00
+    .byte $01
     .byte $FD, OAMDATA_PRIORITY + $0
     .byte $FE
-    .byte $45
-    .byte $44
+    .byte $02
+    .byte $03
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $25
-    .byte $26
-    .byte $27
-    .byte $35
-    .byte $36
+    .byte $04
+    .byte $05
+    .byte $06
+    .byte $07
+    .byte $08
     .byte $FF
 
 ;Samus facing forward.
 ObjFrame07:
     .byte ($0 << 4) + _id_ObjPlace0, $0F, $04
-    .byte $09
-    .byte $0A
+    .byte $00
+    .byte $01
     .byte $FD, OAMDATA_PRIORITY + $0
     .byte $FE
-    .byte $19
-    .byte $1A
+    .byte $02
+    .byte $03
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $29
-    .byte $2A
+    .byte $04
+    .byte $05
     .byte $FE
-    .byte $39
+    .byte $06
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $39
+    .byte $06
     .byte $FF
 
 ;Samus stand.
 ObjFrame08:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace0, $0F, $04
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $0E
-    .byte $0D
+    .byte $00
+    .byte $01
     .byte $FE
-    .byte $1E
-    .byte $1D
-    .byte $2E
-    .byte $2D
+    .byte $02
+    .byte $03
+    .byte $04
+    .byte $05
     .byte $FE
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $3B
-    .byte $3C
+    .byte $06
+    .byte $07
     .byte $FE
-    .byte $17
+    .byte $08
     .byte $FF
 
 ;Samus run and fire.
@@ -716,50 +758,50 @@ ObjFrame0C:
     .byte $00
     .byte $01
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $4B
-    .byte $4A
-    .byte $49
+    .byte $07
+    .byte $08
+    .byte $09
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $20
-    .byte $21
+    .byte $04
+    .byte $05
     .byte $FE
     .byte $FE
-    .byte $31
+    .byte $06
     .byte $FF
 
 ;Samus run and fire.
 ObjFrame0D:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace0, $0F, $04
-    .byte $00
-    .byte $01
+    .byte $09
+    .byte $0A
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $4B
-    .byte $4A
-    .byte $49
+    .byte $0B
+    .byte $0C
+    .byte $0D
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $22
-    .byte $23
+    .byte $04
+    .byte $05
     .byte $FE
-    .byte $32
-    .byte $33
-    .byte $34
+    .byte $06
+    .byte $07
+    .byte $08
     .byte $FF
 
 ;Samus run and fire.
 ObjFrame0E:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace0, $0F, $04
-    .byte $00
-    .byte $01
+    .byte $09
+    .byte $0A
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $4B
-    .byte $4A
-    .byte $49
+    .byte $0B
+    .byte $0C
+    .byte $0D
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $25
-    .byte $26
-    .byte $27
-    .byte $35
-    .byte $36
+    .byte $04
+    .byte $05
+    .byte $06
+    .byte $07
+    .byte $08
     .byte $FF
 
 ;Samus stand and jump.
@@ -769,13 +811,13 @@ ObjFrame10:
     .byte $01
     .byte $FD, OAMDATA_PRIORITY + $0
     .byte $FE
-    .byte $41
-    .byte $40
+    .byte $02
+    .byte $03
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $22
+    .byte $04
+    .byte $05
+    .byte $06
     .byte $07
-    .byte $08
-    .byte $32
     .byte $FF
 
 ;Samus jump and fire.
@@ -784,423 +826,423 @@ ObjFrame12:
     .byte $00
     .byte $01
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $4B
-    .byte $4A
-    .byte $49
-    .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $22
-    .byte $07
     .byte $08
-    .byte $32
+    .byte $09
+    .byte $0A
+    .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
+    .byte $04
+    .byte $05
+    .byte $06
+    .byte $07
     .byte $FF
 
 ;Samus somersault.
 ObjFrame17:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace1, $0F, $04
-    .byte $52
-    .byte $53
-    .byte $62
-    .byte $63
-    .byte $72
-    .byte $73
+    .byte $00
+    .byte $01
+    .byte $02
+    .byte $03
+    .byte $04
+    .byte $05
     .byte $FF
 
 ;Samus somersault.
 ObjFrame18:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace2, $0F, $04
-    .byte $54
-    .byte $55
-    .byte $56
-    .byte $64
-    .byte $65
-    .byte $66
+    .byte $06
+    .byte $07
+    .byte $08
+    .byte $09
+    .byte $0A
+    .byte $0B
     .byte $FF
 
 ;Samus somersault.
 ObjFrame19:
     .byte OAMDATA_VFLIP + ($0 << 4) + _id_ObjPlace1, $0F, $04
-    .byte $52
-    .byte $53
-    .byte $62
-    .byte $63
-    .byte $72
-    .byte $73
+    .byte $00
+    .byte $01
+    .byte $02
+    .byte $03
+    .byte $04
+    .byte $05
     .byte $FF
 
 ;Samus somersault.
 ObjFrame1A:
     .byte OAMDATA_VFLIP + ($0 << 4) + _id_ObjPlace2, $0F, $04
-    .byte $54
-    .byte $55
-    .byte $56
-    .byte $64
-    .byte $65
-    .byte $66
+    .byte $06
+    .byte $07
+    .byte $08
+    .byte $09
+    .byte $0A
+    .byte $0B
     .byte $FF
 
 ;Samus roll.
 ObjFrame1B:
     .byte ($0 << 4) + _id_ObjPlace1, $08, $04
     .byte $FC, $03, $00
-    .byte $50
-    .byte $51
-    .byte $60
-    .byte $61
+    .byte $0C
+    .byte $0D
+    .byte $0E
+    .byte $0F
     .byte $FF
 
 ;Samus roll.
 ObjFrame1C:
     .byte OAMDATA_VFLIP + ($0 << 4) + _id_ObjPlace1, $08, $04
     .byte $FC, $FD, $00
-    .byte $50
-    .byte $51
-    .byte $60
-    .byte $61
+    .byte $0C
+    .byte $0D
+    .byte $0E
+    .byte $0F
     .byte $FF
 
 ;Samus roll.
 ObjFrame1D:
     .byte OAMDATA_VFLIP + OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace1, $08, $04
     .byte $FC, $FD, $00
-    .byte $50
-    .byte $51
-    .byte $60
-    .byte $61
+    .byte $0C
+    .byte $0D
+    .byte $0E
+    .byte $0F
     .byte $FF
 
 ;Samus roll.
 ObjFrame1E:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace1, $08, $04
     .byte $FC, $03, $00
-    .byte $50
-    .byte $51
-    .byte $60
-    .byte $61
+    .byte $0C
+    .byte $0D
+    .byte $0E
+    .byte $0F
     .byte $FF
 
 ;Samus stand and fire.
 ObjFrame22:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace0, $0F, $04
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $0E
-    .byte $0D
+    .byte $00
+    .byte $01
     .byte $FE
-    .byte $1E
-    .byte $1D
-    .byte $2E
-    .byte $2D
+    .byte $02
+    .byte $03
+    .byte $04
+    .byte $05
     .byte $FE
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $3B
-    .byte $3C
+    .byte $06
+    .byte $07
     .byte $FE
     .byte $FE
-    .byte $17
+    .byte $08
     .byte $FF
 
 ;Elevator.
 ObjFrame23:
     .byte ($0 << 4) + _id_ObjPlace3, $04, $10
-    .byte $28
-    .byte $38
-    .byte $38
+    .byte $10
+    .byte $11
+    .byte $11
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $28
+    .byte $10
     .byte $FF
 
 ;Missile right.
 ObjFrame25:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlaceA, $04, $08
-    .byte $5E
-    .byte $5F
+    .byte $12
+    .byte $13
     .byte $FF
 
 ;Missile left.
 ObjFrame26:
     .byte ($0 << 4) + _id_ObjPlaceA, $04, $08
-    .byte $5E
-    .byte $5F
+    .byte $12
+    .byte $13
     .byte $FF
 
 ;Missile up.
 ObjFrame27:
     .byte ($0 << 4) + _id_ObjPlace9, $08, $04
     .byte $14
-    .byte $24
+    .byte $15
     .byte $FF
 
 ;Bullet fire.
 ObjFrame28:
     .byte ($0 << 4) + _id_ObjPlace4, $02, $02
-    .byte $30
+    .byte $16
     .byte $FF
 
 ;Bullet hit.
 ObjFrame2A:
     .byte ($0 << 4) + _id_ObjPlace4, $00, $00
-    .byte $04
+    .byte $17
     .byte $FF
 
 ;Ice bullet fire.
 ObjFrameIceBullet:
     .byte ($1 << 4) + _id_ObjPlace4, $02, $02
-    .byte $30
+    .byte $16
     .byte $FF
 
 ;Ice bullet hit.
 ObjFrameIceBulletHit:
     .byte ($1 << 4) + _id_ObjPlace4, $00, $00
-    .byte $04
+    .byte $17
     .byte $FF
 
 ;Samus stand and point up.
 ObjFrame2B:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace6, $0F, $04
-    .byte $69
+    .byte $09
     .byte $FE
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $7A
-    .byte $79
+    .byte $0A
+    .byte $0B
     .byte $FE
-    .byte $78
-    .byte $77
-    .byte $2E
-    .byte $2D
+    .byte $0C
+    .byte $0D
+    .byte $04
+    .byte $05
     .byte $FE
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $3B
-    .byte $3C
+    .byte $06
+    .byte $07
     .byte $FF
 
 ;Samus from ball to pointing up.
 ObjFrame30:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace6, $0F, $04
     .byte $FE
-    .byte $69
+    .byte $09
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $7A
-    .byte $79
+    .byte $0A
+    .byte $0B
     .byte $FE
-    .byte $78
-    .byte $77
-    .byte $2E
-    .byte $2D
+    .byte $0C
+    .byte $0D
+    .byte $04
+    .byte $05
     .byte $FE
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $3B
-    .byte $3C
+    .byte $06
+    .byte $07
     .byte $FF
 
 ;Door closed.
 ObjFrame31:
     .byte ($3 << 4) + _id_ObjPlace5, $18, $08
-    .byte $0F
-    .byte $1F
-    .byte $2F
+    .byte $18
+    .byte $19
+    .byte $1A
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_VFLIP + $3
-    .byte $2F
-    .byte $1F
-    .byte $0F
+    .byte $1A
+    .byte $19
+    .byte $18
     .byte $FF
 
 ;Door open/close.
 ObjFrame33:
     .byte ($3 << 4) + _id_ObjPlace5, $18, $04
-    .byte $6A
-    .byte $6B
-    .byte $6C
+    .byte $1B
+    .byte $1C
+    .byte $1D
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_VFLIP + $3
-    .byte $6C
-    .byte $6B
-    .byte $6A
+    .byte $1D
+    .byte $1C
+    .byte $1B
     .byte $FF
 
 ;Samus explode.
 ObjFrame35:
     .byte ($0 << 4) + _id_ObjPlace7, $00, $00
     .byte $FC, $FC, $00
+    .byte $07
+    .byte $08
+    .byte $09
+    .byte $0A
     .byte $0B
     .byte $0C
-    .byte $1B
-    .byte $1C
-    .byte $2B
-    .byte $2C
     .byte $FF
 
 ;Samus jump and point up.
 ObjFrame38:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace6, $0F, $04
-    .byte $69
+    .byte $0B
     .byte $FD, OAMDATA_PRIORITY + $0
     .byte $FE
-    .byte $7A
-    .byte $79
+    .byte $0C
+    .byte $0D
     .byte $FE
-    .byte $78
-    .byte $77
+    .byte $0E
+    .byte $0F
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $22
+    .byte $04
+    .byte $05
+    .byte $06
     .byte $07
-    .byte $08
-    .byte $32
     .byte $FF
 
 ;Samus jump and point up.
 ObjFrame39:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace6, $0F, $04
     .byte $FE
-    .byte $69
+    .byte $0B
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $7A
-    .byte $79
+    .byte $0C
+    .byte $0D
     .byte $FE
-    .byte $78
-    .byte $77
+    .byte $0E
+    .byte $0F
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $22
+    .byte $04
+    .byte $05
+    .byte $06
     .byte $07
-    .byte $08
-    .byte $32
     .byte $FF
 
 ;Bomb explode.
 ObjFrame3C:
     .byte ($0 << 4) + _id_ObjPlaceD, $0C, $0C
-    .byte $74
+    .byte $1E
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $74
+    .byte $1E
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_VFLIP + $0
-    .byte $74
+    .byte $1E
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_VFLIP + OAMDATA_HFLIP + $0
-    .byte $74
+    .byte $1E
     .byte $FF
 
 ;Samus run and point up.
 ObjFrame40:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace6, $0F, $04
-    .byte $69
+    .byte $0A
     .byte $FE
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $7A
-    .byte $79
+    .byte $0B
+    .byte $0C
     .byte $FE
-    .byte $78
-    .byte $77
+    .byte $0D
+    .byte $0E
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $20
-    .byte $21
+    .byte $04
+    .byte $05
     .byte $FE
     .byte $FE
-    .byte $31
+    .byte $06
     .byte $FF
 
 ;Samus run and point up.
 ObjFrame41:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace6, $0F, $04
-    .byte $69
+    .byte $00
     .byte $FE
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $7A
-    .byte $79
+    .byte $01
+    .byte $02
     .byte $FE
-    .byte $78
-    .byte $77
+    .byte $03
+    .byte $04
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $22
-    .byte $23
+    .byte $05
+    .byte $06
     .byte $FE
-    .byte $32
-    .byte $33
-    .byte $34
+    .byte $07
+    .byte $08
+    .byte $09
     .byte $FF
 
 ;Samus run and point up.
 ObjFrame42:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace6, $0F, $04
-    .byte $69
+    .byte $00
     .byte $FE
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $7A
-    .byte $79
+    .byte $01
+    .byte $02
     .byte $FE
-    .byte $78
-    .byte $77
+    .byte $03
+    .byte $04
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $25
-    .byte $26
-    .byte $27
-    .byte $35
-    .byte $36
+    .byte $0A
+    .byte $0B
+    .byte $0C
+    .byte $0D
+    .byte $0E
     .byte $FF
 
 ;Samus run and point up.
 ObjFrame46:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace6, $0F, $04
     .byte $FE
-    .byte $69
+    .byte $0A
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $7A
-    .byte $79
+    .byte $0B
+    .byte $0C
     .byte $FE
-    .byte $78
-    .byte $77
+    .byte $0D
+    .byte $0E
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $20
-    .byte $21
+    .byte $04
+    .byte $05
     .byte $FE
     .byte $FE
-    .byte $31
+    .byte $06
     .byte $FF
 
 ;Samus point up, run and fire.
 ObjFrame47:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace6, $0F, $04
     .byte $FE
-    .byte $69
+    .byte $00
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $7A
-    .byte $79
+    .byte $01
+    .byte $02
     .byte $FE
-    .byte $78
-    .byte $77
+    .byte $03
+    .byte $04
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $22
-    .byte $23
+    .byte $05
+    .byte $06
     .byte $FE
-    .byte $32
-    .byte $33
-    .byte $34
+    .byte $07
+    .byte $08
+    .byte $09
     .byte $FF
 
 ;Samus point up, run and fire.
 ObjFrame48:
     .byte OAMDATA_HFLIP + ($0 << 4) + _id_ObjPlace6, $0F, $04
     .byte $FE
-    .byte $69
+    .byte $00
     .byte $FD, OAMDATA_PRIORITY + $0
-    .byte $7A
-    .byte $79
+    .byte $01
+    .byte $02
     .byte $FE
-    .byte $78
-    .byte $77
+    .byte $03
+    .byte $04
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $25
-    .byte $26
-    .byte $27
-    .byte $35
-    .byte $36
+    .byte $0A
+    .byte $0B
+    .byte $0C
+    .byte $0D
+    .byte $0E
     .byte $FF
 
 ;Bomb explode.
 ObjFrame49:
     .byte ($0 << 4) + _id_ObjPlaceD, $0C, $0C
-    .byte $75
+    .byte $1F
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $75
+    .byte $1F
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_VFLIP + $0
-    .byte $75
+    .byte $1F
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_VFLIP + OAMDATA_HFLIP + $0
-    .byte $75
+    .byte $1F
     .byte $FF
 
 ;Bomb explode.
@@ -1211,132 +1253,132 @@ ObjFrame4A:
 ;Wave beam.
 ObjFrame4B:
     .byte ($0 << 4) + _id_ObjPlace4, $04, $04
-    .byte $4C
+    .byte $20
     .byte $FF
 
 ;Bomb explode.
 ObjFrame4D:
-    .byte ($0 >> 4) + _id_ObjPlace8, $10, $10
-    .byte $3D
-    .byte $3E
-    .byte $4E
+    .byte ($0 << 4) + _id_ObjPlace8, $10, $10
+    .byte $21
+    .byte $22
+    .byte $23
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_HFLIP + $0
-    .byte $3E
-    .byte $3D
-    .byte $4E
+    .byte $22
+    .byte $21
+    .byte $23
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_VFLIP + OAMDATA_HFLIP + $0
-    .byte $4E
-    .byte $3E
-    .byte $3D
+    .byte $23
+    .byte $22
+    .byte $21
     .byte $FD, OAMDATA_PRIORITY + OAMDATA_VFLIP + $0
-    .byte $4E
-    .byte $3D
-    .byte $3E
+    .byte $23
+    .byte $21
+    .byte $22
     .byte $FF
 
 ;Bomb tick.
 ObjFrame4E:
     .byte ($0 << 4) + _id_ObjPlace4, $04, $04
-    .byte $70
+    .byte $24
     .byte $FF
 
 ;Bomb tick.
 ObjFrame4F:
     .byte ($0 << 4) + _id_ObjPlace4, $04, $04
-    .byte $71
+    .byte $25
     .byte $FF
 
 ;Bomb item.
 ObjFrame50:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $86
-    .byte $87
-    .byte $96
-    .byte $97
+    .byte $3A
+    .byte $3B
+    .byte $3C
+    .byte $3D
     .byte $FF
 
 ;High jump item.
 ObjFrame51:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $7B
-    .byte $7C
-    .byte $8B
-    .byte $8C
+    .byte $3E
+    .byte $3F
+    .byte $40
+    .byte $41
     .byte $FF
 
 ;Long beam item.
 ObjFrame52:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $88
-    .byte $67
-    .byte $98
-    .byte $99
+    .byte $42
+    .byte $43
+    .byte $44
+    .byte $45
     .byte $FF
 
 ;Screw attack item.
 ObjFrame53:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $80
-    .byte $81
-    .byte $90
-    .byte $91
+    .byte $46
+    .byte $47
+    .byte $48
+    .byte $49
     .byte $FF
 
 ;Maru Mari item.
 ObjFrame54:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $7D
-    .byte $7E
-    .byte $8D
-    .byte $8E
+    .byte $4A
+    .byte $4B
+    .byte $4C
+    .byte $4D
     .byte $FF
 
 ;Varia item.
 ObjFrame55:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $82
-    .byte $83
-    .byte $92
-    .byte $93
+    .byte $4E
+    .byte $4F
+    .byte $50
+    .byte $51
     .byte $FF
 
 ;Wave beam item.
 ObjFrame56:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $88
-    .byte $89
-    .byte $98
-    .byte $99
+    .byte $42
+    .byte $52
+    .byte $44
+    .byte $45
     .byte $FF
 
 ;Ice beam item.
 ObjFrame57:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $88
-    .byte $68
-    .byte $98
-    .byte $99
+    .byte $42
+    .byte $53
+    .byte $44
+    .byte $45
     .byte $FF
 
 ;Energy tank item.
 ObjFrame58:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $84
-    .byte $85
-    .byte $94
-    .byte $95
+    .byte $54
+    .byte $55
+    .byte $56
+    .byte $57
     .byte $FF
 
 ;Missile item.
 ObjFrame59:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $3F
+    .byte $58
     .byte $FD, OAMDATA_HFLIP + $0
-    .byte $3F
+    .byte $58
     .byte $FD, $0
-    .byte $4F
+    .byte $59
     .byte $FD, OAMDATA_HFLIP + $0
-    .byte $4F
+    .byte $59
     .byte $FF
 
 ;Skree burrow.
@@ -1386,36 +1428,35 @@ ObjFrame66:
 ObjFrame67:
     .byte ($0 << 4) + _id_ObjPlaceA, $04, $08
     .byte $FD, $0
-    .byte $57
-    .byte $FD
-    .byte $40
-    .byte $57
+    .byte $26
+    .byte $FD, OAMDATA_HFLIP + $0
+    .byte $26
     .byte $FF
 
 ;Missile explode.
 ObjFrame68:
     .byte ($0 << 4) + _id_ObjPlaceB, $04, $0C
     .byte $FD, $0
-    .byte $57
-    .byte $18
+    .byte $26
+    .byte $27
     .byte $FD, OAMDATA_HFLIP + $0
-    .byte $18
-    .byte $57
+    .byte $27
+    .byte $26
     .byte $FD, OAMDATA_VFLIP + OAMDATA_HFLIP + $0
-    .byte $18
-    .byte $18
+    .byte $27
+    .byte $27
     .byte $FF
 
 ;Missile explode.
 ObjFrame69:
     .byte ($0 << 4) + _id_ObjPlaceC, $04, $10
     .byte $FD, $0
-    .byte $57
-    .byte $18
+    .byte $26
+    .byte $27
     .byte $FD, OAMDATA_HFLIP + $0
-    .byte $18
-    .byte $57
+    .byte $27
+    .byte $26
     .byte $FD, OAMDATA_VFLIP + OAMDATA_HFLIP + $0
-    .byte $18
-    .byte $18
+    .byte $27
+    .byte $27
     .byte $FF

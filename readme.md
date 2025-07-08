@@ -26,3 +26,8 @@ Subject to change.
  * NES_NTSC - The NTSC version of the game released in North America. This is the most popular one. Port of the FDS version.
  * NES_PAL - The PAL version of the game released in Europe. Derived from the NTSC version.
 
+# Samus on the fly
+
+This ROM hack frees up many sprite tiles by dedicating the upper 16 tiles to Samus, allowing for additional enemies, projectiles, Samus animations, and so much more!
+
+This is possible by using the MMC3 mapper to switch the upper 64 tiles on the fly!

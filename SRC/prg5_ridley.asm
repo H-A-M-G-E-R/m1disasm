@@ -614,17 +614,6 @@ TileBlastFrame10:
 
 .include "ridley/metatiles.asm"
 
-;----------------------------------------------[ Graphics ]--------------------------------------------
-
-GFX_RidlBG:
-    .incbin "ridley/bg_chr.chr" ; B3F0 - More Ridley BG CHR
-
-GFX_CREBG1:
-    .incbin "common_chr/bg_CRE.chr" ; 8D60 - Common Room Elements (loaded everywhere except Tourian)
-
-GFX_TourianFont:
-    .incbin "tourian/font_chr.chr" ; 91B0 - Game over, Japanese font tiles (only loaded in Tourian?)
-
 .ENDS
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------

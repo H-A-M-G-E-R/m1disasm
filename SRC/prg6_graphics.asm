@@ -23,28 +23,6 @@
 .SECTION "ROM Bank $006" BANK 6 SLOT "ROMSwitchSlot" ORGA $8000 FORCE
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
-
-; These are loaded together.
-GFX_Samus:
-    .incbin "common_chr/samus.chr" ; 8000 - Samus and gear tile patterns.
-    .incbin "common_chr/items.chr" ; Item Graphics (plus bomb, the N in "EN", and another dot thingy)
-
-GFX_SamusSuitless:
-    .incbin "common_chr/samus_suitless.chr" ; 90E0 - Suitless Samus (in-game)
-
-GFX_ExclamationPoint:
-    .incbin "common_chr/exclamation_point.chr" ; 9890 - Exclamation point
-
-;Blank tile patterns.
-GFX_Solid:
-    .incbin "common_chr/solid.chr"
-
-GFX_CREBG2:
-    .incbin "common_chr/bg_CRE_2.chr" ; 9EF0 - Common Room Elements (loaded in all areas)
-
-GFX_Font:
-    .incbin "common_chr/font.chr" ; B4C0 - Font (upper and lowercase)
-
 ;------------------------------------------[ Sound Engine ]------------------------------------------
 
 .ALIGN $100 ;Needs to be aligned to make it work properly.

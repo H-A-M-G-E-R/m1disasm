@@ -21,6 +21,7 @@ banks = [
     "prg5_ridley",
     "prg6_graphics",
     "prg7_engine",
+    "chr"
 ]
 
 class BuildTarget:

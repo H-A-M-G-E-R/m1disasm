@@ -2024,23 +2024,6 @@ TileBlastFrame10:
 
 .include "tourian/metatiles.asm"
 
-;----------------------------------------------[ Graphics ]--------------------------------------------
-
-GFX_BossBG:
-    .incbin "common_chr/bg_boss_areas.chr" ; A9C0 - Kraid, Ridley, Tourian BG CHR
-
-GFX_TourBG:
-    .incbin "tourian/bg_chr.chr" ; ACA0 - Tourian BG CHR
-
-GFX_Zebetite:
-    .incbin "tourian/zebetite_chr.chr" ; B2A0 - Zebetite BG CHR
-
-GFX_KraidSprites:
-    .incbin "kraid/sprite_tiles.chr" ; 8D60 - Kraid Sprite CHR
-
-GFX_RidleySprites:
-    .incbin "ridley/sprite_tiles.chr" ; 9160 - Ridley Sprite CHR
-
 .ENDS
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------

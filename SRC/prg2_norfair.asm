@@ -652,22 +652,6 @@ TileBlastFrame10:
 
 .include "norfair/metatiles.asm"
 
-;----------------------------------------------[ Graphics ]--------------------------------------------
-
-GFX_NorfBG1:
-    .incbin "norfair/bg_chr_1.chr" ; A6F0 - Norfair BG CHR data
-
-GFX_NorfBG2:
-    .incbin "norfair/bg_chr_2.chr" ; A950 - Norfair BG CHR data
-
-;Norfair enemy tile patterns.
-GFX_NorfairSprites:
-    .incbin "norfair/sprite_tiles.chr"
-
-;Tourian enemy tile patterns.
-GFX_TourianSprites:
-    .incbin "tourian/sprite_tiles.chr"
-
 .ENDS
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------

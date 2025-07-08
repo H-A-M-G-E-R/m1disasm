@@ -725,18 +725,6 @@ TileBlastFrame10:
 
 .include "kraid/metatiles.asm"
 
-;----------------------------------------------[ Graphics ]--------------------------------------------
-
-GFX_KraiBG2:
-    .incbin "kraid/bg_chr_2.chr" ; B330 - More Kraid BG CHR
-
-;Samus end tile patterns.
-GFX_EndingSprites:
-    .incbin "ending/sprite_tiles.chr"
-
-GFX_KraiBG3:
-    .incbin "kraid/bg_chr_3.chr" ; 9360 - Misc Kraid BG CHR
-
 .ENDS
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------

@@ -309,6 +309,33 @@ NMI:
         jsr WritePPUCtrl
         ;($C29A)Update h/v scroll reg.
         jsr WriteScroll
+
+        ;Set CHR banks.
+        ldy #$00
+        sty $8000
+        lda CHRBank0
+        sta $8001
+        iny
+        sty $8000
+        lda CHRBank1
+        sta $8001
+        iny
+        sty $8000
+        lda CHRBank2
+        sta $8001
+        iny
+        sty $8000
+        lda CHRBank3
+        sta $8001
+        iny
+        sty $8000
+        lda CHRBank4
+        sta $8001
+        iny
+        sty $8000
+        lda CHRBank5
+        sta $8001
+
         ;($C215)Read both joypads.
         jsr ReadJoyPads
     LC103:
@@ -1122,86 +1149,6 @@ MMCWriteReg3:
     adc #$01
     sta $8001                       ;Switch bank to CurrentBank * 2 + 1 at $A000-$BFFF
 RTS_C50F:
-    rts
-
-;--------------------------------[ Pattern table loading routines ]---------------------------------
-
-;Y contains the GFX header to fetch from the table above, GFXInfo.
-
-LoadGFX:
-    ; Set a to (7 * y + 6), offset pointing to the last byte of the GFXInfo entry.
-    lda #$FF
-    LC7AD:
-        clc
-        adc #$07
-        dey
-        bpl LC7AD
-    ;Transfer offset into table to Y.
-    tay
-
-    ;Copy entries from GFXInfo to $00-$06.
-    ldx #$06
-    LC7B6:
-        lda GFXInfo,y
-        sta $00,x
-        dey
-        dex
-        bpl LC7B6
-
-    ;Switch to ROM bank containing the GFX data.
-    lda $00
-    jsr MMCWriteReg3
-    
-    ;Set the PPU to increment by 1.
-    lda PPUCTRL_ZP
-    and #~PPUCTRL_INCR_DOWN.b
-    sta PPUCTRL_ZP
-    sta PPUCTRL
-    
-    jsr CopyGFXBlock                ;($C7D5)Copy graphics into pattern tables.
-    
-    ;Switch back to the previous bank.
-    lda #:GFXInfo.b
-    jmp MMCWriteReg3
-
-
-;Writes tile data from ROM to VRAM, according to the gfx header data contained in $00-$06.
-CopyGFXBlock:
-    ;If data length low byte is #$00, decrement data length high byte before beginning.
-    lda $05
-    bne @loop
-    dec $06
-@loop:
-    ;Set PPU to destination address for GFX block write.
-    lda $04
-    sta PPUADDR
-    lda $03
-    sta PPUADDR
-    ;Set offset for GFX data to 0.
-    ldy #$00
-    @lowLoop:
-        ;Copy GFX data byte from ROM to Pattern table.
-        lda ($01),y
-        sta PPUDATA
-        ;Decrement low byte of data length.
-        dec $05                         
-        ;Branch if high byte does not need decrementing.
-        bne @endIf
-            ;Low byte has reached 0. High byte needs decrementing.
-            lda $06
-            ;If copying complete, branch to exit.
-            beq RTS_C800
-            ;Decrement high byte
-            dec $06
-        @endIf:
-        ;Increment to next byte to copy.
-        iny
-        bne @lowLoop
-    ;After 256 bytes loaded, increment upper bits of source and destination addresses.
-    inc $02
-    inc $04
-    jmp @loop
-RTS_C800:
     rts
 
 ;-------------------------------------------[ AreaInit ]---------------------------------------------
@@ -5078,6 +5025,18 @@ LDE60:
     lda ObjHi,x                     ;
     sta Temp06_PositionHi           ;
     lda ObjAnimFrame,x              ;Load A with index into ObjFramePtrTable.
+    ldy IsSamus
+    beq +
+        tax
+        lda SamusCHRBankTable,x
+        ldy JustInBailey
+        beq ++
+            clc
+            adc #(SamusSuitlessGFX0-SamusSuitGFX0)/$400.b
+        ++
+        sta CHRBank2
+        txa
+    +
     asl                             ;*2. Frame pointers are two bytes.
     tax                             ;X is now the index into the ObjFramePtrTable.
     lda ObjFramePtrTable,x             ;
@@ -5533,12 +5492,12 @@ LE11C:
     lda EndTimer                  ;
     jsr Adiv16                      ;($C2BF)Lower timer digit.
     jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    lda #$58                        ;"TI" sprite(left half of "TIME").
+    lda #$2E                        ;"TI" sprite(left half of "TIME").
     sta SpriteRAM+1,x             ;
     inc SpriteRAM+2,x             ;Change color of sprite.
     cpx #$FC                        ;If at last sprite, branch to skip.
     bcs LE14A                           ;
-    lda #$59                        ;"ME" sprite(right half of "TIME").
+    lda #$2F                        ;"ME" sprite(right half of "TIME").
     sta SpriteRAM+($01<<2)+1,x             ;
     inc SpriteRAM+($01<<2)+2,x             ;Change color of sprite.
 
@@ -5550,7 +5509,7 @@ LE14A:
 ;Display full/empty energy tanks.
     sta $03                         ;Temp store tank count.
     ldy #$00                        ;Tank index.
-    lda #$6F                        ;"Full energy tank" tile.
+    lda #$2D                        ;"Full energy tank" tile.
     sta $00                         ;
     lda Health+1                    ;
     jsr Adiv16                      ;($C2BF)/16. A contains # of full energy tanks.
@@ -5578,7 +5537,8 @@ RTS_E172:
 ;as the tile # for the sprite indexed by X.
 
 SPRWriteDigit:
-    ora #$A0                        ;#$A0 is index into pattern table for numbers.
+    clc
+    adc #$30                        ;#$A0 is index into pattern table for numbers.
     sta SpriteRAM+1,x             ;Store proper nametable pattern in sprite RAM.
     jmp Xplus4                      ;Find next sprite pattern table byte.
 
@@ -5653,16 +5613,16 @@ DivideByRepeatedSubtraction: ;($E1AD)
 ;Sprite data for Samus' data display
 
 DataDisplayTbl:
-    .byte $21,$A0,$01,$30           ;Upper health digit.
-    .byte $21,$A0,$01,$38           ;Lower health digit.
+    .byte $21,$30,$01,$30           ;Upper health digit.
+    .byte $21,$30,$01,$38           ;Lower health digit.
     .byte $2B,$FF,$01,$28           ;Upper missile digit.
     .byte $2B,$FF,$01,$30           ;Middle missile digit.
     .byte $2B,$FF,$01,$38           ;Lower missile digit.
-    .byte $2B,$5E,$00,$18           ;Left half of missile.
-    .byte $2B,$5F,$00,$20           ;Right half of missile.
-    .byte $21,$76,$01,$18           ;E
-    .byte $21,$7F,$01,$20           ;N
-    .byte $21,$3A,$00,$28           ;..
+    .byte $2B,$12,$00,$18           ;Left half of missile.
+    .byte $2B,$13,$00,$20           ;Right half of missile.
+    .byte $21,$29,$01,$18           ;E
+    .byte $21,$2A,$01,$20           ;N
+    .byte $21,$2B,$00,$28           ;..
 
 ;-------------------------------------------[ Bit scan ]---------------------------------------------
 

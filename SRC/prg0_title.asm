@@ -2051,7 +2051,6 @@ LoadPasswordScreen:
     ldx #<L99E3.b                     ;Loads PPU with info to display-->
     ldy #>L99E3.b                     ;PASS WORD PLEASE.
     jsr PreparePPUProcess           ;($9449)Load "PASSWORD PLEASE" on screen.
-    jsr InitGFX7                    ;($C6D6)Loads the font for the password.
     jsr DisplayInputCharacters      ;($940B)Write password character to screen.
     lda #$13                        ;
     jsr WriteTitlePal               ;Change palette.
@@ -2404,7 +2403,6 @@ DisplayPassword:
     ldx #<L937F.b                     ;Low byte of start of PPU data.
     ldy #>L937F.b                     ;High byte of start of PPU data.
     jsr PreparePPUProcess           ;($9449)Clears screen and writes "PASS WORD".
-    jsr InitGFX7                    ;($C6D6)Loads the font for the password.
     jsr CalculatePassword           ;($8C7A)Calculates the password.
     jsr NMIOn                       ;($C487)Turn on the nonmaskable interrupt.
     jsr PasswordToScreen            ;($93C6)Displays password on screen.
@@ -2441,7 +2439,6 @@ GameOver:
     ldx #<L93B9.b                     ;Low byte of start of PPU data.
     ldy #>L93B9.b                     ;High byte of start of PPU data.
     jsr PreparePPUProcess           ;($9449)Clears screen and writes "GAME OVER".
-    jsr InitGFX7                    ;($C6D6)Loads the font for the password.
     jsr NMIOn                       ;($C487)Turn on the nonmaskable interrupt.
     lda #$10                        ;Load Timer3 with a delay of 160 frames-->
     sta Timer3                      ;(2.6 seconds) for displaying "GAME OVER".
@@ -4527,6 +4524,7 @@ InitBank1:
         sta GamePaused                  ;Make sure game is not paused.
         jsr ClearRAM_33_DF              ;($C1D4)Clear game engine memory addresses.
         jsr ClearSamusStats             ;($C578)Clear Samus' stats memory addresses.
+        jsr LoadSamusGFX
     LC56D:
     jmp InitGenericAreaBank
 
@@ -4542,6 +4540,40 @@ ClearSamusStats:
         bpl @loop
     rts
 
+;Table used by above subroutine and loads the initial data used to describe
+;metroid's behavior in the Tourian section of the game.
+MetroidData:
+    .byte $F8, $08, $30, $D0, $60, $A0, $02, $04, $00, $00, $00, $00, $00, $00
+
+InitEndGFX:
+    lda #$01                        ;
+    sta GameMode                    ;Game is at title/end game.
+    lda #EndingSPR/$400.b
+    sta CHRBank2
+    jsr LoadAreaGFX
+    .byte EndingBG/$400
+    .byte EndingBG/$400+2
+    .byte EndingSPR/$400+1
+    .byte EndingSPR/$400+2
+    .byte EndingSPR/$400+3
+
+InitTitleGFX:
+    jsr LoadAreaGFX
+    .byte TitleBG/$400
+    .byte TitleBG/$400+2
+    .byte TitleSPR/$400+1
+    .byte TitleSPR/$400+2
+    .byte TitleSPR/$400+3
+
+LoadSamusGFX:
+    ldy #SamusSuitGFX4/$400.b           ;facing forward gfx
+    lda JustInBailey                ;
+    beq LC5EB                           ;Branch if wearing suit
+        ldy #SamusSuitlessGFX4/$400.b   ;Switch to girl gfx
+    LC5EB:
+    sty CHRBank2
+    rts
+
 ;Tourian memory page.
 InitBank3:
     ldy #$0D                        ;
@@ -4555,36 +4587,6 @@ InitBank3:
 InitGenericAreaBank:
     lda #$00                        ;GameMode = play.
     sta GameMode                    ;
-    jsr ScreenNmiOff                ;($C45D)Disable screen and Vblank.
-    jsr InitAreaGFX
-    jmp NMIOn                       ;($C487)Turn on VBlank interrupts.
-
-;Table used by above subroutine and loads the initial data used to describe
-;metroid's behavior in the Tourian section of the game.
-MetroidData:
-    .byte $F8, $08, $30, $D0, $60, $A0, $02, $04, $00, $00, $00, $00, $00, $00
-
-InitEndGFX:
-    lda #$01                        ;
-    sta GameMode                    ;Game is at title/end game.
-    jmp InitGFX6                    ;($C6C2)Load end game GFX.
-
-InitTitleGFX:
-    ldy #$15                        ;Entry 21 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-
-LoadSamusGFX:
-    ldy #$00                        ;Entry 0 in GFXInfo table.
-    jsr LoadGFX                     ;($C7AB)Load pattern table GFX.
-    lda JustInBailey                ;
-    beq LC5EB                           ;Branch if wearing suit
-        ldy #$1B                        ;Entry 27 in GFXInfo table.
-        jsr LoadGFX                     ;($C7AB)Switch to girl gfx
-    LC5EB:
-    jsr LoadMultipleGFX
-    .byte $14,$17,$18,$19,$16, $FF
-
-InitAreaGFX:
     lda CurrentMainBank
     jsr ChooseRoutine
         .word ExitSub
@@ -4597,119 +4599,65 @@ InitAreaGFX:
         .word ExitSub
 
 InitBrinstarGFX:
-    jsr LoadMultipleGFX
-    .byte $03,$04,$05,$06,$19,$16, $FF
+    jsr LoadAreaGFX
+    .byte BrinstarBG/$400
+    .byte BrinstarBG/$400+2
+    .byte ItemsGFX/$400
+    .byte BlankSPR/$400
+    .byte BrinstarSPR/$400
 
 InitNorfairGFX:
-    jsr LoadMultipleGFX
-    .byte $04,$05,$07,$08,$09,$19,$16, $FF
+    jsr LoadAreaGFX
+    .byte NorfairBG/$400
+    .byte NorfairBG/$400+2
+    .byte ItemsGFX/$400
+    .byte BlankSPR/$400
+    .byte NorfairSPR/$400
 
 InitTourianGFX:
-    jsr LoadMultipleGFX
-    .byte $05,$0A,$0B,$0C,$0D,$0E,$1A,$1C,$19,$16, $FF
+    jsr LoadAreaGFX
+    .byte TourianBG/$400
+    .byte TourianBG/$400+2
+    .byte ItemsGFX/$400
+    .byte BlankSPR/$400
+    .byte TourianSPR/$400
 
 InitKraidGFX:
-    jsr LoadMultipleGFX
-    .byte $04,$05,$0A,$0F,$10,$11,$19,$16, $FF
+    jsr LoadAreaGFX
+    .byte KraidBG/$400
+    .byte KraidBG/$400+2
+    .byte ItemsGFX/$400
+    .byte BlankSPR/$400
+    .byte KraidSPR/$400
 
 InitRidleyGFX:
-    jsr LoadMultipleGFX
-    .byte $04,$05,$0A,$12,$13,$19,$16, $FF
+    jsr LoadAreaGFX
+    .byte RidleyBG/$400
+    .byte RidleyBG/$400+2
+    .byte ItemsGFX/$400
+    .byte BlankSPR/$400
+    .byte RidleySPR/$400
 
-InitGFX6:
-    jsr LoadMultipleGFX
-    .byte $01,$02,$19,$16, $FF
-
-InitGFX7: ; Load Password Font
-    jsr LoadMultipleGFX
-    .byte $17,$16, $FF
-
-;The table below contains info for each tile data block in the ROM.
-;Each entry is 7 bytes long. The format is as follows:
-;byte 0: ROM bank where GFX data is located.
-;byte 1-2: 16-bit ROM start address (src).
-;byte 3-4: 16-bit PPU start address (dest).
-;byte 5-6: data length (16-bit).
-
-GFXInfo:
-    .byte bank(GFX_Samus)          ;[SPR]Samus, items.             Entry 0.
-        .word GFX_Samus, $1000, $09A0
-    .byte bank(GFX_EndingSprites)  ;[SPR]Samus in ending.          Entry 1.
-        .word GFX_EndingSprites, $1000, $0520
-    .byte bank(GFX_TheEndFont)     ;[BGR]Partial font, "The End".  Entry 2.
-        .word GFX_TheEndFont, $0000, $0400
-    .byte bank(GFX_BrinBG1)        ;[BGR]Brinstar rooms.           Entry 3.
-        .word GFX_BrinBG1, $0000, $0150
-    .byte bank(GFX_CREBG1)         ;[BGR]Common Room Elements      Entry 4.
-        .word GFX_CREBG1, $0200, $0450
-    .byte bank(GFX_CREBG2)         ;[BGR]More CRE                  Entry 5.
-        .word GFX_CREBG2, $0800, $0800
-    .byte bank(GFX_BrinstarSprites);[SPR]Brinstar enemies.         Entry 6.
-        .word GFX_BrinstarSprites, $1C00, $0400
-    .byte bank(GFX_NorfBG1)        ;[BGR]Norfair rooms.            Entry 7.
-        .word GFX_NorfBG1, $0000, $0260
-    .byte bank(GFX_NorfBG2)        ;[BGR]More Norfair rooms.       Entry 8.
-        .word GFX_NorfBG2, $0700, $0070
-    .byte bank(GFX_NorfairSprites) ;[SPR]Norfair enemies.          Entry 9.
-        .word GFX_NorfairSprites, $1C00, $0400
-    .byte bank(GFX_BossBG)         ;[BGR]Boss areas (Kr, Rd, Tr)   Entry 10. (0A)
-        .word GFX_BossBG, $0000, $02E0
-    .byte bank(GFX_TourBG)         ;[BGR]Tourian rooms.            Entry 11. (0B)
-        .word GFX_TourBG, $0200, $0600
-    .byte bank(GFX_Zebetite)       ;[BGR]Mother Brain room.        Entry 12. (0C)
-        .word GFX_Zebetite, $0900, $0090
-    .byte bank(GFX_TourianFont)    ;[BGR]Misc. object.             Entry 13. (0D)
-        .word GFX_TourianFont, $0D00, $0300
-    .byte bank(GFX_TourianSprites) ;[SPR]Tourian enemies.          Entry 14. (0E)
-        .word GFX_TourianSprites, $1C00, $0400
-    .byte bank(GFX_KraiBG2)        ;[BGR]More Kraid Rooms          Entry 15. (0F)
-        .word GFX_KraiBG2, $0700, $00C0
-    .byte bank(GFX_KraiBG3)        ;[BGR]More Kraid Rooms          Entry 16. (10)
-        .word GFX_KraiBG3, $0E00, $0200
-    .byte bank(GFX_KraidSprites)   ;[SPR]Miniboss I enemies.       Entry 17. (11)
-        .word GFX_KraidSprites, $1C00, $0400
-    .byte bank(GFX_RidlBG)         ;[BGR]More Ridley Rooms         Entry 18. (12)
-        .word GFX_RidlBG, $0700, $00C0
-    .byte bank(GFX_RidleySprites)  ;[SPR]Miniboss II enemies.      Entry 19. (13)
-        .word GFX_RidleySprites, $1C00, $0400
-    .byte bank(GFX_IntroSprites)   ;[SPR]Intro/End sprites.        Entry 20. (14)
-        .word GFX_IntroSprites, $1C00, $0100
-    .byte bank(GFX_Title)          ;[BGR]Title.                    Entry 21. (15)
-        .word GFX_Title, $0400, $0500
-    .byte bank(GFX_Solid)          ;[BGR]Solid tiles.              Entry 22. (16)
-        .word GFX_Solid, $0FC0, $0040
-    .byte bank(GFX_Font)           ;[BGR]Complete font.            Entry 23. (17)
-        .word GFX_Font, $0000, $0400
-    .byte bank(GFX_Font)           ;[BGR]Ingame HUD font.          Entry 24. (18)
-        .word GFX_Font, $1A00, $00A0
-    .byte bank(GFX_Solid)          ;[BGR]Solid tiles.              Entry 25. (19)
-        .word GFX_Solid, $1FC0, $0040
-    .byte bank(GFX_Font)           ;[BGR]Tourian font.             Entry 26. (1A)
-        .word GFX_Font, $0D00, $02A0
-    .byte bank(GFX_SamusSuitless)  ;[SPR]Suitless Samus.           Entry 27. (1B)
-        .word GFX_SamusSuitless, $1000, $07B0
-    .byte bank(GFX_ExclamationPoint)  ;[BGR]Exclaimation point.       Entry 28. (1C)
-        .word GFX_ExclamationPoint, $0F40, $0010
-
-;--------------------------------[ Pattern table loading routines ]---------------------------------
-
-LoadMultipleGFX:
+LoadAreaGFX:
     pla
     sta $07
     pla
     sta $08
     ldy #$01
-@loop:
     lda ($07),y
-    cmp #$FF
-    beq @end
-    sty $09
-    tay
-    jsr LoadGFX
-    ldy $09
+    sta CHRBank0
     iny
-    jmp @loop
-@end:
+    lda ($07),y
+    sta CHRBank1
+    iny
+    lda ($07),y
+    sta CHRBank3
+    iny
+    lda ($07),y
+    sta CHRBank4
+    iny
+    lda ($07),y
+    sta CHRBank5
     rts
 
 ;---------------------------------------[ Remove intro sprites ]-------------------------------------
@@ -4802,14 +4750,6 @@ WorldMap:
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $1D, $1B, $17, $18, $0C, $FF, $04, $11, $10, $12, $13, $14, $14, $15, $03, $1C, $1E, $1E, $1F, $1F, $1F, $1D, $07, $FF
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $0B, $FF, $0C, $16, $18, $17, $18, $17, $0F, $17, $17, $1A, $1A, $17, $1B, $1B, $17, $19, $09, $FF
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-
-;----------------------------------------------[ Graphics ]--------------------------------------------
-
-GFX_IntroSprites:
-    .incbin "common_chr/intro_sprites.chr" ; 89A0 - Intro and end tile patterns.
-
-GFX_Title:
-    .incbin "common_chr/title.chr" ; 8BE0 - METROID title screen CHR
 
 .ENDS
 

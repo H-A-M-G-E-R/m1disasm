@@ -864,17 +864,6 @@ TileBlastFrame10:
 
 .include "brinstar/metatiles.asm"
 
-;----------------------------------------------[ Graphics ]--------------------------------------------
-
-GFX_BrinBG1:
-    .incbin "brinstar/bg_chr_1.chr" ; 9DA0 - Brinstar BG CHR data
-
-GFX_TheEndFont:
-    .incbin "ending/end_font.chr"       ; 8D60 - "THE END" graphics + partial font
-
-GFX_BrinstarSprites:
-    .incbin "brinstar/sprite_tiles.chr" ; 9160 - Brinstar Enemies
-
 .ENDS
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------

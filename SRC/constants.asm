@@ -29,12 +29,15 @@
     SLOT 2 $6000 $2000 "RAMCartSlot"
     SLOT 3 $8000 $4000 "ROMSwitchSlot"
     SLOT 4 $C000 $4000 "ROMFixedSlot"
+    SLOT 5 $0000 $40000 "CHRROMSlot"
 .ENDME
 
 .ROMBANKMAP
-    BANKSTOTAL $8
+    BANKSTOTAL $9
     BANKSIZE $4000
     BANKS $8
+    BANKSIZE $40000
+    BANKS 1
 .ENDRO
 
 ;-------------------------------------------[ Charmap ]----------------------------------------------
@@ -960,6 +963,13 @@ IntroSprYDir           = $6EAF   ;MSB set=decrease sprite y pos, else increase s
 
 ;WorldMapRAM            = $7000   ;Not used in this mod. Vanilla: Thru $73FF. The map is 1Kb in size (1024 bytes).
 DecompressedRoomBuffer = $7000   ;$7000-$7130+
+
+CHRBank0               = $73FA   ;PPU $0000-$07FF
+CHRBank1               = $73FB   ;PPU $0800-$0FFF
+CHRBank2               = $73FC   ;PPU $1000-$13FF
+CHRBank3               = $73FD   ;PPU $1400-$17FF
+CHRBank4               = $73FE   ;PPU $1800-$1BFF
+CHRBank5               = $73FF   ;PPU $1C00-$1FFF
 
 MetroidRepelSpeed      = $77F0   ;$77F0 for negative, $77F1 for positive
 MetroidAccel           = $77F2   ;$77F2-$77F3 for red metroid, $77F4-$77F5 for green metroid
