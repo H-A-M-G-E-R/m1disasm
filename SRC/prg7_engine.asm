@@ -382,6 +382,11 @@ GoMainRoutine:
         jmp MainTitleRoutine
     @endIf_A:
     
+    ;If Samus fades in, execute current routine as normal.
+    lda ObjAction
+    cmp #sa_FadeIn
+    beq @endIf_B
+
     ;Has START been pressed? If not, execute current routine as normal.
     lda Joy1Change
     and #BUTTON_START
@@ -4390,6 +4395,9 @@ Exit0:
 CheckMissileToggle:
     lda MissileCount
     beq Exit0       ; exit if Samus has no missiles
+    lda ObjAction
+    cmp #sa_FadeIn
+    beq Exit0       ; exit if Samus fades in
     lda Joy1Change
     ora Joy1Retrig
     and #BUTTON_SELECT
