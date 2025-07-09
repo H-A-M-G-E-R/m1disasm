@@ -1294,77 +1294,50 @@ ObjFrame4F:
 ;Bomb item.
 ObjFrame50:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $3A
-    .byte $3B
-    .byte $3C
-    .byte $3D
+    .byte $40
+    .byte $41
+    .byte $42
+    .byte $43
     .byte $FF
 
 ;High jump item.
 ObjFrame51:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $3E
-    .byte $3F
-    .byte $40
-    .byte $41
+    .byte $44
+    .byte $45
+    .byte $46
+    .byte $47
     .byte $FF
 
 ;Long beam item.
 ObjFrame52:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $42
-    .byte $43
-    .byte $44
-    .byte $45
+    .byte $48
+    .byte $49
+    .byte $4A
+    .byte $4B
     .byte $FF
 
 ;Screw attack item.
 ObjFrame53:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $46
-    .byte $47
-    .byte $48
-    .byte $49
+    .byte $4C
+    .byte $4D
+    .byte $4E
+    .byte $4F
     .byte $FF
 
 ;Maru Mari item.
 ObjFrame54:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $4A
-    .byte $4B
-    .byte $4C
-    .byte $4D
+    .byte $50
+    .byte $51
+    .byte $52
+    .byte $53
     .byte $FF
 
 ;Varia item.
 ObjFrame55:
-    .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $4E
-    .byte $4F
-    .byte $50
-    .byte $51
-    .byte $FF
-
-;Wave beam item.
-ObjFrame56:
-    .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $42
-    .byte $52
-    .byte $44
-    .byte $45
-    .byte $FF
-
-;Ice beam item.
-ObjFrame57:
-    .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $42
-    .byte $53
-    .byte $44
-    .byte $45
-    .byte $FF
-
-;Energy tank item.
-ObjFrame58:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
     .byte $54
     .byte $55
@@ -1372,16 +1345,43 @@ ObjFrame58:
     .byte $57
     .byte $FF
 
+;Wave beam item.
+ObjFrame56:
+    .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
+    .byte $48
+    .byte $58
+    .byte $4A
+    .byte $4B
+    .byte $FF
+
+;Ice beam item.
+ObjFrame57:
+    .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
+    .byte $48
+    .byte $59
+    .byte $4A
+    .byte $4B
+    .byte $FF
+
+;Energy tank item.
+ObjFrame58:
+    .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
+    .byte $5A
+    .byte $5B
+    .byte $5C
+    .byte $5D
+    .byte $FF
+
 ;Missile item.
 ObjFrame59:
     .byte ($0 << 4) + _id_ObjPlaceD, $03, $03
-    .byte $58
+    .byte $5E
     .byte $FD, OAMDATA_HFLIP + $0
-    .byte $58
+    .byte $5E
     .byte $FD, $0
-    .byte $59
+    .byte $5F
     .byte $FD, OAMDATA_HFLIP + $0
-    .byte $59
+    .byte $5F
     .byte $FF
 
 ;Skree burrow.
