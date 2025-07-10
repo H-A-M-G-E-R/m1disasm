@@ -358,7 +358,7 @@ EnFrame01:
 
 EnFrame02:
     .byte ($0 << 4) + _id_ObjPlace0, $00, $00
-    .byte $04
+    .byte $17
     .byte $FF
 
 EnFrame03:
