@@ -87,12 +87,11 @@ Temp0B_PositionX       = $0B
 ; WriteSpriteRAM
 Temp00_FramePtr        = $00
 ; Temp00_FramePtr+1      = $01
-Temp02_PlacePtr        = $02
-; Temp02_PlacePtr+1      = $03
+Temp02_ExplodeTimer    = $02
+Temp03_ExplodePlaceIndex = $03
 Temp04_MetaspriteFlipFlags = $04 ;Bit 7=vflip, bit 6=hflip
 Temp05_Cntrl           = $05
 Temp0E_ScreenX         = $0E     ;X position of object relative to screen.
-Temp0F_PlaceIndex      = $0F
 Temp10_ScreenY         = $10     ;Y position of object relative to screen.
 Temp11_FrameIndex      = $11
 
@@ -169,10 +168,10 @@ MacroPtr               = $3F     ;Low byte of pointer into macro definitions.
 EnmyFrameTbl1Ptr       = $41     ;Low byte of pointer into address table to find enemy animations.
 ; EnmyFrameTbl1Ptr+1     = $42     ;High byte of pointer into address table to find enemy animations.
 
-EnmyFrameTbl2Ptr       = $43     ;Same as above except in a second table because there are-->
+;EnmyFrameTbl2Ptr       = $43     ;Same as above except in a second table because there are-->
 ; EnmyFrameTbl2Ptr+1     = $44     ;too many entries to fit into one table.
 
-EnmyPlaceTblPtr        = $45     ;Low byte of pointer into enemy frame placement table.
+;EnmyPlaceTblPtr        = $45     ;Low byte of pointer into enemy frame placement table.
 ; EnmyPlaceTblPtr+1      = $46     ;High byte of pointer into enemy frame placement table.
 
 EnemyAnimPtr           = $47     ;Low byte of start of EnemyAnimIndexTbl.

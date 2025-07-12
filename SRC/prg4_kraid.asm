@@ -62,9 +62,9 @@ AreaPointers:
     .word RmPtrTbl                  ;($A1D5)Beginning of room pointer table.
     .word $0000                     ;($A21F)Was beginning of structure pointer table.
     .word MacroDefs                 ;($AC32)Beginning of macro definitions.
-    .word EnFramePtrTable1          ;($9CF7)Address table into enemy animation data. Two-->
-    .word EnFramePtrTable2          ;($9DF7)tables needed to accommodate all entries.
-    .word EnPlacePtrTable           ;($9E25)Pointers to enemy frame placement data.
+    .word EnFramePtrTable1          ;($9CF7)Address table into enemy animation data.
+    .word $0000                     ;
+    .word $0000                     ;($9F0E)Was pointers to enemy frame placement data.
     .word EnAnimTbl                 ;($9C86)Index to values in addr tables for enemy animations.
 
 ; Tourian-specific jump table (dummied out in other banks)
@@ -182,6 +182,9 @@ EnemyDamageTbl:
 
 MellowDamage:
     .word $0200
+
+EnemyPrimaryPaletteTbl:
+    .byte $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02
 
 EnemyRestingAnimIndex:
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl

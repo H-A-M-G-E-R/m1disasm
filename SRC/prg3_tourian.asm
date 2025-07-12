@@ -62,9 +62,9 @@ AreaPointers:
     .word RmPtrTbl                  ;($A7D1)Beginning of room pointer table.
     .word $0000                     ;($A7FB)Was beginning of structure pointer table.
     .word MacroDefs                 ;($AE49)Beginning of macro definitions.
-    .word EnFramePtrTable1          ;($A42C)Address table into enemy animation data. Two-->
-    .word EnFramePtrTable2          ;($A52C)tables needed to accommodate all entries.
-    .word EnPlacePtrTable           ;($A540)Pointers to enemy frame placement data.
+    .word EnFramePtrTable1          ;($A42C)Address table into enemy animation data.
+    .word $0000                     ;
+    .word $0000                     ;($9F0E)Was pointers to enemy frame placement data.
     .word EnAnimTbl                 ;($A406)Index to values in addr tables for enemy animations.
 
 ; Special Tourian Routines
@@ -192,6 +192,9 @@ EnemyDamageTbl:
 
 MellowDamage:
     .word $0300
+
+EnemyPrimaryPaletteTbl:
+    .byte $03, $03, $02, $02, $03, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02
 
 EnemyRestingAnimIndex:
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
@@ -1797,12 +1800,14 @@ DrawEndTimerEnemy:
     sec
     ror
     and #$0F
-    ora #$A0
+    clc
+    adc #$30
     sta SpriteRAM+($00<<2)+$01,x
     ; set tile of tens digit
     lda EndTimer+1
     and #$0F
-    ora #$A0
+    clc
+    adc #$30
     sta SpriteRAM+($01<<2)+$01,x
     ; set tile of ones digit
     lda EndTimer
@@ -1812,7 +1817,8 @@ DrawEndTimerEnemy:
     sec
     ror
     and #$0F
-    ora #$A0
+    clc
+    adc #$30
     sta SpriteRAM+($02<<2)+$01,x
 RTS_A28A:
     rts
