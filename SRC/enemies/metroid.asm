@@ -285,7 +285,7 @@ L999E:
     lda ObjectCntrl
     bmi L99AB
         lda EnType,x
-        ora #$82 | OAMDATA_PRIORITY.b
+        ora #$03 ~ $02
         sta ObjectCntrl
     L99AB:
     jmp CommonEnemyJump_00_01_02

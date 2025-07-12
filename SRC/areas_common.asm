@@ -1149,7 +1149,6 @@ DrawDoor:
         lda #$01
     L8BBA:
     ; use door type to write to ObjectCntrl
-    ora #$80 | OAMDATA_PRIORITY.b
     sta ObjectCntrl
 
     lda #$00
@@ -1158,6 +1157,8 @@ DrawDoor:
     txa
     and #$10
     eor #$10
+    asl
+    asl
     ora ObjectCntrl
     sta ObjectCntrl
     ; draw door
