@@ -1797,12 +1797,14 @@ DrawEndTimerEnemy:
     sec
     ror
     and #$0F
-    ora #$A0
+    clc
+    adc #$30
     sta SpriteRAM+($00<<2)+$01,x
     ; set tile of tens digit
     lda EndTimer+1
     and #$0F
-    ora #$A0
+    clc
+    adc #$30
     sta SpriteRAM+($01<<2)+$01,x
     ; set tile of ones digit
     lda EndTimer
@@ -1812,7 +1814,8 @@ DrawEndTimerEnemy:
     sec
     ror
     and #$0F
-    ora #$A0
+    clc
+    adc #$30
     sta SpriteRAM+($02<<2)+$01,x
 RTS_A28A:
     rts
