@@ -19,7 +19,7 @@
 .include "macros.asm"
 
 .def BANK = 0
-.SECTION "ROM Bank $000" BANK 0 SLOT "ROMSwitchSlot" ORGA $8000 FORCE
+.section "ROM Bank $000" bank 0 slot "ROMSwitchSlot" orga $8000 force
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
@@ -4767,7 +4767,7 @@ AgeTable:
 
 ;-------------------------------------------[ World map ]--------------------------------------------
 
-.ALIGN $100 ;Needs to be aligned, see GetRoomNum
+.align $100 ;Needs to be aligned, see GetRoomNum
 
 WorldMap:
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
@@ -4811,13 +4811,13 @@ GFX_IntroSprites:
 GFX_Title:
     .incbin "common_chr/title.chr" ; 8BE0 - METROID title screen CHR
 
-.ENDS
+.ends
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------
 
-.SECTION "ROM Bank $000 - Vectors" BANK 0 SLOT "ROMSwitchSlot" ORGA $BFFA FORCE
+.section "ROM Bank $000 - Vectors" bank 0 slot "ROMSwitchSlot" orga $BFFA force
     .word NMI                       ;($C0D9)NMI vector.
     .word RESET                     ;($FFB0)Reset vector.
     .word RESET                     ;($FFB0)IRQ vector.
-.ENDS
+.ends
 

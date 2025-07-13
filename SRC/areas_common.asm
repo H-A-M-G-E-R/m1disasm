@@ -24,16 +24,16 @@
 ;    jmp LF438
 ;CommonJump_02: ;$8006 (no anim, no common AI)
 ;    jmp LF416
-;CommonJump_03: ;$8009
-;    jmp LF852
+;CommonJump_CrawlerAIRoutine_ShouldCrawlerMove: ;$8009
+;    jmp CrawlerAIRoutine_ShouldCrawlerMove
 ;CommonJump_UpdateEnemyAnim: ;$800C
 ;    jmp UpdateEnemyAnim             ;($E094)
 ;CommonJump_InitEnAnimIndex: ;$800F
 ;    jmp InitEnAnimIndex
 ;CommonJump_GetEnemyTypeTimes2PlusFacingDirectionBit0: ;$8012 (unused?)
 ;    jmp GetEnemyTypeTimes2PlusFacingDirectionBit0
-;CommonJump_07: ;$8015
-;    jmp LF85A
+;CommonJump_InitEnemyData0DAndHitPoints: ;$8015
+;    jmp InitEnemyData0DAndHitPoints
 ;CommonJump_08: ;$8018
 ;    jmp LFBB9
 ;CommonJump_09: ;$801B

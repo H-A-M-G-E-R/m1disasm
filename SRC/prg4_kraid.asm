@@ -19,7 +19,7 @@
 .include "macros.asm"
 
 .redef BANK = 4
-.SECTION "ROM Bank $004" BANK 4 SLOT "ROMSwitchSlot" ORGA $8000 FORCE
+.section "ROM Bank $004" bank 4 slot "ROMSwitchSlot" orga $8000 force
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
@@ -737,13 +737,13 @@ GFX_EndingSprites:
 GFX_KraiBG3:
     .incbin "kraid/bg_chr_3.chr" ; 9360 - Misc Kraid BG CHR
 
-.ENDS
+.ends
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------
 
-.SECTION "ROM Bank $004 - Vectors" BANK 4 SLOT "ROMSwitchSlot" ORGA $BFFA FORCE
+.section "ROM Bank $004 - Vectors" bank 4 slot "ROMSwitchSlot" orga $BFFA force
     .word NMI                       ;($C0D9)NMI vector.
     .word RESET                     ;($FFB0)Reset vector.
     .word RESET                     ;($FFB0)IRQ vector.
-.ENDS
+.ends
 

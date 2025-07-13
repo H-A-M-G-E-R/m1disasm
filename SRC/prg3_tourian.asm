@@ -19,7 +19,7 @@
 .include "macros.asm"
 
 .redef BANK = 3
-.SECTION "ROM Bank $003" BANK 3 SLOT "ROMSwitchSlot" ORGA $8000 FORCE
+.section "ROM Bank $003" bank 3 slot "ROMSwitchSlot" orga $8000 force
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
@@ -1675,7 +1675,7 @@ UpdateAllRinkaSpawners:
     ; init more rinka stuff idk
     lda #$00
     sta EnSpecialAttribs,x
-    sta EnData04,x
+    sta EnIsHit,x
     jsr CommonJump_0E
     ; set rinka frame to nothing (it will fade into view)
     lda #$F7
@@ -2076,13 +2076,13 @@ GFX_KraidSprites:
 GFX_RidleySprites:
     .incbin "ridley/sprite_tiles.chr" ; 9160 - Ridley Sprite CHR
 
-.ENDS
+.ends
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------
 
-.SECTION "ROM Bank $003 - Vectors" BANK 3 SLOT "ROMSwitchSlot" ORGA $BFFA FORCE
+.section "ROM Bank $003 - Vectors" bank 3 slot "ROMSwitchSlot" orga $BFFA force
     .word NMI                       ;($C0D9)NMI vector.
     .word RESET                     ;($FFB0)Reset vector.
     .word RESET                     ;($FFB0)IRQ vector.
-.ENDS
+.ends
 

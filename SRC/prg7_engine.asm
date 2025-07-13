@@ -21,7 +21,7 @@
 .include "macros.asm"
 
 .redef BANK = 7
-.SECTION "ROM Bank $007" BANK 7 SLOT "ROMFixedSlot" ORGA $C000 FORCE
+.section "ROM Bank $007" bank 7 slot "ROMFixedSlot" orga $C000 force
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
@@ -1790,7 +1790,7 @@ UpdateWorld:
     jsr UpdateSamus                 ;($CC0D)Display/movement of Samus.
     jsr AreaRoutine                 ;($95C3)Area specific routine.
     jsr UpdateElevator              ;($D7B3)Display of elevators.
-    jsr UpdateStatues               ;($D9D4)Display of Ridley & Kraid statues.
+    jsr UpdateAllStatues            ;($D9D4)Display of Ridley & Kraid statues.
     jsr UpdateAllEnemyExplosions    ; destruction of enemies
     jsr UpdateAllMellows            ; update of Mellow/Memu enemies
     jsr UpdateAllEnemyFireballs
@@ -1808,13 +1808,13 @@ UpdateWorld:
 ;Clear remaining sprite RAM
     ldx SpritePagePos
     lda #$F4
-    Lx003:
+    @loop:
         sta SpriteRAM,x
         inx
         inx
         inx
         inx
-        bne Lx003
+        bne @loop
     rts
 
 ;------------------------------------[ Select Samus palette ]----------------------------------------
@@ -2246,6 +2246,8 @@ SetMirrorCntrlBit:
 
 ;------------------------------[ Check if screw attack is active ]-----------------------------------
 
+; return carry clear if screw attack is active
+; return carry set if no screw attack
 IsScrewAttackActive:
     ; default to screw attack inactive (carry flag set).
     sec
@@ -2988,8 +2990,8 @@ SearchOpenProjectileSlot:
     rts
 @slotFound:
     ; found open samus projectile slot
-    ; clear Projectile030A
-    sta Projectile030A,y
+    ; clear ProjectileIsHit
+    sta ProjectileIsHit,y
     ; return set zero flag
     lda #$00
     rts
@@ -3585,11 +3587,14 @@ Lx075:
     jmp DrawBullet
 
 UpdateBullet_ExplodeIfHitSprite:
-    lda Projectile030A,x
+    ; exit if projectile didn't hit anything
+    lda ProjectileIsHit,x
     beq Exit5
+    ; clear projectile is hit flag
     lda #$00
-    sta Projectile030A,x
+    sta ProjectileIsHit,x
 BulletExplode:
+    ; explode the projectile
     lda #ObjAnim_1D - ObjectAnimIndexTbl.b
     ldy ObjAction,x
     cpy #wa_BulletExplode
@@ -3617,8 +3622,8 @@ Lx078:
     lda #$00
     beq Lx077   ; branch always
 
-GotoProjectileHitDoor:
-    jmp ProjectileHitDoor
+GotoProjectileHitDoorOrStatue:
+    jmp ProjectileHitDoorOrStatue
 
 ; bullet <--> background crash detection
 ; return carry clear if collided, set otherwise
@@ -3632,8 +3637,9 @@ UpdateBullet_CollisionWithBG:
     bcs UpdateBullet_Move
     ; tile is solid
     jsr GotoUpdateBullet_CollisionWithMotherBrain
+    ; branch if bullet hit solid blank tile
     cmp #$4E
-    beq GotoProjectileHitDoor
+    beq GotoProjectileHitDoorOrStatue
     jsr CheckBlastTile
     bcc RTS_X081
     clc
@@ -4266,50 +4272,80 @@ SamusOnElevatorOrEnemy:
 Exit8:
     rts
 
-; UpdateStatues
+; UpdateAllStatues
 ; =============
 
-UpdateStatues:
+UpdateAllStatues:
+    ; set page index to statues object slot
     lda #$60
     sta PageIndex
+    ; exit if no statue present
     ldy StatueStatus
-    beq Exit8          ; exit if no statue present
+    beq Exit8
+    
+    ; branch if statue status is not #$01
     dey
-    bne Lx122
+    bne @endIf_A
+        ; statue status is #$01
         ; put bg tiles for lowered statues
+        ; kraid statue
+        ; y is #$00 here
         jsr UpdateStatueBGTiles
+        
+        ; ridley statue
         ldy #$01
         jsr UpdateStatueBGTiles
-        bcs Lx122
+        
+        ; branch if bg tile update has failed
+        bcs @endIf_B
+            ; bg tile update was successful
+            ; increase statue status to #$02
             inc StatueStatus
-    Lx122:
+        @endIf_B:
+    @endIf_A:
+    
+    ; branch if statue status is not #$02
     ldy StatueStatus
     cpy #$02
-    bne Lx125
-    lda KraidStatueStatus
-    bpl Lx123
-        ; put bg tiles for kraid raised statue
-        ldy #$02
-        jsr UpdateStatueBGTiles
-    Lx123:
-    lda RidleyStatueStatus
-    bpl Lx124
-        ; put bg tiles for ridley raised statue
-        ldy #$03
-        jsr UpdateStatueBGTiles
-    Lx124:
-    bcs Lx125
-    inc StatueStatus
-Lx125:
+    bne @endIf_C
+        ; statue status is #$02
+        ; branch if kraid statue is not raised
+        lda KraidStatueStatus
+        bpl @endIf_D
+            ; put bg tiles for kraid raised statue
+            ldy #$02
+            jsr UpdateStatueBGTiles
+        @endIf_D:
+        
+        ; branch if ridley statue is not raised
+        lda RidleyStatueStatus
+        bpl @endIf_E
+            ; put bg tiles for ridley raised statue
+            ldy #$03
+            jsr UpdateStatueBGTiles
+        @endIf_E:
+        
+        ; branch if bg tile update has failed (or if no tile update occurred)
+        bcs @endIf_F
+            ; bg tile update was successful
+            ; increase statue status to #$03
+            inc StatueStatus
+        @endIf_F:
+    @endIf_C:
+    
+    ; update kraid statue
     ldx #(KraidStatueStatus-(KraidStatueStatus-$60)).b
-    jsr LDA1A
+    jsr UpdateStatue
+    ; update ridley statue
     ldx #(RidleyStatueStatus-(KraidStatueStatus-$60)).b
-    jsr LDA1A
-    jmp LDADA
+    jsr UpdateStatue
+    ; update bridge to tourian
+    jmp UpdateAllStatues_Bridge
 
-LDA1A:
-    jsr LDA3D
-    jsr LDA7C
+UpdateStatue:
+    jsr UpdateStatue_Raise
+    jsr UpdateStatue_StartRaising
+    ; set statue anim frame depending on which statue it is
     txa
     and #$01
     tay
@@ -4329,47 +4365,66 @@ Lx126:
     jmp ObjDrawFrame
 
 StatueXTable:
-    .byte $88 ; Kraid's X
-    .byte $68 ; Ridley's X
+    .byte $88 ; Kraid's X position
+    .byte $68 ; Ridley's X position
 StatueAnimFrameTable:
     .byte _id_ObjFrame65 ; Kraid anim frame
     .byte _id_ObjFrame66 ; Ridley anim frame
 
-LDA3D:
-    lda ObjAnimDelay,x
+UpdateStatue_Raise:
+    ; exit if statue is raised
+    lda KraidStatueRaiseState-$60,x
     bmi RTS_X127
+
+    ; set raise state to not raised
     lda #$01
-    sta ObjAnimDelay,x
+    sta KraidStatueRaiseState-$60,x
+    ; exit if statue isn't moving
     lda KraidStatueY-$60,x
     and #$0F
     beq RTS_X127
-    inc ObjAnimDelay,x
+    
+    ; set raise state to raising
+    inc KraidStatueRaiseState-$60,x
+    ; move statue upwards by one pixel
     dec KraidStatueY-$60,x
+    ; exit if statue isn't done moving
     lda KraidStatueY-$60,x
     and #$0F
     bne RTS_X127
-    lda ObjAnimDelay,x
+
+    ; statue is done moving
+    ; set raise state to raised
+    lda KraidStatueRaiseState-$60,x
     ora #$80
-    sta ObjAnimDelay,x
+    sta KraidStatueRaiseState-$60,x
+    ; set status to statue up
     sta KraidStatueStatus-$60,x
-    inc ObjAnimDelay,x
+    ; set raise state to raised (useless)
+    inc KraidStatueRaiseState-$60,x
+    ; push object slot to stack
     txa
     pha
+    ; push #$00 for kraid, #$01 for ridley to stack
     and #$01
     pha
+    ; put bg tiles for lowered statue (useless)
     tay
     jsr UpdateStatueBGTiles
+    ; put bg tiles for raised statue
     pla
     tay
     iny
     iny
     jsr UpdateStatueBGTiles
+    ; restore object slot to x
     pla
     tax
 RTS_X127:
     rts
 
-LDA7C:
+UpdateStatue_StartRaising:
+    ; set position of statue object to current statue's position
     lda KraidStatueY-$60,x
     sta StatueY
     txa
@@ -4377,35 +4432,55 @@ LDA7C:
     tay
     lda StatueXTable,y
     sta StatueX
+    ; branch if statue status is up or not blinking
     lda KraidStatueStatus-$60,x
-    beq Lx128
-    bmi Lx128
+    beq @exit
+    bmi @exit
+    
+    ; statue is blinking
+    ; branch if statue is raising or raised
     lda KraidStatueRaiseState-$60,x
     cmp #$01
-    bne Lx128
-    lda ObjAnimIndex,x
-    beq Lx128
-    dec KraidStatueY-$60,x
-    lda #sfxTri_StatueRaise
-    jsr SFX_SetTriSFXFlag
-Lx128:
+    bne @exit
+    
+    ; statue is not raised
+    ; branch if statue is not hit
+    lda KraidStatueIsHit-$60,x
+    beq @exit
+        ; statue is hit by samus's weapons
+        ; move statue up by one pixel for the first time
+        ; thanks to this, UpdateStatue_Raise will know that the statue is moving and will take over for the next 15 pixels
+        dec KraidStatueY-$60,x
+        ; play raise sfx
+        lda #sfxTri_StatueRaise
+        jsr SFX_SetTriSFXFlag
+    @exit:
+    ; clear statue is hit flag
     lda #$00
-    sta ObjAnimIndex,x
+    sta KraidStatueIsHit-$60,x
     rts
 
+; return carry clear if updated successfully
+; return carry set on failure
 UpdateStatueBGTiles:
+    ; set destination pointer low byte
     lda StatueTileBlastWRAMPtrLoTable,y
     sta TileBlastWRAMPtr+$C0
+    ; set destination pointer high byte
     lda StatueHi
     asl
     asl
     ora StatueTileBlastWRAMPtrHiTable,y
     sta TileBlastWRAMPtr+1+$C0
+    ; set 2x3 tile region of solid blank tiles
     lda #$09
     sta TileBlastAnimFrame+$C0
+    ; set page index to #$C0 (what is this parameter used for?)
     lda #$C0
     sta PageIndex
+    ; update bg tiles
     jsr DrawTileBlast
+    ; restore page index to statues object slot
     lda #$60
     sta PageIndex
     rts
@@ -4422,37 +4497,51 @@ StatueTileBlastWRAMPtrHiTable:
     .byte >$60F0
     .byte >$606C
 
-LDADA:
-    lda Statues54
+UpdateAllStatues_Bridge:
+    ; exit if the bridge is already spawned
+    lda StatuesBridgeIsSpawned
     bmi Exit0
+    
+    ; exit if samus is in a door
     lda DoorEntryStatus
     bne Exit0
+    
+    ; exit if either statue is not raised
     lda KraidStatueStatus
     and RidleyStatueStatus
     bpl Exit0
-    sta Statues54
+    
+    ; set StatuesBridgeIsSpawned flag to not spawn the bridge again
+    sta StatuesBridgeIsSpawned
+    
+    ; loop through all 8 blasts to create for the bridge
     ldx #$70
     ldy #$08
-Lx129:
-    lda #$03
-    sta TileBlastRoutine,x
-    tya
-    asl
-    sta TileBlastDelay,x
-    lda #$04
-    sta TileBlastType,x
-    lda StatueHi
-    asl
-    asl
-    ora #$62
-    sta TileBlastWRAMPtr+1,x
-    tya
-    asl
-    adc #$08
-    sta TileBlastWRAMPtr,x
-    jsr Xminus16
-    dey
-    bne Lx129
+    @loop:
+        ; set tile blast routine to await respawning
+        lda #$03
+        sta TileBlastRoutine,x
+        ; set respawn delay to y*2
+        tya
+        asl
+        sta TileBlastDelay,x
+        ; set tile blast animation to generic shot block
+        lda #$04
+        sta TileBlastType,x
+        ; set tile blast nametable pointer
+        lda StatueHi
+        asl
+        asl
+        ora #$62
+        sta TileBlastWRAMPtr+1,x
+        tya
+        asl
+        adc #$08
+        sta TileBlastWRAMPtr,x
+        ; continue looping if there are still more tile blasts to make
+        jsr Xminus16
+        dey
+        bne @loop
 Exit0:
     rts
 
@@ -4462,18 +4551,25 @@ Exit0:
 ; Toggles between bullets/missiles (if Samus has any missiles).
 
 CheckMissileToggle:
+    ; exit if Samus has no missiles
     lda MissileCount
-    beq Exit0       ; exit if Samus has no missiles
+    beq Exit0
+    ; exit if Samus fades in
     lda ObjAction
     cmp #sa_FadeIn
-    beq Exit0       ; exit if Samus fades in
+    beq Exit0
+    
+    ; exit if SELECT was not just pressed and was not auto-fired
     lda Joy1Change
     ora Joy1Retrig
     and #BUTTON_SELECT
-    beq Exit0       ; exit if SELECT not pressed
+    beq Exit0
+    
+    ; toggle missiles on/off
     lda MissileToggle
-    eor #$01        ; 0 = fire bullets, 1 = fire missiles
+    eor #$01
     sta MissileToggle
+    ; update samus's palette
     jmp SelectSamusPal
 
 ;-------------------------------------------------------------------------------
@@ -4484,10 +4580,10 @@ CheckMissileToggle:
 MakeBitMask:
     sec
     lda #$00
-    LDB32:
+    @loop:
         rol
         dey
-        bpl LDB32
+        bpl @loop
 RTS_DB36:
     rts
 
@@ -4986,12 +5082,12 @@ DrawEnemy_NotBlank:
     iny
     lda (EnmyPlaceTblPtr),y
     sta Temp02_PlacePtr+1.b
-    ; branch if place is not EnPlace2
+    ; branch if place is not EnPlace1
     ldy #$00
-    cpx #$02
+    cpx #_id_EnPlace1*2.b
     bne Lx146
-        ; place is EnPlace2
-        ; therefore, this enemy is a miniboss or fake miniboss
+        ; place is EnPlace1
+        ; therefore, this enemy is exploding
         
         ; increment explosion timer
         ldx PageIndex
@@ -5121,7 +5217,7 @@ LDE60:
     beq LDEBC                           ;If not, branch.
 
 ;Special case for Samus exploding.
-    cpx #$0E                        ;Is Samus exploding?-->
+    cpx #_id_ObjPlace7*2.b          ;Is Samus exploding?-->
     bne LDEBC                           ;If not, branch to skip this section of code.
     ldx PageIndex                   ;X=0.
     inc ObjectCounter               ;Incremented every frame during explode sequence.-->
@@ -5615,23 +5711,29 @@ SPRWriteDigit:
 ;Add energy tank to Samus' data display.
 
 AddOneTank:
-    lda EnergyTankYPositions,y      ;Y coord-1.
-    sta SpriteRAM,x                 ;
-    lda $00                         ;Tile value.
-    sta SpriteRAM+1,x               ;
-    lda #$01                        ;Palette #.
-    sta SpriteRAM+2,x               ;
-    lda EnergyTankXPositions,y      ;X coord.
-    sta SpriteRAM+3,x               ;
+    ;Y coord-1.
+    lda EnergyTankYPositions,y
+    sta SpriteRAM,x
+    ;Tile value.
+    lda $00
+    sta SpriteRAM+1,x
+    ;Palette #.
+    lda #$01
+    sta SpriteRAM+2,x
+    ;X coord.
+    lda EnergyTankXPositions,y
+    sta SpriteRAM+3,x
+    ; fallthrough
 
 ;-----------------------------------------[ Add 4 to x ]---------------------------------------------
 
 Xplus4:
-    inx                             ;
-    inx                             ;
-    inx                             ;Add 4 to value stored in X.
-    inx                             ;
-    rts                             ;
+    ;Add 4 to value stored in X.
+    inx
+    inx
+    inx
+    inx
+    rts
 
 EnergyTankXPositions:
     .byte $18,$22,$2C,$36
@@ -5666,10 +5768,10 @@ DivideByRepeatedSubtraction: ;($E1AD)
     ldy #$00
     sec
     ;Loop and subtract value in $0A from A until carry flag is not set.
-    LE1B0:
+    @loop:
         iny
         sbc $0A
-        bcs LE1B0
+        bcs @loop
     ;the last subtraction made A negative
     ;undo last subtraction
     dey
@@ -6881,8 +6983,9 @@ LE7E6:
     jsr MakeCartRAMPtr              ;($E96A)Find object position in room RAM.
     ldy #$00
     lda (Temp04_CartRAMPtr),y     ; get tile value
+    ; branch if bullet hit solid blank tile
     cmp #$4E
-    beq ProjectileHitDoor
+    beq ProjectileHitDoorOrStatue
     jsr GotoUpdateBullet_CollisionWithMotherBrain
     jsr CheckBlastTile
     bcc Exit16      ; CF = 0 if tile # < $80 (solid tile)... CRASH!!!
@@ -6915,7 +7018,8 @@ Exit16:
 
 ; bullet/missile hits a door
 
-ProjectileHitDoor:
+ProjectileHitDoorOrStatue:
+    ; exit if we aren't updating a samus projectile
     ldx UpdatingProjectile
     beq ClcExit
     ldx #$06
@@ -6958,11 +7062,17 @@ ProjectileHitDoor:
         dex
         dex
     bpl @loop
+    
+    ; if it wasn't a door, it was a statue
+    ; lowest nybble of pointer to kraid statue is #$0 or #$1
+    ; lowest nybble of pointer to ridley statue is #$C or #$D
+    ; therefore, by using bit 3 of the pointer, we can distinguish between the statues
     lda Temp04_CartRAMPtr
     jsr Adiv8       ; / 8
     and #$01
+    ; set statue is hit flag for appropriate statue
     tax
-    inc Statue0366,x
+    inc KraidStatueIsHit,x
 
 ClcExit:
     clc
@@ -7514,7 +7624,7 @@ LEB4D:
     lda #$01                        ;
     sta EnStatus,x                  ;Indicate object slot is taken.
     lda #$00
-    sta EnData04,x
+    sta EnIsHit,x
     jsr GetNameTable                ;($EB85)Get name table to place enemy on.
     sta EnHi,x               ;Store name table.
 LEB6E:
@@ -7522,7 +7632,7 @@ CommonJump_0E:
     ldy EnType,x               ;Load A with index to enemy data.
     asl EnData05,x                     ;*2
     jsr LFB7B
-    jmp LF85A
+    jmp InitEnemyData0DAndHitPoints
 
 IsSlotTaken:
     lda EnStatus,x
@@ -7686,25 +7796,35 @@ SpawnElevatorRoutine:
 ; ===========
 
 LoadStatues:
+    ; set statues object hi position
     jsr GetNameTable                ;($EB85)
     sta StatueHi
+    
+    ; set kraid statue y position
     lda #$40
     ldx RidleyStatueStatus
     bpl @elseIf_A      ; branch if Ridley statue not hit
         lda #$30
     @elseIf_A:
     sta RidleyStatueY
+    
+    ; set ridley statue y position
     lda #$60
     ldx KraidStatueStatus
     bpl @elseIf_B      ; branch if Kraid statue not hit
         lda #$50
     @elseIf_B:
     sta KraidStatueY
-    sty Statues54 ; y is #$00
+    
+    ; clear StatuesBridgeIsSpawned
+    ; y is #$00 here
+    sty StatuesBridgeIsSpawned
+    ; set status to #$01 (first bg tile update batch)
     lda #$01
     sta StatueStatus
 Lx237:
     jmp EnemyLoop   ; do next room object
+
 
 LoadPipeBugHole:
     ; find first open pipe bug hole slot
@@ -8198,8 +8318,8 @@ CollisionDetection:
         ora DoorEntryStatus
         bne Lx262
         ldy #$00
-        jsr CollisionDetectionMellow_F149
-        jsr CollisionDetectionMellow_F2B4
+        jsr CollisionDetectionMellow_CheckWithObjectYSlot
+        jsr CollisionDetectionMellow_ReactToCollisionWithSamus
     ; check for crash with samus's projectiles
     Lx262:
         ldy #$D0
@@ -8216,12 +8336,12 @@ CollisionDetection:
             beq Lx264
             cmp #wa_Missile
             bne Lx265
-        Lx264:
-            ; projectile is of the right type
-            ; hit mellow
-            jsr CollisionDetectionMellow_F149
-            jsr CollisionDetectionMellow_F32A
-        Lx265:
+            Lx264:
+                ; projectile is of the right type
+                ; hit mellow if they collided
+                jsr CollisionDetectionMellow_CheckWithObjectYSlot
+                jsr CollisionDetectionMellow_ReactToCollisionWithProjectile
+            Lx265:
             jsr Yplus16
             bne Lx263
     Lx266:
@@ -8281,11 +8401,11 @@ Lx269:
             beq Lx272
             cmp #wa_Missile
             bne Lx273
-        ; check if enemy is actually hit
-        Lx272:
-            jsr CollisionDetectionEnemy_F140
-            jsr CollisionDetectionEnemy_F2CA
-        Lx273:
+            ; check if enemy is actually hit
+            Lx272:
+                jsr CollisionDetectionEnemy_CheckWithObjectYSlot
+                jsr CollisionDetectionEnemy_ReactToCollisionWithProjectile
+            Lx273:
             jsr Yplus16          ; next projectile slot
             bne Lx271
     Lx274:
@@ -8302,8 +8422,8 @@ Lx269:
         jsr IsSamusDead
         beq NextEnemy
         ; enemy collide with samus
-        jsr CollisionDetectionEnemy_F140
-        jsr CollisionDetectionEnemy_F282
+        jsr CollisionDetectionEnemy_CheckWithObjectYSlot
+        jsr CollisionDetectionEnemy_ReactToCollisionWithSamus
         NextEnemy:
         jsr Xminus16
         bmi Lx275
@@ -8365,12 +8485,12 @@ GotoSubtractHealth:
     jmp SubtractHealth              ;($CE92)
 
 
-CollisionDetectionEnemy_F140:
+CollisionDetectionEnemy_CheckWithObjectYSlot:
     jsr GetRadiusSumsOfEnXSlotAndObjYSlot
     jsr GetObjectYSlotPosition
     jmp CheckCollisionOfXSlotAndYSlot
 
-CollisionDetectionMellow_F149:
+CollisionDetectionMellow_CheckWithObjectYSlot:
     jsr GetObjectYSlotPosition
     jsr AddObjectYSlotRadiusYOf4AndRadiusXOf8
     jmp CheckCollisionOfXSlotAndYSlot
@@ -8608,35 +8728,51 @@ LF270:
     rts
 
 CollisionDetectionDoor_F277:
+    ; exit if collision didn't happen
     bcs Exit17
-LF279:
+    
+SetProjectileIsHit:
     lda Temp10_DistHi
-LF27B:
+SetSamusIsHitFlags:
     ora SamusIsHit,y
     sta SamusIsHit,y
 Exit17:
     rts
 
-CollisionDetectionEnemy_F282:
+CollisionDetectionEnemy_ReactToCollisionWithSamus:
+    ; exit if collision didn't happen
     bcs Exit17
+    
     jsr LF2E8
-    jsr IsScrewAttackActive         ;($CD9C)Check if screw attack active.
+    ;branch if screw attack is active.
+    jsr IsScrewAttackActive         
     ldy #$00
     bcc Lx289
+    
+    ; screw attack is not active
+    ; exit if enemy is frozen
     lda EnStatus,x
-    cmp #$04
+    cmp #enemyStatus_Frozen
     bcs Exit17
+    
+    ; enemy is not frozen
+    ; set SamusHurt010F to enemy type
     lda EnType,x
 Lx287:
     sta SamusHurt010F
+    
+    ; branch if enemy type bit 7 is set (when does this happen?)
     tay
     bmi Lx288
+        ; enemy type bit 7 is not set
+        ; exit if bit 4 of L968B is set
         lda L968B,y
         and #$10
         bne Exit17
     Lx288:
+    
     ldy #$00
-    jsr LF338
+    jsr SetSamusIsHitByEnemy
     lda SamusHurt010F
     cmp #$C0
     beq +
@@ -8652,31 +8788,40 @@ Lx289:
     sta EnWeaponAction,x
     bne Lx291 ; branch always
 
-CollisionDetectionMellow_F2B4:
+CollisionDetectionMellow_ReactToCollisionWithSamus:
+    ; exit if collision didn't happen
     bcs RTS_X290
-    jsr IsScrewAttackActive         ;($CD9C)Check if screw attack active.
+    ; branch if screw attack is not active (samus got hit)
+    jsr IsScrewAttackActive
     ldy #$00
     lda #$C0
     bcs Lx287
-LF2BF:
-    lda MellowB6,x
+    ; screw attack was active
+CollisionDetectionMellow_Hit:
+    ; set mellow is hit flag
+    lda MellowIsHit,x
     and #$F8
-    ora $10
+    ora Temp10_DistHi
     eor #$03
-    sta MellowB6,x
+    sta MellowIsHit,x
 RTS_X290:
     rts
 
-CollisionDetectionEnemy_F2CA:
+CollisionDetectionEnemy_ReactToCollisionWithProjectile:
+    ; exit if collision didn't happen
     bcs Lx293
+    
+    ; save weapon action to enemy
     lda ObjAction,y
     sta EnWeaponAction,x
-    jsr LF279
+    ; set projectile is hit flag
+    jsr SetProjectileIsHit
 Lx291:
-    jsr LF332
+    ; set enemy is hit flag
+    jsr GetEnemyIsHitFlags
 Lx292:
-    ora EnData04,x
-    sta EnData04,x
+    ora EnIsHit,x
+    sta EnIsHit,x
 Lx293:
     rts
 
@@ -8684,10 +8829,11 @@ LF2E8:
     jsr LF340
     bne Lx292
 CollisionDetectionFireball_F2ED:
+    ; exit if collision didn't happen
     bcs RTS_X294
-    lda $10
-    ora EnData04,x
-    sta EnData04,x
+    lda Temp10_DistHi
+    ora EnIsHit,x
+    sta EnIsHit,x
     tya
     pha
     jsr IsScrewAttackActive         ;($CD9C)Check if screw attack active.
@@ -8696,8 +8842,8 @@ CollisionDetectionFireball_F2ED:
     bcc RTS_X294
     lda #$80
     sta SamusHurt010F
-    jsr LF332
-    jsr LF27B
+    jsr GetEnemyIsHitFlags
+    jsr SetSamusIsHitFlags
 LF306:
     ; apply enemy base damage
     txa
@@ -8727,15 +8873,21 @@ RTS_X294:
     rts
 
 SamusHurt_F311:
+    ; exit if collision didn't happen
     bcs Exit22
+    ; set SamusHurt010F to #$E0
     lda #$E0
     sta SamusHurt010F
-    jsr LF338
-    lda $0F
+    ; set SamusIsHit depending on the direction samus was hit
+    jsr SetSamusIsHitByEnemy
+    ; set SamusKnockbackIsBomb to #$01 (vertical knockback) if samus and what hit her have the same x position
+    ; else, set SamusKnockbackIsBomb to #$00 (diagonal knockback)
+    lda Temp0F_DistX
     beq Lx295
-    lda #$01
-Lx295:
+        lda #$01
+    Lx295:
     sta SamusKnockbackIsBomb
+    ; fallthrough
 
 ClearHealthChange:
     lda #$00
@@ -8745,24 +8897,24 @@ ClearHealthChange:
 Exit22:
     rts                             ;Return for routine above and below.
 
-CollisionDetectionMellow_F32A:
+CollisionDetectionMellow_ReactToCollisionWithProjectile:
     bcs Exit22
-    jsr LF279
-    jmp LF2BF
+    jsr SetProjectileIsHit
+    jmp CollisionDetectionMellow_Hit
 
-LF332:
+GetEnemyIsHitFlags:
     jsr LF340
     jmp Amul8       ; * 8
 
-LF338:
-    lda $10
+SetSamusIsHitByEnemy:
+    lda Temp10_DistHi
     asl
     asl
     asl
-    jmp LF27B
+    jmp SetSamusIsHitFlags
 
 LF340:
-    lda $10
+    lda Temp10_DistHi
     eor #$03
     rts
 
@@ -8928,7 +9080,7 @@ Lx301:
     LF42D:
     ldx PageIndex
     lda #$00
-    sta EnData04,x
+    sta EnIsHit,x
     sta EnWeaponAction,x
     rts
 
@@ -8974,7 +9126,7 @@ DoFrozenEnemy: ; ($F43E)
 ;--------------------------------------
 DoEnemyPickup: ;($F483)
     ; branch if samus is not touching the pickup
-    lda EnData04,x
+    lda EnIsHit,x
     and #$24
     beq @pickupWasNotTouched
 
@@ -9116,7 +9268,7 @@ EnemyReactToSamusWeapon:
     lda EnSpecialAttribs,x
     sta $0A
     ; exit if enemy was not attacked?
-    lda EnData04,x
+    lda EnIsHit,x
     and #$20
     beq RTS_X315
     
@@ -9668,25 +9820,41 @@ Lx352:
     tay
     rts
 
-LF852: ; accessed from CommonJump_03
-CommonJump_03:
+CrawlerAIRoutine_ShouldCrawlerMove:
+CommonJump_CrawlerAIRoutine_ShouldCrawlerMove:
+    ; load enemy slot into a
     txa
+    ; divide by 8
     lsr
     lsr
     lsr
+    ; add frame count
     adc FrameCount
+    ; divide by two
     lsr
+    ; this returns
+    ; enemy slot  %----7654
+    ; frame count %07654321
+    ; whenever this is called, only the bits 0-1 are used
+    ; if bits 0-1 are zero, the crawler does not move
     rts
 
-LF85A:
-CommonJump_07:
+InitEnemyData0DAndHitPoints:
+CommonJump_InitEnemyData0DAndHitPoints:
     ldy EnType,x
+    
+    ; initialoze EnData0D
     lda EnemyData0DTbl,y
     sta EnData0D,x
+
+    ; initialize enemy's health
     lda EnemyHitPointTbl,y          ;($962B)
     bmi Lx353 ; BUGFIX: tough rippers and squeepts now don't bug out their immunity
     ldy EnSpecialAttribs,x
-    bpl Lx353 ; Check MSB of enemyAttr, double health if set
+    ; Check MSB of enemyAttr, double health if set
+    ; (this is the reason powerful variants of rippers have 254 health,
+    ;  instead of being invincible (255 health) like their weaker variant)
+    bpl Lx353
         asl
     Lx353:
     sta EnHitPoints,x
@@ -9719,7 +9887,7 @@ CommonJump_SpawnFireball:
     bcs RTS_SpawnFireball_FindSlot
     
     ; a is #$00 here
-    sta EnData04,y
+    sta EnIsHit,y
     jsr SpawnFireball_F92C
     ; rotate horizontal facing dir flag into carry
     lda EnData05,x
@@ -9873,13 +10041,13 @@ Exit19:
     rts
 
 UpdateEnemyFireball_Resting:
-    jsr LFA5B
+    jsr EnemyBecomePickupIfHit
     jsr EnemyBGCollideOrApplySpeed
     ldx PageIndex
     bcs LF97C
     lda EnStatus,x
     beq Exit19
-    jsr LFA60
+    jsr EnemyBecomePickup
 LF97C:
     lda #$01
 AnimDrawEnemy:
@@ -9894,7 +10062,7 @@ LF987:
     beq Lx362
 
 UpdateEnemyFireball_Active:
-    jsr LFA5B
+    jsr EnemyBecomePickupIfHit
     lda EnData0A,x
     and #$FE
     tay
@@ -10022,12 +10190,13 @@ LoadEnemyPositionFromTemp:
 RTS_X370:
     rts
 
-LFA5B:
-    lda EnData04,x
+EnemyBecomePickupIfHit:
+    ; exit if not hit
+    lda EnIsHit,x
     beq Exit20
-LFA60:
+EnemyBecomePickup:
     lda #$00
-    sta EnData04,x
+    sta EnIsHit,x
     lda #enemyStatus_Pickup
     sta EnStatus,x
 Exit20:
@@ -10146,7 +10315,7 @@ UpdatePipeBugHole:
     @endIf_A:
     ; enemy slot is available, spawn pipe bug
     ; a is #$00 here
-    sta EnData04,x
+    sta EnIsHit,x
     ; check if the slot status needs to be cleared first
     ; (why must clearing be done on a different frame than spawning the pipe bug?)
     lda #$FF
@@ -10190,7 +10359,7 @@ UpdatePipeBugHole:
     ldy EnType,x
     jsr LFB7B
     ; init hit points and stuff
-    jmp LF85A
+    jmp InitEnemyData0DAndHitPoints
 
 @clearEnemySlot:
     sta EnType,x
@@ -10199,10 +10368,12 @@ UpdatePipeBugHole:
     jmp RemoveEnemy                  ;($FA18)Free enemy data slot.
 
 LFB7B:
+    ; rotate bit 7 of L977B into bit 7 of EnData05
     jsr LoadTableAt977B
     ror EnData05,x
-    lda EnemyInitDelayTbl,y         ;($96BB)Load initial delay for enemy movement.
-    sta EnDelay,x           ;
+    ; load initial delay for enemy movement.
+    lda EnemyInitDelayTbl,y
+    sta EnDelay,x
 
 Exit13:
     rts                             ;Exit from multiple routines.
@@ -10261,17 +10432,17 @@ UpdateAllSkreeProjectiles:
     lda #$40
     sta PageIndex
     ldx #(4-1)*4
-    Lx385:
+    @loop:
         jsr UpdateSkreeProjectile
         dex
         dex
         dex
         dex
-        bne Lx385
+        bne @loop
         ; fallthrough
 UpdateSkreeProjectile:
     lda SkreeProjectileDieDelay,x
-    beq RTS_X387
+    beq @RTS
     dec SkreeProjectileDieDelay,x
     
     ; y = x/2
@@ -10328,27 +10499,27 @@ UpdateSkreeProjectile:
     
     ; exit if samus is in i-frames
     lda SamusBlink
-    bne Lx386
+    bne @endIf_A
     ; exit if samus is not touching the skree projectile
     ldy #$00
     ldx #$40
     jsr AreObjectsTouching          ;($DC7F)
-    bcs Lx386
+    bcs @endIf_A
     ; exit if samus is doing the screw attack
     jsr IsScrewAttackActive         ;($CD9C)Check if screw attack active.
     ldy #$00
-    bcc Lx386
-    
-    clc
-    jsr SamusHurt_F311
-    ; deal 5 damage to Samus
-    lda #$50
-    sta HealthChange
-    jsr SubtractHealth              ;($CE92)
-Lx386:
+    bcc @endIf_A
+        ; samus is being hit by the projectile
+        clc
+        jsr SamusHurt_F311
+        ; deal 5 damage to Samus
+        lda #$50
+        sta HealthChange
+        jsr SubtractHealth              ;($CE92)
+    @endIf_A:
     pla
     tax
-RTS_X387:
+@RTS:
     rts
 
 KillSkreeProjectile:
@@ -10367,7 +10538,7 @@ SkreeProjectileSpeedTable:
 UpdateAllMellows:
     ; exit if mellow handler enemy isn't there
     lda EnStatus+$F0
-    beq RTS_X390
+    beq @RTS
     
     ldx #$F0
     stx PageIndex
@@ -10381,21 +10552,22 @@ UpdateAllMellows:
     lda RandomNumber1
     sta Mellow8A
     lda #(4-1)*$08
-Lx389:
-    pha
-    tax
-    jsr UpdateMellow
-    pla
-    tax
-    lda MellowB6,x
-    and #$F8
-    sta MellowB6,x
-    txa
-    sec
-    sbc #$08
-    bpl Lx389
-RTS_X390:
+    @loop:
+        pha
+        tax
+        jsr UpdateMellow
+        pla
+        tax
+        lda MellowIsHit,x
+        and #$F8
+        sta MellowIsHit,x
+        txa
+        sec
+        sbc #$08
+        bpl @loop
+@RTS:
     rts
+
 RemoveMellowHandlerEnemy:
     jmp RemoveEnemy                   ;($FA18)Free enemy data slot.
 
@@ -10548,12 +10720,12 @@ UpdateMellow_LoadPositionFromTemp:
     rts
 
 UpdateMellow_FD84:
-    lda MellowB6,x
+    lda MellowIsHit,x
     and #$04
     beq @RTS
-    lda #$03
-    sta MellowStatus,x
-@RTS:
+        lda #$03
+        sta MellowStatus,x
+    @RTS:
     rts
 
 ;-------------------------------------------------------------------------------
@@ -10577,78 +10749,79 @@ CommonJump_ApplySpeedToPosition:
     ; apply y speed to y position
     lda Temp04_SpeedY
     clc
-    bmi Lx405
+    bmi @else_A
         ; dont apply y speed if it is zero
-        beq LFDBF
+        beq @endIf_A
         ; positive y speed
         adc Temp08_PositionY
-        bcs Lx403
+        bcs @then_B
             cmp #$F0
-            bcc Lx404
-        Lx403:
+            bcc @endIf_B
+        @then_B:
             ; position is greater or equal to 240px, we must wrap around
             adc #$0F ; carry is set, so this adds #$10
             ; if screen scrolls horizontally, this movement has failed bc it would go out of bounds
             ldy Temp02_ScrollDir
-            bne ClcExit2
+            bne @exit_failure
             ; screen scrolls vertically, update high byte
             inc Temp0B_PositionHi
-        Lx404:
+        @endIf_B:
         ; save new y position
         sta Temp08_PositionY
-        jmp LFDBF
-    Lx405:
+        jmp @endIf_A
+    @else_A:
         ; negative y speed
         adc Temp08_PositionY
-        bcs Lx406
+        bcs @endIf_C
             ; position is lesser than 0px, we must wrap around
             sbc #$0F ; carry is set, so this subtracts #$10
             ; if screen scrolls horizontally, this movement has failed bc it would go out of bounds
             ldy Temp02_ScrollDir
-            bne ClcExit2
+            bne @exit_failure
             ; screen scrolls vertically, update high byte
             inc Temp0B_PositionHi
-        Lx406:
+        @endIf_C:
         ; save new y position
         sta Temp08_PositionY
-    LFDBF:
+    @endIf_A:
     
     ; apply x speed to x position
     lda Temp05_SpeedX
     clc
-    bmi Lx408
+    bmi @else_D
         ; dont apply x speed if it is zero
-        beq SecExit
+        beq @exit_success
         ; positive x speed
         adc Temp09_PositionX
-        bcc Lx407
+        bcc @endIf_E
             ; position is greater or equal to 256px, we must wrap around
             ; if screen scrolls vertically, this movement has failed bc it would go out of bounds
             ldy Temp02_ScrollDir
-            beq ClcExit2
+            beq @exit_failure
             ; screen scrolls horizontally, update high byte
             inc Temp0B_PositionHi
-        Lx407:
+        @endIf_E:
         ; save new x position
-        jmp Lx409
-    Lx408:
+        jmp @endIf_F
+    @else_D:
         adc Temp09_PositionX
-        bcs Lx409
+        bcs @endIf_F
             ; position is lesser than 0px, we must wrap around
             ; if screen scrolls vertically, this movement has failed bc it would go out of bounds
             ldy Temp02_ScrollDir
-            beq ClcExit2
+            beq @exit_failure
             ; screen scrolls horizontally, update high byte
             inc Temp0B_PositionHi
-        Lx409:
+        @endIf_F:
         ; save new x position
         sta Temp09_PositionX
 
-SecExit:
+@exit_success:
     ; movement was successful, set carry
     sec
     rts
-ClcExit2:
+
+@exit_failure:
     ; movement has failed, clear carry
     clc
 RTS_X410:
@@ -10661,21 +10834,21 @@ UpdateTourianItems: ; $FDE3
     ; (it will have a value of 99.99 the first frame)
     lda EndTimer+1
     cmp #$99
-    bne Lx411
+    bne @endIf_A
     clc
     sbc EndTimer
-    bne Lx411                   ; On the first frame of the end timer:
+    bne @endIf_A                   ; On the first frame of the end timer:
         ; Add [mother brain defeated] to item history
         ; a is #$00, low byte of ui_MOTHERBRAIN
         sta $06
         lda #>ui_MOTHERBRAIN.b
         sta $07
         jsr LDC54
-    Lx411:
+    @endIf_A:
     
     ; Loop through zebetites (@ x = #$20, #$18, #$10, #$08, #$00)
     ldx #$20
-    Lx412:
+    @loop:
         ; ($FE05) Update one zebetite
         jsr CheckZebetite
         ; Subtract 8 from x
@@ -10683,13 +10856,15 @@ UpdateTourianItems: ; $FDE3
         sec
         sbc #$08
         tax
-        bne Lx412
+        bne @loop
 
 CheckZebetite: ; $FE05
+    ; Exit if zebetite state != 2
     lda ZebetiteStatus,x
     sec
     sbc #$02
-    bne RTS_X410 ; Exit if zebetite state != 2
+    bne RTS_X410
+
     ; a is #$00, low byte of ui_ZEBETITE1
     sta $06
     ; Set zebetite state to 3
@@ -10704,11 +10879,11 @@ CheckZebetite: ; $FE05
 ; Tile degenerate/regenerate
 UpdateAllTileBlasts:
     ldx #$C0
-    Lx413:
+    @loop:
         jsr UpdateTileBlast
         ldx PageIndex
         jsr Xminus16
-        bne Lx413
+        bne @loop
 UpdateTileBlast:
     stx PageIndex
     lda TileBlastRoutine,x
@@ -10750,7 +10925,7 @@ UpdateTileBlast_LFE59:
     ldy TileBlastType,x
     lda TileBlastAnimIndexTable,y
     
-    SetTileAnim:
+SetTileAnim:
     sta TileBlastAnimIndex,x
     sta TileBlast0505,x
     lda #$00
@@ -10820,6 +10995,8 @@ GetTileBlastFramePtr:
 Exit23:
     rts
 
+; return carry clear if successfully drawn
+; return carry set if there is not enough space in the ppu string buffer
 DrawTileBlast: ;($FEDC)
 CommonJump_DrawTileBlast:
     lda PPUStrIndex
@@ -10933,13 +11110,13 @@ TileBlastAnim7:  .byte $07,$06,$0A,$FE
 TileBlastAnim8:  .byte $07,$06,$0B,$FE
 TileBlastAnim9:  .byte $07,$06,$08,$FE
 
-.ENDS
+.ends
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------
 
-.SECTION "ROM Bank $007 - Vectors" BANK 7 SLOT "ROMFixedSlot" ORGA $FFFA FORCE
+.section "ROM Bank $007 - Vectors" bank 7 slot "ROMFixedSlot" orga $FFFA force
     .word NMI                       ;($C0D9)NMI vector.
     .word RESET                     ;($FFB0)Reset vector.
     .word RESET                     ;($FFB0)IRQ vector.
-.ENDS
+.ends
 
