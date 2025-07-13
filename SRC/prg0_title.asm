@@ -19,7 +19,7 @@
 .include "macros.asm"
 
 .def BANK = 0
-.SECTION "ROM Bank $000" BANK 0 SLOT "ROMSwitchSlot" ORGA $8000 FORCE
+.section "ROM Bank $000" bank 0 slot "ROMSwitchSlot" orga $8000 force
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
@@ -4717,7 +4717,7 @@ AgeTable:
 
 ;-------------------------------------------[ World map ]--------------------------------------------
 
-.ALIGN $100 ;Needs to be aligned, see GetRoomNum
+.align $100 ;Needs to be aligned, see GetRoomNum
 
 WorldMap:
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
@@ -4753,13 +4753,5 @@ WorldMap:
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $0B, $FF, $0C, $16, $18, $17, $18, $17, $0F, $17, $17, $1A, $1A, $17, $1B, $1B, $17, $19, $09, $FF
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-.ENDS
-
-;----------------------------------------[ Interrupt vectors ]--------------------------------------
-
-.SECTION "ROM Bank $000 - Vectors" BANK 0 SLOT "ROMSwitchSlot" ORGA $BFFA FORCE
-    .word NMI                       ;($C0D9)NMI vector.
-    .word RESET                     ;($FFB0)Reset vector.
-    .word RESET                     ;($FFB0)IRQ vector.
-.ENDS
+.ends
 

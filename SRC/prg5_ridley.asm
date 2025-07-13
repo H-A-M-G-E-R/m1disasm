@@ -19,7 +19,7 @@
 .include "macros.asm"
 
 .redef BANK = 5
-.SECTION "ROM Bank $005" BANK 5 SLOT "ROMSwitchSlot" ORGA $8000 FORCE
+.section "ROM Bank $005" bank 5 slot "ROMSwitchSlot" orga $8000 force
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
@@ -617,13 +617,5 @@ TileBlastFrame10:
 
 .include "ridley/metatiles.asm"
 
-.ENDS
-
-;----------------------------------------[ Interrupt vectors ]--------------------------------------
-
-.SECTION "ROM Bank $005 - Vectors" BANK 5 SLOT "ROMSwitchSlot" ORGA $BFFA FORCE
-    .word NMI                       ;($C0D9)NMI vector.
-    .word RESET                     ;($FFB0)Reset vector.
-    .word RESET                     ;($FFB0)IRQ vector.
-.ENDS
+.ends
 
