@@ -627,11 +627,3 @@ GFX_TourianFont:
 
 .ends
 
-;----------------------------------------[ Interrupt vectors ]--------------------------------------
-
-.section "ROM Bank $005 - Vectors" bank 5 slot "ROMSwitchSlot" orga $BFFA force
-    .word NMI                       ;($C0D9)NMI vector.
-    .word RESET                     ;($FFB0)Reset vector.
-    .word RESET                     ;($FFB0)IRQ vector.
-.ends
-

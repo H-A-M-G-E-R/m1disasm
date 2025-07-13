@@ -739,11 +739,3 @@ GFX_KraiBG3:
 
 .ends
 
-;----------------------------------------[ Interrupt vectors ]--------------------------------------
-
-.section "ROM Bank $004 - Vectors" bank 4 slot "ROMSwitchSlot" orga $BFFA force
-    .word NMI                       ;($C0D9)NMI vector.
-    .word RESET                     ;($FFB0)Reset vector.
-    .word RESET                     ;($FFB0)IRQ vector.
-.ends
-

@@ -672,11 +672,3 @@ GFX_TourianSprites:
 
 .ends
 
-;----------------------------------------[ Interrupt vectors ]--------------------------------------
-
-.section "ROM Bank $002 - Vectors" BANK 2 SLOT "ROMSwitchSlot" ORGA $BFFA FORCE
-    .word NMI                       ;($C0D9)NMI vector.
-    .word RESET                     ;($FFB0)Reset vector.
-    .word RESET                     ;($FFB0)IRQ vector.
-.ends
-

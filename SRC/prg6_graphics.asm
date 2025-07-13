@@ -53,11 +53,3 @@ GFX_Font:
 
 .ends
 
-;----------------------------------------[ Interrupt vectors ]--------------------------------------
-
-.section "ROM Bank $006 - Vectors" bank 6 slot "ROMSwitchSlot" orga $BFFA force
-    .word NMI                       ;($C0D9)NMI vector.
-    .word RESET                     ;($FFB0)Reset vector.
-    .word RESET                     ;($FFB0)IRQ vector.
-.ends
-

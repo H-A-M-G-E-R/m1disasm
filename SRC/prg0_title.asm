@@ -4813,11 +4813,3 @@ GFX_Title:
 
 .ends
 
-;----------------------------------------[ Interrupt vectors ]--------------------------------------
-
-.section "ROM Bank $000 - Vectors" bank 0 slot "ROMSwitchSlot" orga $BFFA force
-    .word NMI                       ;($C0D9)NMI vector.
-    .word RESET                     ;($FFB0)Reset vector.
-    .word RESET                     ;($FFB0)IRQ vector.
-.ends
-
