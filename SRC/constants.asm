@@ -97,6 +97,14 @@ Temp0E_ScreenX         = $0E     ;X position of object relative to screen.
 Temp10_ScreenY         = $10     ;Y position of object relative to screen.
 Temp11_FrameIndex      = $11
 
+; unique item history
+Temp06_ItemID          = $06
+; Temp06_ItemID+1        = $07
+Temp06_ItemY           = $06
+Temp07_ItemX           = $07
+Temp08_ItemHi          = $08
+Temp09_ItemType        = $09
+
 CodePtr                = $0C     ;Points to address to jump to when choosing-->
 ; CodePtr+1              = $0D     ;a routine from a list of routine addresses.
 
