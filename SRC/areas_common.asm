@@ -1038,12 +1038,6 @@ XorEnData05: ; L856B
     sta EnData05,x
     rts
 
-;---------------------------------[ Object animation data tables ]----------------------------------
-;----------------------------[ Sprite drawing pointer tables ]--------------------------------------
-;------------------------------[ Sprite placement data tables ]-------------------------------------
-;-------------------------------[ Sprite frame data tables ]---------------------------------------
-.include "common_sprite_data.asm"
-
 ;------------------------------------[ Samus enter door routines ]-----------------------------------
 
 ;This function is called once when Samus first enters a door.

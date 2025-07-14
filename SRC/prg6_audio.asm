@@ -29,5 +29,10 @@
 
 .include "music_engine.asm"
 
+;---------------------------------[ Object animation data tables ]----------------------------------
+;----------------------------[ Sprite drawing pointer tables ]--------------------------------------
+;-------------------------------[ Sprite frame data tables ]---------------------------------------
+.include "common_sprite_data.asm"
+
 .ends
 

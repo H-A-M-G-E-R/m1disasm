@@ -201,29 +201,6 @@ NMI:
     ;Save Y.
     tya
     pha
-    ;Sprite RAM address = 0.
-    lda #$00
-    sta OAMADDR
-    ;Transfer page 2 ($200-$2FF) to Sprite RAM.
-    ldy #>SpriteRAM.b
-    sty OAMDMA
-
-    ;Set SPR CHR banks so Samus would use the correct GFX during lag frames.
-    sty $8000
-    lda CHRBank2
-    sta $8001
-    iny
-    sty $8000
-    lda CHRBank3
-    sta $8001
-    iny
-    sty $8000
-    lda CHRBank4
-    sta $8001
-    iny
-    sty $8000
-    lda CHRBank5
-    sta $8001
 
     ;Skip if the frame couldn't finish in time.
     lda NMIStatus
@@ -324,6 +301,12 @@ NMI:
         sta PPUADDR
         sta PPUADDR
 
+        ;Sprite RAM address = 0.
+        sta OAMADDR
+        ;Transfer page 2 ($200-$2FF) to Sprite RAM.
+        lda #>SpriteRAM.b
+        sta OAMDMA
+
         ;($C2CA)check if data needs to be written to PPU.
         jsr CheckPPUWrite
         ;($C44D)Update $2000 & $2001.
@@ -331,7 +314,7 @@ NMI:
         ;($C29A)Update h/v scroll reg.
         jsr WriteScroll
 
-        ;Set BG CHR banks.
+        ;Set CHR banks.
         ldy #$00
         sty $8000
         lda CHRBank0
@@ -339,6 +322,22 @@ NMI:
         iny
         sty $8000
         lda CHRBank1
+        sta $8001
+        iny
+        sty $8000
+        lda CHRBank2
+        sta $8001
+        iny
+        sty $8000
+        lda CHRBank3
+        sta $8001
+        iny
+        sty $8000
+        lda CHRBank4
+        sta $8001
+        iny
+        sty $8000
+        lda CHRBank5
         sta $8001
 
         ;($C215)Read both joypads.
@@ -1140,6 +1139,8 @@ CheckSwitch:
     sty CurrentMainBank
     jsr MMCWriteReg3                ;Switch bank to 0
     jsr GoBankInit                  ;($C510)Initialize bank switch data.
+    ;fallthrough
+SetBankToMainBank:
     lda CurrentMainBank
     ;fallthrough
 
@@ -4786,7 +4787,12 @@ UpdateObjAnim:
     sta ObjAnimDelay,x     ; set initial anim countdown value
     ldy ObjAnimIndex,x
 Lx131:
+    lda #:ObjectAnimIndexTbl.b
+    jsr MMCWriteReg3
     lda ObjectAnimIndexTbl,y                ;($8572)Load frame number.
+    pha
+    jsr SetBankToMainBank
+    pla
     cmp #$FF        ; has end of anim been reached?
     beq Lx133
     sta ObjAnimFrame,x     ; store frame number
@@ -5095,6 +5101,8 @@ ObjDrawFrame:
     sta ObjectCntrl                 ;elevators.
 
 LDE60:
+    lda #:ObjFramePtrTable.b
+    jsr MMCWriteReg3
     lda ObjY,x                      ;
     sta Temp0A_PositionY            ;
     lda ObjX,x                      ;Copy object y and x room position and name table-->
@@ -5153,7 +5161,7 @@ LDE60:
         sta ObjAnimDelay,x                 ;Set animation delay for 40 frames(.667 seconds).
         pla                             ;Pull last return address off of the stack.
         pla                             ;
-        jmp ClearObjectCntrl            ;($DF2D)Clear object control byte.
+        jmp ClearObjectCntrlAndSetMainBank            ;($DF2D)Clear object control byte.
     +
     lda ObjRadY,x
     jsr ReduceYRadius               ;($DE3D)Reduce temp y radius by #$10.
@@ -5168,12 +5176,13 @@ LDE60:
     ldx PageIndex                   ;Get index to object.
     sta ObjOnScreen,x               ;Store visibility status of object.
     tax                             ;
-    beq LDEE3                           ;Branch if object is not within the screen boundaries.
-LDEDE:
-    ldx SpritePagePos               ;Load index into next unused sprite RAM segment.
-    jmp DrawMetasprite              ;($DF19)Start drawing object.
-LDEE3:
-    jmp ClearObjectCntrl            ;($DF2D)Clear object control byte then exit.
+    beq ClearObjectCntrlAndSetMainBank                           ;Branch if object is not within the screen boundaries.
+    jsr DrawMetasprite              ;($DF19)Start drawing object.
+    jmp SetBankToMainBank
+
+ClearObjectCntrlAndSetMainBank:
+    jsr ClearObjectCntrl            ;($DF2D)Clear object control byte then exit.
+    jmp SetBankToMainBank
 
 ;---------------------------------[ Check if object is on screen ]----------------------------------
 
@@ -6589,8 +6598,7 @@ LE733:
     ldy #$00                        ;
     lda ($00),y                     ;Load room number.
     pha
-    lda CurrentMainBank
-    jsr MMCWriteReg3
+    jsr SetBankToMainBank
     pla
     cmp #$FF                        ;Is it unused?-->
     beq RTS_E76F                    ;If so, branch to exit with carry flag set.
