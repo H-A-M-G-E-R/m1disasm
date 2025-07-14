@@ -468,7 +468,7 @@ EnemyMovement05_R:
     SignMagSpeed $05,  2, -5
     SignMagSpeed $04,  2, -6
     SignMagSpeed $02,  2, -7
-    EnemyMovementInstr_ClearEnData1D
+    EnemyMovementInstr_ClearEnJumpDsplcmnt
 
     SignMagSpeed $03,  2, -5
     SignMagSpeed $06,  2, -3
@@ -484,7 +484,7 @@ EnemyMovement05_R:
     SignMagSpeed $07,  2, -1
     SignMagSpeed $05,  2, -3
     SignMagSpeed $04,  2, -5
-    EnemyMovementInstr_ClearEnData1D
+    EnemyMovementInstr_ClearEnJumpDsplcmnt
     EnemyMovementInstr_Restart
 
 EnemyMovement05_L:
@@ -510,7 +510,7 @@ EnemyMovement05_L:
     SignMagSpeed $05, -2, -5
     SignMagSpeed $04, -2, -6
     SignMagSpeed $02, -2, -7
-    EnemyMovementInstr_ClearEnData1D
+    EnemyMovementInstr_ClearEnJumpDsplcmnt
 
     SignMagSpeed $03, -2, -5
     SignMagSpeed $06, -2, -3
@@ -526,7 +526,7 @@ EnemyMovement05_L:
     SignMagSpeed $07, -2, -1
     SignMagSpeed $05, -2, -3
     SignMagSpeed $04, -2, -5
-    EnemyMovementInstr_ClearEnData1D
+    EnemyMovementInstr_ClearEnJumpDsplcmnt
     EnemyMovementInstr_Restart
 
 ; ripper

@@ -716,6 +716,7 @@ EnFrame65:
     .byte $03,$FC,$98,$22,$00
     .byte $80
 
+;Zeb facing left.
 EnFrame66:
     .byte $08,$08
     .byte $F8,$C2,$22,$F8
@@ -724,6 +725,7 @@ EnFrame66:
     .byte $00,$D3,$22,$00
     .byte $80
 
+;Zeb facing left.
 EnFrame67:
     .byte $08,$08
     .byte $F8,$C2,$22,$F8
@@ -732,6 +734,7 @@ EnFrame67:
     .byte $00,$D4,$22,$00
     .byte $80
 
+;Zeb explode facing left.
 EnFrame68:
     .byte $88,$08
     .byte $00,$F4,$C2,$22,$F8
@@ -740,6 +743,7 @@ EnFrame68:
     .byte $03,$FC,$D4,$22,$00
     .byte $80
 
+;Zeb facing right.
 EnFrame69:
     .byte $08,$08
     .byte $F8,$C2,$62,$00
@@ -748,6 +752,7 @@ EnFrame69:
     .byte $00,$D3,$62,$F8
     .byte $80
 
+;Zeb facing right.
 EnFrame6A:
     .byte $08,$08
     .byte $F8,$C2,$62,$00
@@ -756,6 +761,7 @@ EnFrame6A:
     .byte $00,$D4,$62,$F8
     .byte $80
 
+;Zeb explode facing right.
 EnFrame6B:
     .byte $88,$08
     .byte $00,$F4,$C2,$62,$00
