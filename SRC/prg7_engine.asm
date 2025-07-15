@@ -469,9 +469,9 @@ HiPPUTable:
 ;-------------------------------------[ Erase all sprites ]------------------------------------------
 
 EraseAllSprites:
-    ldy #$02                        ;
+    ldy #>SpriteRAM.b               ;
     sty $01                         ;Loads locations $00 and $01 with -->
-    ldy #$00                        ;#$00 and #$02 respectively
+    ldy #<SpriteRAM.b               ;#$00 and #$02 respectively
     sty $00                         ;
     ldy #$00                        ;
     lda #$F0                        ;
@@ -490,12 +490,12 @@ EraseAllSprites:
 ;The routine below clears RAM associated with rooms and enemies.
 
 ClearRAM_33_DF:
-    ldx #$33                        ;
+    ldx #RoomPtr                    ;
     lda #$00                        ;
     LC1D8:
         sta $00,x                       ;Clear RAM addresses $33 through $DF.
         inx                             ;
-        cpx #$E0                        ;
+        cpx #SoundE0                    ;
         bcc LC1D8                       ;Loop until all desired addresses are cleared.
     rts
 
