@@ -6775,7 +6775,10 @@ LE7E6:
     bcc Exit16      ; CF = 0 if tile # < $80 (solid tile)... CRASH!!!
     cmp #$A0        ; is tile >= A0h? (walkable tile)
     bcs IsWalkableTile
-    jmp IsBlastTile  ; tile is $80-$9F (blastable tiles)
+    stx TempX
+    jsr IsBlastTile  ; tile is $80-$9F (blastable tiles)
+    ldx TempX
+    bcc Exit16
 
 IsWalkableTile:
     ldy IsSamus
@@ -7106,12 +7109,23 @@ ToggleNameTable:
 
 IsBlastTile:
     ldy UpdatingProjectile
+    bne IsBlastTile_SkipCheckUpdatingProjectile
+    ldy IsSamus
     beq Exit18
+    tax
+    jsr IsScrewAttackActive
+    txa
+    bcc IsBlastTile_SkipCheckUpdatingProjectile
+    clc
+    rts
+
 IsBlastTile_SkipCheckUpdatingProjectile:
-    tay
+    pha
     jsr GotoUpdateBullet_CollisionWithZebetiteAndMotherBrainGlass
-    cpy #$98
-    bcs Lx223
+    pla
+    cmp #$98
+    bcs +
+    tay
 ; attempt to find a vacant tile slot
     ldx #$C0
     Lx219:
@@ -7144,6 +7158,12 @@ Lx221:
 Lx222:
     lsr
     sta TileBlastType,x
++
+    lda UpdatingProjectile
+    bne Lx223
+    sec
+    rts
+
 Lx223:
     clc
 Exit18:
