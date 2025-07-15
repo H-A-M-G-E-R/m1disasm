@@ -7120,12 +7120,10 @@ IsBlastTile:
     rts
 
 IsBlastTile_SkipCheckUpdatingProjectile:
-    pha
-    jsr GotoUpdateBullet_CollisionWithZebetiteAndMotherBrainGlass
-    pla
-    cmp #$98
-    bcs +
     tay
+    jsr GotoUpdateBullet_CollisionWithZebetiteAndMotherBrainGlass
+    cpy #$98
+    bcs +
 ; attempt to find a vacant tile slot
     ldx #$C0
     Lx219:
