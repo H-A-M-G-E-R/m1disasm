@@ -64,7 +64,7 @@ SpecItmsTbl:
     ;Elevator to Norfair.
     @@x19:
         .byte $19, $FF
-        .byte it_Elevator, $84
+        .byte it_Elevator, $82
         .byte $00
 
 @y19:
