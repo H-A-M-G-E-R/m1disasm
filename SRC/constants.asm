@@ -507,13 +507,8 @@ ElevatorAnimResetIndex = $0325   ;Restart index-1 when AnimIndex finished with l
 ElevatorAnimIndex      = $0326   ;Current index into ObjectAnimIndexTbl.
 ElevatorUnused0328     = $0328   ;when starting to move, #$00 is written, but this is never read
 ElevatorType           = $032F   ;bit 7 is up(1) or down(0)
-                                   ;low nybble is which elevator it is
-                                   ;#$0=Brinstar/Brinstar
-                                   ;#$1=Brinstar/Norfair
-                                   ;#$2=Brinstar/Kraid
-                                   ;#$3=Brinstar/Tourian
-                                   ;#$4=Norfair/Ridley
-                                   ;elevator type #$8F is for the ending elevator
+                                   ;low nybble is destination area
+                                   ;elevator types #$7F or #$FF are for the ending elevator
 
 ;Power-up item RAM.
 PowerUpAnimFrame       = $0343   ;*2 = Index into FramePtrTable for current animation.

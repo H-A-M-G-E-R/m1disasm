@@ -71,11 +71,6 @@ SpecItmsTbl:
 @y0B:
     .byte $0B
     .word @y0C
-    ;Elevator from Brinstar.
-    @@x16:
-        .byte $16, @@x1A - @@x16
-        .byte it_Elevator, $81
-        .byte $00
     ;Missiles.
     @@x1A:
         .byte $1A, @@x1B - @@x1A
@@ -107,7 +102,7 @@ SpecItmsTbl:
     ;Elevator to Brinstar.
     @@x16:
         .byte $16, $FF
-        .byte it_Elevator, $81
+        .byte it_Elevator, $80
         .byte $00
 
 @y0E:

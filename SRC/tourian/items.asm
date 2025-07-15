@@ -59,7 +59,7 @@ SpecItmsTbl:
     ;Elevator to end.
     @@x01:
         .byte $01, $FF
-        .byte it_Elevator, $8F
+        .byte it_Elevator, $FF
         .byte $00
 
 @y04:
@@ -68,7 +68,7 @@ SpecItmsTbl:
     ;Elevator to Brinstar.
     @@x03:
         .byte $03, $FF
-        .byte it_Elevator, $83
+        .byte it_Elevator, $80
         .byte $00
 
 @y07:

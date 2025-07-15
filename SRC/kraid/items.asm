@@ -53,22 +53,13 @@
 ;#$0A=Palette change room.
 
 SpecItmsTbl:
-@y12:
-    .byte $12
-    .word @y14
-    ;Elevator from Brinstar.
-    @@x07:
-        .byte $07, $FF
-        .byte it_Elevator, $81
-        .byte $00
-
 @y14:
     .byte $14
     .word @y15
     ;Elevator to Brinstar.
     @@x07:
         .byte $07, $FF
-        .byte it_Elevator, $82
+        .byte it_Elevator, $80
         .byte $00
 
 @y15:

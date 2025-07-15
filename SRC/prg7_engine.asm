@@ -2432,6 +2432,8 @@ IsSamusDead:
     cmp #$FF
     beq Exit3
     cmp #sa_FadeIn
+    beq Exit3
+    cmp #sa_Elevator
 Exit3:
     rts                             ;Exit for routines above and below.
 
@@ -2785,6 +2787,8 @@ Lx029:
     jmp SetSamusAnim
 
 SetSamusRoll:
+    lda SamusOnElevator ; prevents morph sound from being played when starting to go down an elevator with maru mari equipped (fix added by me)
+    bne Lx030
     lda SamusGear
     and #gr_MARUMARI
     beq Lx030      ; branch if Samus doesn't have Maru Mari
@@ -4098,9 +4102,9 @@ ElevatorFade:
 
 ElevatorD8BF:
     lda ElevatorType-$20,x
-    tay
+    and #$7F
     ; Leads-To-Ending elevator?
-    cmp #$8F
+    cmp #$7F
     bne @endIf_A
         ; Samus made it! YAY!
         lda #_id_IncrementRoutine.b
@@ -4117,21 +4121,7 @@ ElevatorD8BF:
         rts
     @endIf_A:
     
-    ; determine destination area
-    ; branch if elevator is going down
-    tya
-    bpl @endIf_B
-        ; elevator is going up
-        ; default destination is brinstar
-        ldy #$00
-        ; if the elevator is Norfair/Ridley, destination is norfair
-        cmp #$84
-        bne @endIf_C
-            iny
-        @endIf_C:
-        tya
-    @endIf_B:
-    ; destination area is now in the low nybble of y
+    ; destination area is now in the low 7 bits of a
     ; load destination area bank
     jsr IsEngineRunning
     ; toggle palette
@@ -4208,10 +4198,8 @@ ElevatorStop:
     bne Lx116
     ; we are at the right height to stop moving
     ; set samus to stand
-    lda #sa_Stand
+    lda #sa_Begin
     sta ObjAction
-    ; clear samus horizontal movement
-    jsr StopHorzMovement
     ; set elevator routine to ElevatorIdle
     ldx PageIndex
     lda #$01
@@ -7851,10 +7839,10 @@ LoadElevator:
     bne Lx230           ; branch always
 
 SpawnElevatorRoutine:
-    lda ElevatorStatus
-    bne @exit      ; exit if elevator already present
     iny
     lda ($00),y
+    ldx ElevatorStatus
+    bne @alreadyPresent      ; branch if elevator already present
     sta ElevatorType
     ldy #$83
     sty ObjY+$20.w       ; elevator Y coord
@@ -7865,7 +7853,15 @@ SpawnElevatorRoutine:
     lda #_id_ObjFrame23.b
     sta ObjAnimFrame+$20       ; elevator frame
     inc ElevatorStatus              ;1
-@exit:
+    lda #$02
+    rts
+
+@alreadyPresent:
+    ; update destination area without switching direction
+    asl
+    asl ElevatorType
+    ror
+    sta ElevatorType
     lda #$02
     rts
 
