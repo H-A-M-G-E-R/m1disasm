@@ -4669,9 +4669,9 @@ LoadAreaGFX:
 ;sprite to the bottom right of the screen and uses a blank graphic for the sprite.
 
 RemoveIntroSprites:
-    ldy #$02                        ;Start at address $200.
+    ldy #>SpriteRAM.b               ;Start at address $200.
     sty $01                         ;
-    ldy #$00                        ;
+    ldy #<SpriteRAM.b               ;
     sty $00                         ;($00) = $0200 (sprite page)
     ldy #$5F                        ;Prepare to clear RAM $0200-$025F
     lda #$F4                        ;
