@@ -983,7 +983,7 @@ IntroSprYDir           = $6EAF   ;MSB set=decrease sprite y pos, else increase s
 ;WorldMapRAM            = $7000   ;Not used in this mod. Vanilla: Thru $73FF. The map is 1Kb in size (1024 bytes).
 DecompressedRoomBuffer = $7000   ;$7000-$7130+
 
-SpiderOrientation      = $73F9   ;0=on floor, 1=on right wall, 2=on ceiling, 3=on left wall, #$FF=midair
+SpiderOrientation      = $73F9   ;0=on floor, 1=on right wall, 2=on ceiling, 3=on left wall
 
 CHRBank0               = $73FA   ;PPU $0000-$07FF
 CHRBank1               = $73FB   ;PPU $0800-$0FFF

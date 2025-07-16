@@ -1,8 +1,8 @@
 SamusSpiderIdle:
     jsr CheckCancelSpider
     ; make spider fall if midair
-    jsr CheckSpiderCollision
-    bpl @collision
+    jsr CheckSpiderCollisionOnWall
+    bcc @collision
         lda #sa_SpiderFall
         sta ObjAction
         bne @exit ; branch always
@@ -30,11 +30,11 @@ SamusSpiderIdle:
 SamusSpiderRoll:
     jsr CheckCancelSpider
     ; make spider fall if midair
-    jsr CheckSpiderCollision
-    bpl @collision
+    jsr CheckSpiderCollisionOnWall
+    bcc @collision
         lda #sa_SpiderFall
         sta ObjAction
-        bne @exit
+        bne @exit ; branch always
     @collision:
     ; set idle action if dpad isn't pressed
     lda Joy1Status
@@ -84,8 +84,17 @@ SamusSpiderRoll:
 
 SamusSpiderFall:
     jsr CheckCancelSpider
-    jsr CheckSpiderCollision
-    bmi @inAir
+    ; check if the spider sticks to a surface
+    jsr CheckSpiderCollisionDown
+    bcc @stick
+    jsr CheckSpiderCollisionUp
+    bcc @stick
+    jsr CheckSpiderCollisionRight
+    bcc @stick
+    jsr CheckSpiderCollisionLeft
+    bcs @inAir
+    @stick:
+        sta SpiderOrientation
         lda #sa_SpiderIdle
         sta ObjAction
         bne @exit ; branch always
@@ -108,54 +117,63 @@ SamusSpiderFall:
     lda #$02
     jmp SetSamusData
 
-CheckSpiderCollision:
-    ; down
+CheckSpiderCollisionOnWall:
+    lda SpiderOrientation
+    jsr ChooseRoutine
+        .word CheckSpiderCollisionDown
+        .word CheckSpiderCollisionRight
+        .word CheckSpiderCollisionUp
+        .word CheckSpiderCollisionLeft
+
+CheckSpiderCollisionDown:
     lda ObjY
     clc
     adc ObjRadY
     and #$07
-    bne +
-        jsr CheckMoveDown
-        bcs +
+    bne CheckSpiderCollisionLeft@dontCheck
+    jsr CheckMoveDown
+    bcs @RTS
         lda #$00
-        beq @setOrientation ; branch always
-    +
-    ; up
-    lda ObjY
-    sec
-    sbc ObjRadY
-    and #$07
-    bne +
-        jsr CheckMoveUp
-        bcs +
-        lda #$02
-        bne @setOrientation ; branch always
-    +
-    ; right
+    @RTS:
+    rts
+
+CheckSpiderCollisionRight:
     lda ObjX
     clc
     adc ObjRadX
     and #$07
-    bne +
-        jsr ObjectCheckMoveRight
-        bcs +
+    bne CheckSpiderCollisionLeft@dontCheck
+    jsr ObjectCheckMoveRight
+    bcs @RTS
         lda #$01
-        bne @setOrientation ; branch always
-    +
-    ; left
+    @RTS:
+    rts
+
+CheckSpiderCollisionUp:
+    lda ObjY
+    sec
+    sbc ObjRadY
+    and #$07
+    bne CheckSpiderCollisionLeft@dontCheck
+    jsr CheckMoveUp
+    bcs @RTS
+        lda #$02
+    @RTS:
+    rts
+
+CheckSpiderCollisionLeft:
     lda ObjX
     sec
     sbc ObjRadX
     and #$07
-    bne +
-        jsr ObjectCheckMoveLeft
-        bcs +
+    bne @dontCheck
+    jsr ObjectCheckMoveLeft
+    bcs @RTS
         lda #$03
-        bne @setOrientation ; branch always
-    +
-    lda #$FF
-@setOrientation:
-    sta SpiderOrientation
+    @RTS:
+    rts
+@dontCheck:
+    sec
     rts
 
 TurnSpiderAtInsideWall:
