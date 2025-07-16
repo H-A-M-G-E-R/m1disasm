@@ -299,13 +299,13 @@ ClearMetroidLatch:
 
 LoadEnemySlotIDIntoY:
     txa
-    jsr Adiv16_
+    jsr Adiv16
     tay
     rts
 
 LoadEnemySlotIDIntoX:
     txa
-    jsr Adiv16_
+    jsr Adiv16
     tax
     rts
 

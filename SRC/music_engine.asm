@@ -222,7 +222,7 @@ MultiSFXInitRoutineTbl:
 
 ;Multi channel continue SFX handling routine addresses:
 MultiSFXContRoutineTbl:
-    .word GotoLoadSQ1SFXInitFlags
+    .word LoadSQ1SFXInitFlags
     .word IncorrectPasswordSFXContinue                     ;Incorrect password continue SFX.
     .word BossHitSFXContinue                     ;Boss hit continue SFX.
     .word SamusHitSFXContinue                     ;Samus hit continue SFX.
@@ -250,7 +250,7 @@ LoadSQ1SFXInitFlags:
 LoadSQ1SFXContFlags:
     lda SQ1ContSFX                  ;Load A with SQ1 continue flags, (6th SFX cycle).
     ldx #<SQ1SFXContPointers.b        ;Lower address byte in ChooseNextSFXRoutineTbl.
-    bne GotoSFXCheckFlags           ;Branch always.
+    ; fallthrough
 
 GotoSFXCheckFlags:
     jsr CheckSFXFlag                ;($B4BD)Checks to see if SFX flags set.
@@ -277,10 +277,6 @@ LoadMultiSFXContFlags:
     ldx #<MultiSFXContPointers.b      ;Lower address byte in ChooseNextSFXRoutineTbl.
     jmp GotoSFXCheckFlags           ;($B337)Checks to see if SFX or music flags set.
 
-GotoLoadSQ1SFXInitFlags:
-    jsr LoadSQ1SFXInitFlags         ;($B329)Check for SQ1 init flags.
-RTS_GotoLoadSQ1SFXInitFlags:
-    rts
 
 LoadSQ1ChannelSFX:                      ;Used to determine which sound registers to change-->
     lda #$00                        ;($4000 - $4003) - SQ1.
@@ -614,7 +610,7 @@ IncrementPeriodIndex:
 MissileLaunchSFXStart:
     lda #$18                        ;Number of frames to play sound before a change.
     ldy #<MissileLaunchSFXData.b      ;Lower byte of sound data start address(base=$B200).
-    jsr GotoSelectSFXRoutine        ;($B587)Prepare to setup registers for SFX.
+    jsr SelectSFXRoutine            ;($B587)Prepare to setup registers for SFX.
     lda #$0A                        ;
     sta NoiseSFXData                ;Start increment index for noise channel at #$0A.
     rts
@@ -1928,3 +1924,4 @@ RepeatMusic:
     sta TriMusicIndexIndex
     sta NoiseMusicIndexIndex
     rts
+
