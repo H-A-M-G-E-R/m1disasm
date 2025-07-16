@@ -2786,8 +2786,13 @@ SamusRoll:
     and #BUTTON_DOWN     ; DOWN pressed?
     bne Lx032     ; branch if yes
     ;break out of "ball mode"
-        inc ObjRadY
-        inc ObjRadY
+        lda ObjY
+        sec
+        sbc ObjRadY
+        and #$07
+        clc
+        adc ObjRadY
+        sta ObjRadY
         jsr CheckMoveUp
         bcc Lx032     ; branch if not possible to stand up
         ldx #$00
