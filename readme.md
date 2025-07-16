@@ -31,3 +31,6 @@ Subject to change.
 This ROM hack frees up many sprite tiles by dedicating the upper 16 tiles to Samus, allowing for additional enemies, projectiles, Samus animations, and so much more!
 
 This is possible by using the MMC3 mapper to switch the upper 64 tiles on the fly!
+
+
+Spider ball sprite by BBLIR from The Spriters Resource: https://www.spriters-resource.com/custom_edited/metroidcustoms/sheet/84367/

@@ -22,6 +22,7 @@
     SamusSuitGFX5: .incbin "common_chr/samus_suit_5.chr" ; 1
     SamusSuitGFX6: .incbin "common_chr/samus_suit_6.chr" ; 1
     SamusSuitGFX7: .incbin "common_chr/samus_suit_7.chr" ; 1
+    SamusSuitGFXSpider: .incbin "common_chr/samus_suit_spider.chr" ; 1
     SamusSuitlessGFX0: .incbin "common_chr/samus_suitless_0.chr" ; 1
     SamusSuitlessGFX1: .incbin "common_chr/samus_suitless_1.chr" ; 1
     SamusSuitlessGFX2: .incbin "common_chr/samus_suitless_2.chr" ; 1
@@ -30,6 +31,7 @@
     SamusSuitlessGFX5: .incbin "common_chr/samus_suitless_5.chr" ; 1
     SamusSuitlessGFX6: .incbin "common_chr/samus_suitless_6.chr" ; 1
     SamusSuitlessGFX7: .incbin "common_chr/samus_suitless_7.chr" ; 1
+    SamusSuitlessGFXSpider: .incbin "common_chr/samus_suit_spider.chr" ; 1 (placeholder)
 
     ItemsGFX: .incbin "common_chr/items.chr" ; 1
 

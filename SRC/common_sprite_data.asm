@@ -170,6 +170,10 @@ ObjAnim_IceBullet:
 ObjAnim_IceBulletHit:
     .byte _id_ObjFrameIceBulletHit, $F7, $FF
 
+;Samus spider ball animation.
+ObjAnim_SamusSpider:
+    .byte _id_ObjFrame_SamusSpider0, _id_ObjFrame_SamusSpider1, _id_ObjFrame_SamusSpider2, _id_ObjFrame_SamusSpider3, $FF
+
 ;----------------------------[ Sprite drawing pointer tables ]--------------------------------------
 
 ;The above animation pointers provide an index into the following table
@@ -215,6 +219,10 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame46
     PtrTableEntry ObjFramePtrTable, ObjFrame47
     PtrTableEntry ObjFramePtrTable, ObjFrame48
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSpider0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSpider1
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSpider2
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSpider3
     PtrTableEntry ObjFramePtrTable, ObjFrame49
     PtrTableEntry ObjFramePtrTable, ObjFrame4A
     PtrTableEntry ObjFramePtrTable, ObjFrame4B
@@ -280,6 +288,10 @@ SamusCHRBankTable:
     .byte SamusSuitGFX0/$400 ; ObjFrame46
     .byte SamusSuitGFX3/$400 ; ObjFrame47
     .byte SamusSuitGFX3/$400 ; ObjFrame48
+    .byte SamusSuitGFXSpider/$400 ; ObjFrame_SamusSpider0
+    .byte SamusSuitGFXSpider/$400 ; ObjFrame_SamusSpider1
+    .byte SamusSuitGFXSpider/$400 ; ObjFrame_SamusSpider2
+    .byte SamusSuitGFXSpider/$400 ; ObjFrame_SamusSpider3
 
 ;-------------------------------[ Sprite frame data tables ]---------------------------------------
 
@@ -759,6 +771,42 @@ ObjFrame48:
     .byte $00,$0C,$60,$F0
     .byte $08,$0D,$60,$00
     .byte $08,$0E,$60,$F8
+    .byte $80
+
+;Samus spider ball.
+ObjFrame_SamusSpider0:
+    .byte $07,$04
+    .byte $F8,$00,$20,$F8
+    .byte $F8,$01,$20,$00
+    .byte $00,$02,$20,$F8
+    .byte $00,$03,$20,$00
+    .byte $80
+
+;Samus spider ball.
+ObjFrame_SamusSpider1:
+    .byte $07,$04
+    .byte $00,$00,$A0,$F8
+    .byte $00,$01,$A0,$00
+    .byte $F8,$02,$A0,$F8
+    .byte $F8,$03,$A0,$00
+    .byte $80
+
+;Samus spider ball.
+ObjFrame_SamusSpider2:
+    .byte $07,$04
+    .byte $FF,$00,$E0,$00
+    .byte $FF,$01,$E0,$F8
+    .byte $F7,$02,$E0,$00
+    .byte $F7,$03,$E0,$F8
+    .byte $80
+
+;Samus spider ball.
+ObjFrame_SamusSpider3:
+    .byte $07,$04
+    .byte $F7,$00,$60,$00
+    .byte $F7,$01,$60,$F8
+    .byte $FF,$02,$60,$00
+    .byte $FF,$03,$60,$F8
     .byte $80
 
 ;Bomb explode.

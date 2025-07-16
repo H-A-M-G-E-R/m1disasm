@@ -198,6 +198,8 @@ CheckCancelSpider:
     sta ObjAction
     jsr StopVertMovement
     jsr ClearHorzData
+    lda #ObjAnim_16 - ObjectAnimIndexTbl.b
+    jsr SetSamusAnim
     lda #$02
     jsr SetSamusData
     pla
