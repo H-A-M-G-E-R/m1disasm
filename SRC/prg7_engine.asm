@@ -5698,7 +5698,7 @@ ToggleScroll:
 
 ;The following function checks to see if Samus is in lava.  If she is, the carry bit is cleared,
 ;if she is not, the carry bit is set. Samus can only be in lava if in a horizontally scrolling
-;room. If Samus is 24 pixels or less away from the bottom of the screen, she is considered to be
+;room. If Samus is 23 pixels or less away from the bottom of the screen, she is considered to be
 ;in lava whether its actually there or not.
 
 IsSamusInLava:
@@ -5706,9 +5706,9 @@ IsSamusInLava:
     lda #$01
     cmp ScrollDir
     bcs RTS_E268
-    ;If Samus is Scrolling left or right and within 24 pixels-->
+    ;If Samus is Scrolling left or right and within 23 pixels-->
     ;of the bottom of the screen, she is in lava. Clear carry bit.
-    lda #$D8
+    lda #$D9
     cmp ObjY
 RTS_E268:
     rts
