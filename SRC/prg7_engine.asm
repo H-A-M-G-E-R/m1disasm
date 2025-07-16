@@ -2795,6 +2795,11 @@ SamusRoll:
         sta ObjRadY
         jsr CheckMoveUp
         bcc Lx032     ; branch if not possible to stand up
+        lda ObjRadY
+        adc #$07
+        sta ObjRadY
+        jsr CheckMoveUp
+        bcc Lx032
         ldx #$00
         jsr StoreObjectPositionToTemp
         stx Temp05_SpeedX
