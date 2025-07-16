@@ -370,7 +370,7 @@ SoundEngine:
     beq +
         sta PreviousMusic
         tay
-        beq LB3EB
+        beq ClearMusicChannels
         jsr InitializeMusic
     +
     jsr LoadCurrentMusicFrameData
@@ -386,9 +386,25 @@ ClearSFXFlags:
     sta MultiSFXFlag
     rts
 
-LB3EB:
-    jsr InitializeSoundAddresses    ;($B404)Prepare to start playing music.
-    beq ClearSFXFlags               ;Branch always.
+ClearMusicChannels:
+    lda #$10
+    ldy SQ1InUse
+    bne +
+        sta SQ1_VOL
+    +
+    ldy SQ2InUse
+    bne +
+        sta SQ2_VOL
+    +
+    ldy NoiseContSFX
+    bne +
+        sta NOISE_VOL
+    +
+    lda TriInUse
+    bne +
+        sta TRI_LINEAR
+    +
+    rts
 
 CheckRepeatMusic:
     ;If music is supposed to repeat, reset music flags else branch to exit.
@@ -630,9 +646,13 @@ RTS_MusicBranch02:
     rts                             ;Exit for multiple routines.
 
 SamusWalkSFXStart:
-    lda NoiseContSFX                ;If MissileLaunch, SamusWalk or SpitFire SFX are-->
-    and #$34                        ;already being played, branch to exit.
-    bne RTS_MusicBranch02           ;
+    lda NoiseContSFX                ;If MissileLaunch, BombExplode or SpitFire SFX are-->
+    cmp #sfxNoise_MissileLaunch     ;already being played, branch to exit.
+    beq RTS_MusicBranch02           ;
+    cmp #sfxNoise_BombExplode
+    beq RTS_MusicBranch02
+    cmp #sfxNoise_SpitFlame
+    beq RTS_MusicBranch02
     lda #$03                        ;Number of frames to play sound before a change.
     ldy #<SamusWalkSFXData.b          ;Lower byte of sound data start address(base=$B200).
     bne GotoSelectSFXRoutine        ;Branch always.
@@ -839,8 +859,14 @@ BulletFireSFXStart:
     lsr                             ;If Samus has ice beam, branch.
     bcs HasIceBeamSFXStart          ;
     lda SQ1ContSFX                  ;If MissilePickup, EnergyPickup, BirdOutOfHole-->
-    and #$CC                        ;or EnemyHit SFX already playing, branch to exit.
-    bne RTS_MusicBranch03           ;
+    cmp #sfxSQ1_MissilePickup       ;or EnemyHit SFX already playing, branch to exit.
+    beq RTS_MusicBranch03           ;
+    cmp #sfxSQ1_EnergyPickup
+    beq RTS_MusicBranch03
+    cmp #sfxSQ1_OutOfHole
+    beq RTS_MusicBranch03
+    cmp #sfxSQ1_EnemyHit
+    beq RTS_MusicBranch03
     lda HasBeamSFX                  ;
     asl                             ;If Samus has long beam, branch.
     bcs HasLongBeamSFXStart         ;
@@ -961,9 +987,9 @@ DoorOpenCloseSFXContinue:
     jmp WriteTriPeriods        ;($B869)Save new periods.
 
 BeepSFXStart:
-    lda TriContSFX                  ;If BombLaunchSFX is already playing, branch-->
-    and #$80                        ;without playing BeepSFX.
-    bne RTS_MusicBranch10           ;
+    lda TriContSFX                  ;If SamusDieSFX is already playing, branch-->
+    cmp #sfxTri_SamusDie            ;without playing BeepSFX.
+    beq RTS_MusicBranch10           ;
     lda #$03                        ;Number of frames to play sound before a change.
     ldy #<SamusBeepSFXData.b          ;Lower byte of sound data start address(base=$B200).
     jmp SelectSFXRoutine            ;($B452)Setup registers for SFX.
@@ -1538,8 +1564,7 @@ LBBD8:
     jmp LoadSoundDataIndexIndex     ;($BB37)Load index to sound data index.
 
 LoadNoiseChannelMusic:
-    lda NoiseContSFX                ;
-    and #$FC                        ;If playing any Noise SFX, branch to exit.
+    lda NoiseContSFX                ;If playing any Noise SFX, branch to exit.
     bne LBBF7                       ;
         lda SFXData,y                     ;
         sta NOISE_VOL                 ;Load noise channel with drum beat SFX starting-->
