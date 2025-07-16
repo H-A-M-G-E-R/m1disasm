@@ -2805,21 +2805,20 @@ SamusRoll:
         jmp LD144
     Lx032:
         lda Joy1Change
-        jsr BitScan                     ;($E1E1)
-        cmp #BUTTONBIT_DOWN
-        bne +
+        and #BUTTON_DOWN
+        beq +
             lda SamusGear
             and #gr_MARUMARI
             beq +      ; branch if Samus doesn't have spider ball
             lda #sa_SpiderFall
             sta ObjAction
             jsr SFX_SamusBall
-            sec
         +
+        lda Joy1Status
+        jsr BitScan                     ;($E1E1)
+        cmp #BUTTONBIT_DOWN
         bcs Lx033
             sta SamusDir
-            lda #ObjAnim_16 - ObjectAnimIndexTbl.b
-            jsr SetSamusAnim
         Lx033:
         ldx SamusDir
         jsr LCCB7
