@@ -84,13 +84,11 @@ SamusSpiderFall:
         bne @exit ; branch always
     @inAir:
     ; i copy-pasted from SamusRoll
-    lda Joy1Change
+    lda Joy1Status
     jsr BitScan
     cmp #BUTTONBIT_DOWN
     bcs @noChangeDir
         sta SamusDir
-        lda #ObjAnim_16 - ObjectAnimIndexTbl.b
-        jsr SetSamusAnim
     @noChangeDir:
     ldx SamusDir
     jsr LCCB7
