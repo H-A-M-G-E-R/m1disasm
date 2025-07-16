@@ -44,6 +44,13 @@ SamusSpiderRoll:
         sta ObjAction
         bne @exit
     @pressedDPad:
+    ; halve speed in lava
+    lda SamusInLava
+    beq @notInLava
+        lda FrameCount
+        lsr
+        bcc @exit
+    @notInLava:
     jsr @move
     bcs @endif_turnInside
         ; hit wall
