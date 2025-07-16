@@ -983,6 +983,8 @@ IntroSprYDir           = $6EAF   ;MSB set=decrease sprite y pos, else increase s
 ;WorldMapRAM            = $7000   ;Not used in this mod. Vanilla: Thru $73FF. The map is 1Kb in size (1024 bytes).
 DecompressedRoomBuffer = $7000   ;$7000-$7130+
 
+SpiderOrientation      = $73F9   ;0=on floor, 1=on right wall, 2=on ceiling, 3=on left wall, #$FF=midair
+
 CHRBank0               = $73FA   ;PPU $0000-$07FF
 CHRBank1               = $73FB   ;PPU $0800-$0FFF
 CHRBank2               = $73FC   ;PPU $1000-$13FF
@@ -1085,10 +1087,13 @@ sa_Roll                = 3
 sa_PntUp               = 4
 sa_Door                = 5
 sa_PntJump             = 6
-sa_Dead                = 7
-sa_Dead2               = 8
-sa_Elevator            = 9
-sa_FadeIn              = 10
+sa_SpiderIdle          = 7
+sa_SpiderRoll          = 8
+sa_SpiderFall          = 9
+sa_Dead                = 10
+sa_Dead2               = 11
+sa_Elevator            = 12
+sa_FadeIn              = 13
 sa_Begin               = 255
 
 ;once i replace all usages of these constants by (ObjAnim_00 - ObjectAnimIndexTbl) expressions, ->

@@ -475,7 +475,7 @@ ObjFrame1A:
 
 ;Samus roll.
 ObjFrame1B:
-    .byte $08,$04
+    .byte $07,$04 ; changed y radius from 8 to 7 to compensate for spider ball
     .byte $F6,$0C,$20,$F8
     .byte $F6,$0D,$20,$00
     .byte $FE,$0E,$20,$F8
@@ -484,7 +484,7 @@ ObjFrame1B:
 
 ;Samus roll.
 ObjFrame1C:
-    .byte $08,$04
+    .byte $07,$04
     .byte $02,$0C,$A0,$F8
     .byte $02,$0D,$A0,$00
     .byte $FA,$0E,$A0,$F8
@@ -493,7 +493,7 @@ ObjFrame1C:
 
 ;Samus roll.
 ObjFrame1D:
-    .byte $08,$04
+    .byte $07,$04
     .byte $02,$0C,$E0,$00
     .byte $02,$0D,$E0,$F8
     .byte $FA,$0E,$E0,$00
@@ -502,7 +502,7 @@ ObjFrame1D:
 
 ;Samus roll.
 ObjFrame1E:
-    .byte $08,$04
+    .byte $07,$04
     .byte $F6,$0C,$60,$00
     .byte $F6,$0D,$60,$F8
     .byte $FE,$0E,$60,$00

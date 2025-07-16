@@ -31,6 +31,9 @@
 ; New metasprite engine
 .include "metasprite_engine.asm"
 
+; Spider ball code
+.include "spider_ball.asm"
+
 ;This routine generates pseudo random numbers and updates those numbers
 ;every frame. The random numbers are used for several purposes including
 ;password scrambling and determinig what items, if any, an enemy leaves
@@ -1976,6 +1979,9 @@ GoSamusHandler: ;($CC1A)
         .word SamusPntUp                ;($D198)Pointing up.
         .word SamusDoor                 ;($D3A8)Inside door while screen scrolling.
         .word SamusJump                 ;($D002)Jumping while pointing up.
+        .word SamusSpiderIdle
+        .word SamusSpiderRoll
+        .word SamusSpiderFall
         .word SamusDead                 ;($D41A)Dead.
         .word SamusDead2                ;($D41F)More dead.
         .word SamusElevator             ;($D423)Samus on elevator.
@@ -2743,9 +2749,9 @@ Lx029:
 SetSamusRoll:
     lda SamusOnElevator ; prevents morph sound from being played when starting to go down an elevator with maru mari equipped (fix added by me)
     bne Lx030
-    lda SamusGear
-    and #gr_MARUMARI
-    beq Lx030      ; branch if Samus doesn't have Maru Mari
+    ;lda SamusGear
+    ;and #gr_MARUMARI
+    ;beq Lx030      ; branch if Samus doesn't have Maru Mari
     lda SamusAccelY
     bne Lx030
 
@@ -2780,10 +2786,8 @@ SamusRoll:
     and #BUTTON_DOWN     ; DOWN pressed?
     bne Lx032     ; branch if yes
     ;break out of "ball mode"
-        lda ObjRadY
-        clc
-        adc #$08
-        sta ObjRadY
+        inc ObjRadY
+        inc ObjRadY
         jsr CheckMoveUp
         bcc Lx032     ; branch if not possible to stand up
         ldx #$00
@@ -2803,6 +2807,15 @@ SamusRoll:
         lda Joy1Change
         jsr BitScan                     ;($E1E1)
         cmp #BUTTONBIT_DOWN
+        bne +
+            lda SamusGear
+            and #gr_MARUMARI
+            beq +      ; branch if Samus doesn't have spider ball
+            lda #sa_SpiderFall
+            sta ObjAction
+            jsr SFX_SamusBall
+            sec
+        +
         bcs Lx033
             sta SamusDir
             lda #ObjAnim_16 - ObjectAnimIndexTbl.b
@@ -5758,6 +5771,15 @@ LavaAndMoveCheck:
     ;Set Samus lava status.
     iny
     sty SamusInLava
+
+    ;Spider idle and roll actions move Samus manually.
+    lda ObjAction
+    cmp #sa_SpiderIdle
+    beq @RTS
+    cmp #sa_SpiderRoll
+    bne SamusMoveVertically
+@RTS:
+    rts
 
 SamusMoveVertically: ; unreferenced label
     ;($E37A)Calculate vertical acceleration.
