@@ -2787,6 +2787,10 @@ SamusRoll:
     and #BUTTON_DOWN     ; DOWN pressed?
     bne Lx032     ; branch if yes
     ;break out of "ball mode"
+        lda ObjRadY
+        cmp #$07
+        bne Lx032
+        pha
         lda ObjY
         sec
         sbc ObjRadY
@@ -2795,16 +2799,18 @@ SamusRoll:
         adc ObjRadY
         sta ObjRadY
         jsr CheckMoveUp
-        bcc Lx032     ; branch if not possible to stand up
+        bcc +     ; branch if not possible to stand up
         lda ObjRadY
         adc #$07
         sta ObjRadY
         jsr CheckMoveUp
-        bcc Lx032
+        bcc +
+        pla
+        sta ObjRadY
         ldx #$00
         jsr StoreObjectPositionToTemp
         stx Temp05_SpeedX
-        lda #$F5
+        lda #-$0B
         sta Temp04_SpeedY
         jsr ApplySpeedToPosition
         jsr LoadObjectPositionFromTemp
@@ -2813,7 +2819,10 @@ SamusRoll:
         sta ObjAnimIndex
         jsr StopVertMovement
         lda #$04
-        jmp LD144
+        bne LD144 ; branch always
+    +
+        pla
+        sta ObjRadY
     Lx032:
         lda Joy1Change
         and #BUTTON_DOWN

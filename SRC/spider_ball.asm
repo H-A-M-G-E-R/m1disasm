@@ -1,7 +1,7 @@
 SamusSpiderIdle:
     jsr CheckCancelSpider
     ; make spider fall if midair
-    jsr CheckSpiderCollisionOnWall
+    jsr CheckSpiderCollisionOnSurface
     bcc @collision
         lda #sa_SpiderFall
         sta ObjAction
@@ -30,7 +30,7 @@ SamusSpiderIdle:
 SamusSpiderRoll:
     jsr CheckCancelSpider
     ; make spider fall if midair
-    jsr CheckSpiderCollisionOnWall
+    jsr CheckSpiderCollisionOnSurface
     bcc @collision
         lda #sa_SpiderFall
         sta ObjAction
@@ -117,7 +117,7 @@ SamusSpiderFall:
     lda #$02
     jmp SetSamusData
 
-CheckSpiderCollisionOnWall:
+CheckSpiderCollisionOnSurface:
     lda SpiderOrientation
     jsr ChooseRoutine
         .word CheckSpiderCollisionDown
