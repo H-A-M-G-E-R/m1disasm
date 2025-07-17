@@ -69,18 +69,26 @@ SamusSpiderRoll:
     jmp SetSamusData
 
 @move:
-    ; X = (orientation * 2 + direction) * 2
+    ; A = orientation * 2 + direction
     lda SamusDir
     lsr
     lda SpiderOrientation
     rol
-    asl
-    tax
-    lda SpiderMovementRoutinesTbl+1,x
-    pha
-    lda SpiderMovementRoutinesTbl,x
-    pha
-    rts
+    jsr ChooseRoutine
+        .word MoveSamusRight_Spider, MoveSamusLeft_Spider
+        .word MoveSamusUp, MoveSamusDown
+        .word MoveSamusLeft_Spider, MoveSamusRight_Spider
+        .word MoveSamusDown, MoveSamusUp
+
+MoveSamusLeft_Spider:
+    lda #$01
+    sta SamusDoorDir
+    jmp MoveSamusLeft
+
+MoveSamusRight_Spider:
+    lda #$00
+    sta SamusDoorDir
+    jmp MoveSamusRight
 
 SamusSpiderFall:
     jsr CheckCancelSpider
@@ -228,9 +236,3 @@ CheckCancelSpider:
 SpiderInputDirections:
     .byte BUTTON_RIGHT, BUTTON_UP, BUTTON_LEFT, BUTTON_DOWN
     .byte BUTTON_LEFT, BUTTON_DOWN, BUTTON_RIGHT, BUTTON_UP
-
-SpiderMovementRoutinesTbl:
-    .word MoveSamusRight-1, MoveSamusLeft-1
-    .word MoveSamusUp-1, MoveSamusDown-1
-    .word MoveSamusLeft-1, MoveSamusRight-1
-    .word MoveSamusDown-1, MoveSamusUp-1
