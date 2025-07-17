@@ -5992,7 +5992,12 @@ CheckStopHorzMvmt:
     lda ObjAction
     cmp #sa_Roll
     beq Exit10
+    cmp #sa_SpiderFall+1.b
+    bcs +
+    cmp #sa_SpiderIdle
+    bcs Exit10
     ;($CF55)Stop horizontal movement or play walk SFX if stopped.
++
     jmp StopHorzMovement
 
 ;-------------------------------------[ Samus vertical acceleration ]--------------------------------
