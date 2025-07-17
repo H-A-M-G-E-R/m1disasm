@@ -2793,7 +2793,7 @@ SamusRoll:
         pha
         lda ObjY
         sec
-        sbc ObjRadY
+        sbc #$07
         and #$07
         clc
         adc ObjRadY
