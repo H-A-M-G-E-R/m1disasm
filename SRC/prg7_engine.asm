@@ -7424,7 +7424,7 @@ Lx226:
 GetEnemyType: ; ($EB28)
     pha                             ;Store enemy type.
     and #$C0                        ;If MSB is set, the "tough" version of the enemy
-    sta EnSpecialAttribs,x          ;is to be loaded(more hit points, except rippers).
+    sta EnSpecialAttribs,x          ;is to be loaded(double health, except rippers).
     asl                             ;
     bpl Lx228                          ;If bit 6 is set, the enemy is either Kraid or Ridley.
         lda InArea                      ;Load current area Samus is in(to check if Kraid or-->
@@ -7465,7 +7465,7 @@ CommonJump_0E:
     ldy EnType,x               ;Load A with index to enemy data.
     asl EnData05,x                     ;*2
     jsr LFB7B
-    jmp InitEnemyData0DAndHitPoints
+    jmp InitEnemyData0DAndHealth
 
 IsSlotTaken:
     lda EnStatus,x
@@ -8894,7 +8894,7 @@ DoRestingEnemy: ;($F3BE)
         sta EnMovementInstrIndex,x
         sta EnData0A,x
         jsr DoEnemy_F6B9
-        jsr DoEnemy_F75B
+        jsr DoEnemy_EnData05DistanceToSamusThreshold
         jsr InitEnRestingAnimIndex
         jsr DoRestingEnemy_F676
 
@@ -8911,7 +8911,7 @@ DoActiveEnemy: ; LF3E6
     asl
     bmi DoActiveEnemy_BranchB
 
-    ; Branch if bit 5 is set
+    ; Branch if bit 5 is clear
     lda EnData05,x
     and #$20
     beq DoActiveEnemy_BranchA
@@ -8926,7 +8926,7 @@ DoActiveEnemy: ; LF3E6
 
 DoActiveEnemy_BranchA: ; LF401
     jsr DoEnemy_F6B9
-    jsr DoEnemy_F75B
+    jsr DoEnemy_EnData05DistanceToSamusThreshold
     jsr RemoveEnemyIfItIsInLava
 DoActiveEnemy_BranchB: ; LF40A
     jsr EnemyReactToSamusWeapon
@@ -9178,7 +9178,7 @@ EnemyReactToSamusWeapon:
     beq RTS_X315
     ; set hp to 5, and clear metroid latch
     lda #$05
-    sta EnHitPoints,x
+    sta EnHealth,x
     jmp GotoClearCurrentMetroidLatchAndMetroidOnSamus
 RTS_X315:
     rts
@@ -9194,7 +9194,7 @@ Lx316:
     jmp LF42D
 Lx317:
     ; branch if enemy is completely invulnerable to Samus's attacks
-    lda EnHitPoints,x
+    lda EnHealth,x
     cmp #$FF
     beq Lx316
     
@@ -9282,27 +9282,27 @@ Lx319:
     sta EnSpecialAttribs,x
     
     ; check attack type
-    ; if enemy is attacked by wave beam, damage enemy by 2 hit points
+    ; if enemy is attacked by wave beam, decrement health by 2
     cpy #wa_WaveBeam
     beq Lx324
-        ; if enemy is not a miniboss, damage enemy by 1 hit point
+        ; if enemy is not a miniboss, decrement health by 1
         bit $0A
         bvc Lx325
         ; enemy is a miniboss
-        ; if miniboss was not attacked by a missile, damage miniboss by 1 hit point
+        ; if miniboss was not attacked by a missile, decrement health by 1
         ldy EnWeaponAction,x
         cpy #wa_Missile
         bne Lx325
-        ; miniboss was attacked by a missile, damage miniboss by 4 hit points
-        dec EnHitPoints,x
+        ; miniboss was attacked by a missile, decrement health by 4
+        dec EnHealth,x
         beq ExplodeEnemy
-        dec EnHitPoints,x
+        dec EnHealth,x
         beq ExplodeEnemy
     Lx324:
-    dec EnHitPoints,x
+    dec EnHealth,x
     beq ExplodeEnemy
 Lx325:
-    dec EnHitPoints,x
+    dec EnHealth,x
     bne GetPageIndex
 ExplodeEnemy:
     ; the enemy has been killed by Samus's attacks
@@ -9446,7 +9446,7 @@ DoEnemy_F6B9:
 
     ; clear bit 0 of EnData05
     lda #~$01
-    jsr LF7B3
+    jsr AndEnData05
 
     lda ScrollDir
     cmp #$02
@@ -9476,7 +9476,7 @@ DoEnemy_F6B9:
 Lx337:
     ; clear bit 2 of EnData05
     lda #~$04
-    jsr LF7B3
+    jsr AndEnData05
 
     lda ScrollDir
     cmp #$02
@@ -9532,56 +9532,91 @@ LF752:
     rts
 
 ;-------------------------------------------------------------------------------
-DoEnemy_F75B:
-    lda #$E7
+DoEnemy_EnData05DistanceToSamusThreshold:
+    ; default to masking out bit 4 and bit 3 of EnData05
+    lda #~$18
     sta $06
+    ; set bit 4 and bit 3 of EnData05
     lda #$18
     jsr OrEnData05
+    ; exit if EnemyDistanceToSamusThreshold is zero
     ldy EnType,x
-    lda L96AB,y
+    lda EnemyDistanceToSamusThreshold,y
     beq RTS_X346
+    
+    ; push to y
     tay
+    ; unset bit 4 and bit 3 of EnData05 and exit if enemy is invisible
     lda EnData05,x
     and #$02
     beq Lx345
+    
+    ; pop from y
     tya
-    ldy #$F7
+    ; mask out bit 3 from EnData05
+    ldy #~$08
+    ; branch if bit 7 of EnemyDistanceToSamusThreshold is set
     asl
     bcs Lx342
-        ldy #$EF
+        ; bit 7 of EnemyDistanceToSamusThreshold is not set
+        ; mask out bit 4 from EnData05
+        ldy #~$10
     Lx342:
+    ; save EnemyDistanceToSamusThreshold & #$7F to $02
     lsr
     sta $02
+    ; save mask to $06
     sty $06
+    
+    ; check y axis
     lda ObjY
     sta $00
     ldy EnY,x
+    ; branch if bit 7 of EnData05 is set
     lda EnData05,x
     bmi Lx343
+        ; bit 7 of EnData05 is not set
+        ; check x axis
         ldy ObjX
         sty $00
         ldy EnX,x
     Lx343:
+    
+    ; rotate samus hi bit into bit 7 of her position
     lda ObjHi
     lsr
     ror $00
+    ; rotate enemy hi bit into bit 7 of its position
     lda EnHi,x
     lsr
     tya
     ror
+    ; get enemy pos relative to samus pos
     sec
     sbc $00
+    ; branch if enemy is to the right of samus
     bpl Lx344
+        ; enemy is to the left of samus
+        ; negate pos
         jsr TwosComplement              ;($C3D4)
     Lx344:
+    ; now a contains absolute distance between enemy and samus on a specific axis, divided by 2
+    
+    ; divide further by 8
     lsr
     lsr
     lsr
+    ; now it's divided by 16
+    ; compare with EnemyDistanceToSamusThreshold & #$7F
     cmp $02
+    ; exit if the distance is smaller than the threshold
     bcc RTS_X346
+    ; the distance is greater than the threshold
+    ; we must unset the proper bit of EnData05
 Lx345:
+    ; apply mask to EnData05
     lda $06
-LF7B3:
+AndEnData05:
     and EnData05,x
     sta EnData05,x
 RTS_X346:
@@ -9683,7 +9718,7 @@ DoRestingEnemy_TryBecomingActive:
     Lx351:
     ; clear bit 5 of EnData05
     lda #~$20
-    jmp LF7B3
+    jmp AndEnData05
 
 GetEnemyTypeTimes2PlusFacingDirectionBit0:
 CommonJump_GetEnemyTypeTimes2PlusFacingDirectionBit0:
@@ -9721,8 +9756,8 @@ CommonJump_CrawlerAIRoutine_ShouldCrawlerMove:
     ; if bits 0-1 are zero, the crawler does not move
     rts
 
-InitEnemyData0DAndHitPoints:
-CommonJump_InitEnemyData0DAndHitPoints:
+InitEnemyData0DAndHealth:
+CommonJump_InitEnemyData0DAndHealth:
     ldy EnType,x
     
     ; initialoze EnData0D
@@ -9730,7 +9765,7 @@ CommonJump_InitEnemyData0DAndHitPoints:
     sta EnData0D,x
 
     ; initialize enemy's health
-    lda EnemyHitPointTbl,y          ;($962B)
+    lda EnemyHealthTbl,y          ;($962B)
     bmi Lx353 ; BUGFIX: tough rippers and squeepts now don't bug out their immunity
     ldy EnSpecialAttribs,x
     ; Check MSB of enemyAttr, double health if set
@@ -9739,7 +9774,7 @@ CommonJump_InitEnemyData0DAndHitPoints:
     bpl Lx353
         asl
     Lx353:
-    sta EnHitPoints,x
+    sta EnHealth,x
 RTS_X354:
     rts
 
@@ -10240,8 +10275,8 @@ UpdatePipeBugHole:
     ; set enemy delay
     ldy EnType,x
     jsr LFB7B
-    ; init hit points and stuff
-    jmp InitEnemyData0DAndHitPoints
+    ; init health and stuff
+    jmp InitEnemyData0DAndHealth
 
 @clearEnemySlot:
     sta EnType,x
