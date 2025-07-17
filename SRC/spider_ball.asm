@@ -54,16 +54,16 @@ SamusSpiderRoll:
     jsr @move
     bcs @endif_turnInside
         ; hit wall
-        jsr TurnSpiderAtInsideWall
+        jsr TurnSpiderAtInsideCorner
         jsr @move
         jmp @exit
     @endif_turnInside:
     ; outside corner check
-    jsr TurnSpiderAtOutsideWall
+    jsr TurnSpiderAtOutsideCorner
     jsr @move
     bcs @exit
     ; spider isn't at an outside corner, revert orientation
-    jsr TurnSpiderAtInsideWall
+    jsr TurnSpiderAtInsideCorner
 @exit:
     lda #$02
     jmp SetSamusData
@@ -184,7 +184,7 @@ CheckSpiderCollisionLeft:
     sec
     rts
 
-TurnSpiderAtInsideWall:
+TurnSpiderAtInsideCorner:
     lda #$01
     ldx SamusDir
     beq +
@@ -196,7 +196,7 @@ TurnSpiderAtInsideWall:
     sta SpiderOrientation
     rts
 
-TurnSpiderAtOutsideWall:
+TurnSpiderAtOutsideCorner:
     lda #$01
     ldx SamusDir
     bne +
