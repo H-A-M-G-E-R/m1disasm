@@ -577,8 +577,10 @@ EnData05               = $0405   ;bit0: 0=facing right, 1=facing left
                                    ;bit1: IsObjectVisible
                                    ;bit2: 0=facing down, 1=facing up (can desync with sign of y speed for multiviolas)
                                    ;bit3: does the enemy become active if it's resting and EnDelay becomes zero. 0=no, 1=yes
-                                   ;bit4: always set? (see L968B)
-                                   ;bit5: when active, this bit being unset will trigger a resting period
+                                   ;bit4: is samus close enough to the enemy (EnemyDistanceToSamusThreshold). 0=no, 1=yes
+                                   ;  depending on the threshold, bit 3 may be used instead, which will allow -->
+                                   ;  the enemy to become active when samus gets close.
+                                   ;bit5: when active, this bit being set will trigger a resting period
                                    ;bit6: toggles every frame for some enemy routines to run at 30FPS
                                    ;bit7: when this is set, some routines use bit2 as facing direction instead of bit0
 EnMovementInstrIndex   = $0406   ;Counts such things as explosion time.
@@ -588,7 +590,7 @@ EnMovementIndex        = $0408   ;Index into the EnemyMovement table of that ene
 EnDelay                = $0409   ;Delay counter between enemy actions.
 EnData0A               = $040A   ; unknown -- For crawlers, orientation
                                    ; 00-on floor, 01-on wall going down, 02-on ceiling, 03-on wall going up
-EnHitPoints            = $040B   ;Current hit points of enemy.
+EnHealth               = $040B   ;Current health of enemy.
 EnPrevStatus           = $040C   ;Enemy status before being hurt. bit 7 and bit 6 is EnSpecialAttribs.
 EnData0D               = $040D   ; unknown - Ice Timer? stun timer?
 EnWeaponAction         = $040E   ; unknown - What weapon action is currently hitting the enemy?

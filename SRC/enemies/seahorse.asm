@@ -63,3 +63,4 @@ L9B59:
 
 SeahorseTable:
     .byte EnAnim_DragonPrepareToSpitFacingRight - EnAnimTbl, EnAnim_DragonPrepareToSpitFacingLeft - EnAnimTbl
+
