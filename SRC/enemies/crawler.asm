@@ -175,3 +175,4 @@ CrawlerMovementRoutinesTable:
     .word EnemyMoveOnePixelRight-1
     .word EnemyMoveOnePixelUp-1
     .word EnemyMoveOnePixelUp-1
+
