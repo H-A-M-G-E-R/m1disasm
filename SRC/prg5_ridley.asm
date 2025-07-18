@@ -122,8 +122,8 @@ AreaMellowAnimIndex:
 ChooseEnemyAIRoutine:
     lda EnType,x
     jsr CommonJump_ChooseRoutine
-        .word SwooperAIRoutine ; 00 - swooper
-        .word SwooperAIRoutine2 ; 01 - becomes swooper ?
+        .word SwooperAIRoutine00 ; 00 - swooper has not seen samus
+        .word SwooperAIRoutine01 ; 01 - swooper targetting samus
         .word SidehopperFloorAIRoutine ; 02 - dessgeegas
         .word SidehopperCeilingAIRoutine ; 03 - ceiling dessgeegas
         .word InvalidEnemy ; 04 - disappears
@@ -157,7 +157,7 @@ EnemyDeathAnimIndex:
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
 
-EnemyHitPointTbl:
+EnemyHealthTbl:
     .byte $08, $08, $08, $08, $01, $01, $02, $01, $01, $8C, $FF, $FF, $08, $06, $FF, $00
 
 ; Base damage caused by area enemies.
@@ -243,7 +243,7 @@ L968B:
 EnemyData0DTbl:
     .byte $01, $01, $01, $01, $01, $01, $01, $01, $28, $10, $00, $00, $00, $01, $00, $00
 
-L96AB:
+EnemyDistanceToSamusThreshold:
     .byte $05, $05, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $86, $00, $00
 
 EnemyInitDelayTbl:

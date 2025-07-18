@@ -159,7 +159,7 @@ EnemyDeathAnimIndex:
     .byte $00, $00 ; unused enemy
     .byte $00, $00 ; unused enemy
 
-EnemyHitPointTbl:
+EnemyHealthTbl:
     .byte $08, $08, $04, $FF, $02, $02, $04, $01, $20, $FF, $FF, $04, $01, $00, $00, $00
 
 ; Base damage caused by area enemies.
@@ -255,8 +255,11 @@ L968B:
 EnemyData0DTbl:
     .byte $01, $01, $01, $01, $01, $01, $01, $01, $20, $01, $01, $01, $40, $00, $00, $00
 
-; Some table referenced when loading an enemy
-L96AB:
+; Update EnData05 bit 4 or bit 3 depending on whether samus is close enough to the enemy
+; bit 7: 0=EnData05 bit 4, 1=EnData05 bit 3
+; bit 4-6: zero
+; bit 0-3: number of blocks distance threshold in the axis indicated by EnData05 bit 7
+EnemyDistanceToSamusThreshold:
     .byte $00, $00, $06, $00, $83, $00, $88, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
 EnemyInitDelayTbl:
@@ -325,7 +328,6 @@ EnSpeedXTable:
 ; bit2-3: bit6-7 of EnData1F for resting enemies
 ; bit1: toggle bit2 of EnData05 in EnemyIfMoveFailedDown/EnemyIfMoveFailedUp
 ; bit0: toggle bit0 of EnData05 in EnemyIfMoveFailedRight/EnemyIfMoveFailedLeft
-
 L977B:
     .byte $64, $6C, $21, $01, $04, $00, $4C, $40, $04, $00, $00, $40, $40, $00, $00, $00
 

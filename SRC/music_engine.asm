@@ -412,7 +412,6 @@ InitializeSoundAddresses:
     ;Jumps to all subroutines needed to reset all sound addresses in order to start playing music.
     jsr ClearMusicAndSFXAddresses
     jsr ClearSounds
-LB40A:
     jmp ClearSpecialAddresses
 
 ;Clears addresses used for repeating music, pausing music and controlling triangle length.
@@ -602,9 +601,10 @@ LB549:
     jmp EndNoiseSFX                 ;($B58F)End SFX.
 
 IncrementPeriodIndex:
-    inc NoiseSFXData                ;Incrementing the period index has the effect of-->
-    lda NoiseSFXData                ;lowering the frequency of the noise SFX.
-    sta NOISE_LO                    ;
+    ;Incrementing the period index has the effect of lowering the frequency of the noise SFX.
+    inc NoiseSFXData
+    lda NoiseSFXData
+    sta NOISE_LO
     rts
 
 MissileLaunchSFXStart:
@@ -654,20 +654,22 @@ SamusWalkSFXStart:
     bne GotoSelectSFXRoutine        ;Branch always.
 
 MultiSFXInit:
-    sta MultiSFXLength              ;
+    sta MultiSFXLength
     jsr LoadSQ2ChannelSFX           ;($B374)Set SQ2 SFX data.
     jsr UpdateContFlags             ;($B493)Set continue SFX flag.
-    lda #$01                        ;
-    sta SQ1InUse                    ;Disable music from using SQ1 and SQ2 while-->
-    lda #$02                        ;SFX are playing.
-    sta SQ2InUse                    ;
-    lda #$00                        ;
-    sta SQ1ContSFX                  ;
-    sta SQ1SFXData                  ;
-    sta SQ1SQ2SFXData               ;Clear all listed memory addresses.
-    sta SQ1SFXPeriodLow             ;
-    sta ThisMultiFrame              ;
-    sta WriteMultiChannelData       ;
+    ;Disable music from using SQ1 and SQ2 while SFX are playing.
+    lda #$01
+    sta SQ1InUse
+    lda #$02
+    sta SQ2InUse
+    ;Clear all listed memory addresses.
+    lda #$00
+    sta SQ1ContSFX
+    sta SQ1SFXData
+    sta SQ1SQ2SFXData
+    sta SQ1SFXPeriodLow
+    sta ThisMultiFrame
+    sta WriteMultiChannelData
     rts
 
 EndMultiSFX:
@@ -826,7 +828,7 @@ EnergyPickupSFXStart:
 
 SQ1SFXContinue:
     jsr IncrementSFXFrame           ;($B4A9)Get next databyte to process in SFX.
-    bne RTS_MusicBranch03               ;
+    bne RTS_MusicBranch03
 
 EndSQ1SFX:
     lda #$10                        ;
@@ -946,7 +948,7 @@ WaveBeamSFXContinue:
 
 LoadSQ1PeriodLow:
     sta SQ1_LO                   ;Change the period low data for SQ1 channel.
-    inc SQ1SFXData                  ;
+    inc SQ1SFXData
 
 RTS_MusicBranch10:
     rts                             ;Exit for multiple routines.
