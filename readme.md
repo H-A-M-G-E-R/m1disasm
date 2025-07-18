@@ -41,3 +41,5 @@ Spider ball sprite by BBLIR from The Spriters Resource: https://www.spriters-res
 # DMC sound effect test
 
 This test replaces Samus's hurt sound with a DPCM sample of the "Bart hits Homer with chair" meme!
+
+I used [Dn-Famitracker](https://github.com/Dn-Programming-Core-Management/Dn-FamiTracker) to convert the sample to DPCM.
