@@ -1109,6 +1109,8 @@ CheckSwitch:
     sty CurrentMainBank
     jsr MMCWriteReg3                ;Switch bank to 0
     jsr GoBankInit                  ;($C510)Initialize bank switch data.
+    ;fallthrough
+SetBankToMainBank:
     lda CurrentMainBank
     ;fallthrough
 
@@ -1800,7 +1802,10 @@ UpdateWorld:
     jsr UpdateAllDoors              ; display of doors
     jsr UpdateAllTileBlasts         ; tile de/regeneration
     jsr CollisionDetection          ; collision detection between entities.
+    lda #:DisplayBar.b
+    jsr MMCWriteReg3
     jsr DisplayBar                  ;($E0C1)Display of status bar.
+    jsr SetBankToMainBank
     jsr UpdateAllPipeBugHoles
     jsr CheckMissileToggle
     jsr UpdateItems                 ;($DB37)Display of power-up items.
@@ -5639,209 +5644,6 @@ LE0BC:
     ldy EnResetAnimIndex,x          ;reset animation index.
     bcs LE0AD                         ;Branch always.
 
-;---------------------------------------[ Display status bar ]---------------------------------------
-
-;Displays Samus' status bar components.
-
-DisplayBar:
-    ldy #$00                        ;Reset data index.
-    lda SpritePagePos               ;Load current sprite index.
-    pha                             ;save sprite page pos.
-    tax                             ;
-    LE0C7:
-        lda DataDisplayTbl,y            ;
-        sta SpriteRAM,x               ;Stor contents of DataDisplayTbl in sprite RAM.
-        inx                             ;
-        iny                             ;
-        cpy #$28                        ;10*4. At end of DataDisplayTbl? If not, loop to-->
-        bne LE0C7                           ;load next byte from table.
-
-;Display 2-digit health count.
-    stx SpritePagePos               ;Save new location in sprite RAM.
-    pla                             ;Restore initial sprite page pos.
-    tax                             ;
-    lda Health+1                    ;
-    and #$0F                        ;Extract upper health digit.
-    jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    lda Health                    ;
-    jsr Adiv16                      ;($C2BF)Move lower health digit to 4 LSBs.
-    jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    ldy EndTimer+1                  ;
-    iny                             ;Is Samus in escape sequence?-->
-    bne LE11C                          ;If so, branch.
-    ldy MaxMissiles                 ;
-    beq LE10A                           ;Don't show missile count if Samus has no missile containers.
-
-;Display 3-digit missile count.
-    lda MissileCount                ;
-    jsr HexToDec                    ;($E198)Convert missile hex count to decimal cout.
-    lda $02                         ;Upper digit.
-    jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    lda $01                         ;Middle digit.
-    jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    lda $00                         ;Lower digit.
-    jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    bne LE14A                         ;Branch always.
-
-;Samus has no missiles, erase missile sprite.
-LE10A:
-    lda #$FF                        ;"Blank" tile.
-    cpx #$F4                        ;If at last 3 sprites, branch to skip.
-    bcs LE14A                          ;
-    sta SpriteRAM+($03<<2)+1,x             ;Erase left half of missile.
-    cpx #$F0                        ;If at last 4 sprites, branch to skip.
-    bcs LE14A                          ;
-    sta SpriteRAM+($04<<2)+1,x             ;Erase right half of missile.
-    bne LE14A                          ;Branch always.
-
-;Display 3-digit end sequence timer.
-LE11C:
-    lda EndTimer+1                  ;
-    jsr Adiv16                      ;($C2BF)Upper timer digit.
-    jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    lda EndTimer+1                  ;
-    and #$0F                        ;Middle timer digit.
-    jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    lda EndTimer                  ;
-    jsr Adiv16                      ;($C2BF)Lower timer digit.
-    jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    lda #$58                        ;"TI" sprite(left half of "TIME").
-    sta SpriteRAM+1,x             ;
-    inc SpriteRAM+2,x             ;Change color of sprite.
-    cpx #$FC                        ;If at last sprite, branch to skip.
-    bcs LE14A                           ;
-    lda #$59                        ;"ME" sprite(right half of "TIME").
-    sta SpriteRAM+($01<<2)+1,x             ;
-    inc SpriteRAM+($01<<2)+2,x             ;Change color of sprite.
-
-LE14A:
-    ldx SpritePagePos               ;Restore initial sprite page pos.
-    lda TankCount                   ;
-    beq RTS_E172                          ;Branch to exit if Samus has no energy tanks.
-
-;Display full/empty energy tanks.
-    sta $03                         ;Temp store tank count.
-    ldy #$00                        ;Tank index.
-    lda #$6F                        ;"Full energy tank" tile.
-    sta $00                         ;
-    lda Health+1                    ;
-    jsr Adiv16                      ;($C2BF)/16. A contains # of full energy tanks.
-    sta $01                         ;Storage of full tanks.
-    bne AddTanks                    ;Branch if at least 1 tank is full.
-    dec $00                         ;Else switch to "empty energy tank" tile.
-
-AddTanks:
-    jsr AddOneTank                  ;($E17B)Add energy tank to display.
-    iny
-    dec $01                         ;Any more full energy tanks left?-->
-    bne LE16C                           ;If so, then branch.-->
-        dec $00                         ;Otherwise, switch to "empty energy tank" tile.
-    LE16C:
-    dec $03                         ;done all tanks?-->
-    bne AddTanks                    ;if not, loop to do another.
-
-    stx SpritePagePos               ;Store new sprite page position.
-RTS_E172:
-    rts
-
-;----------------------------------------[Sprite write digit ]---------------------------------------
-
-;A=value in range 0..9. #$A0 is added to A(the number sprites begin at $A0), and the result is stored
-;as the tile # for the sprite indexed by X.
-
-SPRWriteDigit:
-    ora #$A0                        ;#$A0 is index into pattern table for numbers.
-    sta SpriteRAM+1,x             ;Store proper nametable pattern in sprite RAM.
-    jmp Xplus4                      ;Find next sprite pattern table byte.
-
-;----------------------------------[ Add energy tank to display ]------------------------------------
-
-;Add energy tank to Samus' data display.
-
-AddOneTank:
-    ;Y coord-1.
-    lda EnergyTankYPositions,y
-    sta SpriteRAM,x
-    ;Tile value.
-    lda $00
-    sta SpriteRAM+1,x
-    ;Palette #.
-    lda #$01
-    sta SpriteRAM+2,x
-    ;X coord.
-    lda EnergyTankXPositions,y
-    sta SpriteRAM+3,x
-    ; fallthrough
-
-;-----------------------------------------[ Add 4 to x ]---------------------------------------------
-
-Xplus4:
-    ;Add 4 to value stored in X.
-    inx
-    inx
-    inx
-    inx
-    rts
-
-EnergyTankXPositions:
-    .byte $18,$22,$2C,$36
-    .byte $18,$22,$2C,$36
-
-EnergyTankYPositions:
-    .byte $17,$17,$17,$17
-    .byte $0D,$0D,$0D,$0D
-
-;------------------------------------[ Convert hex to decimal ]--------------------------------------
-
-;Convert 8-bit value in A to 3 decimal digits.
-;Upper digit put in $02, middle in $01 and lower in $00.
-HexToDec:
-    ldy #100                        ;Find upper digit.
-    sty $0A                         ;
-    jsr DivideByRepeatedSubtraction ;Extract hundreds digit.
-    sty $02                         ;Store upper digit in $02.
-
-    ldy #10                         ;Find middle digit.
-    sty $0A                         ;
-    jsr DivideByRepeatedSubtraction ;Extract tens digit.
-    sty $01                         ;Store middle digit in $01.
-
-    sta $00                         ;Store lower digit in $00
-    rts
-
-; A is the dividend
-; $0A is the divisor
-; returns quotient in Y and remainder in A
-DivideByRepeatedSubtraction: ;($E1AD)
-    ldy #$00
-    sec
-    ;Loop and subtract value in $0A from A until carry flag is not set.
-    @loop:
-        iny
-        sbc $0A
-        bcs @loop
-    ;the last subtraction made A negative
-    ;undo last subtraction
-    dey
-    adc $0A
-    rts
-
-;-------------------------------------[ Status bar sprite data ]-------------------------------------
-
-;Sprite data for Samus' data display
-
-DataDisplayTbl:
-    .byte $21,$A0,$01,$30           ;Upper health digit.
-    .byte $21,$A0,$01,$38           ;Lower health digit.
-    .byte $2B,$FF,$01,$28           ;Upper missile digit.
-    .byte $2B,$FF,$01,$30           ;Middle missile digit.
-    .byte $2B,$FF,$01,$38           ;Lower missile digit.
-    .byte $2B,$5E,$00,$18           ;Left half of missile.
-    .byte $2B,$5F,$00,$20           ;Right half of missile.
-    .byte $21,$76,$01,$18           ;E
-    .byte $21,$7F,$01,$20           ;N
-    .byte $21,$3A,$00,$28           ;..
-
 ;-------------------------------------------[ Bit scan ]---------------------------------------------
 
 ;This function takes the value stored in A and right shifts it until a set bit is encountered.
@@ -6920,8 +6722,7 @@ LE733:
     ldy #$00                        ;
     lda ($00),y                     ;Load room number.
     pha
-    lda CurrentMainBank
-    jsr MMCWriteReg3
+    jsr SetBankToMainBank
     pla
     cmp #$FF                        ;Is it unused?-->
     beq RTS_E76F                    ;If so, branch to exit with carry flag set.
