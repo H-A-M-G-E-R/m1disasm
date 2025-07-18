@@ -177,38 +177,22 @@ SetRinkaSpeed:
     lda $00
     pha
     ; write upper nibble to enemy y speed
-    jsr Adiv16_
+    jsr Adiv16
     sta EnSpeedY,x
     pla
     ; write lower nibble to enemy y speed subpixels
-    jsr Amul16_
+    jsr Amul16
     sta EnSpeedSubPixelY,x
 
     ; load x speed
     lda $01
     pha
-    jsr Adiv16_
+    jsr Adiv16
     ; write upper nibble to enemy x speed
     sta EnSpeedX,x
     pla
     ; write lower nibble to enemy x speed subpixels
-    jsr Amul16_
+    jsr Amul16
     sta EnSpeedSubPixelX,x
-    rts
-
-
-    lsr ; unused instruction
-Adiv16_:
-    lsr
-    lsr
-    lsr
-    lsr
-    rts
-
-Amul16_:
-    asl
-    asl
-    asl
-    asl
     rts
 

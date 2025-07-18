@@ -805,7 +805,7 @@ SpawnCannonRoutine:
 @spawnCannon:
     ; high nibble of special item type is CannonInstrListID
     lda ($00),y
-    jsr Adiv16_
+    jsr Adiv16
     sta CannonInstrListID,x
     
     lda #$01
@@ -820,12 +820,12 @@ SpawnCannonRoutine:
     ora #$07
     sta CannonY,x
     pla
-    jsr Amul16_
+    jsr Amul16
     ora #$07
     sta CannonX,x
     
     ; set nametable for edge of the screen that scrolls in
-    jsr GetNameTable_
+    jsr GetNameTable
     sta CannonHi,x
 @RTS:
     rts
@@ -835,7 +835,7 @@ SpawnCannonRoutine:
 SpawnMotherBrainRoutine:
     lda #$01
     sta MotherBrainStatus
-    jsr GetNameTable_
+    jsr GetNameTable
     sta MotherBrainHi
     eor #$01
     tax
@@ -878,7 +878,7 @@ SpawnZebetiteRoutine:
     rts
 
 GetVRAMPtrHi:
-    jsr GetNameTable_
+    jsr GetNameTable
     asl
     asl
     ora #$21+$40
@@ -895,18 +895,12 @@ SpawnRinkaSpawnerRoutine:
     lda RinkaSpawnerStatus,x
     bpl RTS_9D87
     lda ($00),y
-    jsr Adiv16_
+    jsr Adiv16
     sta RinkaSpawnerStatus,x
-    jsr GetNameTable_
+    jsr GetNameTable
     sta RinkaSpawnerHi,x
     lda #$FF
 RTS_9D87:
-    rts
-
-GetNameTable_:
-    lda PPUCTRL_ZP
-    eor ScrollDir
-    and #$01
     rts
 
 CannonInstrDelayTable:
@@ -1136,7 +1130,7 @@ SpawnRinka_InitPositionXY:
     sta EnY,x
     pla
     ; x position = (low nybble * #$10) + #$07
-    jsr Amul16_
+    jsr Amul16
     ora #$07
     sta EnX,x
     rts
@@ -1146,9 +1140,6 @@ Xplus16:
     clc
     adc #$10
     tax
-    rts
-
-    ; unused
     rts
 
 L9F00: .byte _id_Palette08+1, _id_Palette09+1
@@ -1929,7 +1920,7 @@ ClearAllMetroidLatches:
 
 ClearCurrentMetroidLatchAndMetroidOnSamus:
     txa
-    jsr Adiv16_
+    jsr Adiv16
     tay
     jsr ClearMetroidLatch
     sta MetroidOnSamus

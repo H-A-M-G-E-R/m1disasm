@@ -110,7 +110,11 @@ LC057:
     sty GameMode                    ;Title screen mode
     jsr ClearNameTables             ;($C158)
     jsr EraseAllSprites             ;($C1A3)
+    lda #:InitializeSoundAddresses.b
+    jsr MMCWriteReg3
     jsr InitializeSoundAddresses
+    lda #$00
+    jsr MMCWriteReg3
 
     ;NMI = enabled
     ;Sprite size = 8x8
@@ -502,7 +506,7 @@ ClearRAM_33_DF:
 
 ;----------------------------------[ Write PPU string to palette ]-----------------------------------
 
-PreparePPUProcess_:
+PreparePPUProcess:
     stx $00                         ;Lower byte of pointer to PPU string.
     sty $01                         ;Upper byte of pointer to PPU string.
     jmp ProcessPPUString            ;($C30C)Write data string to PPU.
@@ -708,8 +712,7 @@ Adiv32:
     lsr                             ;Divide by 32.
 Adiv16:
     lsr                             ;Divide by 16.
-Adiv8:
-    lsr                             ;Divide by 8.
+    lsr                             ;
     lsr                             ;
     lsr                             ;Divide by shifting A right.
     rts
@@ -2091,9 +2094,6 @@ ActionTable:
 ;----------------------------------------------------------------------------------------------------
 
 SetSamusExplode: ;($CC8B)
-    ; this write doesn't serve any purpose
-    lda #$50
-    sta SamusJumpDsplcmnt
     ; set samus animation to explode
     lda #ObjAnim_SamusExplode - ObjectAnimIndexTbl.b
     jsr SetSamusAnim
@@ -5716,7 +5716,9 @@ DoOneDoorScroll:
     lda #$20                        ;Set DoorDelay to 32 frames(comming out of door).
     sta DoorDelay                   ;
     lda SamusDoorData               ;Check if scrolling should be toggled.
-    jsr Amul8                       ;($C2C6)*8. Is door not to toggle scrolling(item room,-->
+    asl
+    asl
+    asl                       ;($C2C6)*8. Is door not to toggle scrolling(item room,-->
     bcs LE23D                           ;bridge room, etc.)? If so, branch to NOT toggle scrolling.
         ldy DoorScrollStatus            ;If coming from vertical shaft, skip ToggleScroll because-->
         cpy #$03                        ;the scroll was already toggled after room was centered-->
@@ -6676,7 +6678,9 @@ EndOfRoomHorizontal:
     ; $01.00 = (ScrollX & 0xF8) / 8 = tile index
     lda ScrollX
     and #$F8        ; keep upper five bits (redundant)
-    jsr Adiv8       ; / 8 (make 'em lower five)
+    lsr
+    lsr
+    lsr       ; / 8 (make 'em lower five)
     sta $00
     lda #$00
     jmp UpdateNameTable
@@ -6886,7 +6890,9 @@ ProjectileHitDoorOrStatue:
         and #$1F
         bne @next
         txa
-        jsr Amul8       ; * 8
+        asl
+        asl
+        asl       ; * 8
         ora #$80
         tay
         lda DoorStatus,y
@@ -6920,7 +6926,9 @@ ProjectileHitDoorOrStatue:
     ; lowest nybble of pointer to ridley statue is #$C or #$D
     ; therefore, by using bit 3 of the pointer, we can distinguish between the statues
     lda Temp04_CartRAMPtr
-    jsr Adiv8       ; / 8
+    lsr
+    lsr
+    lsr       ; / 8
     and #$01
     ; set statue is hit flag for appropriate statue
     tax
@@ -11013,7 +11021,9 @@ LFF3C:
     ror $02
     tya
     and #$1F
-    jsr Amul8       ; * 8
+    asl
+    asl
+    asl       ; * 8
     sta $03
     rts
 

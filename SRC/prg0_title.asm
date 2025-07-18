@@ -205,7 +205,7 @@ DrawIntroBackground:
     jsr ClearNameTables             ;($C158)Erase name table data.
     ldx #<PPUString_DrawIntroBackground.b                     ;Lower address of PPU information.
     ldy #>PPUString_DrawIntroBackground.b                     ;Upper address of PPU information.
-    jsr PreparePPUProcess_          ;($C20E) Writes background of intro screen to name tables.
+    jsr PreparePPUProcess          ;($C20E) Writes background of intro screen to name tables.
     lda #$01                        ;
     jsr WriteTitlePal               ;Write palette 0.
     sta SpareMemC5                  ;Not accessed by game.
@@ -782,7 +782,9 @@ RTS_8819:
 
 DoSparkleSpriteCoord:
     txa                             ;
-    jsr Adiv8                       ;($C2C0)Y=0 when working with top sparkle sprite-->
+    lsr
+    lsr
+    lsr                       ;($C2C0)Y=0 when working with top sparkle sprite-->
     tay                             ;and y=2 when working with bottom sparkle sprite.
     lda SparkleAddressTbl,y         ;Base is $89AF.
     sta $00                         ;When working with top sparkle sprite, E1,E0=$89B3-->
@@ -1371,9 +1373,13 @@ UniqueItemSearch: ;($8B9C)
 
 UniqueItemFound:
     txa                             ;
-    jsr Adiv8                       ;($C2C0)Divide by 8.
+    lsr
+    lsr
+    lsr                       ;($C2C0)Divide by 8.
     sta $05                         ;Shifts 5 MSBs to LSBs of item # and saves results in $05.
-    jsr Amul8                       ;($C2C6)Multiply by 8.
+    asl
+    asl
+    asl                       ;($C2C6)Multiply by 8.
     sta $02                         ;Restores 5 MSBs of item # and drops 3 LSBs; saves in $02.
     txa                             ;
     sec                             ;
@@ -1451,7 +1457,9 @@ RTS_8C38:
 
 SamusHasItem:
     lda $05                         ;$05 becomes the upper part of the item offset-->
-    jsr Amul8                       ;while $06 becomes the lower part of the item offset.
+    asl
+    asl
+    asl                       ;while $06 becomes the lower part of the item offset.
     clc                             ;
     adc $06                         ;
     asl                             ;* 2. Each item is two bytes in length.
@@ -2539,11 +2547,6 @@ PasswordRowsTbl:
     .byte $22, $E4                  ;
 
 
-PreparePPUProcess:
-    stx $00                         ;Lower byte of pointer to PPU string
-    sty $01                         ;Upper byte of pointer to PPU string
-    jmp ProcessPPUString            ;($C30C)
-
 PrepareEraseTiles:
     stx $00                         ;PPU low address byte
     sty $01                         ;PPU high address byte
@@ -3089,7 +3092,7 @@ NMIScreenWrite:
         ldx EndMessageStringTbl0-2,y
         lda EndMessageStringTbl0-1,y
         tay
-        jsr PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+        jsr PreparePPUProcess          ;($C20E)Prepare to write to PPU.
     L9A24:
     ;If not time to erase end message, branch
     lda HideShowEndMsg              ;
@@ -3103,7 +3106,7 @@ NMIScreenWrite:
         ldx EndMessageStringTbl1-2,y
         lda EndMessageStringTbl1-1,y
         tay
-        jmp PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+        jmp PreparePPUProcess          ;($C20E)Prepare to write to PPU.
 Exit100:
     rts                             ;Exit from above and below routines.
 
@@ -3222,7 +3225,7 @@ L9AE4:
     sta SpritePointerIndex          ;
     ldx #<LA052.b                     ;Loads the screen where Samus stands on-->
     ldy #>LA052.b                     ;the surface of the planet in end of game.
-    jsr PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+    jsr PreparePPUProcess          ;($C20E)Prepare to write to PPU.
     jsr NMIOn                       ;($C487)Turn on non-maskable interrupt.
     lda #music_EndMusic             ;Initiate end game music.
     sta CurrentMusic                ;
@@ -3526,7 +3529,7 @@ LoadCredits:
     ldx CreditsPointerTbl,y         ;Base is $A291. Lower byte of pointer to PPU string.
     lda CreditsPointerTbl+1,y       ;Upper byte of pointer to PPU string.
     tay
-    jmp PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+    jmp PreparePPUProcess          ;($C20E)Prepare to write to PPU.
 @RET:
     rts
 
