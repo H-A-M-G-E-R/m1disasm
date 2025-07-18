@@ -95,6 +95,8 @@ StatueRaiseSFXData:
     .byte $03, $7F, $11, $09
 DoorSFXData:
     .byte $7F, $7F, $30, $B2
+HomerHitByChairSFXData:
+    .byte $0B, $00, (HomerGetsHitByChairDMCSample-$C000)/$40, (HomerGetsHitByChairDMCSampleEnd-HomerGetsHitByChairDMCSample)/$10
 
 ;The following table is used by the CheckSFXFlag routine.  The first two bytes of each row
 ;are the address of the pointer table used for handling SFX and music  routines for set flags.
@@ -133,6 +135,14 @@ MultiSFXInitPointers:
 MultiSFXContPointers:
     .word MultiSFXContRoutineTbl ;Multi continue SFX     (4th).
     .byte $04
+
+DMCSFXInitPointers:
+    .word DMCSFXInitRoutineTbl
+    .byte DMCInUse-NoiseInUse
+
+DMCSFXContPointers:
+    .word DMCSFXContRoutineTbl
+    .byte DMCInUse-NoiseInUse
 
 ;The tables below contain addresses for SFX handling routines.
 
@@ -232,6 +242,14 @@ MultiSFXContRoutineTbl:
     .word RTS_B3B3                     ;No sound.
     .word RTS_B3B3                     ;No sound.
 
+DMCSFXInitRoutineTbl:
+    .word LoadDMCSFXContFlags
+    .word HomerHitByChairSFXStart
+
+DMCSFXContRoutineTbl:
+    .word RTS_B3B3
+    .word HomerHitByChairSFXContinue
+
 LoadNoiseSFXInitFlags:
     lda NoiseSFXFlag                ;Load A with Noise init SFX flags, (1st SFX cycle).
     ldx #<NoiseSFXInitPointers.b      ;Lower address byte in ChooseNextSFXRoutineTbl.
@@ -267,6 +285,16 @@ LoadTriSFXContFlags:
     ldx #<TriSFXContPointers.b        ;Lower address byte in ChooseNextSFXRoutineTbl.
     bne GotoSFXCheckFlags           ;Branch always.
 
+LoadDMCSFXInitFlags:
+    lda DMCSFXFlag
+    ldx #<DMCSFXInitPointers.b
+    bne GotoSFXCheckFlags
+
+LoadDMCSFXContFlags:
+    lda DMCContSFX
+    ldx #<DMCSFXContPointers.b
+    bne GotoSFXCheckFlags
+
 LoadMultiSFXInitFlags:
     lda MultiSFXFlag                ;Load A with Multi init flags, (3rd SFX cycle).
     ldx #<MultiSFXInitPointers.b      ;Lower address byte in ChooseNextSFXRoutineTbl.
@@ -289,6 +317,15 @@ LoadSQ1ChannelSFX:                      ;Used to determine which sound registers
 LoadTriChannelSFX:                 ;Used to determine which sound registers to change-->
     lda #$08                        ;($4008 - $400B) - Triangle.
     bne LoadSFXData                       ;Branch always.
+
+LoadDMCChannelSFX:
+    lda #$0F
+    sta SND_CHN
+    lda #$10
+    jsr LoadSFXData
+    lda #$1F
+    sta SND_CHN
+    rts
 
 LoadNoiseChannelSFX:                    ;Used to determine which sound registers to change-->
     lda #$0C                        ;($400C - $400F) - Noise.
@@ -365,6 +402,7 @@ SoundEngine:
     jsr LoadNoiseSFXInitFlags       ;($B31B)Check noise SFX flags.
     jsr LoadMultiSFXInitFlags       ;($B34B)Check multichannel SFX flags.
     jsr LoadTriSFXInitFlags         ;($B33D)Check triangle SFX flags.
+    jsr LoadDMCSFXInitFlags
     lda CurrentMusic
     cmp PreviousMusic
     beq +
@@ -383,6 +421,7 @@ ClearSFXFlags:
     sta SQ1SFXFlag
     sta SQ2SFXFlag
     sta TriSFXFlag
+    sta DMCSFXFlag
     sta MultiSFXFlag
     rts
 
@@ -437,6 +476,7 @@ ClearMusicAndSFXAddresses: ;($B41D)
     sta SQ1ContSFX
     sta SQ2ContSFX
     sta TriContSFX
+    sta DMCContSFX
     sta MultiContSFX
     sta CurrentMusic
     rts
@@ -463,6 +503,8 @@ SelectSFXRoutine:
     beq SelectSFXRoutine_SQ2        ;Branch if SFX uses SQ2 channel.
     cmp #$03                        ;
     beq SelectSFXRoutine_Tri        ;Branch if SFX uses triangle wave.
+    cmp #DMCInUse-NoiseInUse.b
+    beq SelectSFXRoutine_DMC
     rts                             ;Exit if SFX routine uses no channels.
 
 SelectSFXRoutine_SQ1:
@@ -474,6 +516,9 @@ SelectSFXRoutine_SQ2:
 SelectSFXRoutine_Tri:
     jsr LoadTriChannelSFX      ;($B36C)Prepare to load triangle channel with data.
     beq SelectSFXRoutine_Common     ;Branch always.
+SelectSFXRoutine_DMC:
+    jsr LoadDMCChannelSFX
+    bne SelectSFXRoutine_Common     ;Branch always.
 SelectSFXRoutine_Noise:
     jsr LoadNoiseChannelSFX         ;($B370)Prepare to load noise channel with data.
 SelectSFXRoutine_Common:
@@ -1246,7 +1291,23 @@ DivideTriPeriods:
     sta TriPeriodHigh          ;Restore TriPerodLow and TriPeriodHigh.
     pla                             ;
     sta TriPeriodLow           ;
+-
     rts
+
+HomerHitByChairSFXStart:
+    lda #$FF
+    ldy #<HomerHitByChairSFXData.b
+    jmp SelectSFXRoutine
+
+HomerHitByChairSFXContinue:
+    jsr IncrementSFXFrame
+    bne -
+    ;fallthrough
+
+EndDMCSFX:
+    lda #$0F
+    sta SND_CHN
+    jmp ClearCurrentSFXFlags
 
 ;--------------------------------------[ End SFX routines ]-------------------------------------
 

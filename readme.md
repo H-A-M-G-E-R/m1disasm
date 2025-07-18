@@ -37,3 +37,7 @@ This is possible by using the MMC3 mapper to switch the upper 64 tiles on the fl
 
 
 Spider ball sprite by BBLIR from The Spriters Resource: https://www.spriters-resource.com/custom_edited/metroidcustoms/sheet/84367/
+
+# DMC sound effect test
+
+This test replaces Samus's hurt sound with a DPCM sample of the "Bart hits Homer with chair" meme!

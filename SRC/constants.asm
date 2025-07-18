@@ -765,6 +765,13 @@ MultiContSFX           = $068C   ;Continuation flags for Multi SFX
 
 CurrentMusic           = $068D   ;Stores the flag of the current music being played
 
+DMCInUse               = $068E
+DMCSFXLength           = NoiseSFXLength+(DMCInUse-NoiseInUse)
+ThisDMCFrame           = ThisNoiseFrame+(DMCInUse-NoiseInUse)
+DMCSFXData             = NoiseSFXData+(DMCInUse-NoiseInUse)
+DMCSFXFlag             = NoiseSFXFlag+(DMCInUse-NoiseInUse)
+DMCContSFX             = NoiseContSFX+(DMCInUse-NoiseInUse)
+
 ;----------------------------------------------------------------------------------------------------
 
 ; 5 slots of 6 bytes each ($0700-$0723)
@@ -1179,6 +1186,8 @@ sfxTri_BombLaunch      = $01
 sfxMulti_SamusHit      = $03
 sfxMulti_BossHit       = $02
 sfxMulti_IncorrectPassword = $01
+
+sfxDMC_HomerHitByChair = $01
 
 music_RidleyArea       = $01
 music_Tourian          = $02
