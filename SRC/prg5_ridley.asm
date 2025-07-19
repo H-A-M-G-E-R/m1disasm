@@ -19,7 +19,7 @@
 .include "macros.asm"
 
 .redef BANK = 5
-.section "ROM Bank $005" bank 5 slot "ROMSwitchSlot" orga $8000 force
+.section "ROM Bank $005" bank 5 slot "ROMSwitchSlot" orga $A000 force
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
@@ -616,6 +616,15 @@ TileBlastFrame10:
 ;----------------------------------------[ Macro definitions ]---------------------------------------
 
 .include "ridley/metatiles.asm"
+
+.ends
+
+;------------------------------------------[ DPCM samples ]-----------------------------------------
+
+.section "ROM Bank $005 - DPCM samples" bank 5 slot "ROMSwitchSlot" orga $CA00 force
+
+HomerGetsHitByChairDMCSample: .incbin "ow.dmc"
+HomerGetsHitByChairDMCSampleEnd:
 
 .ends
 

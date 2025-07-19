@@ -27,15 +27,18 @@
     SLOT 0 $0000 $0010 "HeaderSlot"
     SLOT 1 $0000 $0800 "RAMConsoleSlot"
     SLOT 2 $6000 $2000 "RAMCartSlot"
-    SLOT 3 $8000 $4000 "ROMSwitchSlot"
-    SLOT 4 $C000 $4000 "ROMFixedSlot"
-    SLOT 5 $0000 $40000 "CHRROMSlot"
+    SLOT 3 $A000 $4000 "ROMSwitchSlot"
+    SLOT 4 $8000 $2000 "ROMFixedSlot1"
+    SLOT 5 $E000 $2000 "ROMFixedSlot2"
+    SLOT 6 $0000 $40000 "CHRROMSlot"
 .ENDME
 
 .ROMBANKMAP
-    BANKSTOTAL $9
+    BANKSTOTAL $A
     BANKSIZE $4000
-    BANKS $8
+    BANKS $7
+    BANKSIZE $2000
+    BANKS $2
     BANKSIZE $40000
     BANKS 1
 .ENDRO

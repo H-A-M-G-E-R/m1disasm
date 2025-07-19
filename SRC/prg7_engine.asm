@@ -21,13 +21,7 @@
 .include "macros.asm"
 
 .redef BANK = 7
-.section "ROM Bank $007" bank 7 slot "ROMFixedSlot" orga $C000 force
-
-;------------------------------------------[ DPCM samples ]-----------------------------------------
-
-.align 0x40
-HomerGetsHitByChairDMCSample: .incbin "ow.dmc"
-HomerGetsHitByChairDMCSampleEnd:
+.section "ROM Bank $007 upper half" bank 7 slot "ROMFixedSlot1" orga $8000 force
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
@@ -36,6 +30,9 @@ HomerGetsHitByChairDMCSampleEnd:
 
 ; New metasprite engine
 .include "metasprite_engine.asm"
+
+; Spider ball code
+.include "spider_ball.asm"
 
 ;This routine generates pseudo random numbers and updates those numbers
 ;every frame. The random numbers are used for several purposes including
@@ -65,17 +62,9 @@ RandomNumbers: ;$C000
 
 ;-----------------------------------------------[ RESET ]--------------------------------------------
 
-RESET:
-    ;Disables interrupt.
-    sei
-    ldx #$FF
-    txs                             ;S points to end of stack page
-
+Startup:
     lda #$00
-    jsr MMCWriteReg3                ;($C4FA)Swap to PRG bank #0 at $8000
-
-    lda #$80                        ;
-    sta $A001                       ;Enable MMC3 PRG RAM
+    jsr MMCWriteReg3                ;($C4FA)Swap to PRG bank #0 at $A000
 
 ;Clear RAM at $000-$7FF.
     ldy #$07                        ;High byte of start address.
@@ -322,7 +311,7 @@ NMI:
         jsr WriteScroll
 
         ;Set CHR banks.
-        ldy #$00
+        ldy #$40
         sty $8000
         lda CHRBank0
         sta $8001
@@ -1162,17 +1151,17 @@ SetBankToMainBank:
 
 MMCWriteReg3:
     sta CurrentBank
-    lda #$06                        ;Select bank at $8000-$9FFF
+    lda #$47                        ;Select bank at $A000-$BFFF
     sta $8000                       ;
     lda CurrentBank
     asl                             ;Because PRG banks are half the size compared to MMC1
-    sta $8001                       ;Switch bank to CurrentBank * 2 at $8000-$9FFF
+    sta $8001                       ;Switch bank to CurrentBank * 2 at $A000-$BFFF
     pha
-    lda #$07                        ;Select bank at $A000-$BFFF
+    lda #$46                        ;Select bank at $C000-$DFFF
     sta $8000                       ;
     pla
     adc #$01
-    sta $8001                       ;Switch bank to CurrentBank * 2 + 1 at $A000-$BFFF
+    sta $8001                       ;Switch bank to CurrentBank * 2 + 1 at $C000-$DFFF
 RTS_C50F:
     rts
 
@@ -5147,7 +5136,9 @@ DrawEnemy_NotBlank:
     sta EnData05,x
     ; draw enemy if it is on screen
     lda Temp08_RadiusY
-    beq GotoClearObjectCntrl
+    bne +
+        jmp ClearObjectCntrl
+    +
     jmp DrawMetasprite
 
 ;----------------------------------------[ Item drop table ]-----------------------------------------
@@ -5183,6 +5174,10 @@ ReduceYRadius:
     sta Temp08_RadiusY
     rts
 
+.ends
+
+.section "ROM Bank $007 lower half" bank 8 slot "ROMFixedSlot2" orga $E000 force
+
 AnimDrawObject:
     jsr UpdateObjAnim               ;($DC8F)Update animation if needed.
 
@@ -5191,7 +5186,6 @@ ObjDrawFrame:
     lda ObjAnimFrame,x              ;
     cmp #$F7                        ;Is the frame valid?-->
     bne LDE56                          ;Branch if yes.
-    GotoClearObjectCntrl:
         jmp ClearObjectCntrl            ;($DF2D)Clear object control byte.
     LDE56:
         cmp #_id_ObjFrame07.b           ;Is the animation of Samus facing forward or exploding?-->
@@ -10169,6 +10163,306 @@ CommonJump_0A:
     sta EnResetAnimIndex,x
     jmp SetEnAnimIndex
 
+UpdateAllSkreeProjectiles:
+    lda #$40
+    sta PageIndex
+    ldx #(4-1)*4
+    @loop:
+        jsr UpdateSkreeProjectile
+        dex
+        dex
+        dex
+        dex
+        bne @loop
+        ; fallthrough
+UpdateSkreeProjectile:
+    lda SkreeProjectileDieDelay,x
+    beq @RTS
+    dec SkreeProjectileDieDelay,x
+    
+    ; y = x/2
+    txa
+    lsr
+    tay
+    
+    ; prepare parameters to ApplySpeedToPosition
+    ; y speed
+    lda SkreeProjectileSpeedTable,y
+    sta Temp04_SpeedY
+    ; x speed
+    lda SkreeProjectileSpeedTable+1,y
+    sta Temp05_SpeedX
+    ; y pos
+    lda SkreeProjectileY,x
+    sta Temp08_PositionY
+    ; x pos
+    lda SkreeProjectileX,x
+    sta Temp09_PositionX
+    ; nametable
+    lda SkreeProjectileHi,x
+    sta Temp0B_PositionHi
+    
+    ; apply speed to position in parameters
+    jsr ApplySpeedToPosition
+    ; kill projectile if the projectile moved outside the bounds of the room
+    bcc KillSkreeProjectile
+    
+    ; save the new position from parameters to skree projectile variables
+    ; y pos
+    lda Temp08_PositionY
+    sta SkreeProjectileY,x
+    sta PowerUpY
+    ; x pos
+    lda Temp09_PositionX
+    sta SkreeProjectileX,x
+    sta PowerUpX
+    ; nametable
+    lda Temp0B_PositionHi
+    and #$01
+    sta SkreeProjectileHi,x
+    sta PowerUpHi
+    ; oops this write is redundant
+    lda SkreeProjectileHi,x
+    sta PowerUpHi
+    
+    ;Save index to find object animation.
+    lda #_id_ObjFrame5A.b
+    sta PowerUpAnimFrame
+    txa
+    pha
+    jsr ObjDrawFrame
+    
+    ; exit if samus is in i-frames
+    lda SamusBlink
+    bne @endIf_A
+    ; exit if samus is not touching the skree projectile
+    ldy #$00
+    ldx #$40
+    jsr AreObjectsTouching          ;($DC7F)
+    bcs @endIf_A
+    ; exit if samus is doing the screw attack
+    jsr IsScrewAttackActive         ;($CD9C)Check if screw attack active.
+    ldy #$00
+    bcc @endIf_A
+        ; samus is being hit by the projectile
+        clc
+        jsr SamusHurt_F311
+        ; deal 5 damage to Samus
+        lda #$50
+        sta HealthChange
+        jsr SubtractHealth              ;($CE92)
+    @endIf_A:
+    pla
+    tax
+@RTS:
+    rts
+
+KillSkreeProjectile:
+    lda #$00
+    sta SkreeProjectileDieDelay,x
+    rts
+
+; Table used by above subroutine
+SkreeProjectileSpeedTable:
+    ;      Y    X
+    .byte $00, $FB
+    .byte $FB, $FE
+    .byte $FB, $02
+    .byte $00, $05
+
+UpdateAllMellows:
+    ; exit if mellow handler enemy isn't there
+    lda EnStatus+$F0
+    beq @RTS
+    
+    ldx #$F0
+    stx PageIndex
+    ; delete mellow handler enemy if ???
+    lda EnResetAnimIndex+$F0
+    cmp AreaMellowAnimIndex
+    bne RemoveMellowHandlerEnemy
+    
+    lda #$03
+    jsr UpdateEnemyAnim
+    lda RandomNumber1
+    sta Mellow8A
+    lda #(4-1)*$08
+    @loop:
+        pha
+        tax
+        jsr UpdateMellow
+        pla
+        tax
+        lda MellowIsHit,x
+        and #$F8
+        sta MellowIsHit,x
+        txa
+        sec
+        sbc #$08
+        bpl @loop
+@RTS:
+    rts
+
+RemoveMellowHandlerEnemy:
+    jmp RemoveEnemy                   ;($FA18)Free enemy data slot.
+
+UpdateMellow:
+    lda MellowStatus,x
+    jsr ChooseRoutine
+        .word ExitSub       ;($C45C) rts
+        .word UpdateMellow_Resting
+        .word UpdateMellow_Active
+        .word UpdateMellow_Explode
+
+UpdateMellow_Resting:
+    jsr UpdateMellow_FD84
+    jsr UpdateMellow_FD08
+    jsr UpdateMellow_FD25
+    jmp DrawEnemy
+
+UpdateMellow_Active:
+    jsr UpdateMellow_FD84
+    jsr UpdateMellow_RunAI
+    jmp DrawEnemy
+
+UpdateMellow_Explode:
+    lda #$00
+    sta MellowStatus,x
+    jmp SFX_EnemyHit
+
+UpdateMellow_RunAI:
+    jsr UpdateMellow_StorePositionToTemp
+    lda MellowAttackState,x
+    cmp #$02
+    bcs Lx392
+    ldy Temp08_PositionY
+    cpy ObjY
+    bcc Lx392
+    ora #$02
+    sta MellowAttackState,x
+Lx392:
+    ldy #$01
+    lda MellowAttackState,x
+    lsr
+    bcc Lx393
+        ldy #$FF
+    Lx393:
+    sty Temp05_SpeedX
+    ldy #$04
+    lsr
+    lda MellowAttackTimer,x
+    bcc Lx394
+        ldy #$FD
+    Lx394:
+    sty Temp04_SpeedY
+    inc MellowAttackTimer,x
+    jsr ApplySpeedToPosition
+    bcs Lx395
+        lda MellowAttackState,x
+        ora #$02
+        sta MellowAttackState,x
+    Lx395:
+    bcc Lx396
+        jsr UpdateMellow_LoadPositionFromTemp
+    Lx396:
+    lda MellowAttackTimer,x
+    cmp #$50
+    bcc RTS_X397
+    lda #$01
+    sta MellowStatus,x
+RTS_X397:
+    rts
+
+UpdateMellow_FD08:
+    lda #$00
+    sta MellowAttackTimer,x
+    tay
+    lda ObjX
+    sec
+    sbc MellowX,x
+    bpl Lx398
+        iny
+        jsr TwosComplement              ;($C3D4)
+    Lx398:
+    cmp #$10
+    bcs RTS_X399
+    tya
+    sta MellowAttackState,x
+    lda #$02
+    sta MellowStatus,x
+RTS_X399:
+    rts
+
+UpdateMellow_FD25:
+    txa
+    lsr
+    lsr
+    lsr
+    adc Mellow8A
+    sta Mellow8A
+    lsr Mellow8A
+    and #$03
+    tay
+    lda MellowSpeedTable,y
+    sta Temp04_SpeedY
+    lda MellowSpeedTable+1,y
+    sta Temp05_SpeedX
+    jsr UpdateMellow_StorePositionToTemp
+    lda Temp08_PositionY
+    sec
+    sbc ScrollY
+    tay
+    lda #$02
+    cpy #$20
+    bcc Lx400
+    jsr TwosComplement              ;($C3D4)
+    cpy #$80
+    bcc Lx401
+Lx400:
+    sta Temp04_SpeedY
+Lx401:
+    jsr ApplySpeedToPosition
+    jmp UpdateMellow_LoadPositionFromTemp
+
+; Table used by above subroutine
+MellowSpeedTable:
+    .byte  $02
+    .byte -$02
+    .byte  $01
+    .byte -$01
+    .byte  $02
+
+UpdateMellow_StorePositionToTemp:
+    lda MellowHi,x
+    sta Temp0B_PositionHi
+    lda MellowY,x
+    sta Temp08_PositionY
+    lda MellowX,x
+    sta Temp09_PositionX
+    rts
+
+UpdateMellow_LoadPositionFromTemp:
+    lda Temp08_PositionY
+    sta MellowY,x
+    sta EnY+$F0
+    lda Temp09_PositionX
+    sta MellowX,x
+    sta EnX+$F0
+    lda Temp0B_PositionHi
+    and #$01
+    sta MellowHi,x
+    sta EnHi+$F0
+    rts
+
+UpdateMellow_FD84:
+    lda MellowIsHit,x
+    and #$04
+    beq @RTS
+        lda #$03
+        sta MellowStatus,x
+    @RTS:
+    rts
+
 ;-------------------------------------------------------------------------------
 ; $02 is tempScrollDir
 ; $04 is tempYvel?
@@ -10316,11 +10610,261 @@ CheckZebetite: ; $FE05
     sta Temp06_ItemID+1.b
     jmp AddItemToHistory               ; Add zebetite to item history
 
+;-------------------------------------------------------------------------------
+; Tile degenerate/regenerate
+UpdateAllTileBlasts:
+    ldx #$C0
+    @loop:
+        jsr UpdateTileBlast
+        ldx PageIndex
+        jsr Xminus16
+        bne @loop
+UpdateTileBlast:
+    stx PageIndex
+    lda TileBlastRoutine,x
+    beq RTS_X414          ; exit if tile not active
+    jsr ChooseRoutine
+        .word ExitSub       ;($C45C) rts
+        .word UpdateTileBlast_Init
+        .word UpdateTileBlast_LFE54
+        .word UpdateTileBlast_LFE59
+        .word UpdateTileBlast_LFE54
+        .word UpdateTileBlast_Respawn
+
+UpdateTileBlast_Init:
+    inc TileBlastRoutine,x
+    lda #$00
+    jsr SetTileAnim
+    lda #$50
+    sta TileBlastDelay,x
+    lda TileBlastWRAMPtr,x     ; low WRAM addr of blasted tile
+    sta $00
+    lda TileBlastWRAMPtr+1,x     ; high WRAM addr
+    sta $01
+
+UpdateTileBlast_LFE54:
+    lda #$02
+    jmp UpdateTileBlastAnim
+
+UpdateTileBlast_LFE59:
+    ; only update tile timer every 4th frame
+    lda FrameCount
+    and #$03
+    bne RTS_X414
+    
+    ; exit if timer not reached zero
+    dec TileBlastDelay,x
+    bne RTS_X414
+    
+    inc TileBlastRoutine,x
+    ldy TileBlastType,x
+    lda TileBlastAnimIndexTable,y
+    
+SetTileAnim:
+    sta TileBlastAnimIndex,x
+    sta TileBlast0505,x
+    lda #$00
+    sta TileBlastAnimDelay,x
+RTS_X414:
+    rts
+
+; Table used for indexing the animations in TileBlastAnim (see below)
+TileBlastAnimIndexTable:
+    .byte TileBlastAnim6 - TileBlastAnim
+    .byte TileBlastAnim7 - TileBlastAnim
+    .byte TileBlastAnim8 - TileBlastAnim
+    .byte TileBlastAnim0 - TileBlastAnim
+    .byte TileBlastAnim1 - TileBlastAnim
+    .byte TileBlastAnim2 - TileBlastAnim
+    .byte TileBlastAnim3 - TileBlastAnim
+    .byte TileBlastAnim4 - TileBlastAnim
+    .byte TileBlastAnim9 - TileBlastAnim
+    .byte TileBlastAnim5 - TileBlastAnim
+
+UpdateTileBlast_Respawn:
+    lda #$00
+    sta TileBlastRoutine,x       ; tile = respawned
+    lda TileBlastWRAMPtr,x
+    clc
+    adc #$21
+    sta $00
+    lda TileBlastWRAMPtr+1,x
+    sta $01
+    jsr LFF3C
+    lda $02
+    sta $07
+    lda $03
+    sta $09
+    lda $01
+    lsr
+    lsr
+    and #$01
+    sta $0B
+    ldy #$00
+    jsr GetObjectYSlotPosition
+    lda #$04
+    clc
+    adc ObjRadY
+    sta Temp04_YSlotRadY
+    lda #$04
+    clc
+    adc ObjRadX
+    sta Temp05_YSlotRadX
+    jsr CheckCollisionOfXSlotAndYSlot
+    bcs Exit23
+    
+    jsr SamusHurt_F311
+    ; deal 5 damage to samus
+    lda #$50
+    sta HealthChange
+    jmp SubtractHealth
+
+GetTileBlastFramePtr:
+    lda TileBlastAnimFrame,x
+    asl
+    tay
+    lda TileBlastFramePtrTable,y
+    sta $02
+    lda TileBlastFramePtrTable+1,y
+    sta $03
+Exit23:
+    rts
+
+; return carry clear if successfully drawn
+; return carry set if there is not enough space in the ppu string buffer
+DrawTileBlast: ;($FEDC)
+CommonJump_DrawTileBlast:
+    lda PPUStrIndex
+    cmp #$1F
+    bcs Exit23
+    ldx PageIndex
+    lda TileBlastWRAMPtr,x
+    sta $00
+    lda TileBlastWRAMPtr+1,x
+    sta $01
+    jsr GetTileBlastFramePtr
+    ldy #$00
+    sty $11
+    lda ($02),y
+    tax
+    jsr Adiv16       ; / 16
+    sta $04
+    txa
+    and #$0F
+    sta $05
+    iny
+    sty $10
+    Lx415:
+        ldx $05
+        Lx416:
+            ldy $10
+            lda ($02),y
+            inc $10
+            ldy $11
+            sta ($00),y
+            inc $11
+            dex
+            bne Lx416
+        lda $11
+        clc
+        adc #$20
+        sec
+        sbc $05
+        sta $11
+        dec $04
+        bne Lx415
+    lda $01
+    and #$04
+    beq Lx417
+        lda $01
+        ora #$0C
+        sta $01
+    Lx417:
+    lda $01
+    and #$2F
+    sta $01
+    jsr EraseTile
+    clc
+    rts
+
+LFF3C:
+    lda $00
+    tay
+    and #$E0
+    sta $02
+    lda $01
+    lsr
+    ror $02
+    lsr
+    ror $02
+    tya
+    and #$1F
+    jsr Amul8       ; * 8
+    sta $03
+    rts
+
+UpdateTileBlastAnim:
+    ldx PageIndex
+    ldy TileBlastAnimDelay,x
+    beq Lx418
+        dec TileBlastAnimDelay,x
+        bne RTS_X419
+    Lx418:
+    sta TileBlastAnimDelay,x
+    ldy TileBlastAnimIndex,x
+    lda TileBlastAnim,y
+    cmp #$FE            ; end of "tile-blast" animation?
+    beq Lx420
+    sta TileBlastAnimFrame,x
+    iny
+    tya
+    sta TileBlastAnimIndex,x
+    jsr DrawTileBlast
+    bcc RTS_X419
+    ldx PageIndex
+    dec TileBlastAnimIndex,x
+RTS_X419:
+    rts
+Lx420:
+    inc TileBlastRoutine,x
+    pla
+    pla
+    rts
+
+; Frame data for tile blasts
+
+TileBlastAnim:
+TileBlastAnim0:  .byte $06,$07,$00,$FE
+TileBlastAnim1:  .byte $07,$06,$01,$FE
+TileBlastAnim2:  .byte $07,$06,$02,$FE
+TileBlastAnim3:  .byte $07,$06,$03,$FE
+TileBlastAnim4:  .byte $07,$06,$04,$FE
+TileBlastAnim5:  .byte $07,$06,$05,$FE
+TileBlastAnim6:  .byte $07,$06,$09,$FE
+TileBlastAnim7:  .byte $07,$06,$0A,$FE
+TileBlastAnim8:  .byte $07,$06,$0B,$FE
+TileBlastAnim9:  .byte $07,$06,$08,$FE
+
+;-----------------------------------------------[ RESET ]--------------------------------------------
+
+RESET:
+    ;Disables interrupt.
+    sei
+    ldx #$FF
+    txs                             ;S points to end of stack page
+
+    lda #$40
+    sta $8000                       ;PRG ROM bank mode = $C000-$DFFF swappable, $8000-$9FFF fixed to second-last bank
+
+    lda #$80                        ;
+    sta $A001                       ;Enable MMC3 PRG RAM
+    jmp Startup
+
 .ends
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------
 
-.section "ROM Bank $007 - Vectors" bank 7 slot "ROMFixedSlot" orga $FFFA force
+.section "ROM Bank $007 - Vectors" bank 8 slot "ROMFixedSlot2" orga $FFFA force
     .word NMI                       ;($C0D9)NMI vector.
     .word RESET                     ;($FFB0)Reset vector.
     .word RESET                     ;($FFB0)IRQ vector.
