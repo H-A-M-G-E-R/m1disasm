@@ -43,8 +43,8 @@ LZSA_SMALL_SIZE =       0
 
 lzsa_cmdbuf     =       $00                     ; 1 byte.
 lzsa_winptr     =       $01                     ; 1 word.
-lzsa_srcptr     =       $03                     ; 1 word.
-lzsa_dstptr     =       $05                     ; 1 word.
+.def lzsa_srcptr $03 export                     ; 1 word.
+.def lzsa_dstptr $05 export                     ; 1 word.
 lzsa_npages     =       $07
 
 lzsa_offset     =       lzsa_winptr
