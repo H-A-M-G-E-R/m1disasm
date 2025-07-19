@@ -202,10 +202,45 @@ DrawIntroBackground:
     lda #music_IntroMusic           ;Intro music.
     sta CurrentMusic                ;
     jsr ScreenOff                   ;($C439)Turn screen off.
-    jsr ClearNameTables             ;($C158)Erase name table data.
-    ldx #<PPUString_DrawIntroBackground.b                     ;Lower address of PPU information.
-    ldy #>PPUString_DrawIntroBackground.b                     ;Upper address of PPU information.
-    jsr PreparePPUProcess_          ;($C20E) Writes background of intro screen to name tables.
+    ;Compress the nametable to a buffer.
+    lda #<TitleNametable_Compressed.b
+    sta lzsa_srcptr
+    lda #>TitleNametable_Compressed.b
+    sta lzsa_srcptr+1.b
+    lda #<RoomRAMA.b
+    sta lzsa_dstptr
+    lda #>RoomRAMA.b
+    sta lzsa_dstptr+1.b
+    jsr lzsa1_unpack
+    ;Write the nametable to PPU.
+    ;Reset PPU address latch.
+    lda PPUSTATUS
+    ;PPU increment = 1.
+    lda PPUCTRL_ZP
+    and #$FB
+    sta PPUCTRL_ZP
+    sta PPUCTRL
+    ;PPU address = $2000 (nametable 0).
+    lda #$20
+    sta PPUADDR
+    ldx #$00
+    stx PPUADDR
+
+    stx $00
+    lda #>RoomRAMA.b
+    sta $01
+    ldx #$08
+    @loop_A:
+        @loop_B:
+            lda ($00),y
+            sta PPUDATA
+            iny
+            bne @loop_B
+        inc $01
+        dex
+        bne @loop_A
+    jsr WriteScroll
+
     lda #$01                        ;
     jsr WriteTitlePal               ;Write palette 0.
     sta SpareMemC5                  ;Not accessed by game.
@@ -544,150 +579,6 @@ TitleScreenOff:
 TitleRoutineReturn13:
 TitleRoutineReturn14:
     rts                             ;Last title routine function. Should not be reached.
-
-;The following data fills name table 0 with the intro screen background graphics.
-PPUString_DrawIntroBackground:
-    ;Information to be stored in attribute table 0.
-    PPUString $23C0, \
-        $00, $00, $00, $00, $00, $00, $00, $00, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-
-    PPUString $23E0, \
-        $FF, $FF, $BF, $AF, $FF, $FF, $FF, $FF, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-
-    ;Writes row $22E0 (24th row from top).
-    PPUString $22E0, \
-        $FF, $FF, $FF, $FF, $FF, $8C, $FF, $FF, $FF, $FF, $FF, $8D, $FF, $FF, $8E, $FF, $FF, $FF, $FF, $FF, $FF, $8C, $FF, $FF, $FF, $FF, $FF, $8D, $FF, $FF, $8E, $FF
-
-    ;Writes row $2300 (25th row from top).
-    PPUString $2300, \
-        $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81
-
-    ;Writes row $2320 (26th row from top).
-    PPUString $2320, \
-        $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83
-
-    ;Writes row $2340 (27th row from top).
-    PPUString $2340, \
-        $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85
-
-    ;Writes row $2360 (28th row from top).
-    PPUString $2360, \
-        $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87
-
-    ;Writes row $2380 (29th row from top).
-    PPUString $2380, \
-        $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89
-
-    ;Writes row $23A0 (Bottom row).
-    PPUString $23A0, \
-        $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B
-
-    ;Writes some blank spaces in row $20A0 (6th row from top).
-    PPUStringRepeat $20A8, " ", $0F
-
-    ;Writes METROID graphics in row $2100 (9th row from top).
-    PPUString $2103, \
-        $40, $5D, $56, $5D, $43, $40, $5D, $43, $40, $5D, $5D, $43, $40, $5D, $5D, $63, $62, $5D, $5D, $63, $40, $43, $40, $5D, $5D, $63, $1D, $16
-
-    ;Writes METROID graphics in row $2120 (10th row from top).
-    PPUString $2123, \
-        $44, $50, $50, $50, $47, $44, $57, $58, $74, $75, $76, $77, $44, $57, $69, $47, $44, $57, $69, $47, $44, $47, $44, $68, $69, $47
-
-    ;Writes METROID graphics in row $2140 (11th row from top).
-    PPUString $2143, \
-        $44, $41, $7E, $49, $47, $44, $59, $5A, $78, $79, $7A, $7B, $44, $59, $6D, $70, $44, $73, $72, $47, $44, $47, $44, $73, $72, $47
-
-    ;Writes METROID graphics in row $2160 (12th row from top).
-    PPUString $2163, \
-        $44, $42, $7F, $4A, $47, $44, $5B, $5C, $FF, $44, $47, $FF, $44, $5B, $6F, $71, $44, $45, $46, $47, $44, $47, $44, $45, $46, $47
-
-    ;Writes METROID graphics in row $2180 (13th row from top).
-    PPUString $2183, \
-        $44, $47, $FF, $44, $47, $44, $5F, $60, $FF, $44, $47, $FF, $44, $7D, $7C, $47, $44, $6A, $6B, $47, $44, $47, $44, $6A, $6B, $47
-
-    ;Writes METROID graphics in row $21A0 (14th row from top).
-    PPUString $21A3, \
-        $4C, $4F, $FF, $4C, $4F, $4C, $5E, $4F, $FF, $4C, $4F, $FF, $4C, $4D, $4E, $4F, $66, $5E, $5E, $64, $4C, $4F, $4C, $5E, $5E, $64
-
-    ;Writes METROID graphics in row $21C0 (15th row from top).
-    PPUString $21C3, \
-        $51, $52, $FF, $51, $52, $51, $61, $52, $FF, $51, $52, $FF, $51, $53, $54, $52, $67, $61, $61, $65, $51, $52, $51, $61, $61, $65
-
-    ;Writes PUSH START BUTTON in row $2220 (18th row from top).
-    PPUString $2227, \
-        " PUSH START BUTTON   "
-
-    ;Writes C 1986 NINTENDO in row $2260 (20th row from top).
-    PPUString $2269, \
-        "< 1986 NINTENDO   "
-
-;The following data fills name table 1 with the intro screen background graphics.
-
-    ;Information to be stored in attribute table 1.
-    PPUString $27C0, \
-        $00, $00, $00, $00, $00, $00, $00, $00, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-
-    ;Writes row $27E0 (24th row from top).
-    PPUString $27E0, \
-        $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-
-    ;Writes row $26E0 (24th row from top).
-    PPUString $26E0, \
-        $FF, $FF, $FF, $FF, $FF, $8C, $FF, $FF, $FF, $FF, $FF, $8D, $FF, $FF, $8E, $FF, $FF, $FF, $FF, $FF, $FF, $8C, $FF, $FF, $FF, $FF, $FF, $8D, $FF, $FF, $8E, $FF
-
-    ;Writes row $2700 (25th row from top).
-    PPUString $2700, \
-        $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81, $80, $81
-
-    ;Writes row $2720 (26th row from top).
-    PPUString $2720, \
-        $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83, $82, $83
-
-    ;Writes row $2740 (27th row from top).
-    PPUString $2740, \
-        $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85, $84, $85
-
-    ;Writes row $2760 (28th row from top).
-    PPUString $2760, \
-        $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87, $86, $87
-
-    ;Writes row $2780 (29th row from top).
-    PPUString $2780, \
-        $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89, $88, $89
-
-    ;Writes row $27A0 (bottom row).
-    PPUString $27A0, \
-        $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B, $8A, $8B
-
-    ;Writes row $2480 (5th row from top).
-    PPUString $2488, \
-        "EMERGENCY ORDER"
-
-    ;Writes row $2500 (9th row from top).
-    PPUString $2504, \
-        "DEFEAT THE METROID OF       "
-
-    ;Writes row $2540 (11th row from top).
-    PPUString $2544, \
-        "THE PLANET ZEBETH AND     "
-
-    ;Writes row $2580 (13th row from top).
-    PPUString $2584, \
-        "DESTROY THE MOTHER BRAIN  "
-
-    ;Writes row $25C0 (15th row from top).
-    PPUString $25C4, \
-        "THE MECHANICAL LIFE VEIN  "
-
-    ;Writes row $2620 (18th row from top).
-    PPUString $2627, \
-        "GALAXY FEDERAL POLICE"
-
-    ;Writes row $2660 (20th row from top).
-    PPUString $2669, \
-        "              M510"
-
-    PPUStringEnd
 
 ;The following error message is diplayed if the player enters an incorrect password.
 L8759:
@@ -4918,6 +4809,11 @@ DataDisplayTbl:
     .byte $21,$29,$01,$18           ;E
     .byte $21,$2A,$01,$20           ;N
     .byte $21,$2B,$00,$28           ;..
+
+;-------------------------------------[ Compressed nametables ]-------------------------------------
+
+TitleNametable_Compressed:
+    .incbin "title/title_nametable_compressed.bin"
 
 ;-------------------------------------------[ World map ]--------------------------------------------
 

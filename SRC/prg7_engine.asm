@@ -116,7 +116,15 @@ LC057:
     sty GameMode                    ;Title screen mode
     jsr ClearNameTables             ;($C158)
     jsr EraseAllSprites             ;($C1A3)
-    jsr InitializeSoundAddresses
+
+    ;Clear sounds. 
+    lda #$10
+    sta SQ1_VOL
+    sta SQ2_VOL
+    sta NOISE_VOL
+    lda #$00
+    sta TRI_LINEAR
+    sta DMC_RAW
 
     ;NMI = enabled
     ;Sprite size = 8x8
