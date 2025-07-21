@@ -75,20 +75,10 @@ SamusSpiderRoll:
     lda SpiderOrientation
     rol
     jsr ChooseRoutine
-        .word MoveSamusRight_Spider, MoveSamusLeft_Spider
+        .word MoveSamusRight, MoveSamusLeft
         .word MoveSamusUp, MoveSamusDown
-        .word MoveSamusLeft_Spider, MoveSamusRight_Spider
+        .word MoveSamusLeft, MoveSamusRight
         .word MoveSamusDown, MoveSamusUp
-
-MoveSamusLeft_Spider:
-    lda #$01
-    sta SamusDoorDir
-    jmp MoveSamusLeft
-
-MoveSamusRight_Spider:
-    lda #$00
-    sta SamusDoorDir
-    jmp MoveSamusRight
 
 SamusSpiderFall:
     jsr CheckCancelSpider
