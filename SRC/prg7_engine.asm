@@ -5704,12 +5704,7 @@ SamusMoveHorizontally:
         dec ObjectCounter
         ;Branch if Samus needs to be moved another pixel.
         bne LE335
-    ; exit if samus hasn't entered a door
-    lda SamusDoorData
-    beq Exit10
-    ; samus has entered a door, Door leads to the left.
-    lda #$01                        
-    bne LE362 ;Branch always.
+    beq Exit10 ;Branch always.
 
 ;Samus is moving right.
 LE347:
@@ -5734,13 +5729,6 @@ LE347:
         dec ObjectCounter
         ;Branch if Samus needs to be moved another pixel.
         bne LE352
-    ; exit if samus hasn't entered a door
-    lda SamusDoorData
-    beq Exit10
-    ; samus has entered a door, Door leads to the right.
-    lda #$00
-LE362:
-    sta SamusDoorDir
 Exit10:
     rts                             ;Exit for routines above and below.
 
@@ -6483,6 +6471,8 @@ RTS_E76F:
 ;-----------------------------------------------------------------------------------------------------
 
 EnemyCheckMoveUp:
+    lda #$03
+    sta CollisionDirection
     ldx PageIndex
     lda EnRadY,x
     clc
@@ -6490,6 +6480,8 @@ EnemyCheckMoveUp:
     jmp LE783
 
 EnemyCheckMoveDown:
+    lda #$02
+    sta CollisionDirection
     ldx PageIndex
     lda #$00
     sec
@@ -6514,6 +6506,8 @@ StoreEnemyPositionToTemp:
     rts
 
 CheckMoveUp:; For Samus, et al
+    lda #$03
+    sta CollisionDirection
     ldx PageIndex
     lda ObjRadY,x
     clc
@@ -6521,6 +6515,8 @@ CheckMoveUp:; For Samus, et al
     jmp Lx197
 
 CheckMoveDown: ; For Samus
+    lda #$02
+    sta CollisionDirection
     ldx PageIndex
     lda #$00
     sec
@@ -6589,6 +6585,8 @@ IsWalkableTile:
     inc SamusDoorData
 Lx200:
     inc SamusDoorData
+    lda CollisionDirection
+    sta SamusDoorDir
 Lx201:
     dex
     beq Lx202
@@ -6666,6 +6664,8 @@ BulletHitMissileDoor:
     jmp ClcExit
 
 ObjectCheckMoveLeft:
+    lda #$01
+    sta CollisionDirection
     ldx PageIndex
     lda ObjRadX,x
     clc
@@ -6675,6 +6675,7 @@ ObjectCheckMoveLeft:
 ObjectCheckMoveRight:
     ldx PageIndex
     lda #$00
+    sta CollisionDirection
     sec
     sbc ObjRadX,x
     ; fallthrough
@@ -6746,6 +6747,8 @@ LE8CE:
 ;-----------------------------------------------------------
 
 EnemyCheckMoveLeft:
+    lda #$01
+    sta CollisionDirection
     ldx PageIndex
     lda EnRadX,x
     clc
@@ -6755,6 +6758,7 @@ EnemyCheckMoveLeft:
 EnemyCheckMoveRight:
     ldx PageIndex
     lda #$00
+    sta CollisionDirection
     sec
     sbc EnRadX,x
 
