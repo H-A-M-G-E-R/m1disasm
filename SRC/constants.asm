@@ -121,6 +121,7 @@ RetrigDelay2           = $19     ;The retriggering of held down buttons.
 NMIStatus              = $1A     ;0=NMI in progress. anything else, NMI not in progress.
 PPUDataPending         = $1B     ;1=not PPU data pending, 1=data pending.
 ;PalDataPending         = $1C    ;Not used in this mod. Was pending palette data. Palette # = PalDataPending - 1.
+CollisionDirection     = $1C     ;Used when Samus or an enemy checks for tile collision. 0 = right, 1 = left, 2 = down, 3 = up
 GameMode               = $1D     ;0 = Game is playing, 1 = At title/password screen
 MainRoutine            = $1E     ;5 = Game paused, 3 = Game engine running
 TitleRoutine           = $1F     ;Stores title routine number currently running.
