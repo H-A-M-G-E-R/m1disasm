@@ -1053,35 +1053,37 @@ SamusEnterDoor:
     tay                             ;
     lsr                             ;
     sta DoorOnNameTable3,y          ;
-    lda ScrollDir                   ;
-    and #$02                        ;Is Samus scrolling horizontally?-->
-    bne L8B4B                       ;If so, branch.
-        ldx #$04                        ;Samus currently scrolling vertically.
-        lda ScrollY                     ;Is room centered on screen?-->
-        beq L8B6D                       ;If so, branch.
-        lda PPUCTRL_ZP                  ;
-        eor ObjHi                       ;Get inverse of Samus' current nametable.
-        lsr                             ;
-        bcc SetDoorEntryInfo            ;If Samus is on nametable 3, branch.
-        bcs L8B52                       ;If Samus is on nametable 0, branch to decrement x.
-
-    L8B4B:
-        ldx #$02                        ;Samus is currently scrolling horizontally.
-        lda ObjX                        ;Is Samus entering a left hand door?-->
-        bpl SetDoorEntryInfo            ;If so, branch.
-    L8B52:
-    dex                             ;
+    lda ScrollDir
+    sta ScrollDirBeforeDoor
+    lda SamusDoorDir
+    and #$02
+    eor #$02
+    tax
+    inx
+    inx
+    lda SamusDoorDir
+    lsr
+    tay
+    lda ScrollY,y                   ;Is room centered on screen?-->
+    beq L8B6D                       ;If so, branch.
+    lda PPUCTRL_ZP                  ;
+    eor ObjHi                       ;Get inverse of Samus' current nametable.
+    lsr                             ;
+    bcs SetDoorEntryInfo            ;If Samus is on nametable 0, branch.
+    inx                             ;
 
 SetDoorEntryInfo:
     txa                             ;X contains door scroll status and is transferred to A.
-    sta DoorScrollStatus            ;Save door scroll status.
     jsr SamusInDoor                 ;($8B74)Indicate Samus just entered a door.
-    lda #$12                        ;
-    sta DoorDelay                   ;Set DoorDelay to 18 frames(going into door).
-    lda SamusDoorData               ;
-    jsr Amul16                      ;($C2C5)*16. Move scroll toggle data to upper 4 bits.
-    ora ObjAction                   ;Keep Samus action so she will appear the same comming-->
-    sta SamusDoorData               ;out of the door as she did going in.
+    ldy #$12                        ;Set DoorDelay to 18 frames(going into door).
+    lda SamusDoorDir
+    lsr
+    beq +
+        ldy #$12+8
+    +
+    sty DoorDelay
+    lda ObjAction                   ;Keep Samus action so she will appear the same comming-->
+    sta ObjectCounter               ;out of the door as she did going in.
     lda #$05                        ;
     sta ObjAction                   ;Indicate Samus is in a door.
 RTS_8B6C:
@@ -1091,7 +1093,7 @@ L8B6D:
     jsr SetDoorEntryInfo            ;($8B53)Save Samus action and set door entry timer.
     jsr VerticalRoomCentered        ;($E21B)Room is centered. Toggle scroll.
 
-    txa                             ;X=#$01 or #$02(depending on which door Samus is in).
+    lda #$01
 
 SamusInDoor:
     ora #$80                        ;Set MSB of DoorEntryStatus to indicate Samus has just-->
@@ -1195,12 +1197,12 @@ UpdateDoor_Closed:
     sta DoorHitPoints,x
     ; set door animation to opening the door
     ; and play sound effect
-    ; (BUG! there is no call to DrawDoor, so the door isn't drawn on this frame)
     lda #ObjAnim_DoorOpen_Reset - ObjectAnimIndexTbl.b
     sta DoorAnimResetIndex,x
     sec
     sbc #ObjAnim_DoorOpen_Reset - ObjAnim_DoorOpen.b
-    jmp DoorSubRoutine8C7E
+    jsr DoorSubRoutine8C7E
+    jmp DrawDoor
 
 UpdateDoor_Open:
     ; branch if samus is not entering a door
@@ -1293,7 +1295,7 @@ DoorSubRoutine8C7E:
 UpdateDoor_LetSamusIn:
     ; branch if scrolling has not started
     lda DoorEntryStatus
-    cmp #$05
+    cmp #$06
     bcs L8CC3
     ; scrolling has started
     ; write solid collision
@@ -1345,7 +1347,7 @@ L8CC3:
 UpdateDoor_Scroll:
     ; branch if scrolling has not ended
     lda DoorEntryStatus
-    cmp #$05
+    cmp #$06
     bne Goto2DrawDoor
     ; scrolling has ended
     ; get door slot of the door attached to this one

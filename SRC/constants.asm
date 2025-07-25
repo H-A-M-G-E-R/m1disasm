@@ -212,11 +212,7 @@ DoorEntryStatus        = $56     ;0=Not in door, 1=In right door, 2=In left door
                                    ;is 3 or 4, a door was entered while in a vertical shaft and-->
                                    ;the door was not centered on the screen and up or down-->
                                    ;scrolling needs to occur before scrolling to the next room.
-DoorScrollStatus       = $57     ;#$01=Entered right hand door from horizontal area.-->
-                                   ;#$02=Entered left hand door from horizontal area.-->
-                                   ;#$03=Entered door from vertical shaft and room needs to-->
-                                   ;be centered before horizontal scrolling. #$04=Entered-->
-                                   ;door from vertical shaft and room was already centered.
+ScrollDirBeforeDoor    = $57
 SamusDoorData          = $58     ;The upper 4 bits store either 1 or 2. If 1 is stored(bit 4-->
                                    ;set), the scrolling after Samus exits the door is toggled.-->
                                    ;If 2 is stored(bit 5 set), the scrolling is set to-->

@@ -3242,7 +3242,7 @@ CheckIceBulletFire:
 
 SamusDoor:
     lda DoorEntryStatus
-    cmp #$05
+    cmp #$06
     bcc Lx055
 ; move Samus out of door, how far depends on initial value of DoorDelay
     dec DoorDelay
@@ -3277,32 +3277,62 @@ SamusDoor:
         sta KraidRidleyPresent
         beq Lx050     ; branch always
 Lx052:
-    lda SamusDoorData
-    and #$0F
+    lda ObjectCounter
     sta ObjAction
     lda #$00
     sta SamusDoorData
     sta DoorEntryStatus
-    jsr StopVertMovement
 
 MoveOutDoor:
     lda SamusDoorDir
-    beq Lx054    ; branch if door leads to the right
-    ldy ObjX
-    bne Lx053
-        jsr ToggleSamusHi       ; toggle 9th bit of Samus' X coord
-    Lx053:
-    dec ObjX
-    jmp Lx055
-
-Lx054:
-    inc ObjX
-    bne Lx055
-    jsr ToggleSamusHi       ; toggle 9th bit of Samus' X coord
+    jsr Lx055@jumpTable
 Lx055:
     jsr CheckHealthStatus           ;($CDFA)Check if Samus hit, blinking or Health low.
     jsr SetMirrorCntrlBit
     jmp ObjDrawFrame       ; display Samus
+
+@jumpTable:
+    jsr ChooseRoutine
+    .word @right
+    .word @left
+    .word @down
+    .word @up
+
+@left:
+    ldy ObjX
+    bne +
+        jsr ToggleSamusHi       ; toggle 9th bit of Samus' X coord
+    +
+    dec ObjX
+    rts
+
+@right:
+    inc ObjX
+    bne +
+        jsr ToggleSamusHi       ; toggle 9th bit of Samus' X coord
+    +
+    rts
+
+@down:
+    inc ObjY
+    lda ObjY
+    cmp #SCRN_VY
+    bne +
+        jsr ToggleSamusHi
+        lda #$00
+        sta ObjY
+    +
+    rts
+
+@up:
+    lda ObjY
+    bne +
+        jsr ToggleSamusHi
+        lda #SCRN_VY
+        sta ObjY
+    +
+    dec ObjY
+    rts
 
 SamusDead:
     lda #$01
@@ -5431,69 +5461,80 @@ RTS_E1F0:
 
 ;------------------------------------------[ Scroll door ]-------------------------------------------
 
-;Scrolls the screen if Samus is inside a door.
+;Scrolls the screen if Samus is inside a door.DoorScroll
 
 ScrollDoor:
     ldx DoorEntryStatus                  ;
     beq RTS_E1F0                    ;Exit if Samus isn't in a door.
-    dex                             ;
-    bne LE1FE                           ;Not in right door. branch to check left door.
-        jsr ScrollRight                 ;($E6D2)DoorEntryStatus=1, scroll 1 pixel right.
-        jmp LE204                       ;Jump to check if door scroll is finished.
-
-    LE1FE:
-        dex                             ;Check if in left door.
-        bne LE20C                       ;
-        jsr ScrollLeft                  ;($E6A7)DoorEntryStatus=2, scroll 1 pixel left.
-    LE204:
-    ldx ScrollX                     ;Has x scroll offset reached 0?-->
+    bmi RTS_E1F0
+    cpx #$06
+    beq RTS_E1F0
+    dex
+    bne LE20C
+        lda SamusDoorDir
+        jsr @jumpTable
+    lda ScrollX                     ;Has x and y scroll offset reached 0?-->
+    ora ScrollY                     ;
     bne Exit15                      ;If not, branch to exit.
 
 ;Scrolled one full screen, time to exit door.
-    ldx #$05                        ;Samus is exiting the door.
+    ldx #$06                        ;Samus is exiting the door.
     bne DoOneDoorScroll             ;Branch always.
 
+@jumpTable:
+    jsr ChooseRoutine
+        .word ScrollRight
+        .word ScrollLeft
+        .word ScrollDown
+        .word ScrollUp
+
 LE20C:
-    dex                             ;
-    bne LE215                           ;Check if need to scroll down to center door.
-        jsr ScrollDown                  ;($E519)DoorEntryStatus=3, scroll 1 pixel down.
-        jmp VerticalRoomCentered        ;Jump to check y scrolling value.
-    LE215:
-    dex                             ;
-    bne Exit15                      ;Check if need to scroll up to center door.
-    jsr ScrollUp                    ;($E4F1)DoorEntryStatus=4, scroll 1 pixel up.
+    dex
+    txa
+    jsr ScrollDoor@jumpTable
 
 VerticalRoomCentered: ; ($E21B)
-    ldx ScrollY                     ;Has room been centered on screen?-->
+    lda SamusDoorDir
+    lsr
+    tay
+    ldx ScrollY,y                   ;Has room been centered on screen?-->
     bne Exit15                      ;If not, branch to exit.
-    stx DoorOnNameTable3            ;
-    stx DoorOnNameTable0            ;Erase door nametable data.
-    inx                             ;X=1.
-    lda ObjX                        ;Did Samus enter in the right hand door?-->
-    bmi LE241                       ;If so, branch.
-    inx                             ;X=2. Samus is in left door.
-    bne LE241                       ;Branch always.
+    ; Check if scroll needs to be toggled.
+    lda SamusDoorDir
+    eor ScrollDir
+    and #$02
+    bne +
+        ; Toggle scroll
+        jsr ToggleScroll
+        sta MirrorCntrl
+    +
+    lda #$01
+    sta DoorEntryStatus
+    rts
 
 ;This function is called once after door scrolling is complete.
 
 DoOneDoorScroll:
-    lda #$20                        ;Set DoorDelay to 32 frames(comming out of door).
-    sta DoorDelay                   ;
-    lda SamusDoorData               ;Check if scrolling should be toggled.
-    jsr Amul8                       ;($C2C6)*8. Is door not to toggle scrolling(item room,-->
-    bcs LE23D                           ;bridge room, etc.)? If so, branch to NOT toggle scrolling.
-        ldy DoorScrollStatus            ;If coming from vertical shaft, skip ToggleScroll because-->
-        cpy #$03                        ;the scroll was already toggled after room was centered-->
-        bcc LE241                       ;by the routine just above.
-    LE23D:
-    lda #$47                        ;Set mirroring for vertical mirroring(horz scrolling).
-    bne LE244                       ;Branch always.
-
-    LE241:
+    ldy #$20                        ;Set DoorDelay to 32 frames(comming out of door).
+    lda SamusDoorDir
+    lsr
+    beq +
+        ldy #$20+8
+    +
+    sty DoorDelay
+    lda ScrollDirBeforeDoor
+    ldy SamusDoorData               ;Check if scrolling should be toggled.
+    cpy #$02                        ;Is door not to toggle scrolling(item room,-->
+    beq +                           ;bridge room, etc.)? If so, branch to NOT toggle scrolling.
+        eor #$02
+    +
+    eor ScrollDir
+    and #$02
+    beq +
         jsr ToggleScroll                ;($E252)Toggle scrolling and mirroring.
-    LE244:
-    sta MirrorCntrl                 ;Store new mirror control data.
-    stx DoorEntryStatus                  ;DoorEntryStatus=5. Done with door scrolling.
+        sta MirrorCntrl                 ;Store new mirror control data.
+    +
+    stx DoorEntryStatus                  ;DoorEntryStatus=6. Done with door scrolling.
 
 Exit15:
     rts                             ;Exit for several routines above.
@@ -6004,7 +6045,12 @@ MoveSamusUp:
     dec ObjY
     inc SamusJumpDsplcmnt
     sec
+    rts
+
+; crash with object on the top or bottom
 RTS_X156:
+    lda #$00
+    sta SamusDoorData
     rts
 
 ; attempt to move Samus one pixel down
@@ -6016,7 +6062,7 @@ MoveSamusDown:
     and #$07
     bne Lx157              ; only call crash detection every 8th pixel
         jsr CheckMoveDown       ; check if Samus obstructed DOWNWARDS
-        bcc RTS_X163      ; exit if yes
+        bcc RTS_X156      ; exit if yes
     Lx157:
     lda ObjAction
     cmp #sa_Elevator        ; is Samus in elevator?
@@ -6024,9 +6070,9 @@ MoveSamusDown:
         jsr SamusOnElevatorOrEnemy
         lda SamusOnElevator
         clc
-        bne RTS_X163
+        bne RTS_X156
         lda OnFrozenEnemy
-        bne RTS_X163
+        bne RTS_X156
     Lx158:
     lda SamusScrY
     cmp #$84        ; reached down scroll limit?
@@ -6050,7 +6096,6 @@ MoveSamusDown:
     inc ObjY
     dec SamusJumpDsplcmnt
     sec
-RTS_X163:
     rts
 
 ; Attempt to scroll UP, return carry clear if success, carry set if failure
@@ -6309,7 +6354,7 @@ MoveSamusLeft: ;($E626)
     sec
     rts
 
-; crash with object on the left
+; crash with object on the left or right
 Lx181:
     lda #$00
     sta SamusDoorData
@@ -6324,14 +6369,14 @@ MoveSamusRight:
     and #$07
     bne Lx182              ; only call crash detection every 8th pixel
         jsr ObjectCheckMoveRight      ; check if Samus is obstructed to the RIGHT
-        bcc Lx186       ; branch if yes! (CF = 0)
+        bcc Lx181       ; branch if yes! (CF = 0)
     Lx182:
     jsr SamusOnElevatorOrEnemy
     lda SamusIsHit
     and #$41
     cmp #$40
     clc
-    beq Lx186
+    beq Lx181
     lda SamusScrX
     cmp #$8F        ; reached right scroll limit?
     bcc Lx183      ; branch if not
@@ -6348,12 +6393,6 @@ MoveSamusRight:
         jsr ToggleSamusHi       ; toggle 9th bit of Samus' X coord
     Lx185:
     sec
-    rts
-
-; crash with object on the right
-Lx186:
-    lda #$00
-    sta SamusDoorData
     rts
 
 ; Attempt to scroll LEFT
@@ -6623,8 +6662,8 @@ IsWalkableTile:
     ldy IsSamus
     beq Lx201
 ; special case for Samus
-    dey          ; = 0
-    sty SamusDoorData
+    ldy SamusDoorData
+    bne Lx201
     cmp #$A0        ; crash with tile #$A0? (scroll toggling door)
     beq Lx200
     cmp #$A1        ; crash with tile #$A1? (horizontal scrolling door)
