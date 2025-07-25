@@ -710,23 +710,24 @@ TileBlastFrame0F:
 TileBlastFrame10:
     ;nothing
 
-.include "kraid/enemy_sprite_data.asm"
+.include "data/kraid/enemy_sprite_data.asm"
 
 ;----------------------------------------[ Palette data ]--------------------------------------------
 
-.include "kraid/palettes.asm"
+.include "data/kraid/palettes.asm"
 
 ;-----------------------------------[ Special items table ]-----------------------------------------
 
-.include "kraid/items.asm"
+.include "data/kraid/global_objs.asm"
 
 ;-----------------------------------------[ Room definitions ]---------------------------------------
 
-.include "kraid/rooms.asm"
+.include "data/kraid/rooms.asm"
 
 ;----------------------------------------[ Macro definitions ]---------------------------------------
 
-.include "kraid/metatiles.asm"
+MacroDefs:
+    .incbin "data/kraid/metatiles.bin"
 
 .ends
 

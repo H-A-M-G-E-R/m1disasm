@@ -2761,9 +2761,9 @@ Lx029:
 SetSamusRoll:
     lda SamusOnElevator ; prevents morph sound from being played when starting to go down an elevator with maru mari equipped (fix added by me)
     bne Lx030
-    ;lda SamusGear
-    ;and #gr_MARUMARI
-    ;beq Lx030      ; branch if Samus doesn't have Maru Mari
+    lda SamusGear
+    and #gr_MARUMARI
+    beq Lx030      ; branch if Samus doesn't have Maru Mari
     lda SamusAccelY
     bne Lx030
 
@@ -2835,18 +2835,18 @@ SamusRoll:
         pla
         sta ObjRadY
     Lx032:
-        lda Joy1Change
-        and #BUTTON_DOWN
-        beq +
-            lda SamusGear
-            and #gr_MARUMARI
-            beq +      ; branch if Samus doesn't have spider ball
-            lda #sa_SpiderFall
-            sta ObjAction
-            lda #ObjAnim_SamusSpider - ObjectAnimIndexTbl.b
-            jsr SetSamusAnim
-            jsr SFX_SamusBall
-        +
+        ;lda Joy1Change
+        ;and #BUTTON_DOWN
+        ;beq +
+        ;    lda SamusGear
+        ;    and #gr_MARUMARI
+        ;    beq +      ; branch if Samus doesn't have spider ball
+        ;    lda #sa_SpiderFall
+        ;    sta ObjAction
+        ;    lda #ObjAnim_SamusSpider - ObjectAnimIndexTbl.b
+        ;    jsr SetSamusAnim
+        ;    jsr SFX_SamusBall
+        ;+
         lda Joy1Status
         jsr BitScan                     ;($E1E1)
         cmp #BUTTONBIT_DOWN

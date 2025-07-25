@@ -639,23 +639,24 @@ TileBlastFrame0F:
 TileBlastFrame10:
     ;nothing
 
-.include "norfair/enemy_sprite_data.asm"
+.include "data/norfair/enemy_sprite_data.asm"
 
 ;-----------------------------------------[ Palette data ]-------------------------------------------
 
-.include "norfair/palettes.asm"
+.include "data/norfair/palettes.asm"
 
 ;---------------------------------[ Special items table ]-----------------------------------------
 
-.include "norfair/items.asm"
+.include "data/norfair/global_objs.asm"
 
 ;-----------------------------------------[ Room definitions ]---------------------------------------
 
-.include "norfair/rooms.asm"
+.include "data/norfair/rooms.asm"
 
 ;----------------------------------------[ Macro definitions ]---------------------------------------
 
-.include "norfair/metatiles.asm"
+MacroDefs:
+    .incbin "data/norfair/metatiles.bin"
 
 .ends
 

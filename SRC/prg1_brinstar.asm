@@ -857,23 +857,24 @@ TileBlastFrame0F:
 TileBlastFrame10:
     ; nothing
 
-.include "brinstar/enemy_sprite_data.asm"
+.include "data/brinstar/enemy_sprite_data.asm"
 
 ;----------------------------------------[ Palette data ]--------------------------------------------
 
-.include "brinstar/palettes.asm"
+.include "data/brinstar/palettes.asm"
 
 ;------------------------------------[ Special items table ]-----------------------------------------
 
-.include "brinstar/items.asm"
+.include "data/brinstar/global_objs.asm"
 
 ;-----------------------------------------[ Room definitions ]---------------------------------------
 
-.include "brinstar/rooms.asm"
+.include "data/brinstar/rooms.asm"
 
 ;----------------------------------------[ Macro definitions ]---------------------------------------
 
-.include "brinstar/metatiles.asm"
+MacroDefs:
+    .incbin "data/brinstar/metatiles.bin"
 
 .ends
 

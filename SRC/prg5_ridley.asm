@@ -599,23 +599,24 @@ TileBlastFrame0F:
 TileBlastFrame10:
     ;nothing
 
-.include "ridley/enemy_sprite_data.asm"
+.include "data/ridley/enemy_sprite_data.asm"
 
 ;------------------------------------------[ Palette data ]------------------------------------------
 
-.include "ridley/palettes.asm"
+.include "data/ridley/palettes.asm"
 
 ;-----------------------------------[ Special items table ]-----------------------------------------
 
-.include "ridley/items.asm"
+.include "data/ridley/global_objs.asm"
 
 ;-----------------------------------------[ Room definitions ]---------------------------------------
 
-.include "ridley/rooms.asm"
+.include "data/ridley/rooms.asm"
 
 ;----------------------------------------[ Macro definitions ]---------------------------------------
 
-.include "ridley/metatiles.asm"
+MacroDefs:
+    .incbin "data/ridley/metatiles.bin"
 
 .ends
 

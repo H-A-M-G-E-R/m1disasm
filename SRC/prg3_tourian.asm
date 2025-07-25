@@ -2047,23 +2047,24 @@ TileBlastFrame10:
     .byte $A0, $A0
     .byte $A0, $A0
 
-.include "tourian/enemy_sprite_data.asm"
+.include "data/tourian/enemy_sprite_data.asm"
 
 ;-----------------------------------------[ Palette data ]-------------------------------------------
 
-.include "tourian/palettes.asm"
+.include "data/tourian/palettes.asm"
 
 ;------------------------------------[ Special items table ]-----------------------------------------
 
-.include "tourian/items.asm"
+.include "data/tourian/global_objs.asm"
 
 ;-----------------------------------------[ Room definitions ]---------------------------------------
 
-.include "tourian/rooms.asm"
+.include "data/tourian/rooms.asm"
 
 ;----------------------------------------[ Macro definitions ]---------------------------------------
 
-.include "tourian/metatiles.asm"
+MacroDefs:
+    .incbin "data/tourian/metatiles.bin"
 
 .ends
 

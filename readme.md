@@ -19,7 +19,7 @@ Subject to change.
 
  * build.py - Run this to build. Requires WLA-DX binaries to be in your path.
  * SRC/prg*.asm - Main assembly files for each bank
- * SRC/brinstar, SRC/norfair, etc. - Data pertaining to each bank
+ * SRC/data - Data pertaining to each bank
  * SRC/common_chr - Common CHR data
  * SRC/enemies - Assembly files for enemy AI routines shared between areas
  * SRC/songs - Song data for all songs in the game

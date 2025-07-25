@@ -1,0 +1,1038 @@
+[
+ {
+  "tilemap": "/////////////////////////////////////////////////////////////////////////////////////wICAgICAgICAgICAgICAgIH/////////xz///////8HB/////////8c////////Bwf/////////HP///////wcCAgICAgICAgICAgICAgIC////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
+  "attrs": "AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMDAwMDAwMDAwMDAwMDAwMDAgICAgICAgMCAgICAgICAwICAgICAgIDAgICAgICAgMCAgICAgICAwICAgICAgIDAwMDAwMDAwMDAwMDAwMDAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg==",
+  "objs": []
+ },
+ {
+  "tilemap": "/////////wQF//////////////////8EBf//////////////////BAX//////////////////wQF//////////////////8EBf//////////////////BAX//////////////////wQF//////////////////8EBf//////////////////BAX//////////////////wQF//////////////////8EBf//////////////////BAX//////////////////wQF//////////////////8EBf//////////////////BAX/////////",
+  "attrs": "AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg==",
+  "objs": []
+ },
+ {
+  "tilemap": "FxcbFxcXGxcXFxsXFxcbFxsXFxcbFxcXGxcXFxsXFxcbFxsbGxcbGxsXGxsbFxsbFxsXFxcbFxcXGxcXFxsXFxcXGP//////////////FxcXGxj//////////////xcbFxv//////////////xkXGxsX////Hv////8e//8ZGxcXF////xr/////Gv///xcXFxce//8aFxcXFxr//x4XFxcbGv//Gv////8a//8aFxsXGxr//x7/////Hv//GhcbGxca/////////////xobFxcXHv////////////8eFxcXFxcXF////////xcXFxcX",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": []
+ },
+ {
+  "tilemap": "Fxf//////////xcXFxcXFxcb////////////////FxsXGxj/////////////GRcbGxcY/////////////xkbFxcX////FxcXF///////FxcG//////////////////8GBv//////////////////Bgb//////////////////wYXFxsX////////FxcXFxsXGxcXF////////xcbGxcXFxsXGxsY//////8XGxsXGxsXGxcXGP//////GxcXGxcXFxcbF///////FxcXFxcbFxsXFxf/////////GRsXFxcbFxcbF////////xkbFxsb",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAQAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAACAgAAAAAAAAAAAAAAAAAAAgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 0
+   },
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 124,
+    "y": 56,
+    "slot": 3,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   }
+  ]
+ },
+ {
+  "tilemap": "Fxf//////xcX//8XFxsXFxcb//////8XG///GxcXFxsXGxj/////Fxv/GRsXGxcbGxcY//8XFxcX/xkXGxcbFxcX//////8XF///////FxcG////////Fxf///////8GBv///////xcb////////Bgb///////8XG////////wYXFxcX////Gxf///8XFxcXFxcY/////xcX//////8XGxcbGP//////////////FxsXG////////////////xcXGxf//////////////xkXGxcX//////////////8ZFxsXG////////////////xsX",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAAAAAABAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAACAgAAAAAAAAAAAAAAAAAAAgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 0
+   },
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 92,
+    "y": 40,
+    "slot": 4,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   },
+   {
+    "obj_type": "enemy",
+    "x": 140,
+    "y": 200,
+    "slot": 2,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 3
+   }
+  ]
+ },
+ {
+  "tilemap": "FxcbF///////////FxcbFxsXFxcY/////////xsXFxcbFxsbGP////////8bFxsbFxsXF///////////FxsXFxcXGxf//////////xcXGxcbFxcX//////////8bFxcXGxcbG/////////8ZGxcbGxcbFxf/////////GRcXGxcXFxsX//////////8bFxcXGxcXFxj/////////GxcbGxsXGxsY/////////xcbFxcXGxcX//////////8XFxsXFxcbF///////////GxcXFxsXFxf/////////GRsXGxsbFxsb/////////xkXGxcX",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "enemy",
+    "x": 124,
+    "y": 88,
+    "slot": 5,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 3
+   },
+   {
+    "obj_type": "enemy",
+    "x": 92,
+    "y": 152,
+    "slot": 0,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 3
+   },
+   {
+    "obj_type": "enemy",
+    "x": 172,
+    "y": 200,
+    "slot": 1,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 3
+   }
+  ]
+ },
+ {
+  "tilemap": "Fxf///////////////8XFxcbGP////8XHRcXFxcXFxsXGxj/////Hv///////xcbGxcdF///Fxr/Ghf///8bFxcX//////8a/xcX////FxcG////////Gv8XHRf///8GBv///////x7/Fxf/////Bgb//////////xob/////wYXFxsXFxcbFxcXGxcXFxsXGxcXFxsXFxcbFxcXGxcXFxsXGxsbFxsbGxcbGxsXGxsXGxcXFxsXFxcbFxcXGxcXFxcbFxcXGxcXFxsXFxcbFxsXFxcbFxcXGxcXFxsXFxcbFxsbGxcbGxsXGxsbFxsb",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAACAgAAAAAAAAAAAAAAAAAAAgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 172,
+    "y": 40,
+    "slot": 0,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   },
+   {
+    "obj_type": "enemy",
+    "x": 108,
+    "y": 40,
+    "slot": 5,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   }
+  ]
+ },
+ {
+  "tilemap": "FxcbF////////xcXGxcaFxsXFxf///////8bFxcXFxcbFxsbGP//Fx0XGxcbGxsaFxsXFxj//////xcbFxcXFxoX////////////////GhsXF/////////////////8GGxoXFxsX////////////BhcXGxcXF////////////wYaGxsXGxv//////xcdFxoXGhcXGxcX/////////xkXFxcX//////////////8ZGxoaFxcXGxcXFxcX/////xcXFxcbFxcX//////////8aFxsaGxcbGxj/////////FxcXFxcbFxcY/////////xsa",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 124,
+    "y": 24,
+    "slot": 0,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   },
+   {
+    "obj_type": "enemy",
+    "x": 140,
+    "y": 168,
+    "slot": 2,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   },
+   {
+    "obj_type": "enemy",
+    "x": 124,
+    "y": 136,
+    "slot": 3,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 3
+   }
+  ]
+ },
+ {
+  "tilemap": "FxcbFxcbF////xcXFxcbFxsXFxsXFxf///8bFxsXFxcbFxsbFxsb//8ZGxcbFxsbFxsXFxsXHRf/GRcbFxsXFxcXGxcY/////////xcXGxcbFxcXGP////////8bFxcXGxcbG///////////GxcbGxcbFxf//////xcdFxcbFxcXFxsX//////////8XFxsXGxcXF///////////GxcXFxsXGxv/////////GRsXGxsXFxsXFxcXF////xkXGxcXGxcXF///////////FxcbFxsXGxsY/////////xsXFxcXGxcXGP////////8bFxsb",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "enemy",
+    "x": 172,
+    "y": 104,
+    "slot": 1,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   },
+   {
+    "obj_type": "enemy",
+    "x": 108,
+    "y": 168,
+    "slot": 4,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   }
+  ]
+ },
+ {
+  "tilemap": "Ghf//////////////xkaFxcX//////////////8ZFxcbGv///////////////xsaFxf///////////////8XFxobGP//////////////GhsaFxj///////////////8GFxf/////////////////Bhsa/////////////////wYXF////////////xcdFxoXGhv//////////////xkXFxoX/////xcdF/////8ZGxoXF////////////////xcXGxr///////////////8aGxcX////////////////GhcaG////////////////xcX",
+  "attrs": "AAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 124,
+    "y": 152,
+    "slot": 2,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   },
+   {
+    "obj_type": "enemy",
+    "x": 60,
+    "y": 136,
+    "slot": 3,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 3
+   }
+  ]
+ },
+ {
+  "tilemap": "Ghf///////////////8aFxcXGP//////////////FxcbGhj//////////////xsaFxf///////////////8XFxob////////////////GhsaF/////////////////8GFxf/////////////////BhsaGP///////////////wYXFxj/////Fx0X/xcdFxoXGhv///////////////8XFxcXGxf///////////8ZGxobFxcX////////////GRcXGxcbG///////////FxcbFxcbFxcBAQEBAQEBARsXFxcXFxsXAAAAAAAAAAAbFxsb",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAQAAAAAAAAAAAAAAAAIAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAgICAgICAgAAAAAAAAAAAgICAgICAgIAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 140,
+    "y": 120,
+    "slot": 0,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   },
+   {
+    "obj_type": "enemy",
+    "x": 140,
+    "y": 40,
+    "slot": 1,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 3
+   }
+  ]
+ },
+ {
+  "tilemap": "FxcbFxcXGxcXFxsXFxcbFxsXFxcbFxcXGxcXFxsXFxcbFxsbGxcbGxsXGxsbFxsbFxsXFxcbFxcXGxcXFxsXFxcXGxcXFxsXFxcbFxcXGxcbFxcXGxcXFxsXFxcbFxcXGxcbGxsXGxsbFxsbGxcbGxcbFxcXGxcXFxsXFxcbFxcXFxsXFxcbFxcXGxcXFxsXGxcXFxsXFxcbFxcXGxcXFxsXGxsbFxsbGxcbGxsXGxsXFxsXFxcbFxcXGxcXFxsXGxcXFxsXFxcbFxcXGxcXFxsXGxsbFxsbGxcbGxsXGxsXGxcXFxsXFxcbFxcXGxcX",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": []
+ },
+ {
+  "tilemap": "Ghf//////////xf///8aFxcX////////////////FxcbGv///xf//////////xsaFxcY//////////////8XFxobGP///////xf/////GhsG////////////////GRoXBv///////////////xkXFwb/////////////////GxoaFxf///8X/////////xcXFxf/////////////F/8aGxsa////////////////GhcXF///////////////GRcXGhsY//////8X/////xkbGhoXGP8X////////////FxcXF////////////////xob",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAQAAAgAAAAAAAAAAAAAAAAEAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAABAAAAAAAAAAAAAAEAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 156,
+    "y": 56,
+    "slot": 5,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   },
+   {
+    "obj_type": "enemy",
+    "x": 76,
+    "y": 200,
+    "slot": 4,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 5
+   }
+  ]
+ },
+ {
+  "tilemap": "Ghf//////////wv///8aFxcX//////////8L//8ZFxcbGv//////////C///GRsaFxf//////////wv///8XFxob//////////8L////GhsG////////////C////xoXBv///////////wv///8XFwb///////////8L////GxoaF/////8L////C/8X/xcXFxf/////C////wv//xkaGxsaF////wv///8L//8ZGhcXF/////8L////C////xcXGhsY/////////wv///8bGhoXGP////////8L////FxcXF///////////C////xob",
+  "attrs": "AAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAACAAABAAAAAAAAAAAAAAAAAgAAAQAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAACAAAAAAACAAAAAAAAAAAAAgAAAAAAAgAAAAAAAAAAAAIAAAAAAAIAAAAAAAAAAAACAAAAAAAAAAAAAAACAAAAAgAAAAAAAAAAAAAAAgAAAAIAAAEAAAAAAAAAAAIAAAACAAABAAAAAAAAAAACAAAAAgAAAAAAAAABAAAAAAAAAAIAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 1
+   }
+  ]
+ },
+ {
+  "tilemap": "Ghf//////////wv///8aFxcX//////////8L////FxcbGv//////////C///GRsaFxcY/////////wv//xkXFxobGP////////8L////GhsaF///////////C////xoXFxf//////////wv///8XFxsa////////F/8L////GxoXF///////////C////xcXGhsY/////////wv///8aGxoXGP////////8L////GhcXF///////////C///GRcXGxr//////////wv//xkbGhcX//////////8L////FxcaG///////////C////xob",
+  "attrs": "AAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAQAAAAABAAAAAAAAAAIAAAEAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAABAAAAAAAAAAIAAAAAAAAAAQAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAQAAAAAAAAAAAAAAAAIAAAEAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": []
+ },
+ {
+  "tilemap": "IyMjIyMjIyMjIyMjIyMjIyMkJCQkJCQjIyQkJCQkIyMjIyMjIyMjIyMjIyMjIyMk//////////////////8jJP//////////////////IyP///////////////////8G////////////////////Bv///////////////////wb///////////////8jIyMj//////////////8ZIyQkI///////////////GSMkJCP///////////////8jIyMj////////////IyMjIyMjIyMjIyMBAQEBAQEBASQkJCQjJCQjAAAAAAAAAAAjIyMj",
+  "attrs": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECAQEBAQEBAQEBAQEBAQEBAgEBAQEBAQEBAQEBAQEBAQIBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECAgICAgICAgEBAQEBAQEBAgICAgICAgIBAQEBAQEBAQEBAQEBAQEBAQEBAQ==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 28,
+    "y": 56,
+    "slot": 4,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 4
+   },
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 80,
+    "y": 216,
+    "slot": 5,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 7
+   },
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 128,
+    "y": 216,
+    "slot": 0,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 7
+   }
+  ]
+ },
+ {
+  "tilemap": "Hh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/////////////////////////////////////////////////////////////////////////Hv///////////////////xr/////////////////Hv8a/x7//////////////xr/Gv8a////////////Hv8a/x7/Gv8e/////////xr/Gv///xr/Gv//////Hv8a/x7///8e/xr/Hv///xr/Gv////////8a/xr/HgEBAQEBAQEBAQEBAQEBAQEAAAAAAAAAAAAAAAAAAAAA",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "enemy",
+    "x": 220,
+    "y": 40,
+    "slot": 4,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 64,
+    "y": 216,
+    "slot": 2,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 7
+   },
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 160,
+    "y": 216,
+    "slot": 1,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 7
+   }
+  ]
+ },
+ {
+  "tilemap": "Hh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/////F////////////////////////x7/////////////////Hv8aFx0X/////////////xr/Hv//////////////Hv8e/xr//////////////xr/Gv8a//////////////8a/xr/Gv//////////////Gv8a/x7///8XHRf/////Fx7/Hv//////////////////////////////////Dw8PD/8XHRf/Hv//Dw8PDw8PDw8BAQEBAQEBAQ8PDw8PDw8PAAAAAAAAAAAPDw8P",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwMDAwAAAAAAAAAAAwMDAwMDAwMCAgICAgICAgMDAwMDAwMDAgICAgICAgIDAwMDAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "enemy",
+    "x": 156,
+    "y": 56,
+    "slot": 2,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   },
+   {
+    "obj_type": "enemy",
+    "x": 204,
+    "y": 136,
+    "slot": 3,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   },
+   {
+    "obj_type": "enemy",
+    "x": 108,
+    "y": 184,
+    "slot": 4,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   }
+  ]
+ },
+ {
+  "tilemap": "Hh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/////F////////////////////////x7/////////////////Hv8aFx0X/////////////xr/Hv//////////////Hv8e/xr//////////////xr/Gv8a//////////////8a/xr/Gv//////////////Gv8a/x7///8XHRf/////Fx7/Hv//////////////////////////////////Dw8PD/8XHRf/Hv//Dw8PDw8PDw8BAQEBAQEBAQ8PDw8PDw8PAAAAAAAAAAAPDw8P",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwMDAwAAAAAAAAAAAwMDAwMDAwMCAgICAgICAgMDAwMDAwMDAgICAgICAgIDAwMDAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "enemy",
+    "x": 156,
+    "y": 56,
+    "slot": 2,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   },
+   {
+    "obj_type": "enemy",
+    "x": 204,
+    "y": 136,
+    "slot": 3,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   },
+   {
+    "obj_type": "enemy",
+    "x": 108,
+    "y": 184,
+    "slot": 4,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   }
+  ]
+ },
+ {
+  "tilemap": "EBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEP//////////////////EBD//////////////////xAQ//////////////////8G////////////////////Bv////////8SEv///////wb///////////////////8QEP//////////////////EBD/EhL//////////////xAQ////////////EhL///8QEP////////////////8SEBD//////////////////xAQAQEBAQEBAQEBAQEBAQEQEAAAAAAAAAAAAAAAAAAA",
+  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCAwMDAwMDAwMDAwMDAwMDAgMDAwMDAwMDAwMDAwMDAwIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAgICAgICAgICAgICAgIDAwICAgICAgICAgICAgICAwMDAwMDAwMDAwMDAwMDAw==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 0
+   },
+   {
+    "obj_type": "enemy",
+    "x": 124,
+    "y": 40,
+    "slot": 2,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 76,
+    "y": 136,
+    "slot": 4,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   },
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 208,
+    "y": 216,
+    "slot": 3,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 7
+   }
+  ]
+ },
+ {
+  "tilemap": "EBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////EhL///////////////////////////////8SEv///////////xL//////////////////////////////////////////wEBAQEBAQEBAQEBAQEBAQEAAAAAAAAAAAAAAAAAAAAA",
+  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAwMDAwMDAwMDAwMDAwMDAw==",
+  "objs": [
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 16,
+    "y": 216,
+    "slot": 3,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 7
+   },
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 112,
+    "y": 216,
+    "slot": 4,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 7
+   },
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 192,
+    "y": 216,
+    "slot": 5,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 7
+   },
+   {
+    "obj_type": "enemy",
+    "x": 92,
+    "y": 152,
+    "slot": 0,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 5
+   }
+  ]
+ },
+ {
+  "tilemap": "IyMjIyMjIyMjIyMjIyMjIyMkJCQkJCQjIyQkJCQkJCMjIyMjIyMjIyMjIyMjIyMjIyQkJCQkJCMjJCQkJCQkIyMjIyMjIyMjIyMjIyMjIyMG//////////////////8GBv//////////////////Bgb//////////////////wYjIyMjIyMjJSMjIyMjIyMjIyQkJCQkJCYjJCQkJCQkIyMjIyMjIyMmIyMjIyMjIyMjIyMjIyMjJiMjIyMjIyMjIyMjIyMjIyYjIyMjIyMjIyMkJCQkJCQmIyQkJCQkJCMjIyMjIyMjJiMjIyMjIyMj",
+  "attrs": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECAQEBAQEBAQEBAQEBAQECAgEBAQEBAQEBAQEBAQEBAgIBAQEBAQEBAQEBAQEBAQIBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 140,
+    "y": 104,
+    "slot": 0,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 0
+   }
+  ]
+ },
+ {
+  "tilemap": "EBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD//////////////////xAQ//////////////////8QEP//////////////////EBD///////////////////8G/xIS////////////////Bv///////////////////wb//////xIS//////8QEBAQ////////////////EBAQEP//////////////////EBD/////////////EhL//xAQ//////////////////8QEAEBAQEBAQEBAQEBAQEBEBAAAAAAAAAAAAAAAAAAABAQ",
+  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCAwMDAwMDAwMDAwMDAwMDAgMDAwMDAwMDAwMDAwMDAwIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwICAgICAgICAgICAgICAwMCAgICAgICAgICAgICAgMDAwMDAwMDAwMDAwMDAwMDAw==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 48,
+    "y": 216,
+    "slot": 0,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 7
+   },
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 128,
+    "y": 216,
+    "slot": 1,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 7
+   },
+   {
+    "obj_type": "enemy",
+    "x": 124,
+    "y": 40,
+    "slot": 2,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 1
+   }
+  ]
+ },
+ {
+  "tilemap": "Ew4TDg4TDg4TDhMODhMODhEREREODhMTDg4TEw4OExMRERERERERERERERH/////ERERERERHhEREREe/////xERERH//xr/////Gv////8G//////8a/////xr/////Bv//////Gv////8a/////wb//////x7/////Hv////8RERER////////////////EREREf///////////////xERERH/////////////Hv8RERER/////////////xr/EREREf////////////8a/xERERERERERARERFBUREQEREREREREREQAREREREREA",
+  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMBAQEBAwMDAwMDAAMDAwMAAQEBAQMDAwMBAQABAQEBAAEBAQECAQEBAQEAAQEBAQABAQEBAgEBAQEBAAEBAQEAAQEBAQIBAQEBAQABAQEBAAEBAQEDAwMDAQEBAQEBAQEBAQEBAwMDAwEBAQEBAQEBAQEBAQMDAwMBAQEBAQEBAQEBAAEDAwMDAQEBAQEBAQEBAQABAwMDAwEBAQEBAQEBAQEAAQMDAwMDAwMDAgMDAgIDAwIDAwMDAwMDAwIDAwMDAwMCAQEBAQEBAQEBAQEBAQEBAQ==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 92,
+    "y": 200,
+    "slot": 4,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 0
+   },
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 192,
+    "y": 216,
+    "slot": 5,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 7
+   },
+   {
+    "obj_type": "enemy",
+    "x": 140,
+    "y": 72,
+    "slot": 3,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 4
+   }
+  ]
+ },
+ {
+  "tilemap": "Ew4TDg4TDg4TDhMODhMODg4OExMODhMTDg4TExERERERERER//////////8REREREREREf//////////ERERERERERH//////////xERERERERER//////////////8G////////////////////Bv///////////////////wb///////////////8RERER////////////////EREREf///////////////xERERH///////////////8RERER////////////////EREREREREQERFBUREREREREREREREREAERERERERERERERER",
+  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAQEBAQEBAQEDAwMDAwMDAwEBAQEBAQEBAwMDAwMDAwMBAQEBAQEBAQMDAwMDAwMDAQEBAQEBAQEBAQECAQEBAQEBAQEBAQEBAQEBAgEBAQEBAQEBAQEBAQEBAQIBAQEBAQEBAQEBAQEDAwMDAQEBAQEBAQEBAQEBAwMDAwEBAQEBAQEBAQEBAQMDAwMBAQEBAQEBAQEBAQEDAwMDAQEBAQEBAQEBAQEBAwMDAwMDAwIDAgIDAwMDAwMDAwMDAwMCAwMDAwMDAwMDAwMDAQEBAQEBAQEBAQEBAQEBAQ==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 96,
+    "y": 216,
+    "slot": 3,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 7
+   },
+   {
+    "obj_type": "enemy",
+    "x": 44,
+    "y": 104,
+    "slot": 2,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 4
+   },
+   {
+    "obj_type": "enemy",
+    "x": 92,
+    "y": 40,
+    "slot": 1,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 4
+   },
+   {
+    "obj_type": "enemy",
+    "x": 156,
+    "y": 40,
+    "slot": 0,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 4
+   }
+  ]
+ },
+ {
+  "tilemap": "ERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERICIiIiAiIiIgIiIiICIiIhEREREREREREREREREREREgIiIiIiIiIiAiIiIiIiIiERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERER",
+  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
+  "objs": []
+ },
+ {
+  "tilemap": "Dw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8G//////////////////8GBv//////////////////Bgb//////////////////wYPHw8PDw8PDw8PDw8PDw8PDyEPDw8PDw8PDw8PDw8PDw8hDw8PDw8PDw8PDw8PDw8PIQ8PDw8PDw8PDw8PDw8PDyEPDw8PDw8PDw8PDw8PDw8hDw8PDw8PDw8PDw8PDw8PIQ8PDw8PDw8PDw8PDw8P",
+  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCAwMDAwMDAwMDAwMDAwMCAgMDAwMDAwMDAwMDAwMDAgIDAwMDAwMDAwMDAwMDAwIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 0
+   },
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 140,
+    "y": 104,
+    "slot": 3,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 1
+   }
+  ]
+ },
+ {
+  "tilemap": "IyMjIyMjIyYjIyMjIyMjIx4kJCMjIyMmIyMjIyMkJB4aJCQjIwokJiMkCiMjJCQaGiMjIyMkJCYjJCQjIyMjGhonJycjIyMmIyMjIygoKBoG////Jycn//8oKCj///8GBv//////////////////Bgb//////////////////wYaFxISEhISEhISEhISEhoXFxcQEP//////////EBAXFxsaEBD//////////xAQGxoXFxAQ//////////8QEBcXGhsQEP//////////EBAaGx4eHh4BAQEBAQEBAR4eHh4eHh4eAAAAAAAAAAAeHh4e",
+  "attrs": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQIBAQEBAgEBAQEBAQEBAQEBAQEBAQEBAQEBAQAAAAABAQEBAQEBAQAAAAACAAAAAAAAAAAAAAAAAAACAgAAAAAAAAAAAAAAAAAAAgIAAAAAAAAAAAAAAAAAAAIAAAMDAwMDAwMDAwMDAwAAAAADAwAAAAAAAAAAAwMAAAAAAwMAAAAAAAAAAAMDAAAAAAMDAAAAAAAAAAADAwAAAAADAwAAAAAAAAAAAwMAAAAAAAACAgICAgICAgAAAAAAAAAAAgICAgICAgIAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 0
+   },
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 144,
+    "y": 216,
+    "slot": 2,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 7
+   }
+  ]
+ },
+ {
+  "tilemap": "Ew4TDg4TDg4TDhMODhMODg4OExMODhMTDg4TEw4OExP///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8REREREREUFRERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERER",
+  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCAgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
+  "objs": [
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 112,
+    "y": 184,
+    "slot": 3,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 7
+   },
+   {
+    "obj_type": "enemy",
+    "x": 92,
+    "y": 72,
+    "slot": 0,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 0
+   },
+   {
+    "obj_type": "enemy",
+    "x": 188,
+    "y": 56,
+    "slot": 1,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 0
+   },
+   {
+    "obj_type": "enemy",
+    "x": 172,
+    "y": 152,
+    "slot": 2,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 1
+   }
+  ]
+ },
+ {
+  "tilemap": "EBAQEBAQEBAQEBAQEBAQEBMTEwoTExMTExMTEwoTExMT/ycnJ////////ygoKP8TE///////////////////ExP//////////////////xMT//////////////////8GE///////////////////BhP//////////////////wYT/////////////////xMPE/////////////////8TDxP/F////////////xf/Ew8T//8eHh4eHh4eHh7//x8PE///ExMTExMTExMa//8eHhMBARMTExMTExMTGgEBHh4TAAAQEBAQEBAQEBoAAB4e",
+  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAQAAAAEBAQEBAQAAAAEDAwEBAQEBAQEBAQEBAQEBAwMBAQEBAQEBAQEBAQEBAQMDAQEBAQEBAQEBAQEBAQECAwEBAQEBAQEBAQEBAQEBAgMBAQEBAQEBAQEBAQEBAQIDAQEBAQEBAQEBAQEBAQMDAwEBAQEBAQEBAQEBAQEDAwMBAAEBAQEBAQEBAQABAwMDAQEAAAAAAAAAAAABAQMDAwEBAwMDAwMDAwMAAQEAAAMCAgMDAwMDAwMDAAICAAADAgIDAwMDAwMDAwACAgAAAQEBAQEBAQEBAQEBAQEBAQ==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 0
+   },
+   {
+    "obj_type": "enemy",
+    "x": 92,
+    "y": 152,
+    "slot": 0,
+    "tough": 0,
+    "miniboss": 1,
+    "type": 8
+   }
+  ]
+ },
+ {
+  "tilemap": "I/8jIyMjIyMjIyMjIyMjIyP/IyQkJCQkIyQkJCQkJCMj/yMjIyMjIyMjIyMjIyMjI///////////////////IyP//////////////////yMj//////////////////8GI///////////////////BiP///////8e/////////wYj////////I///////IyMjI////////yP//////yMkJCP///////8j//////8jJCQj////////I///////IyMjIyMjIyMjIyMjIyMjIyMjIyMkJCQkJCQjIyQkJCQkJCMjIyMjIyMjIyMjIyMjIyMj",
+  "attrs": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECAQEBAQEBAQEBAQEBAQEBAgEBAQEBAQEAAQEBAQEBAQIBAQEBAQEBAAEBAQEBAQEBAQEBAQEBAQABAQEBAQEBAQEBAQEBAQEAAQEBAQEBAQEBAQEBAQEBAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 92,
+    "y": 56,
+    "slot": 1,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 1
+   }
+  ]
+ },
+ {
+  "tilemap": "IyMjIyMjIyMjIyMjIyMjIyMkJCQkJCQjIyQkJCQkJCMjIyMjIyMjIyMjIyMjIyMjI////////////////////yP///////////////////8G////////////////////Bv///////////////////wb///////////////////8jIyMj////////////////IyQkI////////////////yMkJCP///////////////8jIyMj////////////////IyMjIyMjIyMjIyMjFBUjIyMkJCQkJCQjIyQkJCQkJCMjIyMjIyMjIyMjIyMjIyMj",
+  "attrs": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECAQEBAQEBAQEBAQEBAQEBAgEBAQEBAQEBAQEBAQEBAQIBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAgIBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 188,
+    "y": 168,
+    "slot": 0,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 8
+   },
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 208,
+    "y": 200,
+    "slot": 1,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 7
+   }
+  ]
+ },
+ {
+  "tilemap": "IyMjIyMjIyMjIyMjIyMjIyMkJCQkJCQjIyQkJCQkJCMjIyMjIyMjIyMjIyMjIyMj////////////////////////////////////////////////////////////////////////////////////////////////Hv///////////////////yb///////////////////8m////////////////////Jv///////////////////yb/////////IyMjIyMjIyMjIyMjIxQVIyMkJCQkJCQjIyQkJCQkJCMjIyMjIyMjIyMjIyMjIyMj",
+  "attrs": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAAEBAQEBAQEBAQEBAQEBAQABAQEBAQEBAQEBAQEBAQEAAQEBAQEBAQEBAQEBAQEBAAEBAQEBAQEBAQEBAQEBAQABAQEBAQEBAQEBAQEBAQEBAQEBAQICAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ==",
+  "objs": [
+   {
+    "obj_type": "pipe_bug_hole",
+    "x": 224,
+    "y": 200,
+    "slot": 2,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 7
+   },
+   {
+    "obj_type": "enemy",
+    "x": 204,
+    "y": 184,
+    "slot": 4,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 0
+   }
+  ]
+ },
+ {
+  "tilemap": "IyMjIyMjIyMjIyMjIyMjIyMkJCQkJCQjIyQkJCQkJCMjIyMjIyMjIyMjIyMjIyMjIyQkJCQkJCMjJCQkJCQkIyMjIyMjIyMjIyMjIyMjIyMG//////////////////8GBv//////////////////Bgb//////////////////wYjIyMjIyMjIyMjIyMjIyMjIyQkJCQkJCMjJCQkJCQkIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMkJCQkJCQjIyQkJCQkJCMjIyMjIyMjIyMjIyMjIyMj",
+  "attrs": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECAQEBAQEBAQEBAQEBAQECAgEBAQEBAQEBAQEBAQEBAgIBAQEBAQEBAQEBAQEBAQIBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 140,
+    "y": 104,
+    "slot": 2,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 1
+   }
+  ]
+ },
+ {
+  "tilemap": "Dw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8G//////////////////8GBv//////////////////Bgb//////////////////wYPDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8P",
+  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCAwMDAwMDAwMDAwMDAwMCAgMDAwMDAwMDAwMDAwMDAgIDAwMDAwMDAwMDAwMDAwIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 140,
+    "y": 104,
+    "slot": 4,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 1
+   }
+  ]
+ },
+ {
+  "tilemap": "FxcbF/////////////8XFxsXFxf//xcXFxf/////FxsbFxsb////////////GRcbFxsXFxj//////////xkbFxcXGxcY////////Fx0XFxcbFxcX//////////////8GGxcbG///////////////BhcbFxf//////////////wYXFxsXFxcbFxcXGxcXFxsXGxcXFxsXFxcbFxcXGxcXFxsXGxsbFxsbGxcbGxsXGxsXGxcXFxsXFxcbFxcXGxcXFxcbF///////////FxcbFxsXFxcBAQEBAQEBARsXFxcbFxsbAAAAAAAAAAAbFxsb",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAEAAAAAAAAAAAEAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAgICAgICAgAAAAAAAAAAAgICAgICAgIAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 140,
+    "y": 56,
+    "slot": 0,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 3
+   }
+  ]
+ },
+ {
+  "tilemap": "Ghf///////////////8aFxcX/////////xf///8ZFxcbGv//////////////GRsaFxcY//////////////8XFxobGP///////////xf/GhsG/////////////////xoXBv////////////////8XFwb/////////////////GxoXFxsXFxcbFxcXGxcXFxsXGxcXFxsXFxcbFxcXGxcXFxsXGxsbFxsbGxcbGxsXGxsXGxcXFxsXFxcbFxcXGxcXFxcbF///////////FxcbFxsXFxf//////////xsXFxcbFxsb//////////8bFxsb",
+  "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 16,
+    "y": 104,
+    "dir": 1,
+    "type": 1
+   },
+   {
+    "obj_type": "enemy",
+    "x": 92,
+    "y": 120,
+    "slot": 4,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 0
+   },
+   {
+    "obj_type": "enemy",
+    "x": 172,
+    "y": 120,
+    "slot": 5,
+    "tough": 0,
+    "miniboss": 0,
+    "type": 0
+   },
+   {
+    "obj_type": "enemy",
+    "x": 92,
+    "y": 72,
+    "slot": 0,
+    "tough": 1,
+    "miniboss": 0,
+    "type": 3
+   }
+  ]
+ }
+]
