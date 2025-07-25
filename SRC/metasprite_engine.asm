@@ -204,7 +204,7 @@ DrawExplodingMetaspriteXFlipped:
         plp
         bcc +
             eor #$FF
-            adc #$01
+            adc #$00
         +
         clc
         adc SpriteRAM+3,x
