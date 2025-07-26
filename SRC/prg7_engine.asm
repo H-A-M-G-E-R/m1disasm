@@ -3441,12 +3441,16 @@ LD4B4:
 ; =================
 
 UpdateProjectiles:
+    lda #$01
+    sta UpdatingProjectile
     ldx #$D0
     jsr DoOneProjectile
     ldx #$E0
     jsr DoOneProjectile
     ldx #$F0
-    ; fallthrough
+    jsr DoOneProjectile
+    dec UpdatingProjectile
+    rts
 
 DoOneProjectile:
     stx PageIndex
@@ -3466,8 +3470,6 @@ DoOneProjectile:
         .word UpdateBullet          ; missile
 
 UpdateBullet:
-    lda #$01
-    sta UpdatingProjectile
     jsr UpdateBullet_DeleteIfOffScreen
     jsr UpdateBullet_ExplodeIfHitSprite
     jsr UpdateBullet_CollisionWithBG
@@ -3490,7 +3492,6 @@ DrawBullet:
         lda #$01
         jsr AnimDrawObject
     Lx069:
-    dec UpdatingProjectile
     rts
 
 MoveToNextProjectileWaveInstr:
@@ -3502,8 +3503,6 @@ LD522:
     beq Lx071      ; branch always
 
 UpdateWaveBullet:
-    lda #$01
-    sta UpdatingProjectile
     jsr UpdateBullet_DeleteIfOffScreen
     jsr UpdateBullet_ExplodeIfHitSprite
     ; get movement string depending on wave bullet direction
@@ -3612,8 +3611,6 @@ WaveBulletTrajectoryVertical:
 ; bullet/missile explode
 
 UpdateBulletExplode:
-    lda #$01
-    sta UpdatingProjectile
     lda ObjAnimFrame,x
     sec
     sbc #$F7
@@ -3749,177 +3746,60 @@ Lx086:
     jmp DrawBomb
 
 BombExplosion_CollisionWithBG:
-    jsr GetObjCartRAMPtr
-    ; store bomb's cart ram pointer at $0B.$0A
-    lda Temp04_CartRAMPtr
-    sta $0A
-    lda Temp04_CartRAMPtr+1.b
-    sta $0B
-    ; bomb center if ProjectileDieDelay == 1
-    ldx PageIndex
-    ldy ProjectileDieDelay,x
-    dey
-    beq Lx088
-    dey
-    bne Lx089
-        ; ProjectileDieDelay == 2, bomb 2 tiles up
-        lda #$40
-        jsr LD78B
-        ; branch always
-        txa
-        bne Lx087
-            lda Temp04_CartRAMPtr
-            and #$20
-            beq Exit6
-        Lx087:
-        ; check if underflowed to attributes
-        lda Temp04_CartRAMPtr+1.b
-        and #$03
-        cmp #$03
-        bne Lx088
-        lda Temp04_CartRAMPtr
-        cmp #$C0
-        bcc Lx088
-            ; underflowed to attributes
-            ; exit if in horizontal room
-            lda ScrollDir
-            and #$02
-            bne Exit6
-            ; skip attributes and check opposite nametable
-            lda #$40+$40
-            jsr LD78B
-    Lx088:
-    jsr BombCurrentTile
-Exit6:
-    rts
+    jsr StoreObjectPositionToTemp
+    lda ProjectileDieDelay,x
+    cmp #$0E
+    bcs Exit7
+    asl
+    tax
+    ; calculate collision point
+    lda BombExplosionCollisionOffsetTbl-2,x
+    sta Temp04_SpeedY
+    lda BombExplosionCollisionOffsetTbl-1,x
+    sta Temp05_SpeedX
+    jsr ApplySpeedToPosition
+    ; calculate WRAM pointer at collision point
+    lda Temp08_PositionY
+    sta Temp02_PositionY
+    lda Temp09_PositionX
+    sta Temp03_PositionX
+    jsr MakeCartRAMPtr
 
-Lx089:
-    dey
-    bne Lx092
-        ; ProjectileDieDelay == 3, bomb 2 tiles down
-        lda #$40
-        jsr LD77F
-        ; branch always
-        txa
-        bne Lx090
-            lda Temp04_CartRAMPtr
-            and #$20
-            bne Exit6
-        Lx090:
-        ; check if overflowed to attributes
-        lda Temp04_CartRAMPtr+1.b
-        and #$03
-        cmp #$03
-        bne Lx091
-        lda Temp04_CartRAMPtr
-        cmp #$C0
-        bcc Lx091
-            ; overflowed to attributes
-            ; exit if in horizontal room
-            lda ScrollDir
-            and #$02
-            bne Exit6
-            ; skip attributes and check opposite nametable
-            lda #$40+$40
-            jsr LD77F
-        Lx091:
-        jmp BombCurrentTile
-    Lx092:
-    dey
-    bne Lx095
-        ; ProjectileDieDelay == 4, bomb 2 tiles left
-        lda #$02
-        jsr LD78B
-        ; branch always
-        txa
-        bne Lx093
-            lda Temp04_CartRAMPtr
-            lsr
-            bcc Exit7
-        Lx093:
-        lda Temp04_CartRAMPtr
-        and #$1F
-        cmp #$1E
-        bcc Lx094
-            ; underflowed left
-            ; exit if in vertical room
-            lda ScrollDir
-            and #$02
-            beq Exit7
-            ; check opposite nametable
-            lda #$20-$02
-            jsr LD77F
-            lda Temp04_CartRAMPtr+1.b
-            eor #$04
-            sta Temp04_CartRAMPtr+1.b
-        Lx094:
-        jmp BombCurrentTile
-    Lx095:
-    dey
-    bne Exit7
-        ; ProjectileDieDelay == 5, bomb 2 tiles right
-        lda #$02
-        jsr LD77F
-        ; branch always
-        txa
-        bne Lx096
-            lda Temp04_CartRAMPtr
-            lsr
-            bcs Exit7
-        Lx096:
-        lda Temp04_CartRAMPtr
-        and #$1F
-        cmp #$02
-        bcs BombCurrentTile
-            ; overflowed right
-            ; exit if in vertical room
-            lda ScrollDir
-            and #$02
-            beq Exit7
-            ; check opposite nametable
-            lda #$20-$02
-            jsr LD78B
-            lda Temp04_CartRAMPtr+1.b
-            eor #$04
-            sta Temp04_CartRAMPtr+1.b
-    BombCurrentTile:
-    txa
-    pha
+BombCurrentTile:
     ldy #$00
     lda (Temp04_CartRAMPtr),y
+    cmp #$4E
+    bne +
+    jmp ProjectileHitDoorOrStatue
+
++
     cmp #$70
-    bcc Lx097
-        cmp #$A0
-        bcs Lx097
-        jsr IsBlastTile_SkipCheckUpdatingProjectile
-    Lx097:
-    pla
-    tax
+    bcc Exit7
+    cmp #$A0
+    bcs Exit7
+    jmp IsBlastTile_SkipCheckUpdatingProjectile
+
 Exit7:
     rts
 
-LD77F:
-    clc
-    adc $0A
-    sta Temp04_CartRAMPtr
-    lda $0B
-    adc #$00
-    jmp LD798
+; Y offset, X offset
+BombExplosionCollisionOffsetTbl:
+    .byte  $00,  $00 ; $01
 
-LD78B:
-    sta $00
-    lda $0A
-    sec
-    sbc $00
-    sta Temp04_CartRAMPtr
-    lda $0B
-    sbc #$00
-LD798:
-    and #$07
-    ora #>RoomRAMA.b
-    sta Temp04_CartRAMPtr+1.b
-RTS_X098:
-    rts
+    .byte -$08,  $00 ; $02
+    .byte  $08,  $00 ; $03
+    .byte  $00, -$08 ; $04
+    .byte  $00,  $08 ; $05
+
+    .byte -$08, -$08 ; $06
+    .byte -$08,  $08 ; $07
+    .byte  $08, -$08 ; $08
+    .byte  $08,  $08 ; $09
+
+    .byte -$10,  $00 ; $0A
+    .byte  $10,  $00 ; $0B
+    .byte  $00, -$10 ; $0C
+    .byte  $00,  $10 ; $0D
 
 ;-------------------------------------[ Get object coordinates ]------------------------------------
 
@@ -3992,9 +3872,12 @@ DrawElevator:
     ; only display elevator at odd frames
     lda FrameCount
     lsr
-    bcc RTS_X098
+    bcc @RTS
     ; display elevator
     jmp ObjDrawFrame
+
+@RTS:
+    RTS
 
 ElevatorScrollXToCenter:
     lda ScrollX
