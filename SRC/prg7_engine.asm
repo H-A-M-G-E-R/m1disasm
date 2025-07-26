@@ -432,8 +432,9 @@ GoMainRoutine:
     lda GamePaused
     eor #$01
     sta GamePaused
-    ;($CB92)Silences music while game paused.
-    jsr PauseMusic
+    beq @endIf_B
+    lda #sfxSQ1_Pause
+    sta SQ1SFXFlag
 
 @endIf_B:
     ;Use MainRoutine as index into routine table below.
