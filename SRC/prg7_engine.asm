@@ -5921,12 +5921,7 @@ MoveSamusUp:
     dec ObjY
     inc SamusJumpDsplcmnt
     sec
-    rts
-
-; crash with object on the top or bottom
 RTS_X156:
-    lda #$00
-    sta SamusDoorData
     rts
 
 ; attempt to move Samus one pixel down
@@ -6358,12 +6353,7 @@ MoveSamusLeft: ;($E626)
     Lx180:
     dec ObjX
     sec
-    rts
-
-; crash with object on the left or right
 Lx181:
-    lda #$00
-    sta SamusDoorData
     rts
 
 ; attempt to move Samus one pixel right
@@ -6644,6 +6634,14 @@ LE7DE:
     stx $06
     sty $07
     ldx $04
+    jsr LE7E6
+    bcs Exit16
+    ; collision detected, SamusDoorData = 0 if SamusDoorDir == CollisionDirection
+    lda SamusDoorDir
+    eor CollisionDirection
+    bne Exit16
+    sta SamusDoorData
+    rts
 
 ; object<-->background crash detection
 
