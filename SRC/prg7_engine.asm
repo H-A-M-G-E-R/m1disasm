@@ -3850,6 +3850,7 @@ ElevatorIdle:
     
     ; start elevator!
     ; clear samus variables
+    jsr ClearHorzData
     jsr StopVertMovement
     ; y is #$00 here
     sty ObjAnimDelay
