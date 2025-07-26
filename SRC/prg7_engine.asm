@@ -7558,12 +7558,6 @@ OnNameTable0:
 
 ; Despawn offscreen room sprites to make room for new room sprites.
 UpdateRoomSpriteInfo:
-    ldx ScrollDir
-    dex
-    ldy #$00
-    jsr UpdateDoorData              ;($ED51)Update name table 0 door data.
-    iny
-    jsr UpdateDoorData              ;($ED51)Update name table 3 door data.
     ; If the enemy is in the opposite nametable and is offscreen, delete it.
     ldx #$50
     jsr GetNameTable                ;($EB85)
@@ -7673,20 +7667,14 @@ UpdateRoomSpriteInfo:
     ; tourian stuff
     jmp GotoUpdateRoomSpriteInfo_Tourian
 
-UpdateDoorData:
-    txa                             ;
-    eor #$03                        ;
-    and DoorOnNameTable3,y                     ;Moves door info from one name table to the next-->
-LED57:
-    sta DoorOnNameTable3,y                     ;when the room is transferred across name tables.
-    rts
-
 LED5B:
     jsr GetNameTable                ;($EB85)
     eor #$01
     tay
     lda #$00
-    beq LED57
+    sta DoorOnNameTable3,y
+    rts
+
 LED65:
     ldx #$B0
     Lx252:
