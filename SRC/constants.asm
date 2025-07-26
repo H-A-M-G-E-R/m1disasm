@@ -632,8 +632,8 @@ ProjectileWaveDir      = $0502   ; bullet direction, used to get movement string
 MusicSQ1PeriodLow      = $0600   ;Loaded into SQ1_LO when playing music
 MusicSQ1PeriodHigh     = $0601   ;Loaded into SQ1_HI when playing music
 
-SFXPaused              = $0602   ;0=Game not paused, 1=Game paused
-PauseSFXStatus         = $0603   ;Plays PauseMusic SFX if less than #$12
+;SFXPaused              = $0602   ;0=Game not paused, 1=Game paused
+;PauseSFXStatus         = $0603   ;Plays PauseMusic SFX if less than #$12
 
 MusicSQ2PeriodLow      = $0604   ;Loaded into SQ2_LO when playing music
 MusicSQ2PeriodHigh     = $0605   ;Loaded into SQ2_HI when playing music
@@ -1152,6 +1152,7 @@ sfxNoise_SpitFlame     = $03
 sfxNoise_PauseMusic    = $02
 ;sfxNoise_01            = $01
 
+sfxSQ1_Pause           = $09
 sfxSQ1_MissilePickup   = $08
 sfxSQ1_EnergyPickup    = $07
 sfxSQ1_Metal           = $06

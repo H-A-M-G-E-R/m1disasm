@@ -171,6 +171,7 @@ SQ1SFXInitRoutineTbl:
     .word MetalSFXStart                     ;Metal init SFX.
     .word EnergyPickupSFXStart                     ;Energy pickup init SFX.
     .word MissilePickupSFXStart                     ;Missile pickup init SFX.
+    .word PauseSFXStart
 
 ;SQ1 Continue SFX handling routine addresses:
 SQ1SFXContRoutineTbl:
@@ -183,6 +184,7 @@ SQ1SFXContRoutineTbl:
     .word SQ1SFXContinue                     ;Metal continue SFX.
     .word EnergyPickupSFXContinue                     ;Energy pickup continue SFX.
     .word MissilePickupSFXContinue                     ;Missile pickup continue SFX.
+    .word PauseSFXContinue
 
 ;Triangle init handling routine addresses:
 TriSFXInitRoutineTbl:
@@ -313,27 +315,6 @@ LoadSFXRegisters:
     iny                             ;
     cpy #$04                        ;The four registers associated with each sound-->
     bne LoadSFXRegisters            ;channel are loaded one after the other (the loop repeats four times).
-    rts
-
-PauseSFX:
-    inc SFXPaused                   ;SFXPaused=#$01
-    jsr ClearSounds                 ;($B43E)Clear sound registers of data.
-    sta PauseSFXStatus              ;PauseSFXStatus=#$00
-    rts
-
-LB399:
-    lda SFXPaused                   ;Has SFXPaused been set? if not, branch
-    beq PauseSFX                    ;
-    lda PauseSFXStatus              ;For the first #$12 frames after the game has been-->
-    cmp #$12                        ;paused, play GamePaused SFX.  If paused for #$12-->
-    beq RTS_B3B3                       ;frames or more, branch to exit.
-    and #$03                        ;
-    cmp #$03                        ;Every fourth frame, repeat GamePaused SFX
-    bne LB3B0                       ;
-        ldy #<GamePausedSFXData.b         ;Lower address byte of GamePaused SFX data(Base=$B200)
-        jsr LoadSQ1ChannelSFX           ;($B368) Load GamePaused SFX data.
-    LB3B0:
-    inc PauseSFXStatus
 RTS_B3B3:
     rts
 
@@ -355,13 +336,6 @@ SoundEngine:
     ;This syncs the APU's frame counter with the PPU.
     lda #APU_5STEP | APU_IRQDISABLE.b
     sta JOY2
-    ;Is game paused?  If yes, branch.
-    lda MainRoutine
-    cmp #$05
-    beq LB399
-    ;Clear SFXPaused when game is running.
-    lda #$00
-    sta SFXPaused
     jsr LoadNoiseSFXInitFlags       ;($B31B)Check noise SFX flags.
     jsr LoadMultiSFXInitFlags       ;($B34B)Check multichannel SFX flags.
     jsr LoadTriSFXInitFlags         ;($B33D)Check triangle SFX flags.
@@ -422,7 +396,6 @@ InitializeSoundAddresses:
 ClearSpecialAddresses: ;($B40E)
     lda #$00
     sta TriCounterCntrl
-    sta SFXPaused
     sta MusicRepeat
     rts
 
@@ -827,6 +800,21 @@ EnergyPickupSFXStart:
     ldy #<EnergyPickupSFXData.b       ;Lower byte of sound data start address(base=$B200).
     bne SelectSFX1                  ;Branch always.
 
+PauseSFXStart:
+    lda #$04
+    ldy #<GamePausedSFXData.b
+    bne SelectSFX1                  ;Branch always.
+
+PauseSFXContinue:
+    jsr IncrementSFXFrame
+    bne RTS_MusicBranch03
+    inc SQ1SFXData
+    lda SQ1SFXData
+    cmp #$03
+    beq EndSQ1SFX
+    ldy #<GamePausedSFXData.b
+    jmp LoadSQ1ChannelSFX
+
 ;The following continue routine is used by the metal, bird out of hole,
 ;enemy hit and the Samus jump SFXs.
 
@@ -854,7 +842,9 @@ SamusJumpSFXStart:
 EnemyHitSFXStart:
     lda #$08                        ;Number of frames to play sound before a change.
     ldy #<EnemyHitSFXData.b    ;Lower byte of sound data start address(base=$B200).
-    bne SelectSFX1                  ;Branch always.
+
+SelectSFX1:
+    jmp SelectSFXRoutine            ;($B452)Setup registers for SFX.
 
 BulletFireSFXStart:
     lda HasBeamSFX                  ;
@@ -884,9 +874,7 @@ HasLongBeamSFXStart:
 MetalSFXStart:
     lda #$0B                        ;Number of frames to play sound before a change.
     ldy #<MetalSFXData.b              ;Lower byte of sound data start address(base=$B200).
-
-SelectSFX1:
-    jmp SelectSFXRoutine            ;($B452)Setup registers for SFX.
+    bne SelectSFX1                  ;Branch always.
 
 BirdOutOfHoleSFXStart:
     lda CurrentMusic                ;If escape music is playing, use this SFX to make-->
