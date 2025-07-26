@@ -3676,7 +3676,7 @@ UpdateBullet_CollisionWithBG:
     ; branch if bullet hit solid blank tile
     cmp #$4E
     beq GotoProjectileHitDoorOrStatue
-    jsr CheckBlastTile
+    cmp #$70
     bcc RTS_X081
     clc
     jmp IsBlastTile
@@ -3705,17 +3705,6 @@ ToggleObjHi:
     Lx080:
     sta ObjHi,x
 RTS_X081:
-    rts
-
-; Blast tile ids are #$80-$9F in Brinstar and #$70-$9F in other areas
-CheckBlastTile:
-    ldy InArea
-    beq @Brinstar
-        cmp #$70
-        bcs @RTS
-    @Brinstar:
-    cmp #$80
-@RTS:
     rts
 
 BombInit:
@@ -3898,7 +3887,7 @@ Lx089:
     pha
     ldy #$00
     lda (Temp04_CartRAMPtr),y
-    jsr CheckBlastTile
+    cmp #$70
     bcc Lx097
         cmp #$A0
         bcs Lx097
@@ -6781,7 +6770,7 @@ LE7E6:
     cmp #$4E
     beq ProjectileHitDoorOrStatue
     jsr GotoUpdateBullet_CollisionWithMotherBrain
-    jsr CheckBlastTile
+    cmp #$70
     bcc Exit16      ; CF = 0 if tile # < $80 (solid tile)... CRASH!!!
     cmp #$A0        ; is tile >= A0h? (walkable tile)
     bcs IsWalkableTile
