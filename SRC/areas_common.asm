@@ -1047,12 +1047,6 @@ SamusEnterDoor:
     bne RTS_8B6C                    ;door status is 0, but door data information has been-->
     ldy SamusDoorData               ;written. If both conditions are met, Samus has just-->
     beq RTS_8B6C                    ;entered a door.
-    lda PPUCTRL_ZP                  ;
-    eor #$01                        ;
-    and #$01                        ;Erase name table door data for new room.
-    tay                             ;
-    lsr                             ;
-    sta DoorOnNameTable3,y          ;
     lda ScrollDir
     sta ScrollDirBeforeDoor
     lda SamusDoorDir
