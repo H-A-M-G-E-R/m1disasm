@@ -6637,6 +6637,8 @@ LE7DE:
     jsr LE7E6
     bcs Exit16
     ; collision detected, SamusDoorData = 0 if SamusDoorDir == CollisionDirection
+    lda IsSamus
+    beq Exit16
     lda SamusDoorDir
     eor CollisionDirection
     bne Exit16
