@@ -2804,7 +2804,7 @@ SamusRoll:
         sbc #$07
         and #$07
         clc
-        adc ObjRadY
+        adc #$07
         sta ObjRadY
         jsr CheckMoveUp
         bcc +     ; branch if not possible to stand up
