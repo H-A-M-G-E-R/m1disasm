@@ -4905,6 +4905,7 @@ LDD75:
     ; trigger kill delay
     sta MiniBossKillDelayFlag
     ; make corresponding miniboss statue blink
+    lda InArea
     lsr
     tay
     sta KraidStatueStatus-1,y
