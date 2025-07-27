@@ -1575,7 +1575,11 @@ IncrementToNextItem:
     cpy #$84                        ;7 extra item slots in unique item history.
     bcc L8D95                       ;Loop until all unique item history checked.
     lda $00                         ;
-    sta TankCount                   ;Store the number of energy tanks found in TankCount.
+    jsr Amul16                      ;
+    ora #$09                        ;
+    sta MaxHealth+1                 ;Store the number of energy tanks found in MaxHealth.
+    lda #$99                        ;
+    sta MaxHealth                   ;
     lda #$00                        ;
     ldy $02                         ;
     beq L8DC6                       ;Branch if no missiles found.
@@ -2268,9 +2272,11 @@ RestartXPosTbl:
 
 InitializeStats:
     ;Set all of Samus' stats to 0 when starting new game.
+    lda #$09
+    sta MaxHealth+1
+    lda #$99
+    sta MaxHealth
     lda #$00
-    sta SamusStat00
-    sta TankCount
     sta SamusGear
     sta MissileCount
     sta MaxMissiles
@@ -4683,10 +4689,12 @@ LE11C:
 
 LE14A:
     ldx SpritePagePos               ;Restore initial sprite page pos.
-    lda TankCount                   ;
+    lda MaxHealth+1.b               ;
+    and #$F0                        ;
     beq RTS_E172                          ;Branch to exit if Samus has no energy tanks.
 
 ;Display full/empty energy tanks.
+    jsr Adiv16
     sta $03                         ;Temp store tank count.
     ldy #$00                        ;Tank index.
     lda #$2D                        ;"Full energy tank" tile.

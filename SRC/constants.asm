@@ -849,8 +849,8 @@ EndingType             = $6872   ;1=worst ending, 5=best ending
 
 SamusDataIndex         = $6875   ;Index for Samus saved game stats(not used). #$00, #$10, #$20.
 
-SamusStat00            = $6876   ;Unused memory address for storing Samus info.
-TankCount              = $6877   ;Number of energy tanks.
+MaxHealth              = $6876
+;MaxHealth+1             = $6877
 SamusGear              = $6878   ;Stores power-up items Samus has.
 MissileCount           = $6879   ;Stores current number of missiles.
 MaxMissiles            = $687A   ;Maximum amount of missiles Samus can carry

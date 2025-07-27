@@ -1359,12 +1359,10 @@ SamusInit:
     and #$01
     sta ObjHi
     ;Starting health is full...
-    lda #$99
-    sta Health
-    lda TankCount
-    jsr Amul16
-    ora #$09
+    lda MaxHealth+1
     sta Health+1
+    lda MaxHealth
+    sta Health
 RTS_C92A:
     rts
 
@@ -1612,7 +1610,7 @@ SaveGameData:
     ldx #$00
     LCA66:
         ;Save Samus' data in appropriate saved game slot.
-        lda SamusStat00,x
+        lda MaxHealth,x
         sta SamusData00,y
         iny
         inx
@@ -1643,7 +1641,7 @@ LoadGameData:
     LCA88:
         ;Load Samus' data from appropriate saved game slot.
         lda SamusData00,y
-        sta SamusStat00,x
+        sta MaxHealth,x
         iny
         inx
         cpx #$10
@@ -2504,14 +2502,16 @@ AddHealth:
     jsr Base10Add                   ;($C3DA)Perform base 10 addition.
     sta Health+1                    ;Save results.
 
-    lda TankCount                   ;
-    jsr Amul16                      ;($C2C5)*16. Move tank count to upper 4 bits.
-    ora #$0F                        ;Set lower 4 bits.
-    cmp Health+1                    ;
-    bcs LCF2B                           ;Is life less than max? if so, branch.
-    and #$F9                        ;Life is more than max amount.
+    cmp MaxHealth+1                 ;
+    bcc LCF2B                           ;Is life less than max? if so, branch.
+    bne +
+    lda Health
+    cmp MaxHealth
+    bcc LCF2B
++
+    lda MaxHealth+1                 ;Life is more than max amount.
     sta Health+1                    ;
-    lda #$99                        ;Set life to max amount.
+    lda MaxHealth                   ;Set life to max amount.
     sta Health                    ;
 LCF2B:
     jmp ClearHealthChange           ;($F323)
@@ -4618,12 +4618,13 @@ MissileEnergyTank:
         bne LDBE3                       ;Branch always.
 
     LDC00:
-    inc TankCount                   ;Give her a new tank.
-    lda TankCount                   ;
-    jsr Amul16                      ;Get tank count and shift into upper nibble.
-    ora #$09                        ;
+    lda MaxHealth+1                 ;Give her a new tank.
+    clc                             ;
+    adc #$10                        ;
+    sta MaxHealth+1                 ;
+    lda MaxHealth+1
     sta Health+1                    ;Set new tank count. Upper health digit set to 9.
-    lda #$99                        ;Max out low health digit.
+    lda MaxHealth                   ;Max out low health digit.
     sta Health                      ;Health is now FULL!
     bne LDBE3                       ;Branch always.
 
