@@ -4848,6 +4848,8 @@ LDCFC:
     lda #$60
     sta EnData0D,x
     lda RandomNumber1
+    cmp #$10
+    bcc LDD5B
 LDD30:
     and #$07
     tay
