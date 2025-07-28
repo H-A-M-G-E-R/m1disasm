@@ -37,3 +37,9 @@ This is possible by using the MMC3 mapper to switch the upper 64 tiles on the fl
 
 
 Spider ball sprite by BBLIR from The Spriters Resource: https://www.spriters-resource.com/custom_edited/metroidcustoms/sheet/84367/
+
+# CrazyMetroid
+
+Samus uses her CrazyBus to make it easier to hunt her bounty!
+
+Bus sprites from the NES port of CrazyBus by FG Software (https://forums.nesdev.org/viewtopic.php?p=167597).

@@ -1470,6 +1470,16 @@ LBB40:
     beq GotoLoadNoiseChannelMusic
     pha                             ;Push music channel number on stack(0, 1 or 2).
     ldx ThisSoundChannel            ;
+    cpy #$01
+    bne +
+        jsr RandomNumbers
+        sta MusicSQ1PeriodLow,x
+        jsr RandomNumbers
+        and #$01
+        ora #$08
+        sta MusicSQ1PeriodHigh,x
+        bne LBB59
+    +
     lda MusicNotesTbl+1,y           ;(Base=$BE78)Load A with music channel period low data.
     beq LBB59                       ;If data is #$00, skip period high and low loading.
         sta MusicSQ1PeriodLow,x         ;Store period low data in proper period low address.
@@ -1798,6 +1808,8 @@ NoteLengthsTbl:
         .byte $12                       ;About    9/32 seconds ($B8)
         .byte $02                       ;About    1/32 seconds ($B9)
         .byte $03                       ;About    3/64 seconds ($BA)
+    @9:
+        .byte $09
 .elif BUILDTARGET == "NES_PAL"
     @3:
         .byte $03

@@ -133,8 +133,8 @@
   ]
  },
  {
-  "tilemap": "Cg3//xka////GRsa//8NCgoY////////////////GAoKGP///////////////xgKChj//xkbGv////////8YCgoY////////////GRr/GAoI/////////////////w0KCP////////////////8YCgj/////////////////GAoKDRka/////woKCgoKCgoKChj///////8NFxcXFxcNCgoY////////GAoQCgoQGAoKCgoKCgoKCgoKCgoKCgoKCg0XFxcXFw0NFxcXFxcNCgoYChAKChAYGAoQCgoQGAoKDRcXFxcXDQ0XFxcXFw0K",
-  "attrs": "AwMDAwEBAwMDAQEBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwEBAQMDAwMDAwMDAwMDAwMDAwMDAwMDAQEDAwMCAwMDAwMDAwMDAwMDAwMDAgMDAwMDAwMDAwMDAwMDAwIDAwMDAwMDAwMDAwMDAwMDAwEBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
+  "tilemap": "Cg3//xka/////xka//8NCgoY////////////////GAoKGP///////////////xgKChj//xkbGv////////8YCgoY////////////GRr/GAoI/////////////////w0KCP////////////////8YCgj/////////////////GAoKDRka/////woKCgoKCgoKChj///////8NFxcXFxcNCgoY////////GAoQCgoQGAoKCgoKCgoKCgoKCgoKCgoKCg0XFxcXFw0NFxcXFxcNCgoYChAKChAYGAoQCgoQGAoKDRcXFxcXDQ0XFxcXFw0K",
+  "attrs": "AwMDAwEBAwMDAwEBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwEBAQMDAwMDAwMDAwMDAwMDAwMDAwMDAQEDAwMCAwMDAwMDAwMDAwMDAwMDAgMDAwMDAwMDAwMDAwMDAwIDAwMDAwMDAwMDAwMDAwMDAwEBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
   "objs": [
    {
     "obj_type": "door",
@@ -173,8 +173,8 @@
   ]
  },
  {
-  "tilemap": "Cg3/////////GRsa//8NCgoY////////////////GAoKGP8ZGxr//////////xgKChj///////////////8YCgoY////////////GRsaGAoKDf///////////////w0KChj/////GRr///////8YCgoY////////////////GAoKGBkbGv///////////xgKChj///////8ZGxr///8YCgoN////////////////DQoKGP///////////////xgKChj///////////8ZGv8YCgoY////GRsa////////GAoKGP///////////////xgK",
-  "attrs": "AwMDAwMDAwMDAQEBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMBAQEDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAQEBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAQEDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwEBAQMDAwMDAwMDAwMDAwMDAwMDAwMBAQEDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMBAQMDAwMDAwMDAQEBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
+  "tilemap": "Cg3/////////GRsa//8NCgoY////////////////GAoKGP8ZGv///////////xgKChj///////////////8YCgoY/////////////xkaGAoKDf///////////////w0KChj/////GRr///////8YCgoY////////////////GAoKGBkbGv///////////xgKChj///////8ZGv////8YCgoN////////////////DQoKGP///////////////xgKChj///////////8ZGv8YCgoY/////xka////////GAoKGP///////////////xgK",
+  "attrs": "AwMDAwMDAwMDAQEBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMBAQMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwEBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAQEDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwEBAQMDAwMDAwMDAwMDAwMDAwMDAwMBAQMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMBAQMDAwMDAwMDAwEBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
   "objs": [
    {
     "obj_type": "enemy",
@@ -248,13 +248,13 @@
   "objs": []
  },
  {
-  "tilemap": "Cg3///////////////8NCgoYGRsa////////////GAoKGP///////xkbGv///xgKChj///////////////8YCgoY/////////////xkaGAoKDf///xka//////////8IChj/////////////////CAoY/////////////////wgKGP8ZGv///////xkbGg0KChj///////////////8YCgoN////////////////GAoKCgoKCgoKCgoKCgoKCgoKCg0XFxcXFw0NFxcXFxcNCgoYChAKChAYGAoQCgoQGAoKDRcXFxcXDQ0XFxcXFw0K",
-  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAQEBAwMDAwMDAwMDAwMDAwMDAwMDAwEBAQMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwEBAwMDAwMDAwEBAwMDAwMDAwMCAwMDAwMDAwMDAwMDAwMDAgMDAwMDAwMDAwMDAwMDAwIDAwMBAQMDAwMDAwEBAQMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
+  "tilemap": "Cg3///////////////8NCgoYGRr/////////////GAoKGP///////xkbGv///xgKChj///////////////8YCgoY/////////////xkaGAoKDf///xka//////////8IChj/////////////////CAoY/////////////////wgKGP8ZGv///////xkbGg0KChj///////////////8YCgoN////////////////GAoKCgoKCgoKCgoKCgoKCgoKCg0XFxcXFw0NFxcXFxcNCgoYChAKChAYGAoQCgoQGAoKDRcXFxcXDQ0XFxcXFw0K",
+  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAQEDAwMDAwMDAwMDAwMDAwMDAwMDAwEBAQMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwEBAwMDAwMDAwEBAwMDAwMDAwMCAwMDAwMDAwMDAwMDAwMDAgMDAwMDAwMDAwMDAwMDAwIDAwMBAQMDAwMDAwEBAQMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
   "objs": []
  },
  {
-  "tilemap": "Cg3///////////////8NCgoY//////////8T////GAoKGP///////////////xgKChj///////////////8YCgoY//////////////8TGAoKDf///////////////w0KChj///////////////8YCgoY////////////////GAoKGP//////////E////xgKChj///8T//////////8YCgoN////////////////DQoKGP///////////////xgKChj//////////xP///8YCgoY////////////////GAoKGP//////E////////xgK",
-  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAQMDAwMDAwMDAwMBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwEDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAQMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
+  "tilemap": "Cg3///////////////8NCgoY/////////xP/////GAoKGP///////////////xgKChj///////////////8YCgoY//////////////8TGAoKDf///////////////w0KChj///////////////8YCgoY//////////8T////GAoKGP///////////////xgKChj///8T//////////8YCgoN////////////////DQoKGP//////////E////xgKChj///////////////8YCgoY////////////////GAoKGP//////E////////xgK",
+  "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwEDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMBAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAQMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAQMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
   "objs": []
  },
  {

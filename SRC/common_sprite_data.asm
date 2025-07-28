@@ -13,41 +13,41 @@ ObjectAnimIndexTbl:
 
 ;Samus run animation.
 ObjAnim_00: ;$00
-    .byte _id_ObjFrame03, _id_ObjFrame04, _id_ObjFrame05, $FF
+    .byte _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, $FF, $FF
 
 ;Samus front animation.
 ObjAnim_04: ;$04
-    .byte _id_ObjFrame07, $FF
+    .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus jump out of ball animation.
 ObjAnim_06: ;$06
-    .byte _id_ObjFrame17
+    .byte _id_ObjFrame_CrazyBus0
 ;Samus Stand animation.
 ObjAnim_07: ;$07
-    .byte _id_ObjFrame08, $FF
+    .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus stand and fire animation.
 ObjAnim_09: ;$09
-    .byte _id_ObjFrame22, $FF
+    .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus stand and jump animation.
 ObjAnim_0B: ;$0B
-    .byte _id_ObjFrame04
+    .byte _id_ObjFrame_CrazyBus0
 ;Samus Jump animation.
 ObjAnim_0C: ;$0C
-    .byte _id_ObjFrame10, $FF
+    .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus somersault animation.
 ObjAnim_0E: ;$0E
-    .byte _id_ObjFrame17, _id_ObjFrame18, _id_ObjFrame19, _id_ObjFrame1A, $FF
+    .byte _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, $FF
 
 ;Samus run and jump animation.
 ObjAnim_13: ;$13
-    .byte _id_ObjFrame03, _id_ObjFrame17, $FF
+    .byte _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus roll animation.
 ObjAnim_16: ;$16
-    .byte _id_ObjFrame1E, _id_ObjFrame1D, _id_ObjFrame1C, _id_ObjFrame1B, $FF
+    .byte _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, $FF
 
 ;Bullet animation.
 ObjAnim_1B: ;$1B
@@ -59,18 +59,18 @@ ObjAnim_1D: ;$1D
 
 ;Samus jump and fire animation.
 ObjAnim_20: ;$20
-    .byte _id_ObjFrame12, $FF
+    .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus run and fire animation.
 ObjAnim_22: ;$22
-    .byte _id_ObjFrame0C, _id_ObjFrame0D, _id_ObjFrame0E, $FF
+    .byte _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, $FF, $FF
 
 ;Samus point up and shoot animation.
 ObjAnim_26: ;$26
-    .byte _id_ObjFrame30
+    .byte _id_ObjFrame_CrazyBus0
 ;Samus point up animation.
 ObjAnim_27: ;$27
-    .byte _id_ObjFrame2B, $FF
+    .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Door open animation.
 ObjAnim_DoorOpen: ;$29
@@ -86,33 +86,33 @@ ObjAnim_DoorClose_Reset: ;$30
 
 ;Samus explode animation.
 ObjAnim_SamusExplode: ;$32
-    .byte _id_ObjFrame35, $FF
+    .byte _id_ObjFrame_CrazyBusExplode, $FF
 
 ;Samus jump and point up animation.
 ObjAnim_34: ;$34
-    .byte _id_ObjFrame39
+    .byte _id_ObjFrame_CrazyBus0
 ObjAnim_35: ;$35
-    .byte _id_ObjFrame38, $FF
+    .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus run and point up animation.
 ObjAnim_37: ;$37
-    .byte _id_ObjFrame40, _id_ObjFrame41, _id_ObjFrame42, $FF
+    .byte _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, $FF, $FF
 
 ;Samus run, point up and shoot animation 1.
 ObjAnim_3B: ;$3B
-    .byte _id_ObjFrame46, $FF
+    .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus run, point up and shoot animation 2.
 ObjAnim_3D: ;$3D
-    .byte _id_ObjFrame47, $FF
+    .byte _id_ObjFrame_CrazyBus1, $FF
 
 ;Samus run, point up and shoot animation 3.
 ObjAnim_3F: ;$3F
-    .byte _id_ObjFrame48, $FF
+    .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus front fade out of old area. (plays for only one frame on NES)
 ObjAnim_SamusFadeOutArea: ;$41
-    .byte _id_ObjFrame07, $F7, $F7, _id_ObjFrame07, $F7, $F7, $F7, _id_ObjFrame07, $F7, $F7, $F7, $F7, _id_ObjFrame07
+    .byte _id_ObjFrame_CrazyBus0, $F7, $F7, _id_ObjFrame_CrazyBus0, $F7, $F7, $F7, _id_ObjFrame_CrazyBus0, $F7, $F7, $F7, $F7, _id_ObjFrame_CrazyBus0
 ObjAnim_SamusFadeOutArea_Reset: ;$4E
     .byte $F7, $FF
 
@@ -124,9 +124,9 @@ ObjAnim_ElevatorFadeOutArea_Reset: ;$5D
 
 ;Samus front fade into new area. (plays for only one frame on NES)
 ObjAnim_SamusFadeInArea: ;$5F
-    .byte _id_ObjFrame07, $F7, $F7, $F7, $F7, _id_ObjFrame07, $F7, $F7, $F7, _id_ObjFrame07, $F7, $F7
+    .byte _id_ObjFrame_CrazyBus0, $F7, $F7, $F7, $F7, _id_ObjFrame_CrazyBus0, $F7, $F7, $F7, _id_ObjFrame_CrazyBus0, $F7, $F7
 ObjAnim_SamusFadeInArea_Reset: ;$6B
-    .byte _id_ObjFrame07, $F7, $FF
+    .byte _id_ObjFrame_CrazyBus0, $F7, $FF
 
 ;Elevator fade into new area. (plays for only one frame on NES)
 ObjAnim_ElevatorFadeInArea: ;$6E
@@ -172,13 +172,16 @@ ObjAnim_IceBulletHit:
 
 ;Samus spider ball animation.
 ObjAnim_SamusSpider:
-    .byte _id_ObjFrame_SamusSpider0, _id_ObjFrame_SamusSpider1, _id_ObjFrame_SamusSpider2, _id_ObjFrame_SamusSpider3, $FF
+    .byte _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, $FF
 
 ;----------------------------[ Sprite drawing pointer tables ]--------------------------------------
 
 ;The above animation pointers provide an index into the following table
 ;for the animation sequences.
 ObjFramePtrTable:
+    PtrTableEntry ObjFramePtrTable, ObjFrame_CrazyBus0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_CrazyBus1
+    PtrTableEntry ObjFramePtrTable, ObjFrame_CrazyBusExplode
     PtrTableEntry ObjFramePtrTable, ObjFrame03
     PtrTableEntry ObjFramePtrTable, ObjFrame04
     PtrTableEntry ObjFramePtrTable, ObjFrame05
@@ -248,6 +251,9 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrameIceBullet
 
 SamusCHRBankTable:
+    .byte SamusSuitGFX0/$400 ; ObjFrame_CrazyBus0
+    .byte SamusSuitGFX0/$400 ; ObjFrame_CrazyBus1
+    .byte SamusSuitGFX0/$400 ; ObjFrame_CrazyBusExplode
     .byte SamusSuitGFX0/$400 ; ObjFrame03
     .byte SamusSuitGFX1/$400 ; ObjFrame04
     .byte SamusSuitGFX2/$400 ; ObjFrame05
@@ -1016,4 +1022,107 @@ ObjFrame69:
     .byte $FC,$26,$40,$10
     .byte $0C,$27,$C0,$F0
     .byte $0C,$27,$C0,$08
+    .byte $80
+
+ObjFrame_CrazyBus0:
+    .byte $0E,$20
+    .byte $F2,$60,$20,$E0
+    .byte $F2,$61,$20,$E8
+    .byte $F2,$62,$20,$F0
+    .byte $F2,$63,$20,$F8
+    .byte $F2,$64,$20,$00
+    .byte $F2,$65,$20,$08
+    .byte $F2,$66,$20,$10
+    .byte $F2,$67,$20,$18
+    .byte $FA,$68,$20,$E0
+    .byte $FA,$69,$20,$E8
+    .byte $FA,$6A,$20,$F0
+    .byte $FA,$6B,$20,$F8
+    .byte $FA,$6C,$20,$00
+    .byte $FA,$6D,$20,$08
+    .byte $FA,$6E,$20,$10
+    .byte $FA,$6F,$20,$18
+    .byte $02,$70,$20,$E0
+    .byte $02,$71,$20,$E8
+    .byte $02,$72,$20,$F0
+    .byte $02,$73,$20,$F8
+    .byte $02,$74,$20,$00
+    .byte $02,$75,$20,$08
+    .byte $02,$76,$20,$10
+    .byte $02,$77,$20,$18
+    .byte $0A,$7C,$20,$E8
+    .byte $0A,$7D,$20,$F0
+    .byte $0A,$7C,$20,$07
+    .byte $0A,$7D,$20,$0F
+    .byte $80
+
+ObjFrame_CrazyBus1:
+    .byte $0E,$20
+    .byte $F2,$60,$20,$E0
+    .byte $F2,$61,$20,$E8
+    .byte $F2,$62,$20,$F0
+    .byte $F2,$63,$20,$F8
+    .byte $F2,$64,$20,$00
+    .byte $F2,$65,$20,$08
+    .byte $F2,$66,$20,$10
+    .byte $F2,$67,$20,$18
+    .byte $FA,$68,$20,$E0
+    .byte $FA,$69,$20,$E8
+    .byte $FA,$6A,$20,$F0
+    .byte $FA,$6B,$20,$F8
+    .byte $FA,$6C,$20,$00
+    .byte $FA,$6D,$20,$08
+    .byte $FA,$6E,$20,$10
+    .byte $FA,$6F,$20,$18
+    .byte $02,$70,$20,$E0
+    .byte $02,$78,$20,$E8
+    .byte $02,$79,$20,$F0
+    .byte $02,$73,$20,$F8
+    .byte $02,$74,$20,$00
+    .byte $02,$7A,$20,$08
+    .byte $02,$7B,$20,$10
+    .byte $02,$77,$20,$18
+    .byte $0A,$7E,$20,$E8
+    .byte $0A,$7F,$20,$F0
+    .byte $0A,$7E,$20,$07
+    .byte $0A,$7F,$20,$0F
+    .byte $80
+
+ObjFrame_CrazyBusExplode:
+    .byte $80,$00
+    .byte $00,$F2,$60,$20,$E0
+    .byte $00,$F2,$61,$20,$E8
+    .byte $00,$F2,$62,$20,$F0
+    .byte $00,$F2,$63,$20,$F8
+
+    .byte $01,$F2,$64,$20,$00
+    .byte $01,$F2,$65,$20,$08
+    .byte $01,$F2,$66,$20,$10
+    .byte $01,$F2,$67,$20,$18
+
+    .byte $02,$FA,$68,$20,$E0
+    .byte $02,$FA,$69,$20,$E8
+    .byte $02,$FA,$6A,$20,$F0
+    .byte $02,$FA,$6B,$20,$F8
+
+    .byte $03,$FA,$6C,$20,$00
+    .byte $03,$FA,$6D,$20,$08
+    .byte $03,$FA,$6E,$20,$10
+    .byte $03,$FA,$6F,$20,$18
+
+    .byte $04,$02,$70,$20,$E0
+    .byte $04,$02,$71,$20,$E8
+    .byte $04,$02,$72,$20,$F0
+    .byte $04,$02,$73,$20,$F8
+
+    .byte $05,$02,$74,$20,$00
+    .byte $05,$02,$75,$20,$08
+    .byte $05,$02,$76,$20,$10
+    .byte $05,$02,$77,$20,$18
+
+    .byte $04,$0A,$7C,$20,$E8
+    .byte $04,$0A,$7D,$20,$F0
+
+    .byte $05,$0A,$7C,$20,$07
+    .byte $05,$0A,$7D,$20,$0F
     .byte $80

@@ -33,7 +33,8 @@
     SamusSuitlessGFX7: .incbin "common_chr/samus_suitless_7.chr" ; 1
     SamusSuitlessGFXSpider: .incbin "common_chr/samus_suit_spider.chr" ; 1 (placeholder)
 
-    ItemsGFX: .incbin "common_chr/items.chr" ; 1
+    IrizarGFX: .incbin "common_chr/irizar.chr" ; 1
+    BusscarGFX: .incbin "common_chr/busscar.chr" ; 1
 
     BrinstarSPR: .incbin "data/brinstar/sprite_tiles.chr" ; 1
     NorfairSPR: .incbin "data/norfair/sprite_tiles.chr" ; 1

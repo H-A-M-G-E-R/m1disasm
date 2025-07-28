@@ -1002,13 +1002,16 @@ MotherBrain_9E22_CollideWithSamus:
     
     ; samus is touching mother brain
     ; deal 20 damage to samus
-    lda #$00
-    sta HealthChange
-    lda #$02
-    sta HealthChange+1.b
-    lda #$38
-    sta SamusIsHit
-    jmp CommonJump_SubtractHealth
+    ;lda #$00
+    ;sta HealthChange
+    ;lda #$02
+    ;sta HealthChange+1.b
+    ;lda #$38
+    ;sta SamusIsHit
+    ;jmp CommonJump_SubtractHealth
+    lda #$01
+    sta MotherBrainIsHit
+    rts
 
 ;-------------------------------------------------------------------------------
 MotherBrain_9E22:

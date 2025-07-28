@@ -1272,7 +1272,7 @@ MoreInit:
     lda #$01                        ;
     jsr WriteAreaPal                ;Write area palette 0.
     stx SpareMem30                  ;Not accessed by game.
-    inc MainRoutine                 ;SamusInit is next routine to run.
+    jsr SamusInit                   ;SamusInit is next routine to run.
     jmp ScreenOn
 
 ; CopyAreaPointers
@@ -1325,8 +1325,8 @@ SamusInit:
         lda #$26
     .endif
     sta Timer3
-    jsr IntroMusic                  ;($CBFD)Start the intro music.
-    ldy #sa_FadeIn                  ;
+    jsr StartMusic                  ;($CBFD)Start the intro music.
+    ldy #sa_Begin                   ;
     sty ObjAction                   ;Set Samus status as fading onto screen.
     lda #_id_Palette13+1.b
     sta ObjectCounter
@@ -1363,14 +1363,28 @@ SamusInit:
     sta Health+1
     lda MaxHealth
     sta Health
-RTS_C92A:
-    rts
+
+    jsr SelectSamusPal
 
 ;------------------------------------[ Main game engine ]--------------------------------------------
 
 GameEngine:
-    jsr ScrollDoor                  ;($E1F1)Scroll doors, if needed. 2 routine calls scrolls-->
-    jsr ScrollDoor                  ;($E1F1)twice as fast as 1 routine call.
+    jsr ScrollDoor                  ;($E1F1)Scroll doors, if needed. 16 routine calls scrolls-->
+    jsr ScrollDoor                  ;($E1F1)16 times as fast as 1 routine call.
+    jsr ScrollDoor
+    jsr ScrollDoor
+    jsr ScrollDoor
+    jsr ScrollDoor
+    jsr ScrollDoor
+    jsr ScrollDoor
+    jsr ScrollDoor
+    jsr ScrollDoor
+    jsr ScrollDoor
+    jsr ScrollDoor
+    jsr ScrollDoor
+    jsr ScrollDoor
+    jsr ScrollDoor
+    jsr ScrollDoor
 
     lda NARPASSWORD                 ;
     beq LC945                           ;
@@ -1411,6 +1425,7 @@ GameEngine:
         jmp SetTimer                    ;($C4AA)Set delay timer and run game over routine.
     LC97B:
     inc MainRoutine                 ;Next routine to run is GameOver.
+RTS_C92A:
     rts
 
 ;----------------------------------------[ Update age ]----------------------------------------------
@@ -2029,7 +2044,7 @@ LCC5B:
         lda #sa_Jump                    ;
         sta ObjAction                   ;Set Samus status as jumping.
     LCC6E:
-    lda #$04                        ;Prepare to set animation delay to 4 frames.
+    lda #$01                        ;Prepare to set animation delay to 1 frame.
     jsr SetSamusData                ;($CD6D)Set Samus control data and animation.
     lda ObjAction                   ;
     cmp #sa_Door                    ;Is Samus inside a door, dead or pointing up and jumping?-->
@@ -2130,7 +2145,7 @@ LCCC2:
         jsr LCF88
         jsr LD09C
         jsr LCF2E
-        lda #$02
+        lda #$01
         bne SetSamusData       ; branch always
     samL07:
     lda SamusOnElevator
@@ -2149,7 +2164,7 @@ LCCC2:
     bpl samL10      ; branch if JUMP not pressed
     LCD40:
         jsr SetSamusJump
-        lda #$12
+        lda #$FF
         sta SamusHorzSpeedMax
         jmp LCD6B
 
@@ -2171,7 +2186,7 @@ LCCC2:
         sta SamusDir
         jsr SetSamusRun
     LCD6B:
-    lda #$03
+    lda #$01
     ; fallthrough
 
 ;---------------------------------------[ Set Samus data ]-------------------------------------------
@@ -2675,7 +2690,7 @@ Lx021:
     Lx022:
     jsr StopHorzMovement
 Lx023:
-    lda #$03
+    lda #$01
     jmp SetSamusData                ;($CD6D)Set Samus control data and animation.
 
 LD055:
@@ -2795,38 +2810,38 @@ SamusRoll:
     and #BUTTON_DOWN     ; DOWN pressed?
     bne Lx032     ; branch if yes
     ;break out of "ball mode"
-        lda ObjRadY
-        cmp #$07
-        bne Lx032
-        pha
-        lda ObjY
-        sec
-        sbc #$07
-        and #$07
-        clc
-        adc #$07
-        sta ObjRadY
-        jsr CheckMoveUp
-        bcc +     ; branch if not possible to stand up
-        lda ObjRadY
-        adc #$07
-        sta ObjRadY
-        jsr CheckMoveUp
-        bcc +
-        pla
-        sta ObjRadY
-        ldx #$00
-        jsr StoreObjectPositionToTemp
-        stx Temp05_SpeedX
-        lda #-$0B
-        sta Temp04_SpeedY
-        jsr ApplySpeedToPosition
-        jsr LoadObjectPositionFromTemp
+        ;lda ObjRadY
+        ;cmp #$07
+        ;bne Lx032
+        ;pha
+        ;lda ObjY
+        ;sec
+        ;sbc #$07
+        ;and #$07
+        ;clc
+        ;adc #$07
+        ;sta ObjRadY
+        ;jsr CheckMoveUp
+        ;bcc +     ; branch if not possible to stand up
+        ;lda ObjRadY
+        ;adc #$07
+        ;sta ObjRadY
+        ;jsr CheckMoveUp
+        ;bcc +
+        ;pla
+        ;sta ObjRadY
+        ;ldx #$00
+        ;jsr StoreObjectPositionToTemp
+        ;stx Temp05_SpeedX
+        ;lda #-$0B
+        ;sta Temp04_SpeedY
+        ;jsr ApplySpeedToPosition
+        ;jsr LoadObjectPositionFromTemp
         jsr StopHorzMovement
         lda #ObjAnim_06 - ObjectAnimIndexTbl.b
         sta ObjAnimIndex
         jsr StopVertMovement
-        lda #$04
+        lda #$01
         bne LD144 ; branch always
     +
         pla
@@ -2859,7 +2874,7 @@ SamusRoll:
         bne Lx034
             jsr ClearHorzData
         Lx034:
-        lda #$02
+        lda #$01
     LD144:
     jmp SetSamusData                ;($CD6D)Set Samus control data and animation.
 
@@ -2944,7 +2959,7 @@ SamusPntUp:
         lda #sa_PntJump
         sta ObjAction
     Lx041:
-    lda #$04
+    lda #$01
     jsr SetSamusData                ;($CD6D)Set Samus control data and animation.
     lda ObjAction
     jsr ChooseRoutine
@@ -4574,7 +4589,7 @@ CheckOneItem:
     bcs Exit9                       ;Carry clear=Samus touching power up. Carry set=not touching.
 
     tay                             ;Store power-up type byte in Y.
-    jsr PowerUpMusic                ;($CBF9)Power up obtained! Play power up music.
+    ;jsr PowerUpMusic                ;($CBF9)Power up obtained! Play power up music.
     ldx ItemIndex                   ;X=index to power up item slot.
     iny                             ;Is item obtained a beam weapon?-->
     beq LDBC6                       ;If so, branch.
@@ -4599,7 +4614,7 @@ CheckOneItem:
     sta SamusGear                   ;Update Samus gear with new beam weapon.
 LDBE3:
     lda #$FF                        ;
-    sta PowerUpDelayFlag            ;Initiate delay while power up music plays.
+    ;sta PowerUpDelayFlag            ;Initiate delay while power up music plays.
     sta PowerUpType,x               ;Clear out item data from RAM.
     ldy ItemRoomMusicStatus         ;Is Samus not in an item room?-->
     beq LDBF1                       ;If not, branch.
@@ -5086,15 +5101,15 @@ ObjDrawFrame:
     GotoClearObjectCntrl:
         jmp ClearObjectCntrl            ;($DF2D)Clear object control byte.
     LDE56:
-        cmp #_id_ObjFrame07.b           ;Is the animation of Samus facing forward or exploding?-->
-        beq +
-        cmp #_id_ObjFrame35.b
-        bne LDE60                           ;If not, branch.
+    ;    cmp #_id_ObjFrame07.b           ;Is the animation of Samus facing forward or exploding?-->
+    ;    beq +
+    ;    cmp #_id_ObjFrame35.b
+    ;    bne LDE60                           ;If not, branch.
 
-    +
-    lda ObjectCntrl                 ;Ensure object mirroring bit is clear so Samus'-->
-    and #~OAMDATA_HFLIP.b            ;sprite appears properly when going up and down-->
-    sta ObjectCntrl                 ;elevators.
+    ;+
+    ;lda ObjectCntrl                 ;Ensure object mirroring bit is clear so Samus'-->
+    ;and #~OAMDATA_HFLIP.b            ;sprite appears properly when going up and down-->
+    ;sta ObjectCntrl                 ;elevators.
 
 LDE60:
     lda #:ObjFramePtrTable.b
@@ -5395,7 +5410,7 @@ VerticalRoomCentered: ; ($E21B)
 ;This function is called once after door scrolling is complete.
 
 DoOneDoorScroll:
-    ldy #$20                        ;Set DoorDelay to 32 frames(comming out of door).
+    ldy #$38                        ;Set DoorDelay to 56 frames(comming out of door).
     lda SamusDoorDir
     lsr
     beq +
@@ -5482,6 +5497,7 @@ LavaAndMoveCheck:
 
     ;Samus is in lava.
     ;Don't push Samus from lava damage.
+    /*
     sty SamusKnockbackDir
     ;($F323)Clear any pending health changes to Samus.
     jsr ClearHealthChange
@@ -5513,6 +5529,7 @@ LavaAndMoveCheck:
     lda #$07
     sta HealthChange
     jsr SubtractHealth
+    */
 @endIf_C:
     ;Prepare to indicate Samus is in lava.
     ldy #$00
@@ -5731,8 +5748,8 @@ VertAccelerate:
     lda SamusAccelY
     bne @dontStartFalling
 
-    ;Set Samus maximum running speed. (1.5 px)
-    lda #$18
+    ;Set Samus maximum running speed. (15.9375 px)
+    lda #$FF
     sta SamusHorzSpeedMax
     ;Check if Samus is obstructed downwards on y room positions divisible by 8(every 8th pixel).
     lda ObjY
@@ -5781,7 +5798,7 @@ VertAccelerate:
         bne @endIf_B ;Branch always.
     @else_B:
         ;Check if maximum downward speed has been reached. If so, prepare to set maximum speed.
-        cmp #$05                        ;Has maximum downward speed been reached?-->
+        cmp #$7F                        ;Has maximum downward speed been reached?-->
     @endIf_B:
     bcc @endIf_C                           ;If not, branch.
         ;Max vertical speed reached or exceeded. Adjust Samus vertical speed to max.
@@ -5804,15 +5821,15 @@ VertAccelerate:
 
 HorzAccelerate: ;($E3E5)
     ; store max speed sub-pixels to temp
-    lda SamusHorzSpeedMax
-    jsr Amul16       ; * 16
-    sta $00
-    sta $02
+    ;lda SamusHorzSpeedMax
+    ;jsr Amul16       ; * 16
+    ;sta $00
+    ;sta $02
     ; store max speed pixels to temp
-    lda SamusHorzSpeedMax
-    jsr Adiv16       ; / 16
-    sta $01
-    sta $03
+    ;lda SamusHorzSpeedMax
+    ;jsr Adiv16       ; / 16
+    ;sta $01
+    ;sta $03
 
     ; apply x acceleration to x speed
     ; and save x speed in x and y
@@ -5848,17 +5865,17 @@ HorzAccelerate: ;($E3E5)
     ;temp $02-$03 now contain absolute max x speed
 
     ; branch if absolute x speed is less than than absolute max x speed
-    cpx $02
-    tya
-    sbc $03
-    bcc Lx149
+    ;cpx $02
+    ;tya
+    ;sbc $03
+    ;bcc Lx149
         ; absolute x speed is greater than than absolute max x speed
         ; cap signed x speed to signed max x speed
-        lda $00
-        sta SamusSpeedSubPixelX
-        lda $01
-        sta ObjSpeedX
-    Lx149:
+    ;    lda $00
+    ;    sta SamusSpeedSubPixelX
+    ;    lda $01
+    ;    sta ObjSpeedX
+    ;Lx149:
 
     ; apply sub-pixel speed to sub-pixel position
     lda SamusSubPixelX
@@ -8457,9 +8474,10 @@ CollisionDetectionEnemy_ReactToCollisionWithSamus:
     
     jsr LF2E8
     ;branch if screw attack is active.
-    jsr IsScrewAttackActive         
-    ldy #$00
-    bcc Lx289
+    ;jsr IsScrewAttackActive         
+    ;ldy #$00
+    ;bcc Lx289
+    jmp Lx289
     
     ; screw attack is not active
     ; exit if enemy is frozen
@@ -8526,10 +8544,10 @@ CollisionDetectionMellow_ReactToCollisionWithSamus:
     ; exit if collision didn't happen
     bcs RTS_X290
     ; branch if screw attack is not active (samus got hit)
-    jsr IsScrewAttackActive
-    ldy #$00
-    lda #$C0
-    bcs Lx287
+    ;jsr IsScrewAttackActive
+    ;ldy #$00
+    ;lda #$C0
+    ;bcs Lx287
     ; screw attack was active
 CollisionDetectionMellow_Hit:
     ; set mellow is hit flag
@@ -8568,31 +8586,31 @@ CollisionDetectionFireball_F2ED:
     lda Temp10_DistHi
     ora EnIsHit,x
     sta EnIsHit,x
-    tya
-    pha
-    jsr IsScrewAttackActive         ;($CD9C)Check if screw attack active.
-    pla
-    tay
-    bcc RTS_X294
-    lda #$80
-    sta SamusHurt010F
-    jsr GetEnemyIsHitFlags
-    jsr SetSamusIsHitFlags
+    ;tya
+    ;pha
+    ;jsr IsScrewAttackActive         ;($CD9C)Check if screw attack active.
+    ;pla
+    ;tay
+    ;bcc RTS_X294
+    ;lda #$80
+    ;sta SamusHurt010F
+    ;jsr GetEnemyIsHitFlags
+    ;jsr SetSamusIsHitFlags
 
     ; apply fireball damage
-    stx PageIndex
+    ;stx PageIndex
 
-    lda EnData0A,x
-    lsr
-    tax
-    lda EnemyFireballDamageTbl,x
-    jsr Amul16
-    sta HealthChange
-    lda EnemyFireballDamageTbl,x
-    jsr Adiv16
-    sta HealthChange+1.b
+    ;lda EnData0A,x
+    ;lsr
+    ;tax
+    ;lda EnemyFireballDamageTbl,x
+    ;jsr Amul16
+    ;sta HealthChange
+    ;lda EnemyFireballDamageTbl,x
+    ;jsr Adiv16
+    ;sta HealthChange+1.b
 
-    ldx PageIndex
+    ;ldx PageIndex
 RTS_X294:
     rts
 
@@ -10256,6 +10274,7 @@ UpdateSkreeProjectile:
     jsr ObjDrawFrame
     
     ; exit if samus is in i-frames
+    /*
     lda SamusBlink
     bne @endIf_A
     ; exit if samus is not touching the skree projectile
@@ -10275,6 +10294,7 @@ UpdateSkreeProjectile:
         sta HealthChange
         jsr SubtractHealth              ;($CE92)
     @endIf_A:
+    */
     pla
     tax
 @RTS:
@@ -10707,6 +10727,9 @@ TileBlastAnimIndexTable:
 UpdateTileBlast_Respawn:
     lda #$00
     sta TileBlastRoutine,x       ; tile = respawned
+    rts
+
+/*
     lda TileBlastWRAMPtr,x
     clc
     adc #$21
@@ -10741,6 +10764,7 @@ UpdateTileBlast_Respawn:
     lda #$50
     sta HealthChange
     jmp SubtractHealth
+*/
 
 GetTileBlastFramePtr:
     lda TileBlastAnimFrame,x

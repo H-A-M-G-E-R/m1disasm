@@ -4501,7 +4501,7 @@ InitBrinstarGFX:
     jsr LoadAreaGFX
     .byte BrinstarBG/$400
     .byte BrinstarBG/$400+2
-    .byte ItemsGFX/$400
+    .byte IrizarGFX/$400
     .byte BlankSPR/$400
     .byte BrinstarSPR/$400
 
@@ -4509,7 +4509,7 @@ InitNorfairGFX:
     jsr LoadAreaGFX
     .byte NorfairBG/$400
     .byte NorfairBG/$400+2
-    .byte ItemsGFX/$400
+    .byte IrizarGFX/$400
     .byte BlankSPR/$400
     .byte NorfairSPR/$400
 
@@ -4517,7 +4517,7 @@ InitTourianGFX:
     jsr LoadAreaGFX
     .byte TourianBG/$400
     .byte TourianBG/$400+2
-    .byte ItemsGFX/$400
+    .byte IrizarGFX/$400
     .byte BlankSPR/$400
     .byte TourianSPR/$400
 
@@ -4525,7 +4525,7 @@ InitKraidGFX:
     jsr LoadAreaGFX
     .byte KraidBG/$400
     .byte KraidBG/$400+2
-    .byte ItemsGFX/$400
+    .byte IrizarGFX/$400
     .byte BlankSPR/$400
     .byte KraidSPR/$400
 
@@ -4533,7 +4533,7 @@ InitRidleyGFX:
     jsr LoadAreaGFX
     .byte RidleyBG/$400
     .byte RidleyBG/$400+2
-    .byte ItemsGFX/$400
+    .byte IrizarGFX/$400
     .byte BlankSPR/$400
     .byte RidleySPR/$400
 
@@ -4551,7 +4551,13 @@ LoadAreaGFX:
     iny
     lda ($07),y
     sta CHRBank3
+    lda JustInBailey
     iny
+    lda JustInBailey
+    beq +
+        lda #BusscarGFX/$400.b
+        sta CHRBank3
+    +
     lda ($07),y
     sta CHRBank4
     iny

@@ -1069,7 +1069,7 @@ SamusEnterDoor:
 SetDoorEntryInfo:
     txa                             ;X contains door scroll status and is transferred to A.
     jsr SamusInDoor                 ;($8B74)Indicate Samus just entered a door.
-    ldy #$12                        ;Set DoorDelay to 18 frames(going into door).
+    ldy #$30                        ;Set DoorDelay to 48 frames(going into door).
     lda SamusDoorDir
     lsr
     beq +

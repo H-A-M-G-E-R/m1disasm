@@ -50,5 +50,5 @@ SpecItmsTbl:
     .word $FFFF
     @@x08:
         .byte $08, $FF
-        .byte $02, $08, $BE
+        .byte $02, $08, $A7
         .byte $00
