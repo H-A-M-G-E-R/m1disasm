@@ -8488,7 +8488,29 @@ Lx287:
     lda SamusHurt010F
     cmp #$C0
     beq +
-        jmp LF306
+        ; apply enemy base damage
+        stx PageIndex
+
+        lda EnSpecialAttribs,x
+        php
+        ; X = EnType * 2
+        lda EnType,x
+        asl
+        tax
+        ; increment X if enemy is tough
+        plp
+        bpl +
+        inx
+        +
+        lda EnemyDamageTbl,x
+        jsr Amul16
+        sta HealthChange
+        lda EnemyDamageTbl,x
+        jsr Adiv16
+        sta HealthChange+1.b
+
+        ldx PageIndex
+        rts
     +
     lda MellowDamage
     sta HealthChange
@@ -8556,31 +8578,21 @@ CollisionDetectionFireball_F2ED:
     sta SamusHurt010F
     jsr GetEnemyIsHitFlags
     jsr SetSamusIsHitFlags
-LF306:
-    ; apply enemy base damage
-    txa
-    pha
 
-    lda EnSpecialAttribs,x
-    php
-    ; X = EnType * 2
-    lda EnType,x
-    asl
+    ; apply fireball damage
+    stx PageIndex
+
+    lda EnData0A,x
+    lsr
     tax
-    ; increment X if enemy is tough
-    plp
-    bpl +
-    inx
-    +
-    lda EnemyDamageTbl,x
+    lda EnemyFireballDamageTbl,x
     jsr Amul16
     sta HealthChange
-    lda EnemyDamageTbl,x
+    lda EnemyFireballDamageTbl,x
     jsr Adiv16
     sta HealthChange+1.b
 
-    pla
-    tax
+    ldx PageIndex
 RTS_X294:
     rts
 
@@ -9872,12 +9884,9 @@ Lx365:
     bcs Lx367
     lda EnStatus,x
     beq Exit20
-    ldy #$00
     lda EnData0A,x
     lsr
-    beq Lx366
-        iny
-    Lx366:
+    tay
     lda AreaFireballSplatterAnimIndex,y
     jsr InitEnAnimIndex
     jsr LF518

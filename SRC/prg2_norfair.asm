@@ -115,7 +115,7 @@ AreaExplosionAnimIndex:
 AreaFireballFallingAnimIndex:
     .byte EnAnim_DragonFireballDownRight - EnAnimTbl, EnAnim_DragonFireballDownLeft - EnAnimTbl
 AreaFireballSplatterAnimIndex:
-    .byte EnAnim_DragonFireballSplatter - EnAnimTbl, EnAnim_PolypRockShatter - EnAnimTbl
+    .byte EnAnim_DragonFireballSplatter - EnAnimTbl, EnAnim_PolypRockShatter - EnAnimTbl, EnAnim_PolypRockShatter - EnAnimTbl, EnAnim_PolypRockShatter - EnAnimTbl
 AreaMellowAnimIndex:
     .byte EnAnim_Mella - EnAnimTbl
 
@@ -329,6 +329,10 @@ EnemyFireballMovementPtrTable:
     .word EnemyFireballMovement1
     .word EnemyFireballMovement2
     .word EnemyFireballMovement3
+
+; Referenced using EnData0A / 2
+EnemyFireballDamageTbl:
+    .byte $10, $10, $10, $10
 
 TileBlastFramePtrTable:
     .word TileBlastFrame00
