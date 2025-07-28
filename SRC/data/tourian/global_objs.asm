@@ -4,7 +4,7 @@ SpecItmsTbl:
     .word @y04
     @@x01:
         .byte $01, $FF
-        .byte $04, $8F
+        .byte $04, $FF
         .byte $00
 @y04:
     .byte $04
