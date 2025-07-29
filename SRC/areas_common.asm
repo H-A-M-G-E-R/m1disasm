@@ -1076,10 +1076,6 @@ SetDoorEntryInfo:
         ldy #$12+8
     +
     sty DoorDelay
-    lda ObjAction                   ;Keep Samus action so she will appear the same comming-->
-    sta ObjectCounter               ;out of the door as she did going in.
-    lda #$05                        ;
-    sta ObjAction                   ;Indicate Samus is in a door.
 RTS_8B6C:
     rts
 

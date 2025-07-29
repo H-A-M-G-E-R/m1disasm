@@ -1976,6 +1976,10 @@ UpdateSamus:
 
 ;Find proper Samus handler routine.
 GoSamusHandler: ;($CC1A)
+    lda DoorEntryStatus
+    beq @notInDoor
+        jmp SamusDoor
+    @notInDoor:
     lda ObjAction                   ;
     bmi SamusStand                  ;Branch if Samus is standing.
     jsr ChooseRoutine               ;($C27C)Goto proper Samus handler routine.
@@ -1984,7 +1988,7 @@ GoSamusHandler: ;($CC1A)
         .word SamusJump                 ;($D002)Jumping.
         .word SamusRoll                 ;($D0E1)Rolling.
         .word SamusPntUp                ;($D198)Pointing up.
-        .word SamusDoor                 ;($D3A8)Inside door while screen scrolling.
+        .word ExitSub                   ;Was: ($D3A8)Inside door while screen scrolling.
         .word SamusJump                 ;($D002)Jumping while pointing up.
         .word SamusSpiderIdle
         .word SamusSpiderRoll
@@ -2032,7 +2036,7 @@ LCC5B:
     lda #$04                        ;Prepare to set animation delay to 4 frames.
     jsr SetSamusData                ;($CD6D)Set Samus control data and animation.
     lda ObjAction                   ;
-    cmp #sa_Door                    ;Is Samus inside a door, dead or pointing up and jumping?-->
+    cmp #sa_05                      ;Is Samus action not in this table?-->
     bcs RTS_CC9X                           ;If so, branch to exit.
     jsr ChooseRoutine               ;Select routine below.
         .word ExitSub                   ;($C45C)Rts.
@@ -3274,8 +3278,6 @@ SamusDoor:
         sta KraidRidleyPresent
         beq Lx050     ; branch always
 Lx052:
-    lda ObjectCounter
-    sta ObjAction
     lda #$00
     sta SamusDoorData
     sta DoorEntryStatus
