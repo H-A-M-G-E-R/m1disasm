@@ -8859,15 +8859,19 @@ UpdateEnemy_UpdateEnData05Bit6:
 
 ;---------------------------------------------
 UpdateEnemy_Resting: ;($F3BE)
-    ; Branch if bit 6 is clear (30FPS)
-    lda EnData05,x
-    asl
-    bpl +
     ; branch if anim index != #$FF (init enemy so it won't look glitched sometimes the first frame it spawns)
     lda EnsExtra.0.animIndex,x
     cmp #$FF
-    bne Lx299
+    bne +
+        ; force enemy animation to update
+        sta EnsExtra.0.resetAnimIndex,x
+        beq ++ ; branch always
     +
+    ; Branch if bit 6 is set (30FPS)
+    lda EnData05,x
+    asl
+    bmi Lx299
+    ++
         lda #$00
         sta EnsExtra.0.jumpDsplcmnt,x
         sta EnMovementInstrIndex,x
