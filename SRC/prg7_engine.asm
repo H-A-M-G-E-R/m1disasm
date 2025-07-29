@@ -6618,11 +6618,13 @@ EnemyCheckMoveDown:
 
 LE783:
     sta Temp02_DistToCenterY
+    ; redundant
     lda #$08
-    sta $04
+    sta Temp04_NumBlocksToCheck
+
     jsr StoreEnemyPositionToTemp
     lda EnsExtra.0.radX,x
-    jmp LE7BD
+    jmp CheckMoveVertical
 
 StoreEnemyPositionToTemp:
     lda EnX,x
@@ -6656,7 +6658,7 @@ Lx197:
     jsr StoreObjectPositionToTemp
     lda ObjRadX,x
 
-LE7BD:
+CheckMoveVertical:
     bne Lx198
         ; Skip collision if X radius = 0
         sec
@@ -6812,6 +6814,7 @@ ObjectCheckMoveLeft:
     lda #$01
     sta CollisionDirection
     ldx PageIndex
+    ; X radius + 8 to check block directly to the left
     lda ObjRadX,x
     clc
     adc #$08
@@ -6819,6 +6822,7 @@ ObjectCheckMoveLeft:
 
 ObjectCheckMoveRight:
     ldx PageIndex
+    ; check block directly to the right
     lda #$00
     sta CollisionDirection
     sec
@@ -6830,18 +6834,22 @@ ObjectCheckMoveHorizontalBranch:
     jsr StoreObjectPositionToTemp
     ldy ObjRadY,x
 
-CheckMoveVertical:
+CheckMoveHorizontal:
     bne Lx208
+        ; Skip collision if Y radius = 0
         sec
         rts
     Lx208:
     sty Temp02_DistToCenterY
     ldx #$00
+    ; A = top boundary
     lda Temp08_PositionY
     sec
     sbc Temp02_DistToCenterY
+     ; check for top remainder
     and #$07
     beq Lx209
+        ; there's a top remainder
         inx
     Lx209:
     jsr GetNumBlocksToCheck
@@ -6849,7 +6857,7 @@ CheckMoveVertical:
     jsr CalculateFirstBGCollisionPoint
     ldx #$08 ; Temp06_NextPointYOffset = 8
     ldy #$00 ; Temp07_NextPointXOffset = 0
-    lda $01
+    lda Temp01_CollisionPointXMod8
     jmp LE7DE
 
 StoreObjectPositionToTemp:
@@ -6907,6 +6915,7 @@ EnemyCheckMoveLeft:
     lda #$01
     sta CollisionDirection
     ldx PageIndex
+    ; X radius + 8 to check block directly to the left
     lda EnsExtra.0.radX,x
     clc
     adc #$08
@@ -6914,6 +6923,7 @@ EnemyCheckMoveLeft:
 
 EnemyCheckMoveRight:
     ldx PageIndex
+    ; check block directly to the right
     lda #$00
     sta CollisionDirection
     sec
@@ -6923,7 +6933,7 @@ EnemyCheckMoveHorizontalBranch:
     sta Temp03_DistToCenterX
     jsr StoreEnemyPositionToTemp
     ldy EnsExtra.0.radY,x
-    jmp CheckMoveVertical
+    jmp CheckMoveHorizontal
 
 ;----------------------------------------------
 ; Like ApplySpeedToPosition but no bounds checking (wraps around)
