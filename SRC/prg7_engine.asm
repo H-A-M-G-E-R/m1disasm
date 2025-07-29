@@ -7301,14 +7301,18 @@ GetEnemyData:
         lda ($00),y                     ;Get enemy type.
         jsr GetEnemyType                ;($EB28)Load data about enemy.
         ldy #$02                        ;
-        lda ($00),y                     ;Get enemy initial position(%yyyyxxxx).
+        lda ($00),y                     ;Get enemy initial Y position.
+        sta EnY,x                       ;
+        iny
+        lda ($00),y                     ;Get enemy initial X position.
+        sta EnX,x                       ;
         jsr LEB4D
         pha
     Lx225:
         pla
 Lx226:
     ;Number of bytes to add to ptr to find next room item.
-    lda #$03
+    lda #$04
     rts
 
 GetEnemyType: ; ($EB28)
@@ -7336,14 +7340,6 @@ GetEnemyType: ; ($EB28)
     rts
 
 LEB4D:
-    tay                             ;Save enemy position data in Y.
-    and #$F0                        ;Extract Enemy y position.
-    ora #$08                        ;Add 8 pixels to y position so enemy is always on screen.
-    sta EnY,x                ;Store enemy y position.
-    tya                             ;Restore enemy position data.
-    jsr Amul16                      ;*16 to extract enemy x position.
-    ora #$0C                        ;Add 12 pixels to x position so enemy is always on screen.
-    sta EnX,x                ;Store enemy x position.
     lda #enemyStatus_Resting        ;
     sta EnsExtra.0.status,x                  ;Indicate object slot is taken.
     lda #$00
@@ -7591,18 +7587,14 @@ LoadPipeBugHole:
     ; set position
     iny
     lda ($00),y
-    tay
-    and #$F0
-    ora #$08
     sta PipeBugHoleY,x
-    tya
-    jsr Amul16       ; * 16
-    ora #$00
+    iny
+    lda ($00),y
     sta PipeBugHoleX,x
     jsr GetNameTableAtScrollDir     ;($EB85)
     sta PipeBugHoleHi,x
 @exit:
-    lda #$03
+    lda #$04
     bne Lx237
 
 OnNameTable0:
@@ -7894,19 +7886,9 @@ SpawnPowerUp:
     sta PowerUpType,x
     ; load x and y screen position of item.
     lda ($00),y
-    ;Save position data for later processing.
-    tay
-    ;Extract Y coordinate. + 8 to find Y coordinate center.
-    and #$F0
-    ora #$08
-    ;Store center Y coord
     sta PowerUpYCoord,x
-    ;Reload position data.
-    tya
-    ;Move lower 4 bits to upper 4 bits. + 8 to find X coordinate center.
-    jsr Amul16
-    ora #$08
-    ;Store center X coord
+    iny
+    lda ($00),y
     sta PowerUpXCoord,x
     ;($EB85)Get name table to place item on.
     ;Store name table Item is located on.
@@ -7914,7 +7896,7 @@ SpawnPowerUp:
     sta PowerUpNameTable,x
 @exit:
     ;Get next data byte(Always #$00).
-    lda #$03
+    lda #$04
     bne SpawnMapEnemy@exit ;Branch always to exit handler routines.
 
 PrepareItemID:
@@ -8021,7 +8003,7 @@ SpawnElevator:
 
 SpawnCannon:
     jsr GotoSpawnCannonRoutine
-    lda #$02
+    lda #$03
 SpawnCannon_exit:
     jmp ChooseSpawningRoutine        ;($EDD6)Exit handler routines.
 

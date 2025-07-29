@@ -837,13 +837,9 @@ SpawnCannonRoutine:
     ; set Y and X
     iny
     lda ($00),y
-    pha
-    and #$F0
-    ora #$07
     sta Cannons.0.y,x
-    pla
-    jsr Amul16_
-    ora #$07
+    iny
+    lda ($00),y
     sta Cannons.0.x,x
     
     ; set nametable for edge of the screen that scrolls in

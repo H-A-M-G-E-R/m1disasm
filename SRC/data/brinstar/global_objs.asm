@@ -8,29 +8,29 @@ SpecItmsTbl:
         .byte $00
     @@x0F:
         .byte $0F, $FF
-        .byte $02, $05, $37
+        .byte $02, $05, $38, $78
         .byte $00
 @y03:
     .byte $03
     .word @y05
     @@x18:
         .byte $18, @@x1B - @@x18
-        .byte $02, $09, $67
+        .byte $02, $09, $68, $78
         .byte $00
     @@x1B:
         .byte $1B, $FF
-        .byte $02, $08, $87
+        .byte $02, $08, $88, $78
         .byte $00
 @y05:
     .byte $05
     .word @y07
     @@x07:
         .byte $07, @@x19 - @@x07
-        .byte $02, $02, $37
+        .byte $02, $02, $38, $78
         .byte $00
     @@x19:
         .byte $19, $FF
-        .byte $02, $00, $37
+        .byte $02, $00, $38, $78
         .byte $00
 @y07:
     .byte $07
@@ -41,14 +41,14 @@ SpecItmsTbl:
         .byte $00
     @@x19:
         .byte $19, $FF
-        .byte $02, $08, $87
+        .byte $02, $08, $88, $78
         .byte $00
 @y09:
     .byte $09
     .word @y0B
     @@x13:
         .byte $13, @@x15 - @@x13
-        .byte $02, $07, $37
+        .byte $02, $07, $38, $78
         .byte $00
     @@x15:
         .byte $15, $FF
@@ -59,7 +59,7 @@ SpecItmsTbl:
     .word @y0E
     @@x12:
         .byte $12, @@x16 - @@x12
-        .byte $02, $09, $67
+        .byte $02, $09, $68, $78
         .byte $00
     @@x16:
         .byte $16, $FF
@@ -70,11 +70,11 @@ SpecItmsTbl:
     .word @y12
     @@x02:
         .byte $02, @@x09 - @@x02
-        .byte $02, $04, $96
+        .byte $02, $04, $98, $68
         .byte $00
     @@x09:
         .byte $09, $FF
-        .byte $02, $08, $12
+        .byte $02, $08, $18, $28
         .byte $00
 @y12:
     .byte $12
