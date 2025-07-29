@@ -69,7 +69,7 @@ RESET:
     txs                             ;S points to end of stack page
 
     lda #$00
-    jsr MMCWriteReg3                ;($C4FA)Swap to PRG bank #0 at $8000
+    jsr MMCWritePrgBank                ;($C4FA)Swap to PRG bank #0 at $8000
 
     lda #$80                        ;
     sta $A001                       ;Enable MMC3 PRG RAM
@@ -367,10 +367,10 @@ NMI:
     lda CurrentBank
     pha
     lda #:SoundEngine.b
-    jsr MMCWriteReg3
+    jsr MMCWritePrgBank
     jsr SoundEngine
     pla
-    jsr MMCWriteReg3
+    jsr MMCWritePrgBank
     ;($C97E)Update Samus' age.
     jsr UpdateAge
     ; NMI = finished.
@@ -1182,7 +1182,7 @@ CheckSwitch:
     dey
     sty CurrentMainBank
     ;Switch bank to Y
-    jsr MMCWriteReg3
+    jsr MMCWritePrgBank
     ;($C510)Initialize bank switch data.
     jsr GoBankInit
     ;fallthrough
@@ -1192,7 +1192,7 @@ SetBankToMainBank:
 
 ;Loads the lower memory page with the bank specified in A.
 
-MMCWriteReg3:
+MMCWritePrgBank:
     sta CurrentBank
     ;Select bank at $8000-$9FFF
     lda #$06
@@ -1796,7 +1796,7 @@ UpdateWorld:
     jsr UpdateAllTileBlasts         ; tile de/regeneration
     jsr CollisionDetection          ; collision detection between entities.
     lda #:DisplayBar.b
-    jsr MMCWriteReg3
+    jsr MMCWritePrgBank
     jsr DisplayBar                  ;($E0C1)Display of status bar.
     jsr SetBankToMainBank
     jsr UpdateAllPipeBugHoles
@@ -4821,7 +4821,7 @@ UpdateObjAnim:
     ldy ObjAnimIndex,x
 Lx131:
     lda #:ObjectAnimIndexTbl.b
-    jsr MMCWriteReg3
+    jsr MMCWritePrgBank
     lda ObjectAnimIndexTbl,y                ;($8572)Load frame number.
     pha
     jsr SetBankToMainBank
@@ -5138,7 +5138,7 @@ ObjDrawFrame:
 
 LDE60:
     lda #:ObjFramePtrTable.b
-    jsr MMCWriteReg3
+    jsr MMCWritePrgBank
     lda ObjY,x                      ;
     sta Temp0A_PositionY            ;
     lda ObjX,x                      ;Copy object y and x room position and name table-->
@@ -6549,7 +6549,7 @@ GetRoomNum:
 
 LE733:
     lda #:WorldMap.b
-    jsr MMCWriteReg3
+    jsr MMCWritePrgBank
     lda SamusMapPosY                ;Map pos y.
     jsr Amul16                      ;($C2C5)Multiply by 16.
     sta $00                         ;Store multiplied value in $00.
