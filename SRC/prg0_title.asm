@@ -4422,27 +4422,35 @@ InitBank0:
     jsr ScreenNmiOff                ;($C45D)Waits for NMI to end then turns it off.
     jsr ClearNameTables             ;($C158)Erase name table data.
 
-    ldy #$A0                        ;
-    LC543:
-        lda IntroStarsData-1,y                     ;
-        sta IntroStarSprite-1,y                     ;Loads sprite info for stars into RAM $6E00 thru 6E9F.
-        dey                             ;
-        bne LC543                       ;
+    ;Loads sprite info for stars into RAM $6E00 thru 6E9F.
+    ldy #$A0
+    @loop:
+        lda IntroStarsData-1,y
+        sta IntroStarSprite-1,y
+        dey
+        bne @loop
 
     jsr InitTitleGFX                ;($C5D7)Load title GFX.
     jmp NMIOn                       ;($C487)Turn on VBlank interrupts.
 
 ;Brinstar memory page.
 InitBank1:
-    lda MainRoutine                 ;
-    cmp #$03                        ;Is game engine running? if so, branch.-->
-    beq LC56D                           ;Else do some housekeeping first.
-        lda #$00                        ;
-        sta MainRoutine                 ;Run InitArea routine next.
-        sta InArea                      ;Start in Brinstar.
-        sta GamePaused                  ;Make sure game is not paused.
-        jsr ClearRAM_33_DF              ;($C1D4)Clear game engine memory addresses.
-        jsr ClearSamusStats             ;($C578)Clear Samus' stats memory addresses.
+    ;Is game engine running? if so, branch.-->
+    lda MainRoutine
+    cmp #_id_GameEngine.b
+    beq LC56D
+        ;Else do some housekeeping first.
+        lda #_id_AreaInit.b
+        ;Run InitArea routine next.
+        sta MainRoutine
+        ;Start in Brinstar.
+        sta InArea
+        ;Make sure game is not paused.
+        sta GamePaused
+        ;($C1D4)Clear game engine memory addresses.
+        jsr ClearRAM_33_DF
+        ;($C578)Clear Samus' stats memory addresses.
+        jsr ClearSamusStats
         jsr LoadSamusGFX
     LC56D:
     jmp InitGenericAreaBank
@@ -4487,10 +4495,13 @@ InitTitleGFX:
     .byte TitleSPR/$400+3
 
 LoadSamusGFX:
-    ldy #SamusSuitGFX4/$400.b           ;facing forward gfx
-    lda JustInBailey                ;
-    beq LC5EB                           ;Branch if wearing suit
-        ldy #SamusSuitlessGFX4/$400.b   ;Switch to girl gfx
+    ldy #SamusSuitGFX4/$400.b
+
+    ;Branch if wearing suit
+    lda JustInBailey
+    beq LC5EB
+        ;Switch to girl gfx
+        ldy #SamusSuitlessGFX4/$400.b
     LC5EB:
     sty CHRBank2
     rts
@@ -4588,19 +4599,23 @@ LoadAreaGFX:
 ;sprite to the bottom right of the screen and uses a blank graphic for the sprite.
 
 RemoveIntroSprites:
-    ldy #>SpriteRAM.b               ;Start at address $200.
-    sty $01                         ;
-    ldy #<SpriteRAM.b               ;
-    sty $00                         ;($00) = $0200 (sprite page)
-    ldy #$5F                        ;Prepare to clear RAM $0200-$025F
-    lda #$F4                        ;
-    LC1C8:
-        sta ($00),y                     ;
-        dey                             ;Loop unitl $200 thru $25F is filled with #$F4.
-        bpl LC1C8                       ;
-    lda GameMode                    ;
-    beq Exit101                     ; branch if mode = Play.
-        jmp DecSpriteYCoord             ;($988A)Find proper y coord of sprites.
+    ;Start at address $200. ($00) = $0200 (sprite page)
+    ldy #>SpriteRAM.b
+    sty $01
+    ldy #<SpriteRAM.b
+    sty $00
+    ;Prepare to clear RAM $0200-$025F
+    ldy #$5F
+    lda #$F4
+    @loop:
+        sta ($00),y
+        dey
+        ;Loop unitl $200 thru $25F is filled with #$F4.
+        bpl @loop
+    ; branch if mode = Play.
+    lda GameMode
+    beq Exit101
+        jmp DecSpriteYCoord
 
 ;----------------------------------------[ Choose ending ]-------------------------------------------
 
@@ -4642,14 +4657,16 @@ DisplayBar:
     ldy #$00                        ;Reset data index.
     lda SpritePagePos               ;Load current sprite index.
     pha                             ;save sprite page pos.
-    tax                             ;
-    LE0C7:
-        lda DataDisplayTbl,y            ;
-        sta SpriteRAM,x               ;Stor contents of DataDisplayTbl in sprite RAM.
-        inx                             ;
-        iny                             ;
-        cpy #$28                        ;10*4. At end of DataDisplayTbl? If not, loop to-->
-        bne LE0C7                           ;load next byte from table.
+    tax
+    @loop:
+        ;Store contents of DataDisplayTbl in sprite RAM.
+        lda DataDisplayTbl,y
+        sta SpriteRAM,x
+        inx
+        iny
+        ;At end of DataDisplayTbl? If not, loop to load next byte from table.
+        cpy #10*4.b
+        bne @loop
 
 ;Display 2-digit health count.
     stx SpritePagePos               ;Save new location in sprite RAM.
