@@ -120,7 +120,7 @@ AreaMellowAnimIndex:
     .byte EnAnim_25 - EnAnimTbl
 
 ChooseEnemyAIRoutine:
-    lda EnType,x
+    lda EnsExtra.0.type,x
     jsr CommonJump_ChooseRoutine
         .word SwooperAIRoutine00 ; 00 - swooper has not seen samus
         .word SwooperAIRoutine01 ; 01 - swooper targetting samus
@@ -247,7 +247,22 @@ EnemyData0DTbl:
     .byte $01, $01, $01, $01, $01, $01, $01, $01, $28, $10, $00, $00, $00, $01, $00, $00
 
 EnemyDistanceToSamusThreshold:
-    .byte $05, $05, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $86, $00, $00
+    .byte $5 | (0 << 7)
+    .byte $5 | (0 << 7)
+    .byte $00
+    .byte $00
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00
+    .byte $00
+    .byte $00 ; unused enemy
+    .byte $00
+    .byte $00
+    .byte $00 ; unused enemy
+    .byte $00
+    .byte $6 | (1 << 7) ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
 
 EnemyInitDelayTbl:
     .byte $10, $01, $03, $03, $10, $10, $01, $08, $09, $10, $01, $10, $01, $20, $00, $00
@@ -466,7 +481,7 @@ EnemyFireballMovement3:
 ;-------------------------------------------------------------------------------
 InvalidEnemy:
     lda #$00
-    sta EnStatus,x
+    sta EnsExtra.0.status,x
     rts
 
 CommonEnemyJump_00_01_02:
@@ -512,14 +527,14 @@ StorePositionToTemp:
     sta Temp08_PositionY
     lda EnX,x
     sta Temp09_PositionX
-    lda EnHi,x
+    lda EnsExtra.0.hi,x
     sta Temp0B_PositionHi
     rts
 
 LoadPositionFromTemp:
     lda Temp0B_PositionHi
     and #$01
-    sta EnHi,x
+    sta EnsExtra.0.hi,x
     lda Temp08_PositionY
     sta EnY,x
     lda Temp09_PositionX

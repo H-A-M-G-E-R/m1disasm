@@ -103,6 +103,12 @@ JOY2                   = $4017   ;Joypad2/APU common control 2 register.
     BUTTONBIT_B           = 6
     BUTTONBIT_A           = 7
     
+    SND_CHN_SQ1           = %00000001
+    SND_CHN_SQ2           = %00000010
+    SND_CHN_TRI           = %00000100
+    SND_CHN_NOISE         = %00001000
+    SND_CHN_DMC           = %00010000
+    
     APU_4STEP             = %00000000
     APU_5STEP             = %10000000
     APU_IRQENABLE         = %00000000

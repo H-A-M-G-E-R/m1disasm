@@ -129,7 +129,7 @@ AreaMellowAnimIndex:
 
 ; Enemy AI Jump Table
 ChooseEnemyAIRoutine:
-    lda EnType,x
+    lda EnsExtra.0.type,x
     jsr CommonJump_ChooseRoutine
         .word MetroidAIRoutine ; 00 - red metroid
         .word MetroidAIRoutine ; 01 - green metroid
@@ -257,7 +257,22 @@ EnemyData0DTbl:
     .byte $01, $01, $00, $00, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
 EnemyDistanceToSamusThreshold:
-    .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+    .byte $00
+    .byte $00
+    .byte $00
+    .byte $00 ; unused enemy
+    .byte $00
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
 
 EnemyInitDelayTbl:
     .byte $01, $01, $00, $00, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
@@ -422,7 +437,7 @@ EnemyFireballMovement3:
 
 InvalidEnemy:
     lda #$00
-    sta EnStatus,x
+    sta EnsExtra.0.status,x
     rts
 
 CommonEnemyJump_00_01_02:
@@ -479,7 +494,7 @@ UpdateAllCannons:
 
 @updateIfPossible:
     stx CannonIndex
-    ldy CannonStatus,x
+    ldy Cannons.0.status,x
     bne UpdateCannon
 RTS_9B4B:
     rts
@@ -495,7 +510,7 @@ UpdateCannon:
     bne @escape
         ; escape timer is not active, behave normally
         ; exit if cannon instr list is 5 (unused?)
-        lda CannonInstrListID,x
+        lda Cannons.0.instrListID,x
         cmp #$05
         beq RTS_9B4B
         ; run instructions
@@ -510,24 +525,24 @@ UpdateCannon:
         jmp DrawCannon_Escape
 
 UpdateCannon_RunInstructions:
-    ldy CannonInstrListID,x
+    ldy Cannons.0.instrListID,x
     ; branch if instruction delay is not zero (continue running current angle instruction)
-    lda CannonInstrDelay,x
+    lda Cannons.0.instrDelay,x
     bne @endIf_A
         ; instruction delay is zero
         ; reset delay (always to 40 frames)
         lda CannonInstrDelayTable,y
-        sta CannonInstrDelay,x
+        sta Cannons.0.instrDelay,x
         ; change to next instruction
-        inc CannonInstrID,x
+        inc Cannons.0.instrID,x
     @endIf_A:
     ; decrement delay
-    dec CannonInstrDelay,x
+    dec Cannons.0.instrDelay,x
 @getInstruction:
     ; get cannon instruction from instruction list
     lda CannonInstrListsOffset,y
     clc
-    adc CannonInstrID,x
+    adc Cannons.0.instrID,x
     tay
     lda CannonInstrLists,y
     ; branch if it's an angle instruction
@@ -535,24 +550,24 @@ UpdateCannon_RunInstructions:
         cmp #$FF
         bne @shootFireball
             ; instruction is restart
-            ldy CannonInstrListID,x
+            ldy Cannons.0.instrListID,x
             ; restart to first instruction
             lda #$00
-            sta CannonInstrID,x
+            sta Cannons.0.instrID,x
             ; go back to get instuction
             beq @getInstruction ; branch always
         @shootFireball:
             ; instruction is shoot fireball
             ; change to next instruction
-            inc CannonInstrID,x
+            inc Cannons.0.instrID,x
             ; shoot
             jsr Cannon_ShootFireball
-            ldy CannonInstrListID,x
+            ldy Cannons.0.instrListID,x
             ; go back to get instuction
             jmp @getInstruction
 
     @setAngle:
-        sta CannonAngle,x
+        sta Cannons.0.angle,x
         rts
 
 Cannon_ShootFireball:
@@ -566,7 +581,7 @@ Cannon_ShootFireball:
     ldy #$60
     @loop:
         ; branch if slot is empty
-        lda EnStatus,y
+        lda EnsExtra.0.status,y
         beq @slotFound
         ; slot is not empty, check next slot
         tya
@@ -584,19 +599,19 @@ Cannon_ShootFireball:
     ; store slot
     sty PageIndex
     ; set fireball position to cannon position
-    lda CannonY,x
+    lda Cannons.0.y,x
     sta EnY,y
-    lda CannonX,x
+    lda Cannons.0.x,x
     sta EnX,y
-    lda CannonHi,x
-    sta EnHi,y
+    lda Cannons.0.hi,x
+    sta EnsExtra.0.hi,y
     ; set fireball status to active
     lda #enemyStatus_Active
-    sta EnStatus,y
+    sta EnsExtra.0.status,y
     ; init fireball animation timers
     lda #$00
     sta EnDelay,y
-    sta EnAnimDelay,y
+    sta EnsExtra.0.animDelay,y
     sta EnMovementIndex,y
     ; pop instruction byte #$FC, #$FD or #$FE
     pla
@@ -610,8 +625,8 @@ Cannon_ShootFireball:
     sta EnData05,y
     ; set fireball animation
     lda CannonFireballAnimTable-2,x
-    sta EnResetAnimIndex,y
-    sta EnAnimIndex,y
+    sta EnsExtra.0.resetAnimIndex,y
+    sta EnsExtra.0.animIndex,y
     ; store offset into temp
     lda CannonFireballXOffsetTable-2,x
     sta Temp05_SpeedX
@@ -619,11 +634,11 @@ Cannon_ShootFireball:
     sta Temp04_SpeedY
     ; store cannon position into temp
     ldx CannonIndex
-    lda CannonY,x
+    lda Cannons.0.y,x
     sta Temp08_PositionY
-    lda CannonX,x
+    lda Cannons.0.x,x
     sta Temp09_PositionX
-    lda CannonHi,x
+    lda Cannons.0.hi,x
     sta Temp0B_PositionHi
     tya
     tax
@@ -640,16 +655,16 @@ CannonFireballAnimTable:
     .byte EnAnim_0E - EnAnimTbl ; cannon instr #$FC : straight down
 
 DrawCannon_Normal:
-    ldy CannonAngle,x
+    ldy Cannons.0.angle,x
     lda CannonAnimFrameTable,y
 DrawCannon_Escape:
-    sta EnAnimFrame+$E0
-    lda CannonY,x
+    sta EnsExtra.14.animFrame
+    lda Cannons.0.y,x
     sta EnY+$E0
-    lda CannonX,x
+    lda Cannons.0.x,x
     sta EnX+$E0
-    lda CannonHi,x
-    sta EnHi+$E0
+    lda Cannons.0.hi,x
+    sta EnsExtra.14.hi
     lda #$E0
     sta PageIndex
     jmp CommonJump_DrawEnemy
@@ -657,15 +672,15 @@ DrawCannon_Escape:
 ; return y=#$00 if cannon is on screen and y=#$01 if not
 UpdateCannon_CheckIfOnScreen:
     ldy #$00
-    ; set carry if CannonX >= ScrollX
-    lda CannonX,x
+    ; set carry if Cannons.0.x >= ScrollX
+    lda Cannons.0.x,x
     cmp ScrollX
     ; branch if room is horizontal (in vanilla, this is always the case)
     lda ScrollDir
     and #$02
     bne @endIf_A
-        ; set carry if CannonY >= ScrollY
-        lda CannonY,x
+        ; set carry if Cannons.0.y >= ScrollY
+        lda Cannons.0.y,x
         cmp ScrollY
     @endIf_A:
     ; return y=#$00 if same hi and carry set
@@ -673,7 +688,7 @@ UpdateCannon_CheckIfOnScreen:
     ; return y=#$01 if same hi and carry not set
     ; return y=#$01 if different hi and carry set
     ; in effect, return y=#$00 if cannon is on screen and y=#$01 if not
-    lda CannonHi,x
+    lda Cannons.0.hi,x
     eor PPUCTRL_ZP
     and #$01
     beq @endIf_B
@@ -696,14 +711,14 @@ UpdateRoomSpriteInfo_Tourian:
     ldy #$00
     @loop_A:
         ; branch if cannon is in the current nametable
-        lda CannonHi,y
+        lda Cannons.0.hi,y
         eor $02
         lsr
         bcs @endIf_A
             ; cannon is in the opposite nametable
             ; clear status
             lda #$00
-            sta CannonStatus,y
+            sta Cannons.0.status,y
         @endIf_A:
         ; go to next cannon
         tya
@@ -779,17 +794,17 @@ UpdateRoomSpriteInfo_Tourian:
 
 UpdateRoomSpriteInfo_Tourian_RinkaSpawner:
     ; exit if rinka spawner doesn't exist
-    lda RinkaSpawnerStatus,x
+    lda RinkaSpawners.0.status,x
     bmi @RTS
     ; exit if rinka is in the current nametable
-    lda RinkaSpawnerHi,x
+    lda RinkaSpawners.0.hi,x
     eor $02
     lsr
     bcs @RTS
         ; rinka is in the opposite nametable
         ; clear status
         lda #$FF
-        sta RinkaSpawnerStatus,x
+        sta RinkaSpawners.0.status,x
     @RTS:
     rts
 
@@ -799,7 +814,7 @@ UpdateRoomSpriteInfo_Tourian_RinkaSpawner:
 SpawnCannonRoutine:
     ldx #$00
     @loop:
-        lda CannonStatus,x
+        lda Cannons.0.status,x
         beq @spawnCannon
         txa
         clc
@@ -810,14 +825,14 @@ SpawnCannonRoutine:
     bmi @RTS ; always return
 
 @spawnCannon:
-    ; high nibble of special item type is CannonInstrListID
+    ; high nibble of special item type is Cannons.0.instrListID
     lda ($00),y
     jsr Adiv16_
-    sta CannonInstrListID,x
+    sta Cannons.0.instrListID,x
     
     lda #$01
-    sta CannonStatus,x
-    sta CannonInstrID,x
+    sta Cannons.0.status,x
+    sta Cannons.0.instrID,x
     
     ; set Y and X
     iny
@@ -825,15 +840,15 @@ SpawnCannonRoutine:
     pha
     and #$F0
     ora #$07
-    sta CannonY,x
+    sta Cannons.0.y,x
     pla
     jsr Amul16_
     ora #$07
-    sta CannonX,x
+    sta Cannons.0.x,x
     
     ; set nametable for edge of the screen that scrolls in
-    jsr GetNameTable_
-    sta CannonHi,x
+    jsr GetNameTableAtScrollDir_
+    sta Cannons.0.hi,x
 @RTS:
     rts
 
@@ -842,13 +857,13 @@ SpawnCannonRoutine:
 SpawnMotherBrainRoutine:
     lda #$01
     sta MotherBrainStatus
-    jsr GetNameTable_
+    jsr GetNameTableAtScrollDir_
     sta MotherBrainHi
     eor #$01
     tax
     lda L9D3C
-    ora DoorOnNameTable3,x
-    sta DoorOnNameTable3,x
+    ora ScrollBlockOnNameTable3,x
+    sta ScrollBlockOnNameTable3,x
     lda #$20
     sta MotherBrainAnimBrainDelay
     sta MotherBrainAnimEyeDelay
@@ -885,7 +900,7 @@ SpawnZebetiteRoutine:
     rts
 
 GetVRAMPtrHi:
-    jsr GetNameTable_
+    jsr GetNameTableAtScrollDir_
     asl
     asl
     ora #$21+$40
@@ -899,18 +914,18 @@ SpawnRinkaSpawnerRoutine:
         bmi RTS_9D87
         ldx #$00
     L9D75:
-    lda RinkaSpawnerStatus,x
+    lda RinkaSpawners.0.status,x
     bpl RTS_9D87
     lda ($00),y
     jsr Adiv16_
-    sta RinkaSpawnerStatus,x
-    jsr GetNameTable_
-    sta RinkaSpawnerHi,x
+    sta RinkaSpawners.0.status,x
+    jsr GetNameTableAtScrollDir_
+    sta RinkaSpawners.0.hi,x
     lda #$FF
 RTS_9D87:
     rts
 
-GetNameTable_:
+GetNameTableAtScrollDir_:
     lda PPUCTRL_ZP
     eor ScrollDir
     and #$01
@@ -1069,7 +1084,7 @@ MotherBrain_9E52:
     tax
     L9E68:
         tya
-        sta EnStatus,x
+        sta EnsExtra.0.status,x
         jsr Xplus16
         cpx #$C0
         bne L9E68
@@ -1089,11 +1104,11 @@ MotherBrain_9E86:
     jsr UpdateMotherBrainFlashDelay
     ldx #$00
     L9E98:
-        lda EnStatus,x
+        lda EnsExtra.0.status,x
         cmp #$05
         bne L9EA4
             lda #$00
-            sta EnStatus,x
+            sta EnsExtra.0.status,x
         L9EA4:
         jsr Xplus16
         cmp #$40
@@ -1369,7 +1384,7 @@ MotherBrain_DrawSprites:
     sta PageIndex
     ; set mother brain enemy pos to hardcoded constants
     lda MotherBrainHi
-    sta EnHi+$E0
+    sta EnsExtra.14.hi
     lda #$70
     sta EnY+$E0
     lda #$48
@@ -1377,7 +1392,7 @@ MotherBrain_DrawSprites:
     ; update mother brain anim frame
     ldy MotherBrainAnimFrameTableID
     lda MotherBrainAnimFrameTable,y
-    sta EnAnimFrame+$E0
+    sta EnsExtra.14.animFrame
     ; draw mother brain enemy
     jsr CommonJump_DrawEnemy
     
@@ -1387,7 +1402,7 @@ MotherBrain_DrawSprites:
         ; bit 7 is not set, eyes are open
         ; draw the eyes of mother brain
         lda MotherBrainAnimFrameTable+4
-        sta EnAnimFrame+$E0
+        sta EnsExtra.14.animFrame
         jsr CommonJump_DrawEnemy
     @endIf_A:
     rts
@@ -1633,12 +1648,12 @@ UpdateAllRinkaSpawners:
     sty PageIndex
     
     ; exit if rinka spawner is inactive
-    lda RinkaSpawnerStatus,y
+    lda RinkaSpawners.0.status,y
     bmi RTS_A15D
     
-    ; exit if RinkaSpawnerHi == bit 0 of FrameCount
+    ; exit if RinkaSpawners.0.hi == bit 0 of FrameCount
     ; (maybe to alternate which rinka spawner is processed each frame?)
-    lda RinkaSpawnerHi,y
+    lda RinkaSpawners.0.hi,y
     eor FrameCount
     lsr
     bcc RTS_A15D
@@ -1658,7 +1673,7 @@ UpdateAllRinkaSpawners:
     ldx #$20
     @loop:
         ; use slot if no enemy in slot or enemy is invisible
-        lda EnStatus,x
+        lda EnsExtra.0.status,x
         beq @slotFound
         lda EnData05,x
         and #$02
@@ -1675,10 +1690,10 @@ UpdateAllRinkaSpawners:
 @slotFound:
     ; set rinka status to resting
     lda #enemyStatus_Resting
-    sta EnStatus,x
+    sta EnsExtra.0.status,x
     ; set rinka enemy type to rinka
     lda #$04
-    sta EnType,x
+    sta EnsExtra.0.type,x
     ; init more rinka stuff idk
     lda #$00
     sta EnSpecialAttribs,x
@@ -1686,26 +1701,26 @@ UpdateAllRinkaSpawners:
     jsr CommonJump_0E
     ; set rinka frame to nothing (it will fade into view)
     lda #$F7
-    sta EnAnimFrame,x
+    sta EnsExtra.0.animFrame,x
     ; init rinka position
     ldy PageIndex
-    lda RinkaSpawnerHi,y
-    sta EnHi,x
-    lda RinkaSpawnerPosIndex,y
+    lda RinkaSpawners.0.hi,y
+    sta EnsExtra.0.hi,x
+    lda RinkaSpawners.0.posIndex,y
     asl
-    ora RinkaSpawnerStatus,y
+    ora RinkaSpawners.0.status,y
     tay
     lda RinkaSpawnPosTbl,y
     jsr SpawnRinka_InitPositionXY
     ; increment rinka spawner position id
     ldx PageIndex
-    inc RinkaSpawnerPosIndex,x
-    lda RinkaSpawnerPosIndex,x
+    inc RinkaSpawners.0.posIndex,x
+    lda RinkaSpawners.0.posIndex,x
     cmp #$06
     bne RTS_A1DA
     lda #$00
 LA1D8:
-    sta RinkaSpawnerPosIndex,x
+    sta RinkaSpawners.0.posIndex,x
 RTS_A1DA:
     rts
 
@@ -1777,13 +1792,13 @@ DrawEndTimerEnemy:
 
     ; attempt to draw end timer enemy sprite
     lda EndTimerEnemyHi
-    sta EnHi+$E0
+    sta EnsExtra.14.hi
     lda #$84
     sta EnY+$E0
     lda #$64
     sta EnX+$E0
     lda #_id_EnFrame1A.b
-    sta EnAnimFrame+$E0
+    sta EnsExtra.14.animFrame
     lda #$E0
     sta PageIndex
     ; remember page pos for later

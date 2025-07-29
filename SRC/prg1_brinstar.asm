@@ -121,7 +121,7 @@ AreaMellowAnimIndex:
 
 ; Enemy AI jump table
 ChooseEnemyAIRoutine:
-    lda EnType,x
+    lda EnsExtra.0.type,x
     jsr CommonJump_ChooseRoutine
         .word SidehopperFloorAIRoutine ; 00 - Sidehopper
         .word SidehopperCeilingAIRoutine ; 01 - Ceiling sidehopper
@@ -245,11 +245,12 @@ L967B:
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
 
-; Bit 7: Screw attack vulnerability?
+; Bit 7: for when bit 1 is set, 0=force y axis only, 1=force y and x axis
 ; Bit 5: EnemyMovementInstr_FE failure -> 0=nothing. 1=set EnData05 to (~(facing dir bits) | (bits 0-4 of this)) 
 ; Bits 0-4 are used when bit 5 is set
 ; Bit 4: is enemy intangible (unsure of this)
 ; Bits 2-3: #$00,#$04=normal enemy hit sound, #$08=big enemy hit sound, #$0C=metroid hit sound
+; Bit 1: force enemy speed to point towards samus
 ; Bit 0: can drop big energy
 L968B:
     .byte $01, $01, $01, $00, $86, $04, $89, $80, $81, $00, $00, $00, $82, $00, $00, $00
@@ -263,7 +264,22 @@ EnemyData0DTbl:
 ; bit 4-6: zero
 ; bit 0-3: number of blocks distance threshold in the axis indicated by EnData05 bit 7
 EnemyDistanceToSamusThreshold:
-    .byte $00, $00, $06, $00, $83, $00, $88, $00, $00, $00, $00, $00, $00, $00, $00, $00
+    .byte $00
+    .byte $00
+    .byte $6 | (0 << 7)
+    .byte $00
+    .byte $3 | (1 << 7)
+    .byte $00
+    .byte $8 | (1 << 7)
+    .byte $00
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
 
 EnemyInitDelayTbl:
     .byte $08, $08, $01, $01, $01, $01, $10, $08, $10, $00, $00, $01, $01, $00, $00, $00
@@ -328,7 +344,7 @@ EnSpeedXTable:
 ; bit7: bit7 of EnData05 for pipe bug
 ; bit6: 0=enemy uses movement strings. 1=enemy uses acceleration and speed and subpixels.
 ; bit4: 0=is not metroid, 1=is metroid
-; bit2-3: bit6-7 of EnData1F for resting enemies
+; bit2-3: bit6-7 of EnsExtra.0.data1F for resting enemies
 ; bit1: toggle bit2 of EnData05 in EnemyIfMoveFailedDown/EnemyIfMoveFailedUp
 ; bit0: toggle bit0 of EnData05 in EnemyIfMoveFailedRight/EnemyIfMoveFailedLeft
 L977B:
