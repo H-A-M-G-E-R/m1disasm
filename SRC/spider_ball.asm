@@ -129,7 +129,7 @@ CheckSpiderCollisionDown:
     adc ObjRadY
     and #$07
     bne CheckSpiderCollisionLeft@dontCheck
-    jsr CheckMoveDown
+    jsr ObjectCheckMoveDown
     bcs @RTS
         lda #$00
     @RTS:
@@ -153,7 +153,7 @@ CheckSpiderCollisionUp:
     sbc ObjRadY
     and #$07
     bne CheckSpiderCollisionLeft@dontCheck
-    jsr CheckMoveUp
+    jsr ObjectCheckMoveUp
     bcs @RTS
         lda #$02
     @RTS:
