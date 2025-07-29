@@ -76,7 +76,7 @@ ObjAnim_27: ;$27
 ObjAnim_DoorOpen: ;$29
     .byte _id_ObjFrame31, _id_ObjFrame31, _id_ObjFrame33
 ObjAnim_DoorOpen_Reset: ;$2C
-    .byte $F7, $FF
+    .byte _id_ObjFrame_DoorOpened, $FF
 
 ;Door close animation.
 ObjAnim_DoorClose: ;$2E
@@ -246,6 +246,7 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame68
     PtrTableEntry ObjFramePtrTable, ObjFrame69
     PtrTableEntry ObjFramePtrTable, ObjFrameIceBullet
+    PtrTableEntry ObjFramePtrTable, ObjFrame_DoorOpened
 
 SamusCHRBankTable:
     .byte SamusSuitGFX0/$400 ; ObjFrame03
@@ -637,6 +638,11 @@ ObjFrame33:
     .byte $00,$1D,$A0,$00
     .byte $08,$1C,$A0,$00
     .byte $10,$1B,$A0,$00
+    .byte $80
+
+;Door opened.
+ObjFrame_DoorOpened:
+    .byte $18,$04
     .byte $80
 
 ;Samus explode.
