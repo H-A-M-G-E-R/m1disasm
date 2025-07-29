@@ -154,6 +154,9 @@ RidleyTryToLaunchProjectile_FoundEnemySlot:
     ; set enemy status to resting
     lda #enemyStatus_Resting
     sta EnsExtra.0.status,x
+    ; Flag enemy init
+    lda #$FF
+    sta EnsExtra.0.animIndex,x
     ; set projectile's position to its initial position
     jsr LoadPositionFromTemp
     jmp CommonJump_0E

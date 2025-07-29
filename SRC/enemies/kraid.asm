@@ -206,6 +206,9 @@ KraidUpdateProjectile_Resting:
     lda EnsExtra.0.status,x
     bne LoadPositionFromTemp
     inc EnsExtra.0.status,x
+    ; Flag enemy init
+    lda #$FF
+    sta EnsExtra.0.animIndex,x
     ; save as projectile's position
     ; fallthrough
 

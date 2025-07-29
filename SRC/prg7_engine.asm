@@ -7398,6 +7398,9 @@ GetEnemyType: ; ($EB28)
 LEB4D:
     lda #enemyStatus_Resting        ;
     sta EnsExtra.0.status,x                  ;Indicate object slot is taken.
+    ; Flag enemy init
+    lda #$FF
+    sta EnsExtra.0.animIndex,x
     lda #$00
     sta EnIsHit,x
     jsr GetNameTableAtScrollDir       ;($EB85)Get name table to place enemy on.
@@ -8856,10 +8859,15 @@ UpdateEnemy_UpdateEnData05Bit6:
 
 ;---------------------------------------------
 UpdateEnemy_Resting: ;($F3BE)
-    ; Branch if bit 6 is set (30FPS)
+    ; Branch if bit 6 is clear (30FPS)
     lda EnData05,x
     asl
-    bmi Lx299
+    bpl +
+    ; branch if anim index != #$FF (init enemy so it won't look glitched sometimes the first frame it spawns)
+    lda EnsExtra.0.animIndex,x
+    cmp #$FF
+    bne Lx299
+    +
         lda #$00
         sta EnsExtra.0.jumpDsplcmnt,x
         sta EnMovementInstrIndex,x
@@ -10276,6 +10284,9 @@ UpdatePipeBugHole:
     jsr GetRadiusSumsOfEnXSlotAndObjYSlot
     jsr CheckCollisionOfXSlotAndYSlot
     bcc Exit13
+    ; Flag enemy init
+    lda #$FF
+    sta EnsExtra.0.animIndex,x
     ; set status to resting
     lda #enemyStatus_Resting ; #$01
     sta EnDelay,x

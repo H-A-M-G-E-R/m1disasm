@@ -1698,6 +1698,9 @@ UpdateAllRinkaSpawners:
     ; set rinka frame to nothing (it will fade into view)
     lda #$F7
     sta EnsExtra.0.animFrame,x
+    ; Flag enemy init
+    lda #$FF
+    sta EnsExtra.0.animIndex,x
     ; init rinka position
     ldy PageIndex
     lda RinkaSpawners.0.hi,y
