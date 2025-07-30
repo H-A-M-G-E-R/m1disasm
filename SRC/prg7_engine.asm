@@ -1609,6 +1609,7 @@ BankTable:
 
 ;----------------------------------[ Saved game routines (not used) ]--------------------------------
 
+/*
 AccessSavedGame:
     pha                             ;Save two copies of A. Why? Who knows. This code is-->
     pha                             ;Never implemented. A contains data slot to work on.
@@ -1770,6 +1771,7 @@ ClearScreenData:
     sta $00                         ;Prepare to fill nametable with #$FF.
     jsr ClearNameTable              ;($C175)Clear selected nametable.
     jmp EraseAllSprites             ;($C1A3)Clear sprite data.
+*/
 
 ;----------------------------------------------------------------------------------------------------
 
