@@ -348,6 +348,30 @@ EnemyFireballMovementPtrTable:
 EnemyFireballDamageTbl:
     .byte $20, $20, $20, $20
 
+TileBlastBlastAnimIndexTable:
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$70
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$74
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$78
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$7C
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$80
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$84
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$88
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$8C
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$90
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$94
+
+TileBlastRespawnDelayTbl:
+    .byte $50 ; tile #$70
+    .byte $50 ; tile #$74
+    .byte $50 ; tile #$78
+    .byte $50 ; tile #$7C
+    .byte $50 ; tile #$80
+    .byte $50 ; tile #$84
+    .byte $50 ; tile #$88
+    .byte $50 ; tile #$8C
+    .byte $50 ; tile #$90
+    .byte $50 ; tile #$94
+
 TileBlastRespawnAnimIndexTable:
     .byte TileBlastAnim6 - TileBlastAnim ; tile #$70
     .byte TileBlastAnim7 - TileBlastAnim ; tile #$74

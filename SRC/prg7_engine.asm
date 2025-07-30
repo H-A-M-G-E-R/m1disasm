@@ -10932,10 +10932,11 @@ UpdateTileBlast:
 UpdateTileBlast_Init:
     inc TileBlastRoutine,x
     ; set anim to blasting
-    lda #TileBlastAnim0 - TileBlastAnim.b
+    ldy TileBlastType,x
+    lda TileBlastBlastAnimIndexTable,y
     jsr SetTileAnim
-    ; tile respawns after 320 frames
-    lda #$50
+    ; tile respawns after TileBlastRespawnDelayTbl[TileBlastType] * 4 frames
+    lda TileBlastRespawnDelayTbl,y
     sta TileBlastDelay,x
     lda TileBlastWRAMPtr,x     ; low WRAM addr of blasted tile
     sta $00
@@ -10948,6 +10949,12 @@ UpdateTileBlast_Animating:
     jmp UpdateTileBlastAnim
 
 UpdateTileBlast_WaitToRespawn:
+    lda TileBlastDelay,x
+    bne @canRespawn
+        ; tile can't respawn, delete tile blast and return
+        sta TileBlastRoutine,x
+        rts
+    @canRespawn:
     ; only update tile timer every 4th frame
     lda FrameCount
     and #$03

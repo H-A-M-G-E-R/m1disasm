@@ -383,7 +383,33 @@ EnemyFireballMovementPtrTable:
 EnemyFireballDamageTbl:
     .byte $08, $08, $08, $08
 
-; Table used for indexing the respawining animations in TileBlastAnim
+; Table used for indexing the blasting animations in TileBlastAnim
+TileBlastBlastAnimIndexTable:
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$70
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$74
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$78
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$7C
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$80
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$84
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$88
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$8C
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$90
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$94
+
+; Delay before tile respawns (* 4). 0 = never respawn
+TileBlastRespawnDelayTbl:
+    .byte $50 ; tile #$70
+    .byte $50 ; tile #$74
+    .byte $50 ; tile #$78
+    .byte $50 ; tile #$7C
+    .byte $50 ; tile #$80
+    .byte $50 ; tile #$84
+    .byte $50 ; tile #$88
+    .byte $50 ; tile #$8C
+    .byte $50 ; tile #$90
+    .byte $50 ; tile #$94
+
+; Table used for indexing the respawning animations in TileBlastAnim
 TileBlastRespawnAnimIndexTable:
     .byte TileBlastAnim6 - TileBlastAnim ; tile #$70
     .byte TileBlastAnim7 - TileBlastAnim ; tile #$74
