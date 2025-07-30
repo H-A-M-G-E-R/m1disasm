@@ -6881,46 +6881,6 @@ StoreObjectPositionToTemp:
     sta Temp09_PositionX
     rts
 
-;--------------------------------------------------------
-; Visualizations: (| is block boundary, l is left remainder, c is center, r is right remainder)
-; |  ll|cccc|cccc|rr  | object spans 4 blocks and there are left and right remainders
-; |cccc| object spans 1 block and there's no left nor right remainders
-; |  ll|rr  | object spans 2 blocks and there are left and right remainders
-; |  ll| object spans 1 block and right/bottom is at a block boundary
-; |rr  | object spans 1 block and left/top is at a block boundary
-GetNumBlocksToCheck:
-    ; $04 = left remainder size
-    eor #$FF
-    clc
-    adc #$01
-    and #$07
-    sta Temp04_NumBlocksToCheck
-    ; center
-    ; diameter without left remainder
-    tya
-    asl
-    sec
-    sbc Temp04_NumBlocksToCheck
-    bcs Lx210
-        ; | cc | Special case: object spans 1 block and doesn't touch any block boundary
-        adc #$08
-    Lx210:
-    tay
-    lsr
-    lsr
-    lsr
-    sta Temp04_NumBlocksToCheck
-    ; check for right remainder
-    tya
-    and #$07
-    beq Lx211
-        ; there's a right remainder
-        inx
-    Lx211:
-    txa
-    clc
-    adc Temp04_NumBlocksToCheck
-    rts
 ;-----------------------------------------------------------
 
 EnemyCheckMoveLeft:
