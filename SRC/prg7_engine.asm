@@ -7057,9 +7057,9 @@ CalculateNextBGCollisionPoint:
             lsr
             beq @exit
             ; scrolling horizontally
-            lda Temp04_CartRAMPtr+1
+            lda Temp04_CartRAMPtr+1.b
             eor #$04
-            sta Temp04_CartRAMPtr+1
+            sta Temp04_CartRAMPtr+1.b
         @exit:
         rts
     @horizontal:
@@ -7068,9 +7068,9 @@ CalculateNextBGCollisionPoint:
         clc
         adc #$20
         sta Temp04_CartRAMPtr
-        lda Temp04_CartRAMPtr+1
+        lda Temp04_CartRAMPtr+1.b
         adc #$00
-        sta Temp04_CartRAMPtr+1
+        sta Temp04_CartRAMPtr+1.b
 
         and #$03
         cmp #$03
@@ -7081,16 +7081,16 @@ CalculateNextBGCollisionPoint:
             ; overflow
             and #$1F
             sta Temp04_CartRAMPtr
-            lda Temp04_CartRAMPtr+1
+            lda Temp04_CartRAMPtr+1.b
             and #$FC
-            sta Temp04_CartRAMPtr+1
+            sta Temp04_CartRAMPtr+1.b
             lda ScrollDir
             lsr
             bne @exit
             ; scrolling vertically
-            lda Temp04_CartRAMPtr+1
+            lda Temp04_CartRAMPtr+1.b
             eor #$04
-            sta Temp04_CartRAMPtr+1
+            sta Temp04_CartRAMPtr+1.b
             rts
 
 ToggleNameTable:
@@ -7127,7 +7127,7 @@ IsBlastTile_SkipCheckUpdatingProjectile:
         lda TempY
         cmp TileBlastWRAMPtr,x
         bne ++
-        lda Temp04_CartRAMPtr+1
+        lda Temp04_CartRAMPtr+1.b
         cmp TileBlastWRAMPtr+1,x
         beq +
         ++
@@ -7152,7 +7152,7 @@ Lx220:
     inc TileBlastRoutine,x
     lda TempY
     sta TileBlastWRAMPtr,x
-    lda Temp04_CartRAMPtr+1
+    lda Temp04_CartRAMPtr+1.b
     sta TileBlastWRAMPtr+1,x
     lda InArea
     cmp #$01                        ; In Norfair?
