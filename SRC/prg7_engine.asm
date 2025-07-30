@@ -2041,7 +2041,7 @@ SamusStand:
     lda Joy1Status                  ;Status of joypad 1.
     and #~(BUTTON_SELECT | BUTTON_START).b ;Remove SELECT & START status bits.
     beq LCC41                           ;Branch if no buttons pressed.
-        jsr ClearHorzMvmtAnimData       ;($CF5D)Set no horiontal movement and single frame animation.
+        jsr ClearHorzData               ;($CFB7)Clear all horizontal movement data.
         lda Joy1Status                  ;
     LCC41:
     and #BUTTON_DOWN | BUTTON_LEFT | BUTTON_RIGHT.b ;Keep status of DOWN/LEFT/RIGHT.
