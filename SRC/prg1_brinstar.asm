@@ -86,6 +86,8 @@ AreaRoutine: ; L95C3
     .byte $FF                       ;Not used.
 AreaMusicFlag:
     .byte music_Brinstar            ;Brinstar music init flag.
+AreaMinibossMusic:
+    .byte music_Tourian
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:

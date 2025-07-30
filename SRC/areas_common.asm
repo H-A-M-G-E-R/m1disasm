@@ -1340,8 +1340,8 @@ L8CA7:
     jsr Amul16
     bcs L8CC0
         ; the door leads to a room to the right
-        ; play tourian music
-        jsr TourianMusic
+        ; play area music
+        jsr StartMusic
         bne L8CC3 ; branch always
     L8CC0:
         ; the door leads to a room to the left

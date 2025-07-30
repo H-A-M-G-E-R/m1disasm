@@ -3311,7 +3311,8 @@ SamusDoor:
     Lx051:
         lda KraidRidleyPresent
         beq Lx052
-        jsr TourianMusic
+        lda AreaMinibossMusic
+        sta CurrentMusic
         lda #$00
         sta KraidRidleyPresent
         beq Lx050     ; branch always

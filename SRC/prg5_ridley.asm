@@ -86,6 +86,8 @@ L95CC:
     .byte $12                       ;Ridley's room.
 AreaMusicFlag:
     .byte music_RidleyArea          ;Ridley hideout music init flag.
+AreaMinibossMusic:
+    .byte music_Tourian
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:

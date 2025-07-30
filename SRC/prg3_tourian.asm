@@ -94,6 +94,8 @@ L95CC:
     .byte $FF                       ;Not used.
 AreaMusicFlag:
     .byte music_Tourian             ;Tourian music init flag.
+AreaMinibossMusic:
+    .byte music_Tourian
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:

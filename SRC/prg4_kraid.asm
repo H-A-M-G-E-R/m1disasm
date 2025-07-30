@@ -86,6 +86,8 @@ L95CC:
     .byte $1D                       ;Kraid's room.
 AreaMusicFlag:
     .byte music_KraidArea           ;Kraid's hideout music init flag.
+AreaMinibossMusic:
+    .byte music_Tourian
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:
