@@ -1245,14 +1245,13 @@ MoreInit:
     txa                             ;A=0.
 
     LC830:
-        cpx #(SoundE0-1)-SpareMem7A.b   ;Check to see if more RAM to clear in $7A thru $DE. (should clear $DF, off-by-one bug?)
+        cpx #SoundE0-SpareMem7A.b   ;Check to see if more RAM to clear in $7A thru $DF.
         bcs LC836                           ;
             sta SpareMem7A.b,x              ;Clear RAM $7A thru $DE.
-        LC836:
-        cpx #$FF                        ;Check to see if more RAM to clear in $300 thru $3FE. (off-by-one bug)
-        bcs LC83D                           ;
-            sta ObjAction,x                 ;Clear RAM $300 thru $3FE.
-        LC83D:
+        LC836:                   ;
+        sta ObjAction,x                 ;
+        sta TileBlastRoutine,x          ;Clear RAM pages 3,5,7.
+        sta Mem0700,x                   ;
         inx                             ;
         bne LC830                       ;Loop until all required RAM is cleared.
 
@@ -1331,15 +1330,14 @@ DestroyEnemies: ; LC8BB
     lda #$00
     tax
     @loop:
-        cpx #(SoundE0-1)-CannonIndex.b
+        cpx #SoundE0-CannonIndex.b
         bcs @endIf_A
-            ; clear $97-$DE (should clear $DF, off-by-one bug?)
+            ; clear $97-$DF
             sta CannonIndex,x
         @endIf_A:
-        ; clear extra enemy RAM, including status
+        ; clear both enemy RAM pages
+        sta EnY,x
         sta EnsExtra.0.status,x
-        pha
-        pla
         inx
         bne @loop
     ;Force Samus to have no Metroid stuck to her.
@@ -1371,8 +1369,8 @@ SamusInit:
     dex                             ;X = $FF
     stx PipeBugHoleStatus+$00
     stx PipeBugHoleStatus+$08
-    stx PipeBugHoleStatus+10 ; (BUG! those last two should be +$10 and +$18)
     stx PipeBugHoleStatus+$10
+    stx PipeBugHoleStatus+$18
     stx EndTimer                    ;Set end timer bytes to #$FF as-->
     stx EndTimer+1.w                  ;escape timer not currently active.
     stx RinkaSpawners.0.status
@@ -7116,19 +7114,41 @@ IsBlastTile_SkipCheckUpdatingProjectile:
     jsr GotoUpdateBullet_CollisionWithZebetiteAndMotherBrainGlass
     cpy #$98
     bcs +
+    ; check if there's already a tile blast at the same place so no two tile blasts can spawn at the same place
+    lda $04
+    and #$DE
+    sta $04
+    ldx #$C0
+    -
+        lda TileBlastRoutine,x
+        beq ++
+        lda $04
+        cmp TileBlastWRAMPtr,x
+        bne ++
+        lda $05
+        cmp TileBlastWRAMPtr+1,x
+        beq +
+        ++
+        txa
+        sec
+        sbc #$10
+        tax
+        bne -
 ; attempt to find a vacant tile slot
     ldx #$C0
+    sec
     Lx219:
         lda TileBlastRoutine,x
         beq Lx220                           ; 0 = free slot
-        jsr Xminus16
+        txa
+        sbc #$10
+        tax
         bne Lx219
     lda TileBlastRoutine,x
     bne Lx223                        ; no more slots, can't blast tile
 Lx220:
     inc TileBlastRoutine,x
     lda $04
-    and #$DE
     sta TileBlastWRAMPtr,x
     lda $05
     sta TileBlastWRAMPtr+1,x
@@ -11082,17 +11102,15 @@ UpdateTileBlastAnim:
     jsr DrawTileBlast
     bcc @RTS
     ; Failed to draw, retry drawing it next frame.
-    ; BUG: TileBlastAnimDelay should be set to 0 or 1 here.
     ldx PageIndex
     dec TileBlastAnimIndex,x
+    lda #$00
+    sta TileBlastAnimDelay,x
 @RTS:
     rts
 @end:
     ; TileBlastRoutine = wait to respawn
     inc TileBlastRoutine,x
-    ; Quit updating remaining tile blasts and return (bug)
-    pla
-    pla
     rts
 
 ; Frame data for tile blasts (why aren't these in area banks?)
