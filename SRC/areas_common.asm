@@ -1428,7 +1428,9 @@ WriteDoorBGTiles_Common:
         bne @loop
     ldx PageIndex
     txa
-    jsr Adiv8
+    lsr
+    lsr
+    lsr
     and #$06
     tay
     lda $04

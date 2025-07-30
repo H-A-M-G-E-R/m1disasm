@@ -6518,8 +6518,10 @@ EndOfRoomHorizontal:
     bne RTS_X196
     ; $01.00 = (ScrollX & 0xF8) / 8 = tile index
     lda ScrollX
-    and #$F8        ; keep upper five bits (redundant)
-    jsr Adiv8       ; / 8 (make 'em lower five)
+    ; / 8 (make 'em lower five)
+    lsr
+    lsr
+    lsr
     sta $00
     lda #$00
     jmp UpdateNameTable
@@ -6663,30 +6665,31 @@ CheckMoveVertical:
         rts
     Lx198:
     sta Temp03_DistToCenterX
-    tay
-    ldx #$00
-    ; A = left boundary
+    ; calculate number of blocks to check
     lda Temp09_PositionX
     sec
     sbc Temp03_DistToCenterX
-    ; check for left remainder
-    and #$07
-    beq Lx199
-        ; there's a left remainder
-        inx
-    Lx199:
-    jsr GetNumBlocksToCheck
+    and #$F8
     sta Temp04_NumBlocksToCheck
+    lda Temp09_PositionX
+    clc
+    adc Temp03_DistToCenterX
+    clc
+    sbc Temp04_NumBlocksToCheck
+    lsr
+    lsr
+    lsr
+    tay
+    iny
+    sty Temp04_NumBlocksToCheck
+
     jsr CalculateFirstBGCollisionPoint
-    ldx #$00 ; Temp06_NextPointYOffset = 0
-    ldy #$08 ; Temp07_NextPointXOffset = 8
     lda Temp00_CollisionPointYMod8
 LE7DE:
     ; skip collision if object boundary is not at block boundary
     bne Lx202
-    stx Temp06_NextPointYOffset
-    sty Temp07_NextPointXOffset
     ldx Temp04_NumBlocksToCheck
+    jsr MakeCartRAMPtr              ;($E96A)Find object position in room RAM.
     jsr LE7E6
     bcs Exit16
     ; collision detected, SamusDoorData = 0 if SamusDoorDir == CollisionDirection
@@ -6701,7 +6704,6 @@ LE7DE:
 ; object<-->background crash detection
 
 LE7E6:
-    jsr MakeCartRAMPtr              ;($E96A)Find object position in room RAM.
     ldy #$00
     lda (Temp04_CartRAMPtr),y     ; get tile value
     ; branch if bullet hit solid blank tile
@@ -6760,7 +6762,11 @@ ProjectileHitDoorOrStatue:
         and #$1F
         bne @next
         txa
-        jsr Amul8       ; * 8
+         ; * 8
+        asl
+        asl
+        asl
+
         ora #$80
         tay
         lda DoorStatus,y
@@ -6794,7 +6800,10 @@ ProjectileHitDoorOrStatue:
     ; lowest nybble of pointer to ridley statue is #$C or #$D
     ; therefore, by using bit 3 of the pointer, we can distinguish between the statues
     lda Temp04_CartRAMPtr
-    jsr Adiv8       ; / 8
+    ; / 8
+    lsr
+    lsr
+    lsr
     and #$01
     ; set statue is hit flag for appropriate statue
     tax
@@ -6830,7 +6839,7 @@ ObjectCheckMoveRight:
 ObjectCheckMoveHorizontalBranch:
     sta Temp03_DistToCenterX
     jsr StoreObjectPositionToTemp
-    ldy ObjRadY,x
+    lda ObjRadY,x
 
 CheckMoveHorizontal:
     bne Lx208
@@ -6838,23 +6847,26 @@ CheckMoveHorizontal:
         sec
         rts
     Lx208:
-    sty Temp02_DistToCenterY
-    ldx #$00
-    ; A = top boundary
+    sta Temp02_DistToCenterY
+    ; calculate number of blocks to check
     lda Temp08_PositionY
     sec
     sbc Temp02_DistToCenterY
-     ; check for top remainder
-    and #$07
-    beq Lx209
-        ; there's a top remainder
-        inx
-    Lx209:
-    jsr GetNumBlocksToCheck
+    and #$F8
     sta Temp04_NumBlocksToCheck
+    lda Temp08_PositionY
+    clc
+    adc Temp02_DistToCenterY
+    clc
+    sbc Temp04_NumBlocksToCheck
+    lsr
+    lsr
+    lsr
+    tay
+    iny
+    sty Temp04_NumBlocksToCheck
+
     jsr CalculateFirstBGCollisionPoint
-    ldx #$08 ; Temp06_NextPointYOffset = 8
-    ldy #$00 ; Temp07_NextPointXOffset = 0
     lda Temp01_CollisionPointXMod8
     jmp LE7DE
 
@@ -6930,7 +6942,7 @@ EnemyCheckMoveRight:
 EnemyCheckMoveHorizontalBranch:
     sta Temp03_DistToCenterX
     jsr StoreEnemyPositionToTemp
-    ldy EnsExtra.0.radY,x
+    lda EnsExtra.0.radY,x
     jmp CheckMoveHorizontal
 
 ;----------------------------------------------
@@ -7058,38 +7070,60 @@ MakeCartRAMPtr:
 ;---------------------------------------------------------------------------------------------------
 
 CalculateNextBGCollisionPoint:
-    ; point Y += next point Y offset
-    lda Temp02_PositionY
-    clc
-    adc Temp06_NextPointYOffset
-    sta Temp02_PositionY
-    cmp #$F0
-    bcc Lx217
-    ; point Y >= 240, adjust
-    adc #$0F
-    sta Temp02_PositionY
-    ; branch if scrolling horizontally (allows Samus to wrap around)
-    lda ScrollDir
-    and #$02
-    bne Lx217
-    ; move to next nametable
-    inc Temp0B_PositionHi
-Lx217:
-    ; point X += next point X offset
-    lda Temp03_PositionX
-    clc
-    adc Temp07_NextPointXOffset
-    sta Temp03_PositionX
-    bcc RTS_X218
-    ; point X >= 256, adjust
-    ; return if scrolling vertically (allows Samus to wrap around)
-    lda ScrollDir
-    and #$02
-    beq RTS_X218
-    ; move to next nametable
-    inc Temp0B_PositionHi
-RTS_X218:
-    rts
+    lda CollisionDirection
+    lsr
+    beq @horizontal
+        ; next column
+        inc Temp04_CartRAMPtr
+        lda Temp04_CartRAMPtr
+        and #$1F
+        beq @overflowedHorizontal
+        rts
+        @overflowedHorizontal:
+            ; overflow
+            lda Temp04_CartRAMPtr
+            sec
+            sbc #$20
+            sta Temp04_CartRAMPtr
+            lda ScrollDir
+            lsr
+            beq @exit
+            ; scrolling horizontally
+            lda Temp04_CartRAMPtr+1
+            eor #$04
+            sta Temp04_CartRAMPtr+1
+        @exit:
+        rts
+    @horizontal:
+        ; next row
+        lda Temp04_CartRAMPtr
+        clc
+        adc #$20
+        sta Temp04_CartRAMPtr
+        lda Temp04_CartRAMPtr+1
+        adc #$00
+        sta Temp04_CartRAMPtr+1
+
+        and #$03
+        cmp #$03
+        bne @exit
+        lda Temp04_CartRAMPtr
+        cmp #$C0
+        bcc @exit
+            ; overflow
+            and #$1F
+            sta Temp04_CartRAMPtr
+            lda Temp04_CartRAMPtr+1
+            and #$FC
+            sta Temp04_CartRAMPtr+1
+            lda ScrollDir
+            lsr
+            bne @exit
+            ; scrolling vertically
+            lda Temp04_CartRAMPtr+1
+            eor #$04
+            sta Temp04_CartRAMPtr+1
+            rts
 
 ToggleNameTable:
     lda PPUCTRL_ZP
@@ -7115,17 +7149,17 @@ IsBlastTile_SkipCheckUpdatingProjectile:
     cpy #$98
     bcs +
     ; check if there's already a tile blast at the same place so no two tile blasts can spawn at the same place
-    lda $04
+    lda Temp04_CartRAMPtr
     and #$DE
-    sta $04
+    sta TempY
     ldx #$C0
     -
         lda TileBlastRoutine,x
         beq ++
-        lda $04
+        lda TempY
         cmp TileBlastWRAMPtr,x
         bne ++
-        lda $05
+        lda Temp04_CartRAMPtr+1
         cmp TileBlastWRAMPtr+1,x
         beq +
         ++
@@ -7148,9 +7182,9 @@ IsBlastTile_SkipCheckUpdatingProjectile:
     bne Lx223                        ; no more slots, can't blast tile
 Lx220:
     inc TileBlastRoutine,x
-    lda $04
+    lda TempY
     sta TileBlastWRAMPtr,x
-    lda $05
+    lda Temp04_CartRAMPtr+1
     sta TileBlastWRAMPtr+1,x
     lda InArea
     cmp #$01                        ; In Norfair?
@@ -8204,7 +8238,10 @@ CollisionDetection:
                 jsr CollisionDetectionMellow_CheckWithObjectYSlot
                 jsr CollisionDetectionMellow_ReactToCollisionWithProjectile
             Lx265:
-            jsr Yplus16
+            tya
+            clc
+            adc #$10
+            tay
             bne Lx263
     Lx266:
         ; each Mellow occupies 8 bytes
@@ -8229,7 +8266,10 @@ CollisionDetection:
         jsr AreObjectsTouching          ;($DC7F)
         jsr CollisionDetectionDoor_F277
     Lx268:
-        jsr Xminus16
+        txa
+        sec
+        sbc #$10
+        tax
         bmi Lx267
 
 ; enemy <--> bullet/missile/bomb detection and enemy <--> samus detection
@@ -8268,7 +8308,11 @@ Lx269:
                 jsr CollisionDetectionEnemy_CheckWithObjectYSlot
                 jsr CollisionDetectionEnemy_ReactToCollisionWithProjectile
             Lx273:
-            jsr Yplus16          ; next projectile slot
+            ; next projectile slot
+            tya
+            clc
+            adc #$10
+            tay
             bne Lx271
     Lx274:
         ldy #$00
@@ -8287,7 +8331,10 @@ Lx269:
         jsr CollisionDetectionEnemy_CheckWithObjectYSlot
         jsr CollisionDetectionEnemy_ReactToCollisionWithSamus
         NextEnemy:
-        jsr Xminus16
+        txa
+        sec
+        sbc #$10
+        tax
         bmi Lx275
             jmp LF09F
 
@@ -8339,7 +8386,10 @@ Lx275:
         jsr LDC82
         jsr SamusHurt_F311
     Lx280:
-        jsr Xminus16
+        txa
+        sec
+        sbc #$10
+        tax
         cmp #$C0
         bne Lx278
 
@@ -11074,7 +11124,11 @@ GetPosAtNameTableAddr:
     ror $02
     tya
     and #%00011111
-    jsr Amul8       ; * 8
+    ; * 8
+    asl
+    asl
+    asl
+
     sta $03
     rts
 
