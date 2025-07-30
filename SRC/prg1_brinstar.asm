@@ -383,6 +383,33 @@ EnemyFireballMovementPtrTable:
 EnemyFireballDamageTbl:
     .byte $08, $08, $08, $08
 
+; Table used for indexing the respawining animations in TileBlastAnim
+TileBlastRespawnAnimIndexTable:
+    .byte TileBlastAnim6 - TileBlastAnim ; tile #$70
+    .byte TileBlastAnim7 - TileBlastAnim ; tile #$74
+    .byte TileBlastAnim8 - TileBlastAnim ; tile #$78
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$7C
+    .byte TileBlastAnim1 - TileBlastAnim ; tile #$80
+    .byte TileBlastAnim2 - TileBlastAnim ; tile #$84
+    .byte TileBlastAnim3 - TileBlastAnim ; tile #$88
+    .byte TileBlastAnim4 - TileBlastAnim ; tile #$8C
+    .byte TileBlastAnim9 - TileBlastAnim ; tile #$90
+    .byte TileBlastAnim5 - TileBlastAnim ; tile #$94
+
+; Frame data for tile blasts
+
+TileBlastAnim:
+TileBlastAnim0:  .byte $06,$07,$00,$FE ; blasting tile or respawning tile #$7C
+TileBlastAnim1:  .byte $07,$06,$01,$FE ; respawning tile #$80
+TileBlastAnim2:  .byte $07,$06,$02,$FE ; respawning tile #$84
+TileBlastAnim3:  .byte $07,$06,$03,$FE ; respawning tile #$88
+TileBlastAnim4:  .byte $07,$06,$04,$FE ; respawning tile #$8C
+TileBlastAnim5:  .byte $07,$06,$05,$FE ; respawning tile #$94
+TileBlastAnim6:  .byte $07,$06,$09,$FE ; respawning tile #$70
+TileBlastAnim7:  .byte $07,$06,$0A,$FE ; respawning tile #$74
+TileBlastAnim8:  .byte $07,$06,$0B,$FE ; respawning tile #$78
+TileBlastAnim9:  .byte $07,$06,$08,$FE ; respawning tile #$90
+
 ; Referenced by LFE83
 TileBlastFramePtrTable:
     .word TileBlastFrame00
