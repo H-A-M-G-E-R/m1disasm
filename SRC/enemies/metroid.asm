@@ -106,8 +106,8 @@ MetroidAIRoutine:
         ldy EnHealth,x
         iny
         bne L9899
-            ; if it was invincible, make it vincible with 5 health
-            lda #$05
+            ; if it was invincible, make it vincible with 20 health
+            lda #20
             sta EnHealth,x
             bne L9899
     L9894:

@@ -9198,8 +9198,8 @@ EnemyReactToSamusWeapon:
     jsr LoadTableAt977B
     and #$20
     beq RTS_X315
-    ; set hp to 5, and clear metroid latch
-    lda #$05
+    ; set hp to 20, and clear metroid latch
+    lda #20
     sta EnHealth,x
     jmp GotoClearCurrentMetroidLatchAndMetroidOnSamus
 RTS_X315:
@@ -9303,28 +9303,13 @@ Lx319:
     Lx323:
     sta EnSpecialAttribs,x
     
-    ; check attack type
-    ; if enemy is attacked by wave beam, decrement health by 2
-    cpy #wa_WaveBeam
-    beq Lx324
-        ; if enemy is not a miniboss, decrement health by 1
-        bit $0A
-        bvc Lx325
-        ; enemy is a miniboss
-        ; if miniboss was not attacked by a missile, decrement health by 1
-        ldy EnWeaponAction,x
-        cpy #wa_Missile
-        bne Lx325
-        ; miniboss was attacked by a missile, decrement health by 4
-        dec EnHealth,x
-        beq ExplodeEnemy
-        dec EnHealth,x
-        beq ExplodeEnemy
-    Lx324:
-    dec EnHealth,x
-    beq ExplodeEnemy
-Lx325:
-    dec EnHealth,x
+    ; subtract health by weapon damage
+    ldy EnWeaponAction,x
+    lda EnHealth,x
+    sec
+    sbc WeaponDamageTbl-1,y
+    sta EnHealth,x
+    bcc ExplodeEnemy
     bne GetPageIndex
 ExplodeEnemy:
     ; the enemy has been killed by Samus's attacks
@@ -9388,6 +9373,19 @@ Lx329:
 GetPageIndex:
     ldx PageIndex
     rts
+
+WeaponDamageTbl:
+    .byte $01 ; regular beam
+    .byte $02 ; wave beam
+    .byte $01 ; ice beam
+    .byte $00
+    .byte $00
+    .byte $00
+    .byte $00 ; unk7
+    .byte $00
+    .byte $00
+    .byte $01 ; bomb
+    .byte $04 ; missile (minibosses and metroids only)
 
 UpdateEnemy_Resting_UpdateEnData1F:
     ; load L977B entry * 2
