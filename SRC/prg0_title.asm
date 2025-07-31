@@ -4753,7 +4753,7 @@ LE11C:
 
 LE14A:
     ldx SpritePagePos               ;Restore initial sprite page pos.
-    lda MaxHealth+1.b               ;
+    lda MaxHealth+1                 ;
     and #$F0                        ;
     beq RTS_E172                          ;Branch to exit if Samus has no energy tanks.
 

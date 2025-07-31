@@ -2457,14 +2457,11 @@ Lx009:
 
 CheckHealthBeep:
     ; beep if health < 17
-    ldy Health+1
-    beq Lx010
-    dey 
-    bne Lx011
     lda Health
     cmp #$70
+    lda Health+1
+    sbc #$01
     bcs Lx011
-Lx010:
     ;Only beep every 16th frame.
     lda FrameCount
     and #$0F
@@ -2593,13 +2590,11 @@ AddHealth:
     jsr Base10Add                   ;($C3DA)Perform base 10 addition.
     sta Health+1                    ;Save results.
 
-    cmp MaxHealth+1                 ;
-    bcc LCF2B                           ;Is life less than max? if so, branch.
-    bne +
-    lda Health
-    cmp MaxHealth
+    lda Health                      ;
+    cmp MaxHealth                       ;Is life less than max? if so, branch.
+    lda Health+1
+    sbc MaxHealth+1
     bcc LCF2B
-+
     lda MaxHealth+1                 ;Life is more than max amount.
     sta Health+1                    ;
     lda MaxHealth                   ;Set life to max amount.
