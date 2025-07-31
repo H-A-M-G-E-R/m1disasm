@@ -133,11 +133,8 @@ L98A9:
             ; metroid is latched onto Samus
             ; don't count bomb hit if not hit by a bomb explosion
             lda EnWeaponAction,x
-            cmp #wa_Unknown7
-            beq L98C3
-                cmp #wa_BombExplode
-                bne L9932
-            L98C3:
+            cmp #wa_BombExplode
+            bne L9932
             
             ; don't count bomb hit when bit 1 of FrameCount is set
             lda FrameCount

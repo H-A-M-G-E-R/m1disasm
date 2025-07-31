@@ -170,6 +170,10 @@ ObjAnim_IceBullet:
 ObjAnim_IceBulletHit:
     .byte _id_ObjFrameIceBulletHit, $F7, $FF
 
+;Wave + ice beam animation.
+ObjAnim_WaveIceBeam: ;$7D
+    .byte _id_ObjFrame_WaveIceBeam, $FF
+
 ;Samus spider ball animation.
 ObjAnim_SamusSpider:
     .byte _id_ObjFrame_SamusSpider0, _id_ObjFrame_SamusSpider1, _id_ObjFrame_SamusSpider2, _id_ObjFrame_SamusSpider3, $FF
@@ -226,6 +230,7 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame49
     PtrTableEntry ObjFramePtrTable, ObjFrame4A
     PtrTableEntry ObjFramePtrTable, ObjFrame4B
+    PtrTableEntry ObjFramePtrTable, ObjFrame_WaveIceBeam
     PtrTableEntry ObjFramePtrTable, ObjFrame4D
     PtrTableEntry ObjFramePtrTable, ObjFrame4E
     PtrTableEntry ObjFramePtrTable, ObjFrame4F
@@ -833,6 +838,12 @@ ObjFrame4A:
 ObjFrame4B:
     .byte $04,$04
     .byte $FC,$20,$20,$FC
+    .byte $80
+
+;Wave + ice beam.
+ObjFrame_WaveIceBeam:
+    .byte $04,$04
+    .byte $FC,$20,$21,$FC
     .byte $80
 
 ;Bomb explode.

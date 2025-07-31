@@ -3051,7 +3051,6 @@ FireWeaponForwards:
     
     jsr InitBullet
     jsr CheckHorizontalWaveBulletFire
-    jsr CheckIceBulletFire
     lda #$0C
     sta ProjectileDieDelay,y
     ldx SamusDir
@@ -3109,7 +3108,6 @@ FireWeaponUpwards:
     
     jsr InitBullet
     jsr CheckVerticalWaveBulletFire
-    jsr CheckIceBulletFire
     lda #$0C
     sta ProjectileDieDelay,y
     lda #$FC
@@ -3236,8 +3234,10 @@ CheckHorizontalWaveBulletFire:
     lda SamusDir
 LD35B:
     sta ProjectileWaveDir,y
+    lda MissileToggle
+    bne Exit4
     bit SamusGear
-    bvc Exit4       ; branch if Samus doesn't have Wave Beam
+    bvc CheckIceBulletFire       ; branch if Samus doesn't have Wave Beam
     lda MissileToggle
     bne Exit4
     lda #$00
@@ -3250,19 +3250,27 @@ LD35B:
     lda #$0C
 Lx048:
     sta ProjectileWaveInstrID,y
+    lda SamusGear
+    bmi @ice
     lda #wa_WaveBeam
     sta ObjAction,y
     lda #ObjAnim_WaveBeam - ObjectAnimIndexTbl.b
     jsr SetBulletAnim
     jmp SFX_WaveFire
 
+@ice:
+    lda #wa_WaveIceBeam
+    sta ObjAction,y
+    lda #ObjAnim_WaveIceBeam - ObjectAnimIndexTbl.b
+    jsr SetBulletAnim
+    lda #sfxSQ1_IceBeam
+    jmp SFX_SetSQ1SFXFlag
+
 CheckVerticalWaveBulletFire:
     lda #$02
     bne LD35B ; branch always
 
 CheckIceBulletFire:
-    lda MissileToggle
-    bne Exit4
     lda SamusGear
     bpl Exit4       ; branch if Samus doesn't have Ice Beam
     lda #wa_IceBeam
@@ -3496,10 +3504,8 @@ DoOneProjectile:
         .word UpdateBullet          ; regular beam
         .word UpdateWaveBullet      ; wave beam
         .word UpdateBullet          ; ice beam
+        .word UpdateWaveBullet      ; wave + ice beam
         .word UpdateBulletExplode   ; bullet/missile explode
-        .word BombInit              ; lay bomb
-        .word BombCountdown         ; lay bomb
-        .word BombExplode           ; lay bomb
         .word BombInit              ; lay bomb
         .word BombCountdown         ; bomb countdown
         .word BombExplode           ; bomb explode
@@ -3673,9 +3679,12 @@ BulletExplode:
     lda #ObjAnim_MissileExplode - ObjectAnimIndexTbl.b
 Lx076:
     cpy #wa_IceBeam
-    bne +
-    lda #ObjAnim_IceBulletHit - ObjectAnimIndexTbl.b
+    beq +
+    cpy #wa_WaveIceBeam
+    bne ++
     +
+    lda #ObjAnim_IceBulletHit - ObjectAnimIndexTbl.b
+    ++
     jsr InitObjAnimIndex
     lda #wa_BulletExplode
 Lx077:
@@ -4623,12 +4632,12 @@ CheckOneItem:
     tay                             ;
     cpy #pu_ENERGYTANK                        ;Is power-up item a missile or energy tank?-->
     bcs MissileEnergyTank           ;If so, branch.
-    cpy #pu_WAVEBEAM                        ;Is item the wave beam or ice beam?-->
-    bcc LDBDA                       ;If not, branch.
-        lda SamusGear                   ;Clear status of wave beam and ice beam power ups.
-        and #~(gr_WAVEBEAM | gr_ICEBEAM).b
-        sta SamusGear                   ;Remove beam weapon data from Samus gear byte.
-    LDBDA:
+    ;cpy #pu_WAVEBEAM                        ;Is item the wave beam or ice beam?-->
+    ;bcc LDBDA                       ;If not, branch.
+    ;    lda SamusGear                   ;Clear status of wave beam and ice beam power ups.
+    ;    and #~(gr_WAVEBEAM | gr_ICEBEAM).b
+    ;    sta SamusGear                   ;Remove beam weapon data from Samus gear byte.
+    ;LDBDA:
     jsr MakeBitMask                 ;($DB2F)Create a bit mask for beam weapon just obtained.
     ora SamusGear                   ;
     sta SamusGear                   ;Update Samus gear with new beam weapon.
@@ -8186,11 +8195,9 @@ CollisionDetection:
             ; try next projectile if this one is not active
             lda ObjAction,y
             beq Lx265
-            ; try next projectile if it is not a bullet, unknown7, bomb or missile
+            ; try next projectile if it is not a bullet, bomb or missile
             cmp #wa_BulletExplode
             bcc Lx264
-            cmp #wa_Unknown7
-            beq Lx264
             cmp #wa_BombExplode
             beq Lx264
             cmp #wa_Missile
@@ -8260,8 +8267,6 @@ Lx269:
             beq Lx273            ; branch if not
             cmp #wa_BulletExplode
             bcc Lx272
-            cmp #wa_Unknown7
-            beq Lx272
             cmp #wa_BombExplode
             beq Lx272
             cmp #wa_Missile
@@ -8341,8 +8346,6 @@ Lx275:
     ldx #$F0
     Lx278:
         lda ObjAction,x
-        cmp #wa_Unknown7
-        beq Lx279
         cmp #wa_BombExplode
         bne Lx280
     Lx279:
@@ -9173,7 +9176,10 @@ EnemyReactToSamusWeapon:
     ; branch if enemy was not attacked by ice beam
     lda EnWeaponAction,x
     cmp #wa_IceBeam
+    beq +
+    cmp #wa_WaveIceBeam
     bne Lx317
+    +
     ; branch if enemy is a miniboss (miniboss cannot be frozen)
     bit $0A
     bvs Lx317
@@ -9371,14 +9377,12 @@ GetPageIndex:
 WeaponDamageTbl:
     .byte $01 ; regular beam
     .byte $02 ; wave beam
-    .byte $01 ; ice beam
+    .byte $02 ; ice beam
+    .byte $04 ; wave + ice beam
     .byte $00
     .byte $00
     .byte $00
-    .byte $00 ; unk7
-    .byte $00
-    .byte $00
-    .byte $01 ; bomb
+    .byte $02 ; bomb
     .byte $04 ; missile (minibosses and metroids only)
 
 UpdateEnemy_Resting_UpdateEnData1F:

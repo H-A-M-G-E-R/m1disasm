@@ -1221,12 +1221,12 @@ sa_Begin               = 255
 wa_RegularBeam         = $01
 wa_WaveBeam            = $02
 wa_IceBeam             = $03
-wa_BulletExplode       = $04
-wa_Unknown7            = $07
-wa_LayBomb             = $08
-wa_BombCount           = $09
-wa_BombExplode         = $0A
-wa_Missile             = $0B
+wa_WaveIceBeam         = $04
+wa_BulletExplode       = $05
+wa_LayBomb             = $06
+wa_BombCount           = $07
+wa_BombExplode         = $08
+wa_Missile             = $09 ; must be an odd number, see FireWeaponForwards and FireWeaponUpwards
 wa_ScrewAttack         = $81
 
 ;Enemy Status
