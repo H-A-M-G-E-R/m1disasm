@@ -168,6 +168,8 @@ SQ1SFXInitRoutineTbl:
     .word EnemyHitSFXStart                     ;Enemy hit init SFX.
     .word BirdOutOfHoleSFXStart                     ;Bird out of hole init SFX.
     .word BulletFireSFXStart                     ;Bullet fire init SFX.
+    .word BulletFireSFXStart
+    .word HasIceBeamSFXStart
     .word MetalSFXStart                     ;Metal init SFX.
     .word EnergyPickupSFXStart                     ;Energy pickup init SFX.
     .word MissilePickupSFXStart                     ;Missile pickup init SFX.
@@ -181,6 +183,8 @@ SQ1SFXContRoutineTbl:
     .word SQ1SFXContinue                     ;Enemy hit continue SFX.
     .word SQ1SFXContinue                     ;Bird out of hole continue SFX.
     .word BulletFireSFXContinue                     ;Bullet fire continue SFX.
+    .word BulletFireSFXContinue
+    .word HasIceBeamSFXContinue
     .word SQ1SFXContinue                     ;Metal continue SFX.
     .word EnergyPickupSFXContinue                     ;Energy pickup continue SFX.
     .word MissilePickupSFXContinue                     ;Missile pickup continue SFX.
@@ -847,9 +851,6 @@ SelectSFX1:
     jmp SelectSFXRoutine            ;($B452)Setup registers for SFX.
 
 BulletFireSFXStart:
-    lda HasBeamSFX                  ;
-    lsr                             ;If Samus has ice beam, branch.
-    bcs HasIceBeamSFXStart          ;
     lda SQ1ContSFX                  ;If MissilePickup, EnergyPickup, BirdOutOfHole-->
     cmp #sfxSQ1_MissilePickup       ;or EnemyHit SFX already playing, branch to exit.
     beq RTS_MusicBranch03           ;
@@ -859,9 +860,9 @@ BulletFireSFXStart:
     beq RTS_MusicBranch03
     cmp #sfxSQ1_EnemyHit
     beq RTS_MusicBranch03
-    lda HasBeamSFX                  ;
-    asl                             ;If Samus has long beam, branch.
-    bcs HasLongBeamSFXStart         ;
+    lda SQ1SFXFlag                  ;
+    cmp #sfxSQ1_LongBeam            ;If starting long beam sound, branch.
+    beq HasLongBeamSFXStart         ;
     lda #$03                        ;Number of frames to play sound before a change.
     ldy #<ShortRangeShotSFXData.b     ;Lower byte of sound data start address(base=$B200).
     bne SelectSFX1                  ;Branch always (Plays ShortBeamSFX).
@@ -889,9 +890,6 @@ LB749:
     bne SelectSFX1                  ;Branch always.
 
 BulletFireSFXContinue:
-    lda HasBeamSFX                  ;
-    lsr                             ;If Samus has ice beam, branch.
-    bcs HasIceBeamSFXContinue       ;
     jsr IncrementSFXFrame           ;($B4A9)Get next databyte to process in SFX.
     bne RTS_B75D                       ;If more frames to process, branch to exit.
         jmp EndSQ1SFX                   ;($B6F2)If SFX finished, jump.

@@ -3073,20 +3073,18 @@ FireWeaponForwards:
     lda #-$06
     sta Temp04_SpeedY
     jsr PlaceBulletAtArmCannon
-    ; set bit 7 of HasBeamSFX if Samus has long beam
-    lda SamusGear
-    and #gr_LONGBEAM
-    lsr
-    lsr
-    lsr
-    ror
-    ora HasBeamSFX
-    sta HasBeamSFX
     ; branch if not regular beam (sound played at CheckHorizontalWaveBulletFire or CheckIceBulletFire)
     ldx ObjAction,y
     dex
     bne @exit
-    jsr SFX_BulletFire
+    ldx #sfxSQ1_BulletFire
+    lda SamusGear
+    and #gr_LONGBEAM
+    beq +
+        inx
+    +
+    txa
+    jsr SFX_SetSQ1SFXFlag
 @exit:
     ldy #ObjAnim_09 - ObjectAnimIndexTbl.b
 LD26B:
@@ -3131,20 +3129,18 @@ FireWeaponUpwards:
     lda BulletUpwardsOffsetYTable,x
     sta Temp04_SpeedY
     jsr PlaceBulletAtArmCannon
-    ; set bit 7 of HasBeamSFX if Samus has long beam
-    lda SamusGear
-    and #gr_LONGBEAM
-    lsr
-    lsr
-    lsr
-    ror
-    ora HasBeamSFX
-    sta HasBeamSFX
     ; branch if not regular beam (sound played at CheckVerticalWaveBulletFire or CheckIceBulletFire)
     lda ObjAction,y
     cmp #$01
     bne @exit
-    jsr SFX_BulletFire
+    ldx #sfxSQ1_BulletFire
+    lda SamusGear
+    and #gr_LONGBEAM
+    beq +
+        inx
+    +
+    txa
+    jsr SFX_SetSQ1SFXFlag
 @exit:
     ldx SamusDir
     ldy StandAimUpFireAnimTbl,x
@@ -3271,10 +3267,8 @@ CheckIceBulletFire:
     bpl Exit4       ; branch if Samus doesn't have Ice Beam
     lda #wa_IceBeam
     sta ObjAction,y
-    lda HasBeamSFX
-    ora #$01
-    sta HasBeamSFX
-    jmp SFX_BulletFire
+    lda #sfxSQ1_IceBeam
+    jmp SFX_SetSQ1SFXFlag
 
 ; SamusDoor
 ; =========

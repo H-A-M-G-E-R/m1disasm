@@ -769,7 +769,7 @@ TriHighPercentage      = $0615   ;Stores percent to change period high by each f
 PercentDifference      = $0616   ;if=5, percent=1/5(20%), if=0A, percent=1/10(10%), etc
 DivideData             = $0617   ;Used in DivideTriPeriods
 
-HasBeamSFX             = $061F   ;Bit 7 set=has long beam, bit 0 set=has ice beam
+;HasBeamSFX             = $061F   ;Was: Bit 7 set=has long beam, bit 0 set=has ice beam
 
 ;The following addresses are loaded into $0640 thru $0643 when those
 ;addresses decrement to zero.  These addresses do not decrement.
@@ -1249,10 +1249,12 @@ sfxNoise_SpitFlame     = $03
 sfxNoise_PauseMusic    = $02
 ;sfxNoise_01            = $01
 
-sfxSQ1_Pause           = $09
-sfxSQ1_MissilePickup   = $08
-sfxSQ1_EnergyPickup    = $07
-sfxSQ1_Metal           = $06
+sfxSQ1_Pause           = $0B
+sfxSQ1_MissilePickup   = $0A
+sfxSQ1_EnergyPickup    = $09
+sfxSQ1_Metal           = $08
+sfxSQ1_IceBeam         = $07
+sfxSQ1_LongBeam        = $06
 sfxSQ1_BulletFire      = $05
 sfxSQ1_OutOfHole       = $04
 sfxSQ1_EnemyHit        = $03
