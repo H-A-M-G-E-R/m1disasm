@@ -1539,30 +1539,46 @@ GoPassword:
 ;-----------------------------------------[ Samus intro ]--------------------------------------------
 
 SamusIntro:
-    ldy ObjectCounter               ;Load Samus' fade in status.
-    lda Timer3                      ;
-    bne LC9F2                           ;Branch if Intro still playing.
+    ;Load Samus' fade in status.
+    ldy ObjectCounter
+    ;Branch if Intro still playing.
+    lda Timer3
+    bne LC9F2
         ;Fade in complete.
-        sta ItemRoomMusicStatus         ;Make sure item room music is not playing.
-        lda #sa_Begin                   ;Samus facing forward and can't be hurt.
-        sta ObjAction                   ;
-        jsr StartMusic                  ;($D92C)Start main music.
-        jsr SelectSamusPal              ;($CB73)Select proper Samus palette.
+        ;Make sure item room music is not playing.
+        sta ItemRoomMusicStatus
+        ;Samus facing forward and can't be hurt.
+        lda #sa_Begin
+        sta ObjAction
+        ;($D92C)Start main music.
+        jsr StartMusic
+        ;($CB73)Select proper Samus palette.
+        jsr SelectSamusPal
     ;Still fading in.
     LC9F2:
-    cmp #$1F                        ;When 310 frames left of intro, display Samus.
-    bcs Exit14                      ;Branch if not time to start drawing Samus.
-    cmp SamusFadeInTimeTbl-(_id_Palette13+1),y     ;_id_Palette13+1 is beginning of table.
-    bne LCA00                           ;Every time Timer3 equals one of the entries in the table-->
-        inc ObjectCounter               ;below, change the palette used to color Samus.
-        tya                             ;
-        jsr WriteAreaPal                ;
+    ;When 310 frames left of intro, display Samus.
+    ;Branch if not time to start drawing Samus.
+    cmp #$1F
+    bcs Exit14
+    ;_id_Palette13+1 is beginning of table.
+    cmp SamusFadeInTimeTbl-(_id_Palette13+1),y
+    ;Every time Timer3 equals one of the entries in the table-->
+    bne LCA00
+        ;below, change the palette used to color Samus.
+        inc ObjectCounter
+        tya
+        jsr WriteAreaPal
     LCA00:
-    lda FrameCount                  ;Is game currently on an odd frame?-->
-    lsr                             ;If not, branch to exit.
-    bcc Exit14                      ;Only display Samus on odd frames [the blink effect].
-    lda #ObjAnim_04 - ObjectAnimIndexTbl.b              ;Samus front animation is animation to display.-->
-    jsr SetSamusAnim                ;($CF6B)while fading in.
+    ;Is game currently on an odd frame?-->
+    ;If not, branch to exit.
+    ;Only display Samus on odd frames [the blink effect].
+    lda FrameCount
+    lsr
+    bcc Exit14
+    ;Samus front animation is animation to display.-->
+    lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
+    ;($CF6B)while fading in.
+    jsr SetSamusAnim
     lda #$01
     jmp SetSamusData
 
@@ -2038,37 +2054,54 @@ GoSamusHandler: ;($CC1A)
 ;---------------------------------------[ Samus standing ]-------------------------------------------
 
 SamusStand:
-    lda Joy1Status                  ;Status of joypad 1.
-    and #~(BUTTON_SELECT | BUTTON_START).b ;Remove SELECT & START status bits.
-    beq LCC41                           ;Branch if no buttons pressed.
-        jsr ClearHorzData               ;($CFB7)Clear all horizontal movement data.
-        lda Joy1Status                  ;
+    ;Status of joypad 1.
+    lda Joy1Status
+    ;Remove SELECT & START status bits.
+    and #~(BUTTON_SELECT | BUTTON_START).b
+    ;Branch if no buttons pressed.
+    beq LCC41
+        ;($CFB7)Clear all horizontal movement data.
+        jsr StopHorzMovement
+        lda Joy1Status
     LCC41:
-    and #BUTTON_DOWN | BUTTON_LEFT | BUTTON_RIGHT.b ;Keep status of DOWN/LEFT/RIGHT.
-    bne LCC4B                           ;Branch if any are pressed.
-        lda Joy1Change                  ;
-        and #BUTTON_UP                  ;Check if UP was pressed last frame.-->
-        beq LCC5B                       ;If not, branch.
+    ;Keep status of DOWN/LEFT/RIGHT.
+    and #BUTTON_DOWN | BUTTON_LEFT | BUTTON_RIGHT.b
+    ;Branch if any are pressed.
+    bne LCC4B
+        ;Check if UP was pressed last frame. If not, branch.
+        lda Joy1Change
+        and #BUTTON_UP
+        beq LCC5B
     LCC4B:
-    jsr BitScan                     ;($E1E1)Find which directional button is pressed.
-    cmp #BUTTONBIT_DOWN                 ;Is down pressed?-->
-    bcs LCC54                           ;If so, branch.
-        sta SamusDir                    ;1=left, 0=right.
+    ;($E1E1)Find which directional button is pressed.
+    jsr BitScan
+    ;Is down pressed? If so, branch.
+    cmp #BUTTONBIT_DOWN
+    bcs LCC54
+        ;1=left, 0=right.
+        sta SamusDir
     LCC54:
-    tax                             ;
-    lda ActionTable,x               ;Load proper Samus status from table below.
-    sta ObjAction                   ;Save Samus status.
+    ;Load proper Samus status from table below.
+    tax
+    lda ActionTable,x
+    ;Save Samus status.
+    sta ObjAction
 LCC5B:
-    lda Joy1Change                  ;
-    ora Joy1Retrig                  ;Check if fire was just pressed or needs to retrigger.
-    asl                             ;
-    bpl LCC65                           ;Branch if FIRE not pressed.
-        jsr FireWeapon                  ;($D1EE)Shoot left/right.
+    ;Check if fire was just pressed or needs to retrigger.
+    ;Branch if FIRE not pressed.
+    lda Joy1Change
+    ora Joy1Retrig
+    asl
+    bpl LCC65
+        ;($D1EE)Shoot left/right.
+        jsr FireWeapon
     LCC65:
-    bit Joy1Change                  ;Check if jump was just pressed.
-    bpl LCC6E                           ;Branch if JUMP not pressed.
-        lda #sa_Jump                    ;
-        sta ObjAction                   ;Set Samus status as jumping.
+    ;Branch if JUMP not pressed.
+    bit Joy1Change
+    bpl LCC6E
+        ;Set Samus status as jumping.
+        lda #sa_Jump
+        sta ObjAction
     LCC6E:
     lda #$04                        ;Prepare to set animation delay to 4 frames.
     jsr SetSamusData                ;($CD6D)Set Samus control data and animation.
@@ -2108,25 +2141,27 @@ SetSamusRun:
     sta WalkSoundDelay
     ldx #$00
     lda ObjAnimResetIndex
-    cmp #ObjAnim_07 - ObjectAnimIndexTbl.b
+    cmp #ObjAnim_SamusStand - ObjectAnimIndexTbl.b
     beq LCCBX
     inx
-    cmp #ObjAnim_27 - ObjectAnimIndexTbl.b
+    cmp #ObjAnim_SamusPntUp - ObjectAnimIndexTbl.b
     beq LCCBX
-        lda #ObjAnim_04 - ObjectAnimIndexTbl.b
+        ; Samus is previously in a run animation
+        ; turnaround animation
+        lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
         jsr SetSamusNextAnim
     LCCBX:
     lda RunAnimationTbl,x
     sta ObjAnimResetIndex
     ldx SamusDir
-LCCB7:
+SetSamusRunAccel:
     lda RunAccelerationTbl,x
     sta SamusAccelX
     rts
 
 RunAnimationTbl:
-    .byte ObjAnim_00 - ObjectAnimIndexTbl
-    .byte ObjAnim_37 - ObjectAnimIndexTbl
+    .byte ObjAnim_SamusRun - ObjectAnimIndexTbl
+    .byte ObjAnim_SamusRunPntUp - ObjectAnimIndexTbl
 
 RunAccelerationTbl:
     .byte $30                       ;Accelerate right.
@@ -2136,7 +2171,6 @@ RunAccelerationTbl:
 ; ========
 
 SamusRun:
-LCCC2:
     ldx SamusDir
     lda SamusAccelY
     beq samL07
@@ -2146,9 +2180,9 @@ LCCC2:
         cpy #$18
         bcc samL04
         lda ObjAnimResetIndex
-        cmp #ObjAnim_20 - ObjectAnimIndexTbl.b
+        cmp #ObjAnim_SamusJumpFire - ObjectAnimIndexTbl.b
         beq samL02
-            lda #ObjAnim_0E - ObjectAnimIndexTbl.b
+            lda #ObjAnim_SamusSalto - ObjectAnimIndexTbl.b
             sta ObjAnimResetIndex
         samL02:
         cpy #$20
@@ -2157,61 +2191,72 @@ LCCC2:
         bmi samL04
         jsr StopVertMovement
     samL04:
-        lda #ObjAnim_00 - ObjectAnimIndexTbl.b
+        ; if running and not aiming, set jump anim
+        lda #ObjAnim_SamusRun - ObjectAnimIndexTbl.b
         cmp ObjAnimResetIndex
         bne samL05
-            lda #ObjAnim_0C - ObjectAnimIndexTbl.b
+            lda #ObjAnim_SamusJump - ObjectAnimIndexTbl.b
             sta ObjAnimResetIndex
         samL05:
         lda SamusInLava
         beq samL06
+            ; allows Samus to jump in lava
             lda Joy1Change
             bmi LCD40       ; branch if JUMP pressed
         samL06:
-        jsr LCF88
-        jsr LD09C
+        jsr SamusRun_CheckHorzMovementMidair
+        jsr SamusJump_CheckFire
         jsr LCF2E
+        ; animate every 2 frames
         lda #$02
         bne SetSamusData       ; branch always
     samL07:
+    ; on ground
     lda SamusOnElevator
     bne samL08
-        jsr LCCB7
+        jsr SetSamusRunAccel
     samL08:
-    jsr LCDBF
-    dec WalkSoundDelay  ; time to play walk sound?
-    bne samL09          ; branch if not
+    jsr SamusRun_SetAnim
+    ; time to play walk sound? branch if not
+    dec WalkSoundDelay
+    bne samL09
+        ; # of frames till next walk sound trigger
         lda #$09
-        sta WalkSoundDelay  ; # of frames till next walk sound trigger
+        sta WalkSoundDelay
         jsr SFX_SamusWalk
     samL09:
     jsr LCF2E
+     ; branch if JUMP not pressed
     lda Joy1Change
-    bpl samL10      ; branch if JUMP not pressed
+    bpl samL10
     LCD40:
         jsr SetSamusJump
         lda #$12
         sta SamusHorzSpeedMax
-        jmp LCD6B
+        jmp SetSamusData_3FrameAnimDelay
 
     samL10:
+        ; branch if FIRE not pressed
         ora Joy1Retrig
         asl
-        bpl samL11      ; branch if FIRE not pressed
-            jsr LCDD7
+        bpl samL11
+            jsr SamusRun_Fire
         samL11:
         lda Joy1Status
         and #BUTTON_RIGHT | BUTTON_LEFT.b
         bne samL12
-            jsr StopHorzMovement
-            jmp LCD6B
+            ; stop running
+            jsr SetSamusStand
+            jmp SetSamusData_3FrameAnimDelay
         samL12:
         jsr BitScan                     ;($E1E1)
         cmp SamusDir
-        beq LCD6B
+        beq SetSamusData_3FrameAnimDelay
+        ; turn around
         sta SamusDir
         jsr SetSamusRun
-    LCD6B:
+    SetSamusData_3FrameAnimDelay:
+    ; animate every 3 frames
     lda #$03
     ; fallthrough
 
@@ -2269,10 +2314,10 @@ IsScrewAttackActive:
     beq RTS_CDBE
     ; return active if Samus is in the somersaulting animation
     lda ObjAnimResetIndex
-    cmp #ObjAnim_0E - ObjectAnimIndexTbl.b
+    cmp #ObjAnim_SamusSalto - ObjectAnimIndexTbl.b
     beq LCDBB
         ; return inactive if Samus is not in the neutral jump animation
-        cmp #ObjAnim_0C - ObjectAnimIndexTbl.b
+        cmp #ObjAnim_SamusJump - ObjectAnimIndexTbl.b
         sec
         bne RTS_CDBE
         ; samus is in the neutral jump animation
@@ -2286,45 +2331,50 @@ RTS_CDBE:
 
 ;----------------------------------------------------------------------------------------------------
 
-LCDBF:
+SamusRun_SetAnim:
+    ; X = 1 if up pressed, else 0
     lda Joy1Status
     and #BUTTON_UP
     lsr
     lsr
     lsr
     tax
+
     lda RunAnimationTbl,x
     cmp ObjAnimResetIndex
     beq RTS_CDBE
+    ; aim changed
     jsr SetSamusAnim
     pla
     pla
-    jmp LCD6B
+    jmp SetSamusData_3FrameAnimDelay
 
-LCDD7:
-    jsr FireWeapon                  ;($D1EE)Shoot left/right.
+SamusRun_Fire:
+    ;($D1EE)Shoot left/right.
+    jsr FireWeapon
     lda Joy1Status
     and #BUTTON_UP
-    bne LCDEX
-        lda #ObjAnim_22 - ObjectAnimIndexTbl.b
+    bne @aimingUp
+        lda #ObjAnim_SamusRunFire - ObjectAnimIndexTbl.b
         sta ObjAnimIndex
         rts
 
-    LCDEX:
+    @aimingUp:
+    ; Animation looks weird
     lda ObjAnimIndex
     sec
     sbc ObjAnimResetIndex
     and #$03
     tax
-    lda Table05,x
+    lda @table,x
     jmp SetSamusNextAnim
 
 ; Table used by above subroutine
-Table05:
-    .byte ObjAnim_3F - ObjectAnimIndexTbl.b
-    .byte ObjAnim_3B - ObjectAnimIndexTbl.b
-    .byte ObjAnim_3D - ObjectAnimIndexTbl.b
-    .byte ObjAnim_3F - ObjectAnimIndexTbl.b
+@table:
+    .byte ObjAnim_SamusRunPntUpFire3 - ObjectAnimIndexTbl.b
+    .byte ObjAnim_SamusRunPntUpFire1 - ObjectAnimIndexTbl.b
+    .byte ObjAnim_SamusRunPntUpFire2 - ObjectAnimIndexTbl.b
+    .byte ObjAnim_SamusRunPntUpFire3 - ObjectAnimIndexTbl.b
 
 CheckHealthStatus: ;($CDFA)
     ;Has Samus been hit?
@@ -2585,18 +2635,18 @@ LCF4E:
 RTS_X014:
     rts
 
-StopHorzMovement:
+SetSamusStand:
     lda SamusAccelX              ;Is Samus moving horizontally?-->
-    bne ClearHorzMvmtAnimData       ;If so, branch to stop movement.
+    bne SetSamusStand_NoFootstep    ;If so, branch to stop movement.
     jsr SFX_SamusWalk               ;($CB96)Play walk SFX.
 
-ClearHorzMvmtAnimData:
+SetSamusStand_NoFootstep:
     jsr NoHorzMoveNoDelay           ;($CF81)Clear horizontal movement and animation delay data.
     sty ObjAction                   ;Samus is standing.
     lda Joy1Status                  ;
     and #BUTTON_UP                  ;Is The up button being pressed?-->
     bne SetSamusPntUp               ;If so, branch.
-    lda #ObjAnim_07 - ObjectAnimIndexTbl.b            ;Set Samus animation for standing.
+    lda #ObjAnim_SamusStand - ObjectAnimIndexTbl.b            ;Set Samus animation for standing.
 
 SetSamusAnim:
     sta ObjAnimResetIndex           ;Set new animation reset index.
@@ -2610,47 +2660,56 @@ SetSamusNextAnim:
 SetSamusPntUp:
     lda #sa_PntUp                   ;
     sta ObjAction                   ;Samus is pointing up.
-    lda #ObjAnim_27 - ObjectAnimIndexTbl.b            ;
+    lda #ObjAnim_SamusPntUp - ObjectAnimIndexTbl.b            ;
     jsr SetSamusAnim                ;($CF6B)Set new animation values.
 
 NoHorzMoveNoDelay:
-    jsr ClearHorzData               ;($CFB7)Clear all horizontal movement data.
+    jsr StopHorzMovement               ;($CFB7)Clear all horizontal movement data.
     sty ObjAnimDelay                ;Clear animation delay data.
     rts
 
-LCF88:
+SamusRun_CheckHorzMovementMidair:
     lda Joy1Status
     and #BUTTON_RIGHT | BUTTON_LEFT.b
     beq Lx015
+        ; pressing right or left
+        ; set X accel
         jsr BitScan                     ;($E1E1)
         tax
-        jsr LCCB7
+        jsr SetSamusRunAccel
+        ; return if going up
         lda SamusAccelY
-        bmi RTS_X016
+        bmi StopHorzMovement@RTS
         stx SamusDir ; This fix makes you be able to turn around while spinjumping.
         rts
 
     Lx015:
+    ; not pressing right nor left
+    ; return if going up
     lda SamusAccelY
-    bmi RTS_X016
-    beq RTS_X016
+    bmi StopHorzMovement@RTS
+    ; return if on ground
+    beq StopHorzMovement@RTS
+    ; return if not neutral jump
     lda ObjAnimResetIndex
-    cmp #ObjAnim_0C - ObjectAnimIndexTbl.b
-    bne RTS_X016
+    cmp #ObjAnim_SamusJump - ObjectAnimIndexTbl.b
+    bne StopHorzMovement@RTS
+    ; fallthrough
 
-ClearHorzData:
+StopHorzMovement:
     jsr ClearHorzMvmntData          ;($CF4C)Clear horizontal speed and linear counter.
     sty SamusAccelX              ;Clear horizontal acceleration data.
-RTS_X016:
+@RTS:
     rts
 
-LCFBE:
-    ldy #ObjAnim_35 - ObjectAnimIndexTbl.b
+SetSamusJumpPntUp:
+    ldy #ObjAnim_SamusJumpPntUp - ObjectAnimIndexTbl.b
     jmp LCFC5
     SetSamusJump:
-        ldy #ObjAnim_0C - ObjectAnimIndexTbl.b
+        ldy #ObjAnim_SamusJump - ObjectAnimIndexTbl.b
     LCFC5:
     sty ObjAnimResetIndex
+    ; - 1 to get ObjAnim_SamusJumpTransition and ObjAnim_SamusJumpPntUpFire respectively
     dey
     sty ObjAnimIndex
     lda #$04
@@ -2681,15 +2740,19 @@ Lx017:
 
 SamusJump:
     lda SamusJumpDsplcmnt
+    ; branch if falling down
     bit ObjSpeedY
-    bpl Lx019      ; branch if falling down
+    bpl Lx019
+    ; branch if jumped less than 32 pixels upwards
     cmp #$20
-    bcc Lx019      ; branch if jumped less than 32 pixels upwards
+    bcc Lx019
+    ; branch if JUMP button still pressed
     bit Joy1Status
-    bmi Lx019      ; branch if JUMP button still pressed
-    jsr StopVertMovement            ;($D147)Stop jump (start falling).
+    bmi Lx019
+    ;($D147)Stop jump (start falling).
+    jsr StopVertMovement
 Lx019:
-    jsr LD055
+    jsr SamusJump_CheckHorzMovement
     jsr LCF2E
     lda Joy1Status
     and #BUTTON_UP     ; UP pressed?
@@ -2697,45 +2760,56 @@ Lx019:
         lda #sa_PntJump.b      ; "jumping & pointing up" handler
         sta ObjAction
     Lx020:
-    jsr LD09C
+    jsr SamusJump_CheckFire
     lda SamusInLava
     beq Lx021
     lda Joy1Change
     bpl Lx021      ; branch if JUMP not pressed
+    ; jump in lava
     jsr SetSamusJump
-    jmp LCD6B
+    jmp SetSamusData_3FrameAnimDelay
 
 Lx021:
+    ; check if touched ground
     lda SamusAccelY
     bne Lx023
+    ; touched ground, set stand
     lda ObjAction
     cmp #sa_PntJump
     bne Lx022
         jsr SetSamusPntUp
         bne Lx023
     Lx022:
-    jsr StopHorzMovement
+    jsr SetSamusStand
 Lx023:
     lda #$03
     jmp SetSamusData                ;($CD6D)Set Samus control data and animation.
 
-LD055:
+SamusJump_CheckHorzMovement:
+    ; X = 1
     ldx #$01
+    ; Y = 0
     ldy #$00
     lda Joy1Status
     lsr
     bcs Lx024      ; branch if RIGHT pressed
+    ; X = 0
     dex
     lsr
     bcc Lx027       ; branch if LEFT not pressed
+    ; X = -1
     dex
+    ; Y = 1
     iny
 Lx024:
+    ; branch if not turning around
     cpy SamusDir
     beq Lx027
+    ; turning around
     lda ObjAction
     cmp #sa_PntJump
     bne Lx025
+        ; aiming up
         lda ObjAnimResetIndex
         cmp Table04,y
         bne Lx026
@@ -2751,8 +2825,10 @@ Lx026:
     jsr SetSamusAnim
     lda #$08
     sta ObjAnimDelay
+    ; SamusDir = Y
     sty SamusDir
 Lx027:
+    ; ObjSpeedX = X
     stx ObjSpeedX
 RTS_X028:
     rts
@@ -2760,26 +2836,26 @@ RTS_X028:
 ; Table used by above subroutine
 
 Table06:
-    .byte ObjAnim_0C - ObjectAnimIndexTbl
-    .byte ObjAnim_0C - ObjectAnimIndexTbl
-    .byte ObjAnim_0C - ObjectAnimIndexTbl
+    .byte ObjAnim_SamusJump - ObjectAnimIndexTbl
+    .byte ObjAnim_SamusJump - ObjectAnimIndexTbl
+    .byte ObjAnim_SamusJump - ObjectAnimIndexTbl
 Table04:
-    .byte ObjAnim_35 - ObjectAnimIndexTbl
-    .byte ObjAnim_35 - ObjectAnimIndexTbl
-    .byte ObjAnim_35 - ObjectAnimIndexTbl
+    .byte ObjAnim_SamusJumpPntUp - ObjectAnimIndexTbl
+    .byte ObjAnim_SamusJumpPntUp - ObjectAnimIndexTbl
+    .byte ObjAnim_SamusJumpPntUp - ObjectAnimIndexTbl
 
-LD09C:
+SamusJump_CheckFire:
     lda Joy1Status
     and #BUTTON_UP
     beq +
-        lda #ObjAnim_35 - ObjectAnimIndexTbl.b
+        lda #ObjAnim_SamusJumpPntUp - ObjectAnimIndexTbl.b
         sta ObjAnimResetIndex
         bne ++
     +
     lda ObjAnimResetIndex
-    cmp #ObjAnim_35 - ObjectAnimIndexTbl.b
+    cmp #ObjAnim_SamusJumpPntUp - ObjectAnimIndexTbl.b
     bne ++
-        lda #ObjAnim_20 - ObjectAnimIndexTbl.b
+        lda #ObjAnim_SamusJumpFire - ObjectAnimIndexTbl.b
         sta ObjAnimResetIndex
     ++
     lda Joy1Change
@@ -2787,13 +2863,13 @@ LD09C:
     asl
     bpl RTS_X028      ; exit if FIRE not pressed
     lda ObjAnimResetIndex
-    cmp #ObjAnim_35 - ObjectAnimIndexTbl.b
-    bne Lx029
+    cmp #ObjAnim_SamusJumpPntUp - ObjectAnimIndexTbl.b
+    bne @notAimingUp
     jmp FireWeaponUpwards
 
-Lx029:
+@notAimingUp:
     jsr FireWeaponForwards
-    lda #ObjAnim_20 - ObjectAnimIndexTbl.b
+    lda #ObjAnim_SamusJumpFire - ObjectAnimIndexTbl.b
     jmp SetSamusAnim
 
 SetSamusRoll:
@@ -2807,9 +2883,9 @@ SetSamusRoll:
 
 ;Turn Samus into ball
     ldx SamusDir
-    lda #ObjAnim_16 - ObjectAnimIndexTbl.b
+    lda #ObjAnim_SamusRoll - ObjectAnimIndexTbl.b
     sta ObjAnimResetIndex
-    lda #ObjAnim_13 - ObjectAnimIndexTbl.b
+    lda #ObjAnim_SamusRunJump - ObjectAnimIndexTbl.b
     sta ObjAnimIndex
     lda RunAccelerationTbl,x
     sta SamusAccelX
@@ -2856,6 +2932,7 @@ SamusRoll:
         bcc +
         pla
         sta ObjRadY
+        ; move Samus 11 pixels up
         ldx #$00
         jsr StoreObjectPositionToTemp
         stx Temp05_SpeedX
@@ -2863,10 +2940,12 @@ SamusRoll:
         sta Temp04_SpeedY
         jsr ApplySpeedToPosition
         jsr LoadObjectPositionFromTemp
-        jsr StopHorzMovement
-        lda #ObjAnim_06 - ObjectAnimIndexTbl.b
+        jsr SetSamusStand
+        ; set unroll anim
+        lda #ObjAnim_Unroll - ObjectAnimIndexTbl.b
         sta ObjAnimIndex
         jsr StopVertMovement
+        ; unroll anim for 4 frames
         lda #$04
         bne LD144 ; branch always
     +
@@ -2889,17 +2968,20 @@ SamusRoll:
         jsr BitScan                     ;($E1E1)
         cmp #BUTTONBIT_DOWN
         bcs Lx033
+            ; pressed right or left, turn around
             sta SamusDir
         Lx033:
         ldx SamusDir
-        jsr LCCB7
+        jsr SetSamusRunAccel
         jsr LCF2E
         jsr CheckBombLaunch
         lda Joy1Status
         and #BUTTON_RIGHT | BUTTON_LEFT.b
         bne Lx034
-            jsr ClearHorzData
+            ; not pressing right or left, stop
+            jsr StopHorzMovement
         Lx034:
+        ; animate every 2 frames
         lda #$02
     LD144:
     jmp SetSamusData                ;($CD6D)Set Samus control data and animation.
@@ -2989,13 +3071,13 @@ SamusPntUp:
     jsr SetSamusData                ;($CD6D)Set Samus control data and animation.
     lda ObjAction
     jsr ChooseRoutine
-        .word StopHorzMovement
+        .word SetSamusStand
         .word SetSamusRun
         .word ExitSub       ;($C45C)rts
         .word SetSamusRoll
         .word ExitSub       ;($C45C)rts
         .word ExitSub       ;($C45C)rts
-        .word LCFBE
+        .word SetSamusJumpPntUp
         .word ExitSub       ;($C45C)rts
         .word ExitSub       ;($C45C)rts
         .word ExitSub       ;($C45C)rts
@@ -3085,7 +3167,7 @@ FireWeaponForwards:
     txa
     jsr SFX_SetSQ1SFXFlag
 @exit:
-    ldy #ObjAnim_09 - ObjectAnimIndexTbl.b
+    ldy #ObjAnim_SamusStandFire - ObjectAnimIndexTbl.b
 LD26B:
     tya
     jmp SetSamusNextAnim
@@ -3154,9 +3236,9 @@ FireWeaponUpwards:
 ; Table used by above subroutine
 
 StandAimUpFireAnimTbl:
-    .byte ObjAnim_26 - ObjectAnimIndexTbl, ObjAnim_26 - ObjectAnimIndexTbl
+    .byte ObjAnim_SamusPntUpFire - ObjectAnimIndexTbl, ObjAnim_SamusPntUpFire - ObjectAnimIndexTbl
 AimUpFireMidairAnimTbl:
-    .byte ObjAnim_34 - ObjectAnimIndexTbl, ObjAnim_34 - ObjectAnimIndexTbl
+    .byte ObjAnim_SamusJumpPntUpFire - ObjectAnimIndexTbl, ObjAnim_SamusJumpPntUpFire - ObjectAnimIndexTbl
 
 BulletUpwardsOffsetXTable:
     .byte  $01, -$01
@@ -3170,7 +3252,7 @@ InitBullet:
     lda #$02
     sta ProjectileRadY,y
     sta ProjectileRadX,y
-    lda #ObjAnim_1B - ObjectAnimIndexTbl.b
+    lda #ObjAnim_RegularBullet - ObjectAnimIndexTbl.b
     bit SamusGear
     bpl InitObjAnimIndex ; branch if Samus doesn't have Ice Beam
     lda #ObjAnim_IceBullet - ObjectAnimIndexTbl.b
@@ -3670,7 +3752,7 @@ UpdateBullet_ExplodeIfHitSprite:
     sta ProjectileIsHit,x
 BulletExplode:
     ; explode the projectile
-    lda #ObjAnim_1D - ObjectAnimIndexTbl.b
+    lda #ObjAnim_BulletHit - ObjectAnimIndexTbl.b
     ldy ObjAction,x
     cpy #wa_BulletExplode
     beq Exit5
@@ -3766,7 +3848,7 @@ BombCountdown:
     dec ProjectileDieDelay,x
     bne Lx085
     ; countdown is over, time to explode
-    lda #ObjAnim_37 - ObjectAnimIndexTbl.b ; ?
+    lda #ObjAnim_SamusRunPntUp - ObjectAnimIndexTbl.b ; ?
     ldy ObjAction,x
     cpy #wa_BombCount
     bne Lx084
@@ -3894,7 +3976,7 @@ ElevatorIdle:
     
     ; start elevator!
     ; clear samus variables
-    jsr ClearHorzData
+    jsr StopHorzMovement
     jsr StopVertMovement
     ; y is #$00 here
     sty ObjAnimDelay
@@ -3907,7 +3989,7 @@ ElevatorIdle:
     ; set samus animation
     lda #sa_Elevator
     sta ObjAction
-    lda #ObjAnim_04 - ObjectAnimIndexTbl.b
+    lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
     jsr SetSamusAnim
     ; set samus position to the center of the screen, on top of the elevator
     lda #(SCRN_VX/2).b
@@ -4035,7 +4117,7 @@ ElevatorFade:
     bne @endIf_A
         lda #_id_ObjFrame23.b
         sta ElevatorAnimFrame-$20,x
-        lda #ObjAnim_04 - ObjectAnimIndexTbl.b
+        lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
         jsr SetSamusAnim
         jmp DrawElevator
     @endIf_A:
@@ -5758,7 +5840,7 @@ CheckStopHorzMvmt:
     bcs Exit10
     ;($CF55)Stop horizontal movement or play walk SFX if stopped.
 +
-    jmp StopHorzMovement
+    jmp SetSamusStand
 
 ;-------------------------------------[ Samus vertical acceleration ]--------------------------------
 

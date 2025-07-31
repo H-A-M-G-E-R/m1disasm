@@ -105,12 +105,12 @@ SamusSpiderFall:
         sta SamusDir
     @noChangeDir:
     ldx SamusDir
-    jsr LCCB7
+    jsr SetSamusRunAccel
     jsr LCF2E
     lda Joy1Status
     and #BUTTON_RIGHT | BUTTON_LEFT.b
     bne @exit
-        jsr ClearHorzData
+        jsr StopHorzMovement
     @exit:
     lda #$02
     jmp SetSamusData
@@ -213,8 +213,8 @@ CheckCancelSpider:
     lda #sa_Roll
     sta ObjAction
     jsr StopVertMovement
-    jsr ClearHorzData
-    lda #ObjAnim_16 - ObjectAnimIndexTbl.b
+    jsr StopHorzMovement
+    lda #ObjAnim_SamusRoll - ObjectAnimIndexTbl.b
     jsr SetSamusAnim
     lda #$02
     jsr SetSamusData
