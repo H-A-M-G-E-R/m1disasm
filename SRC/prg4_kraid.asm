@@ -121,6 +121,10 @@ AreaFireballSplatterAnimIndex:
 AreaMellowAnimIndex:
     .byte EnAnim_64 - EnAnimTbl
 
+AreaTileAnim:
+    .byte $FF, KraidBG/$400
+    .byte $00
+
 ChooseEnemyAIRoutine:
     lda EnsExtra.0.type,x
     jsr CommonJump_ChooseRoutine

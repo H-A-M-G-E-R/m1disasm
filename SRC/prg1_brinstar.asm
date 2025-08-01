@@ -121,6 +121,12 @@ AreaFireballSplatterAnimIndex:
 AreaMellowAnimIndex:
     .byte EnAnim_Mellow - EnAnimTbl
 
+; duration, CHR bank
+; 0 = end
+AreaTileAnim:
+    .byte $FF, BrinstarBG/$400
+    .byte $00
+
 ; Enemy AI jump table
 ChooseEnemyAIRoutine:
     lda EnsExtra.0.type,x

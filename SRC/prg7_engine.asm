@@ -1307,8 +1307,7 @@ MoreInit:
     lda #$01                        ;
     jsr WriteAreaPal                ;Write area palette 0.
     stx SpareMem30                  ;Not accessed by game.
-    inc MainRoutine                 ;SamusInit is next routine to run.
-    jmp ScreenOn
+    jmp SamusInit
 
 ; CopyAreaPointers
 ; ========
@@ -1397,6 +1396,9 @@ SamusInit:
     sta Health+1
     lda MaxHealth
     sta Health
+    jsr GameEngine
+    jmp ScreenOn
+
 RTS_C92A:
     rts
 
@@ -1819,6 +1821,7 @@ UpdateWorld:
     jsr CheckMissileToggle
     jsr UpdateItems                 ;($DB37)Display of power-up items.
     jsr UpdateTourianItems          ;($FDE3)
+    jsr UpdateTileAnim
 
 ;Clear remaining sprite RAM
     ldx SpritePagePos
@@ -11204,6 +11207,34 @@ UpdateTileBlastAnim:
 @end:
     ; TileBlastRoutine = wait to respawn
     inc TileBlastRoutine,x
+    rts
+
+;-------------------------------------------------------------------------------
+; Tile animation
+UpdateTileAnim:
+    dec TileAnimDelay
+    bne @RTS
+    ; update
+    ldy TileAnimIndex
+    ; get duration
+    lda AreaTileAnim,y
+    ; reset anim if duration == 0
+    bne @noReset
+        tay
+        lda AreaTileAnim,y
+    @noReset:
+    sta TileAnimDelay
+    ; get CHR bank
+    iny
+    ldx AreaTileAnim,y
+    stx CHRBank0
+    inx
+    inx
+    stx CHRBank1
+
+    iny
+    sty TileAnimIndex
+@RTS:
     rts
 
 .ends

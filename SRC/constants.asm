@@ -1077,14 +1077,21 @@ IntroSprYDir           = $6EAF   ;MSB set=decrease sprite y pos, else increase s
 ;WorldMapRAM            = $7000   ;Not used in this mod. Vanilla: Thru $73FF. The map is 1Kb in size (1024 bytes).
 DecompressedRoomBuffer = $7000   ;$7000-$7130+
 
-SpiderOrientation      = $73F9   ;0=on floor, 1=on right wall, 2=on ceiling, 3=on left wall
+.enum $7300
 
-CHRBank0               = $73FA   ;PPU $0000-$07FF
-CHRBank1               = $73FB   ;PPU $0800-$0FFF
-CHRBank2               = $73FC   ;PPU $1000-$13FF
-CHRBank3               = $73FD   ;PPU $1400-$17FF
-CHRBank4               = $73FE   ;PPU $1800-$1BFF
-CHRBank5               = $73FF   ;PPU $1C00-$1FFF
+TileAnimDelay          db
+TileAnimIndex          db
+
+SpiderOrientation      db        ;0=on floor, 1=on right wall, 2=on ceiling, 3=on left wall
+
+CHRBank0               db        ;PPU $0000-$07FF
+CHRBank1               db        ;PPU $0800-$0FFF
+CHRBank2               db        ;PPU $1000-$13FF
+CHRBank3               db        ;PPU $1400-$17FF
+CHRBank4               db        ;PPU $1800-$1BFF
+CHRBank5               db        ;PPU $1C00-$1FFF
+
+.ende
 
 .enum $77F0
 

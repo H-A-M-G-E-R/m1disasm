@@ -129,6 +129,10 @@ AreaFireballSplatterAnimIndex:
 AreaMellowAnimIndex:
     .byte $00
 
+AreaTileAnim:
+    .byte $FF, TourianBG/$400
+    .byte $00
+
 ; Enemy AI Jump Table
 ChooseEnemyAIRoutine:
     lda EnsExtra.0.type,x
