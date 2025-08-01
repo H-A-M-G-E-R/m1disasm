@@ -20,6 +20,11 @@ banks = [
     "prg4_kraid",
     "prg5_ridley",
     "prg6_audio",
+    "prg8_brinstar_rooms",
+    "prg9_norfair_rooms",
+    "prgA_tourian_rooms",
+    "prgB_kraid_rooms",
+    "prgC_ridley_rooms",
     "prg7_engine",
     "chr"
 ]

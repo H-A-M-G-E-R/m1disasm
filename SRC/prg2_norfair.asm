@@ -59,9 +59,9 @@ PalPntrTbl:
 
 AreaPointers:
     .word SpecItmsTbl               ;($A2D9)Beginning of special items table.
-    .word RmPtrTbl                  ;($A21B)Beginning of room pointer table.
+    .word $0000                     ;($A21B)Was beginning of room pointer table.
     .word $0000                     ;($A277)Was beginning of structure pointer table.
-    .word MacroDefs                 ;($AEEC)Beginning of macro definitions.
+    .word $0000                     ;($AEEC)Was beginning of macro definitions.
     .word EnFramePtrTable1          ;($9C64)Address table into enemy animation data.
     .word $0000                     ;
     .word $0000                     ;($9F0E)Was pointers to enemy frame placement data.
@@ -721,15 +721,6 @@ TileBlastFrame10:
 ;---------------------------------[ Special items table ]-----------------------------------------
 
 .include "data/norfair/global_objs.asm"
-
-;-----------------------------------------[ Room definitions ]---------------------------------------
-
-.include "data/norfair/rooms.asm"
-
-;----------------------------------------[ Macro definitions ]---------------------------------------
-
-MacroDefs:
-    .incbin "data/norfair/metatiles.bin"
 
 .ends
 

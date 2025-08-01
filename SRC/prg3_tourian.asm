@@ -59,9 +59,9 @@ PalPntrTbl:
 
 AreaPointers:
     .word SpecItmsTbl               ;($A83B)Beginning of special items table.
-    .word RmPtrTbl                  ;($A7D1)Beginning of room pointer table.
+    .word $0000                     ;($A7D1)Was beginning of room pointer table.
     .word $0000                     ;($A7FB)Was beginning of structure pointer table.
-    .word MacroDefs                 ;($AE49)Beginning of macro definitions.
+    .word $0000                     ;($AE49)Was beginning of macro definitions.
     .word EnFramePtrTable1          ;($A42C)Address table into enemy animation data.
     .word $0000                     ;
     .word $0000                     ;($9F0E)Was pointers to enemy frame placement data.
@@ -2128,15 +2128,6 @@ TileBlastFrame10:
 ;------------------------------------[ Special items table ]-----------------------------------------
 
 .include "data/tourian/global_objs.asm"
-
-;-----------------------------------------[ Room definitions ]---------------------------------------
-
-.include "data/tourian/rooms.asm"
-
-;----------------------------------------[ Macro definitions ]---------------------------------------
-
-MacroDefs:
-    .incbin "data/tourian/metatiles.bin"
 
 .ends
 

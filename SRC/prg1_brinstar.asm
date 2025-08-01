@@ -59,9 +59,9 @@ PalPntrTbl:
 
 AreaPointers:
     .word SpecItmsTbl               ;($A3D6)Beginning of special items table.
-    .word RmPtrTbl                  ;($A314)Beginning of room pointer table.
+    .word $0000                     ;($A314)Was beginning of room pointer table.
     .word $0000                     ;($A372)Was beginning of structure pointer table.
-    .word MacroDefs                 ;($AEF0)Beginning of macro definitions.
+    .word $0000                     ;($AEF0)Was beginning of macro definitions.
     .word EnFramePtrTable1          ;($9DE0)Pointer table into enemy animation data.
     .word $0000                     ;
     .word $0000                     ;($9F0E)Was pointers to enemy frame placement data.
@@ -947,15 +947,6 @@ TileBlastFrame10:
 ;------------------------------------[ Special items table ]-----------------------------------------
 
 .include "data/brinstar/global_objs.asm"
-
-;-----------------------------------------[ Room definitions ]---------------------------------------
-
-.include "data/brinstar/rooms.asm"
-
-;----------------------------------------[ Macro definitions ]---------------------------------------
-
-MacroDefs:
-    .incbin "data/brinstar/metatiles.bin"
 
 .ends
 

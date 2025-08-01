@@ -33,9 +33,9 @@
 .ENDME
 
 .ROMBANKMAP
-    BANKSTOTAL $9
+    BANKSTOTAL $11
     BANKSIZE $4000
-    BANKS $8
+    BANKS $10
     BANKSIZE $40000
     BANKS 1
 .ENDRO
@@ -255,16 +255,16 @@ CartRAMPtr             dw        ;Low byte of pointer to room RAM (#$00).
                                    ;RAM conatins a completed room in it, the entire contents-->
                                    ;of the room RAM is loaded into the PPU.
 
-RoomPtrTable           dw        ;Low byte of start of room pointer table.
+;RoomPtrTable           dw        ;Low byte of start of room pointer table.
 ; RoomPtrTable+1         = $3C     ;High byte of start of room pointer table.
 
 ;StructPtrTable         dw        ;Low byte of start of structure pointer table.
 ; StructPtrTable+1       = $3E     ;High byte of structure pointer table.
 
-SpareMem3E             dw
-
-MacroPtr               dw        ;Low byte of pointer into macro definitions.
+;MacroPtr               dw        ;Low byte of pointer into macro definitions.
 ; MacroPtr+1             = $40     ;High byte of pointer into macro definitions.
+
+SpareMem3C             ds 6
 
 EnmyFrameTbl1Ptr       dw        ;Low byte of pointer into address table to find enemy animations.
 ; EnmyFrameTbl1Ptr+1     = $42     ;High byte of pointer into address table to find enemy animations.

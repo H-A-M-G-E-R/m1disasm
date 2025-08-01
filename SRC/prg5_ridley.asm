@@ -59,9 +59,9 @@ PalPntrTbl:
 
 AreaPointers:
     .word SpecItmsTbl               ;($A20D)Beginning of special items table.
-    .word RmPtrTbl                  ;($A17F)Beginning of room pointer table.
+    .word $0000                     ;($A17F)Was beginning of room pointer table.
     .word $0000                     ;($A1D3)Was beginning of structure pointer table.
-    .word MacroDefs                 ;($AB23)Beginning of macro definitions.
+    .word $0000                     ;($AB23)Was beginning of macro definitions.
     .word EnFramePtrTable1          ;($9BF0)Address table into enemy animation data.
     .word $0000                     ;
     .word $0000                     ;($9F0E)Was pointers to enemy frame placement data.
@@ -681,15 +681,6 @@ TileBlastFrame10:
 ;-----------------------------------[ Special items table ]-----------------------------------------
 
 .include "data/ridley/global_objs.asm"
-
-;-----------------------------------------[ Room definitions ]---------------------------------------
-
-.include "data/ridley/rooms.asm"
-
-;----------------------------------------[ Macro definitions ]---------------------------------------
-
-MacroDefs:
-    .incbin "data/ridley/metatiles.bin"
 
 .ends
 

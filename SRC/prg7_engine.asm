@@ -14,14 +14,14 @@
 ; Continued by Dirty McDingus (nmikstas@yahoo.com)
 ; A work in progress.
 
-;Game engine (memory page 7)
+;Game engine (memory page $F)
 
 .include "hardware.asm"
 .include "constants.asm"
 .include "macros.asm"
 
-.redef BANK = 7
-.section "ROM Bank $007" bank 7 slot "ROMFixedSlot" orga $C000 force
+.redef BANK = $F
+.section "ROM Bank $00F" bank $F slot "ROMFixedSlot" orga $C000 force
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
@@ -1317,7 +1317,7 @@ CopyAreaPointers:
     ldx #$0D
     @loop:
         lda AreaPointers+2,x
-        sta RoomPtrTable,x
+        sta SpareMem3C,x
         dex
         bpl @loop
     rts
@@ -7291,19 +7291,31 @@ SetupRoom:
     jsr UpdateRoomSpriteInfo        ;($EC9B)Update which sprite belongs on which name table.
 
     jsr ScanForItems                ;($ED98)Set up any special items.
+
+    ; Switch bank to room bank
+    lda CurrentMainBank
+    clc
+    adc #$07
+    jsr MMCWritePrgBank
+
+    lda #<RmPtrTbl.b
+    sta $00
+    lda #>RmPtrTbl.b
+    sta $01
+
     lda RoomNumber                  ;Room number to load.
     asl                             ;*2(for loading address of room pointer).
     tay                             ;
     bcc +
-        inc RoomPtrTable+1.b            ;If MSB set, get second half of RoomPtrTable.
+        inc $01                         ;If MSB set, get second half of RoomPtrTable.
     +
-    lda (RoomPtrTable),y            ;Low byte of 16-bit room pointer.-->
+    lda ($00),y                     ;Low byte of 16-bit room pointer.-->
     sta lzsa_srcptr                 ;Base copied from $959A to $3B.
     iny                             ;
-    lda (RoomPtrTable),y            ;High byte of 16-bit room pointer.-->
+    lda ($00),y                     ;High byte of 16-bit room pointer.-->
     sta lzsa_srcptr+1.b             ;Base copied from $959B to $3C.
     bcc +
-        dec RoomPtrTable+1.b            ;If MSB set, restore RoomPtrTable.
+        dec $01                         ;If MSB set, restore RoomPtrTable.
     +
 
 ; Decompress the room to a buffer.
@@ -7318,9 +7330,11 @@ SetupRoom:
 ; Copy attribute table from DecompressedRoomBuffer to room RAM.
     lda #$00
     sta $00
+    sta $03
+    lda #>MacroDefs.b
+    sta $04
     lda CartRAMPtr+1.b
-    clc
-    adc #$03
+    ora #$03
     sta $01
 
     ldy #$C0
@@ -7351,30 +7365,30 @@ SetupRoom:
     @draw_metatile:
         asl                             ;A=macro number * 4. Each macro is 4 bytes long.
         bcc +
-            inc MacroPtr+1.b                ;If MSB set, add $200 to MacroPtr.
-            inc MacroPtr+1.b                ;
+            inc $04                         ;If MSB set, add $200 to MacroPtr.
+            inc $04                         ;
         +
         asl
         bcc +
-            inc MacroPtr+1.b                ;If second MSB set, add $100 to MacroPtr.
+            inc $04                         ;If second MSB set, add $100 to MacroPtr.
         +
         sta $02                         ;Store macro index.
 
         tay
-        lda (MacroPtr),y                ;Get tile number.
+        lda ($03),y                     ;Get tile number.
         ldy #$00                        ;get tile position in macro.
         sta ($00),y                     ;Write tile number to room RAM.
 
         ldy $02                         ;Macro index loaded into Y.
         iny
-        lda (MacroPtr),y
+        lda ($03),y
         ldy #$01
         sta ($00),y
 
         ldy $02
         iny
         iny
-        lda (MacroPtr),y
+        lda ($03),y
         ldy #$20
         sta ($00),y
 
@@ -7382,12 +7396,12 @@ SetupRoom:
         iny
         iny
         iny
-        lda (MacroPtr),y
+        lda ($03),y
         ldy #$21
         sta ($00),y
 
-        lda AreaPointers+7              ;Restore MacroPtr+1.
-        sta MacroPtr+1.b                ;
+        lda #>MacroDefs.b               ;Restore MacroPtr+1.
+        sta $04                         ;
 
     ; Next metatile
     @next:
@@ -7408,7 +7422,10 @@ SetupRoom:
     bne @loop_metatiles                 ;Branch always.
 
 ; Load enemies.
-@done_metatiles
+@done_metatiles:
+    ; Switch bank back to area bank
+    jsr SetBankToMainBank
+
     lda #<(DecompressedRoomBuffer+$F0+$40).b
     sta $00
     lda #>(DecompressedRoomBuffer+$F0+$40).b
@@ -11241,7 +11258,7 @@ UpdateTileAnim:
 
 ;----------------------------------------[ Interrupt vectors ]--------------------------------------
 
-.section "ROM Bank $007 - Vectors" bank 7 slot "ROMFixedSlot" orga $FFFA force
+.section "ROM Bank $00F - Vectors" bank $F slot "ROMFixedSlot" orga $FFFA force
     .word NMI                       ;($C0D9)NMI vector.
     .word RESET                     ;($FFB0)Reset vector.
     .word RESET                     ;($FFB0)IRQ vector.

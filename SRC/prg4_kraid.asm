@@ -59,9 +59,9 @@ PalPntrTbl:
 
 AreaPointers:
     .word SpecItmsTbl               ;($A26D)Beginning of special items table.
-    .word RmPtrTbl                  ;($A1D5)Beginning of room pointer table.
+    .word $0000                     ;($A1D5)Was beginning of room pointer table.
     .word $0000                     ;($A21F)Was beginning of structure pointer table.
-    .word MacroDefs                 ;($AC32)Beginning of macro definitions.
+    .word $0000                     ;($AC32)Was beginning of macro definitions.
     .word EnFramePtrTable1          ;($9CF7)Address table into enemy animation data.
     .word $0000                     ;
     .word $0000                     ;($9F0E)Was pointers to enemy frame placement data.
@@ -792,15 +792,6 @@ TileBlastFrame10:
 ;-----------------------------------[ Special items table ]-----------------------------------------
 
 .include "data/kraid/global_objs.asm"
-
-;-----------------------------------------[ Room definitions ]---------------------------------------
-
-.include "data/kraid/rooms.asm"
-
-;----------------------------------------[ Macro definitions ]---------------------------------------
-
-MacroDefs:
-    .incbin "data/kraid/metatiles.bin"
 
 .ends
 
