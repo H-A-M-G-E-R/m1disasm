@@ -1663,7 +1663,7 @@ UpdateBullet_CollisionWithMotherBrain:
     ldx PageIndex
     ; exit if projectile status is not #$0B (missile?)
     lda ProjectileStatus,x
-    cmp #$0B
+    cmp #wa_Missile
     bne @exit
     ; exit if tile id < $5E
     cpy #$5E
