@@ -1211,7 +1211,7 @@ wa_LayBomb             = $06
 wa_BombCount           = $07
 wa_BombExplode         = $08
 wa_Missile             = $09 ; must be an odd number, see FireWeaponForwards and FireWeaponUpwards
-wa_ScrewAttack         = $81
+wa_ScrewAttack         = $0A
 
 ;Enemy Status
 enemyStatus_NoEnemy    = 0

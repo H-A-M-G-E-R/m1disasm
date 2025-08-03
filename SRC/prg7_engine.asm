@@ -9485,6 +9485,7 @@ WeaponDamageTbl:
     .byte $00
     .byte $02 ; bomb
     .byte $04 ; missile (minibosses and metroids only)
+    .byte $01 ; screw attack (minibosses only)
 
 UpdateEnemy_Resting_UpdateEnData1F:
     ; load L977B entry * 2

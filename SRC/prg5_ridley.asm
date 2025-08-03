@@ -190,7 +190,7 @@ MellowDamage:
     .word $0240
 
 EnemyPrimaryPaletteTbl:
-    .byte $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02
+    .byte $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $03, $02, $02, $02, $02, $02
 
 EnemyRestingAnimIndex:
     .byte EnAnim_1D - EnAnimTbl, EnAnim_1D - EnAnimTbl
