@@ -4164,6 +4164,24 @@ ElevatorD8BF:
     jsr WriteAreaPal
     ; update samus palette
     jsr SelectSamusPal
+    ; check if there's item room music ahead
+    lda SamusMapPosY
+    pha
+    tay
+    ldx PageIndex
+    lda ElevatorType-$20,x
+    bpl @down
+        dey
+        jmp @endif_B
+    @down:
+        iny
+    @endif_B:
+    sty SamusMapPosY
+    jsr GetRoomNum
+    pla
+    sta SamusMapPosY
+    lda #$FF
+    sta RoomNumber
     ;($D92C)Start music.
     jsr StartMusic
     ; turn the screen on (when had it turned off?)
@@ -4193,27 +4211,16 @@ ElevatorD8BF:
     rts
 
 StartMusic:
-    ; branch if we are not in an elevator transition
-    lda ElevatorStatus
-    cmp #$06
-    bne Lx112
-        ; we are in an elevator transition
-        ; branch if elevator is going up
-        lda ElevatorType
-        bmi Lx113
-    Lx112:
-        ; we are not in an elevator transition, or elevator is going down
-        ;Load proper bit flag for area music.
-        lda AreaMusicFlag
-        ldy ItemRoomMusicStatus
-        bmi Lx114
-        beq Lx114
-    Lx113:
-        ; elevator is going up, or item room music flag is set
-        ;Set flag to play item room music.
-        lda #$81
-        sta ItemRoomMusicStatus
-        lda #music_ItemRoom
+    ;Load proper bit flag for area music.
+    lda AreaMusicFlag
+    ldy ItemRoomMusicStatus
+    bmi Lx114
+    beq Lx114
+    ; item room music flag is set
+    ;Set flag to play item room music.
+    lda #$81
+    sta ItemRoomMusicStatus
+    lda #music_ItemRoom
     Lx114:
     ;Store music flag info.
     sta CurrentMusic
