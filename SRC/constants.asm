@@ -464,6 +464,8 @@ SkreeProjectiles       instanceof SkreeProjectile 4 startfrom 0
 .union
     ; 4 slots of 8 bytes each ($B0-$CF)
     Mellows                instanceof Mellow 4 startfrom 0
+
+    MoveSamusUp_IsUnrollCheck db
 .nextu
     ; $B7 is unused
 

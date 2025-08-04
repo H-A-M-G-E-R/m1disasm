@@ -2917,9 +2917,10 @@ SamusRoll:
         lda ObjRadY
         cmp #$07
         bne Lx032
+        sta MoveSamusUp_IsUnrollCheck
         lda ObjY
         pha
-        lda SamusJumpDsplcmnt
+        lda ObjHi
         pha
         ; branch if not possible to stand up
         lda #($0F-$07)*2
@@ -2930,13 +2931,14 @@ SamusRoll:
             dec ObjectCounter
             bne -
         pla
-        sta SamusJumpDsplcmnt
+        sta ObjHi
         pla
         sta ObjY
         lda #$0F
         sta ObjRadY
         ; move Samus 8 pixels up
         ldx #$00
+        stx MoveSamusUp_IsUnrollCheck
         jsr StoreObjectPositionToTemp
         stx Temp05_SpeedX
         lda #-($0F-$07)
@@ -2953,9 +2955,11 @@ SamusRoll:
         bne LD144 ; branch always
     +
         pla
-        sta SamusJumpDsplcmnt
+        sta ObjHi
         pla
         sta ObjY
+        lda #$00
+        sta MoveSamusUp_IsUnrollCheck
     Lx032:
         ;lda Joy1Change
         ;and #BUTTON_DOWN
@@ -6042,6 +6046,8 @@ MoveSamusUp:
         clc
         beq RTS_X156
     Lx151:
+    lda MoveSamusUp_IsUnrollCheck
+    bne Lx152
     lda SamusScrY
     cmp #$66        ; reached up scroll limit?
     bcs Lx152      ; branch if not
@@ -6061,7 +6067,10 @@ MoveSamusUp:
         sta ObjY
     Lx155:
     dec ObjY
+    lda MoveSamusUp_IsUnrollCheck
+    bne +
     inc SamusJumpDsplcmnt
+    +
     sec
 RTS_X156:
     rts
