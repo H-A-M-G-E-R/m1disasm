@@ -2917,28 +2917,29 @@ SamusRoll:
         lda ObjRadY
         cmp #$07
         bne Lx032
-        pha
         lda ObjY
-        sec
-        sbc #$07
-        and #$07
-        clc
-        adc #$07
-        sta ObjRadY
-        jsr ObjectCheckMoveUp
-        bcc +     ; branch if not possible to stand up
-        lda ObjRadY
-        adc #$07
-        sta ObjRadY
-        jsr ObjectCheckMoveUp
-        bcc +
+        pha
+        lda SamusJumpDsplcmnt
+        pha
+        ; branch if not possible to stand up
+        lda #($0F-$07)*2
+        sta ObjectCounter
+        -
+            jsr MoveSamusUp
+            bcc +
+            dec ObjectCounter
+            bne -
         pla
+        sta SamusJumpDsplcmnt
+        pla
+        sta ObjY
+        lda #$0F
         sta ObjRadY
-        ; move Samus 11 pixels up
+        ; move Samus 8 pixels up
         ldx #$00
         jsr StoreObjectPositionToTemp
         stx Temp05_SpeedX
-        lda #-$0B
+        lda #-($0F-$07)
         sta Temp04_SpeedY
         jsr ApplySpeedToPosition
         jsr LoadObjectPositionFromTemp
@@ -2952,7 +2953,9 @@ SamusRoll:
         bne LD144 ; branch always
     +
         pla
-        sta ObjRadY
+        sta SamusJumpDsplcmnt
+        pla
+        sta ObjY
     Lx032:
         ;lda Joy1Change
         ;and #BUTTON_DOWN
