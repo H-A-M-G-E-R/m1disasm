@@ -2268,6 +2268,11 @@ SamusRun:
 ;The following function sets various animation and control data bytes for Samus.
 
 SetSamusData:
+    ; half animation speed in liquid
+    ldx SamusInLava
+    beq +
+        asl
+    +
     jsr UpdateObjAnim               ;($DC8F)Update animation if needed.
     jsr IsScrewAttackActive         ;($CD9C)Check if screw attack active to change palette.
     bcs LCD7E                           ;If screw attack not active, branch to skip palette change.
