@@ -59,9 +59,9 @@ PalPntrTbl:
 
 AreaPointers:
     .word SpecItmsTbl               ;($A26D)Beginning of special items table.
-    .word RmPtrTbl                  ;($A1D5)Beginning of room pointer table.
+    .word $0000                     ;($A1D5)Was beginning of room pointer table.
     .word $0000                     ;($A21F)Was beginning of structure pointer table.
-    .word MacroDefs                 ;($AC32)Beginning of macro definitions.
+    .word $0000                     ;($AC32)Was beginning of macro definitions.
     .word EnFramePtrTable1          ;($9CF7)Address table into enemy animation data.
     .word $0000                     ;
     .word $0000                     ;($9F0E)Was pointers to enemy frame placement data.
@@ -86,6 +86,8 @@ L95CC:
     .byte $1D                       ;Kraid's room.
 AreaMusicFlag:
     .byte music_KraidArea           ;Kraid's hideout music init flag.
+AreaMinibossMusic:
+    .byte music_Tourian
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:
@@ -119,8 +121,12 @@ AreaFireballSplatterAnimIndex:
 AreaMellowAnimIndex:
     .byte EnAnim_64 - EnAnimTbl
 
+AreaTileAnim:
+    .byte $FF, KraidBG/$400
+    .byte $00
+
 ChooseEnemyAIRoutine:
-    lda EnType,x
+    lda EnsExtra.0.type,x
     jsr CommonJump_ChooseRoutine
         .word SidehopperFloorAIRoutine ; 00 - sidehopper
         .word SidehopperCeilingAIRoutine ; 01 - ceiling sidehopper
@@ -247,7 +253,22 @@ EnemyData0DTbl:
     .byte $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $40, $00, $00, $00
 
 EnemyDistanceToSamusThreshold:
-    .byte $00, $00, $06, $00, $83, $00, $84, $00, $00, $00, $00, $00, $00, $00, $00, $00
+    .byte $00
+    .byte $00
+    .byte $6 | (0 << 7) ; unused enemy
+    .byte $00
+    .byte $3 | (1 << 7)
+    .byte $00
+    .byte $4 | (1 << 7) ; unused enemy
+    .byte $00
+    .byte $00
+    .byte $00
+    .byte $00
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
 
 EnemyInitDelayTbl:
     .byte $08, $08, $01, $01, $01, $01, $10, $08, $10, $00, $00, $01, $01, $00, $00, $00
@@ -332,6 +353,54 @@ EnemyFireballMovementPtrTable:
 ; Referenced using EnData0A / 2
 EnemyFireballDamageTbl:
     .byte $20, $20, $20, $20
+
+TileBlastBlastAnimIndexTable:
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$70
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$74
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$78
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$7C
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$80
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$84
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$88
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$8C
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$90
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$94
+
+TileBlastRespawnDelayTbl:
+    .byte $50 ; tile #$70
+    .byte $50 ; tile #$74
+    .byte $50 ; tile #$78
+    .byte $50 ; tile #$7C
+    .byte $50 ; tile #$80
+    .byte $50 ; tile #$84
+    .byte $50 ; tile #$88
+    .byte $50 ; tile #$8C
+    .byte $50 ; tile #$90
+    .byte $50 ; tile #$94
+
+TileBlastRespawnAnimIndexTable:
+    .byte TileBlastAnim6 - TileBlastAnim ; tile #$70
+    .byte TileBlastAnim7 - TileBlastAnim ; tile #$74
+    .byte TileBlastAnim8 - TileBlastAnim ; tile #$78
+    .byte TileBlastAnim0 - TileBlastAnim ; tile #$7C
+    .byte TileBlastAnim1 - TileBlastAnim ; tile #$80
+    .byte TileBlastAnim2 - TileBlastAnim ; tile #$84
+    .byte TileBlastAnim3 - TileBlastAnim ; tile #$88
+    .byte TileBlastAnim4 - TileBlastAnim ; tile #$8C
+    .byte TileBlastAnim9 - TileBlastAnim ; tile #$90
+    .byte TileBlastAnim5 - TileBlastAnim ; tile #$94
+
+TileBlastAnim:
+TileBlastAnim0:  .byte $06,$07,$00,$FE ; blasting tile or respawning tile #$7C
+TileBlastAnim1:  .byte $07,$06,$01,$FE ; respawning tile #$80
+TileBlastAnim2:  .byte $07,$06,$02,$FE ; respawning tile #$84
+TileBlastAnim3:  .byte $07,$06,$03,$FE ; respawning tile #$88
+TileBlastAnim4:  .byte $07,$06,$04,$FE ; respawning tile #$8C
+TileBlastAnim5:  .byte $07,$06,$05,$FE ; respawning tile #$94
+TileBlastAnim6:  .byte $07,$06,$09,$FE ; respawning tile #$70
+TileBlastAnim7:  .byte $07,$06,$0A,$FE ; respawning tile #$74
+TileBlastAnim8:  .byte $07,$06,$0B,$FE ; respawning tile #$78
+TileBlastAnim9:  .byte $07,$06,$08,$FE ; respawning tile #$90
 
 TileBlastFramePtrTable:
     .word TileBlastFrame00
@@ -723,15 +792,6 @@ TileBlastFrame10:
 ;-----------------------------------[ Special items table ]-----------------------------------------
 
 .include "data/kraid/global_objs.asm"
-
-;-----------------------------------------[ Room definitions ]---------------------------------------
-
-.include "data/kraid/rooms.asm"
-
-;----------------------------------------[ Macro definitions ]---------------------------------------
-
-MacroDefs:
-    .incbin "data/kraid/metatiles.bin"
 
 .ends
 

@@ -12,71 +12,71 @@
 ObjectAnimIndexTbl:
 
 ;Samus run animation.
-ObjAnim_00: ;$00
+ObjAnim_SamusRun: ;$00
     .byte _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, $FF, $FF
 
 ;Samus front animation.
-ObjAnim_04: ;$04
+ObjAnim_SamusFront: ;$04
     .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus jump out of ball animation.
-ObjAnim_06: ;$06
+ObjAnim_Unroll: ;$06
     .byte _id_ObjFrame_CrazyBus0
 ;Samus Stand animation.
-ObjAnim_07: ;$07
+ObjAnim_SamusStand: ;$07
     .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus stand and fire animation.
-ObjAnim_09: ;$09
+ObjAnim_SamusStandFire: ;$09
     .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus stand and jump animation.
-ObjAnim_0B: ;$0B
+ObjAnim_SamusJumpTransition: ;$0B
     .byte _id_ObjFrame_CrazyBus0
 ;Samus Jump animation.
-ObjAnim_0C: ;$0C
+ObjAnim_SamusJump: ;$0C
     .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus somersault animation.
-ObjAnim_0E: ;$0E
+ObjAnim_SamusSalto: ;$0E
     .byte _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, $FF
 
 ;Samus run and jump animation.
-ObjAnim_13: ;$13
+ObjAnim_SamusRunJump: ;$13
     .byte _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus roll animation.
-ObjAnim_16: ;$16
+ObjAnim_SamusRoll: ;$16
     .byte _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, $FF
 
 ;Bullet animation.
-ObjAnim_1B: ;$1B
+ObjAnim_RegularBullet: ;$1B
     .byte _id_ObjFrame28, $FF
 
 ;Bullet hit animation.
-ObjAnim_1D: ;$1D
+ObjAnim_BulletHit: ;$1D
     .byte _id_ObjFrame2A, $F7, $FF
 
 ;Samus jump and fire animation.
-ObjAnim_20: ;$20
+ObjAnim_SamusJumpFire: ;$20
     .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus run and fire animation.
-ObjAnim_22: ;$22
+ObjAnim_SamusRunFire: ;$22
     .byte _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, $FF, $FF
 
 ;Samus point up and shoot animation.
-ObjAnim_26: ;$26
+ObjAnim_SamusPntUpFire: ;$26
     .byte _id_ObjFrame_CrazyBus0
 ;Samus point up animation.
-ObjAnim_27: ;$27
+ObjAnim_SamusPntUp: ;$27
     .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Door open animation.
 ObjAnim_DoorOpen: ;$29
     .byte _id_ObjFrame31, _id_ObjFrame31, _id_ObjFrame33
 ObjAnim_DoorOpen_Reset: ;$2C
-    .byte $F7, $FF
+    .byte _id_ObjFrame_DoorOpened, $FF
 
 ;Door close animation.
 ObjAnim_DoorClose: ;$2E
@@ -89,25 +89,27 @@ ObjAnim_SamusExplode: ;$32
     .byte _id_ObjFrame_CrazyBusExplode, $FF
 
 ;Samus jump and point up animation.
-ObjAnim_34: ;$34
+ObjAnim_SamusJumpPntUpFire: ;$34
+    .byte _id_ObjFrame_CrazyBus0, $FF
+ObjAnim_SamusJumpPntUpTransition:
     .byte _id_ObjFrame_CrazyBus0
-ObjAnim_35: ;$35
+ObjAnim_SamusJumpPntUp: ;$35
     .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus run and point up animation.
-ObjAnim_37: ;$37
+ObjAnim_SamusRunPntUp: ;$37
     .byte _id_ObjFrame_CrazyBus0, _id_ObjFrame_CrazyBus1, $FF, $FF
 
 ;Samus run, point up and shoot animation 1.
-ObjAnim_3B: ;$3B
+ObjAnim_SamusRunPntUpFire1: ;$3B
     .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus run, point up and shoot animation 2.
-ObjAnim_3D: ;$3D
+ObjAnim_SamusRunPntUpFire2: ;$3D
     .byte _id_ObjFrame_CrazyBus1, $FF
 
 ;Samus run, point up and shoot animation 3.
-ObjAnim_3F: ;$3F
+ObjAnim_SamusRunPntUpFire3: ;$3F
     .byte _id_ObjFrame_CrazyBus0, $FF
 
 ;Samus front fade out of old area. (plays for only one frame on NES)
@@ -118,7 +120,9 @@ ObjAnim_SamusFadeOutArea_Reset: ;$4E
 
 ;Elevator fade out of old area. (plays for only one frame on NES)
 ObjAnim_ElevatorFadeOutArea: ;$50
-    .byte _id_ObjFrame23, $F7, $F7, _id_ObjFrame23, $F7, $F7, $F7, _id_ObjFrame23, $F7, $F7, $F7, $F7, _id_ObjFrame23
+    .byte _id_ObjFrame23, $F7, $F7, _id_ObjFrame23, $F7
+ObjAnim_55: ;$55 (referenced in MotherBrain_SpawnDoor)
+    .byte $F7, $F7, _id_ObjFrame23, $F7, $F7, $F7, $F7, _id_ObjFrame23
 ObjAnim_ElevatorFadeOutArea_Reset: ;$5D
     .byte $F7, $FF
 
@@ -169,6 +173,10 @@ ObjAnim_IceBullet:
 ;Ice bullet hit animation.
 ObjAnim_IceBulletHit:
     .byte _id_ObjFrameIceBulletHit, $F7, $FF
+
+;Wave + ice beam animation.
+ObjAnim_WaveIceBeam: ;$7D
+    .byte _id_ObjFrame_WaveIceBeam, $FF
 
 ;Samus spider ball animation.
 ObjAnim_SamusSpider:
@@ -229,6 +237,7 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame49
     PtrTableEntry ObjFramePtrTable, ObjFrame4A
     PtrTableEntry ObjFramePtrTable, ObjFrame4B
+    PtrTableEntry ObjFramePtrTable, ObjFrame_WaveIceBeam
     PtrTableEntry ObjFramePtrTable, ObjFrame4D
     PtrTableEntry ObjFramePtrTable, ObjFrame4E
     PtrTableEntry ObjFramePtrTable, ObjFrame4F
@@ -249,6 +258,7 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame68
     PtrTableEntry ObjFramePtrTable, ObjFrame69
     PtrTableEntry ObjFramePtrTable, ObjFrameIceBullet
+    PtrTableEntry ObjFramePtrTable, ObjFrame_DoorOpened
 
 SamusCHRBankTable:
     .byte SamusSuitGFX0/$400 ; ObjFrame_CrazyBus0
@@ -645,6 +655,11 @@ ObjFrame33:
     .byte $10,$1B,$A0,$00
     .byte $80
 
+;Door opened.
+ObjFrame_DoorOpened:
+    .byte $18,$04
+    .byte $80
+
 ;Samus explode.
 ObjFrame35:
     .byte $80,$00
@@ -833,6 +848,12 @@ ObjFrame4A:
 ObjFrame4B:
     .byte $04,$04
     .byte $FC,$20,$20,$FC
+    .byte $80
+
+;Wave + ice beam.
+ObjFrame_WaveIceBeam:
+    .byte $04,$04
+    .byte $FC,$20,$21,$FC
     .byte $80
 
 ;Bomb explode.

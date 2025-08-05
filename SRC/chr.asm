@@ -2,7 +2,7 @@
 .include "constants.asm"
 .include "macros.asm"
 
-.SECTION "CHR Bank 0" BANK 8 SLOT "CHRROMSlot" ORGA $0000 FORCE
+.section "CHR Bank 0" bank $10 slot "CHRROMSlot" orga $0000 force
     TitleBG: .incbin "title/title_bg.chr" ; 4
     EndingBG: .incbin "title/ending_bg.chr" ; 4
     BrinstarBG: .incbin "data/brinstar/bg.chr" ; 4
@@ -43,4 +43,4 @@
     RidleySPR: .incbin "data/ridley/sprite_tiles.chr" ; 1
 
     BlankSPR:
-.ENDS
+.ends

@@ -1,5 +1,8 @@
 ; SkreeRoutine
 SkreeAIRoutine:
+    ; skree uses EnemyDistanceToSamusThreshold to see if samus is close enough on the x axis to start falling
+    ; when samus gets close enough, bit 3 of EnData05 will get set, which will make the skree active
+    
     ; branch if enemy is resting
     lda EnemyStatusPreAI
     cmp #enemyStatus_Resting
@@ -18,31 +21,31 @@ SkreeAIRoutine:
     ; skree just landed on the ground
     ; set blow up delay to roughly 1 second
     lda #$3A
-    sta EnJumpDsplcmnt,x
+    sta EnsExtra.0.jumpDsplcmnt,x
     bne SkreeExit_Active
 
 SkreeBlowUpIntoProjectiles:
     ; decrement blow up delay
-    dec EnJumpDsplcmnt,x
+    dec EnsExtra.0.jumpDsplcmnt,x
     ; exit if delay is not zero
     bne SkreeExit_Active
 
     ; remove skree
     lda #enemyStatus_NoEnemy
-    sta EnStatus,x
+    sta EnsExtra.0.status,x
     ; spawn 4 projectiles
     ldy #(4-1)*4
     @loop:
         ; projectile is alive for 10 frames
         lda #$0A
-        sta SkreeProjectileDieDelay,y
+        sta SkreeProjectiles.0.dieDelay,y
         ; set projectile position to skree position
         lda EnY,x
-        sta SkreeProjectileY,y
+        sta SkreeProjectiles.0.y,y
         lda EnX,x
-        sta SkreeProjectileX,y
-        lda EnHi,x
-        sta SkreeProjectileHi,y
+        sta SkreeProjectiles.0.x,y
+        lda EnsExtra.0.hi,x
+        sta SkreeProjectiles.0.hi,y
         ; move to next projectile slot
         dey
         dey

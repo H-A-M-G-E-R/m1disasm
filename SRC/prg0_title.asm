@@ -429,9 +429,9 @@ UnusedIntroRoutine2:
     bne RTS_822D
     lda #$00
     sta ObjAction
-    lda #ObjAnim_0B - ObjectAnimIndexTbl.b
+    lda #ObjAnim_SamusJumpTransition - ObjectAnimIndexTbl.b
     sta ObjAnimResetIndex
-    lda #ObjAnim_0C - ObjectAnimIndexTbl.b
+    lda #ObjAnim_SamusJump - ObjectAnimIndexTbl.b
     sta ObjAnimIndex
     lda #_id_ObjFrame07.b
     sta ObjAnimFrame
@@ -729,16 +729,16 @@ WriteIntroSprite:
     lda IntroSprYCoord,x
     sec ;Subtract #$01 from first byte to get proper y coordinate.
     sbc #$01
-    sta SpriteRAM+($04<<2),x
+    sta SpriteRAM.4.y,x
     
     lda IntroSprPattTbl,x
-    sta SpriteRAM+($04<<2)+1,x
+    sta SpriteRAM.4.tileID,x
     
     lda IntroSprCntrl,x
-    sta SpriteRAM+($04<<2)+2,x
+    sta SpriteRAM.4.attrib,x
     
     lda IntroSprXCoord,x
-    sta SpriteRAM+($04<<2)+3,x
+    sta SpriteRAM.4.x,x
     
     rts
 
@@ -749,8 +749,8 @@ InitCrossMissiles:
 
     L889D:
         lda InitCrossMissile0and4Tbl,x        ;Load data from tables below.
-        cmp $FF                         ;If #$FF, skip loading that byte and move to next item.
-        beq L88AA                       ;
+        cmp PPUCTRL_ZP                  ;BUG: supposed to be #$FF. Expected behavior:-->
+        beq L88AA                       ;if #$FF, skip loading that byte and move to next item.
             sta IntroSprYCoord,x            ;Store initial values for sprites 0 thru 3.
             sta IntroSprYCoord+$40,x        ;Store initial values for sprites 4 thru 7.
         L88AA:
@@ -1360,7 +1360,7 @@ SamusHasItem:
     sty NumberOfUniqueItems         ;Keeps a running total of unique items.
     rts
 
-CheckPassword:
+CheckPassword: ;($8C5E)
     jsr ConsolidatePassword         ;($8F60)Convert password characters to password bytes.
     jsr ValidatePassword            ;($8DDE)Verify password is correct.
     ;Branch if incorrect password.
@@ -1817,18 +1817,26 @@ PasswordBitmaskTbl:
 ;on world map. See constants.asm for values of IIIIII.
 
 ItemData: ; $9029
+    ItemData_MaruMari:
     .word ui_MARUMARI    + ($02 << 5) + $0E  ;Maru Mari at coord 02,0E                    (Item 0)
+
     .word ui_MISSILES    + ($12 << 5) + $0B  ;Missiles at coord 12,0B                     (Item 1)
     .word ui_MISSILEDOOR + ($07 << 5) + $05  ;Red door to long beam at coord 07,05        (Item 2)
     .word ui_MISSILEDOOR + ($04 << 5) + $02  ;Red door to Tourian elevator at coord 05,02 (Item 3)
     .word ui_ENERGYTANK  + ($19 << 5) + $07  ;Energy tank at coord 19,07                  (Item 4)
     .word ui_MISSILEDOOR + ($19 << 5) + $05  ;Red door to bombs at coord 1A,05            (Item 5)
+
+    ItemData_Bombs:
     .word ui_BOMBS       + ($19 << 5) + $05  ;Bombs at coord 19,05                        (Item 6)
+
     .word ui_MISSILEDOOR + ($13 << 5) + $09  ;Red door to ice beam at coord 13,09         (Item 7)
     .word ui_MISSILES    + ($18 << 5) + $03  ;Missiles at coord 18,03                     (Item 8)
     .word ui_ENERGYTANK  + ($1B << 5) + $03  ;Energy tank at coord 1B,03                  (Item 9)
     .word ui_MISSILEDOOR + ($0F << 5) + $02  ;Red door to varia suit at coord 0F,02       (Item 10)
+
+    ItemData_Varia:
     .word ui_VARIA       + ($0F << 5) + $02  ;Varia suit at coord 0F,02                   (Item 11)
+
     .word ui_ENERGYTANK  + ($09 << 5) + $0E  ;Energy tank at coord 09,0E                  (Item 12)
     .word ui_MISSILES    + ($12 << 5) + $0E  ;Missiles at coord 12,0E                     (Item 13)
     .word ui_MISSILES    + ($11 << 5) + $0F  ;Missiles at coord 11,0F                     (Item 14)
@@ -1841,9 +1849,15 @@ ItemData: ; $9029
     .word ui_MISSILES    + ($14 << 5) + $0F  ;Missiles at coord 14,0F                     (Item 21)
     .word ui_MISSILES    + ($13 << 5) + $0F  ;Missiles at coord 13,0F                     (Item 22)
     .word ui_MISSILEDOOR + ($1B << 5) + $11  ;Red door to high jump at coord 1C,11        (Item 23)
+
+    ItemData_HighJump:
     .word ui_HIGHJUMP    + ($1B << 5) + $11  ;High jump at coord 1B,11                    (Item 24)
+
     .word ui_MISSILEDOOR + ($0F << 5) + $10  ;Red door to screw attack at coord 0E,10     (Item 25)
+
+    ItemData_ScrewAttack:
     .word ui_SCREWATTACK + ($0F << 5) + $10  ;Screw attack at coord 0D,1D                 (Item 26)
+
     .word ui_MISSILES    + ($13 << 5) + $16  ;Missiles at coord 13,16                     (Item 27)
     .word ui_MISSILES    + ($14 << 5) + $16  ;Misslies at coord 14,16                     (Item 28)
     .word ui_MISSILEDOOR + ($12 << 5) + $15  ;Red door to wave beam at coord 1C,15        (Item 29)
@@ -1926,15 +1940,16 @@ L90EB:
     sta StartContinue               ;on game select screen.
     jsr SFX_Beep                    ;Set SFX flag for select being pressed. Uses triangle channel.
 L90FF:
-    ldy StartContinue               ;
-    lda StartContTbl,y              ;Get y pos of selection sprite.
-    sta SpriteRAM                   ;
-    lda #$6E                        ;Load sprite info for square selection sprite.
-    sta SpriteRAM+1                 ;
-    lda #$03                        ;
-    sta SpriteRAM+2                 ;
-    lda #$50                        ;Set data for selection sprite.
-    sta SpriteRAM+3                 ;
+    ldy StartContinue
+    ;Load sprite info for square selection sprite.
+    lda StartContTbl,y
+    sta SpriteRAM.0.y
+    lda #$6E
+    sta SpriteRAM.0.tileID
+    lda #$03
+    sta SpriteRAM.0.attrib
+    lda #$50
+    sta SpriteRAM.0.x
     rts
 
 StartContTbl:
@@ -2106,28 +2121,39 @@ CheckBackspace:
         sta PasswordCursor              ;
     L920E:
     ldy PasswordStat00              ;Appears to have no function.
-    lda FrameCount                  ;
-    and #$08                        ;If FrameCount bit 3 not set, branch.
-    beq L923F                       ;
-        lda #$3F                        ;
-        ldx PasswordCursor              ;Load A with #$3F if PasswordCursor is on-->
-        cpx #$0C                        ;character 0 thru 11, else load it with #$4F.
-        bcc L9222                       ;
-            lda #$4F                        ;
+    ;If FrameCount bit 3 not set, branch.
+    ;This flashes the cursor on and off.
+    lda FrameCount
+    and #$08
+    beq L923F
+        ;Set cursor y position to #$3F if PasswordCursor is on character 0 thru 11,
+        ;else set it to #$4F.
+        lda #$3F
+        ldx PasswordCursor
+        cpx #$0C
+        bcc L9222
+            lda #$4F
         L9222:
-        sta SpriteRAM+($01<<2)            ;Set Y-coord of password cursor sprite.
-        lda #$6E                        ;
-        sta SpriteRAM+($01<<2)+1          ;Set pattern for password cursor sprite.
-        lda #$20                        ;
-        sta SpriteRAM+($01<<2)+2          ;Set attributes for password cursor sprite.
-        lda PasswordCursor              ;If the password cursor is at the 12th-->
-        cmp #$0C                        ;character or less, branch.
-        bcc L9238                       ;
-            sbc #$0C                        ;Calculate how many characters the password cursor-->
+        sta SpriteRAM.1.y
+        ;Set pattern for password cursor sprite.
+        lda #$6E
+        sta SpriteRAM.1.tileID
+        ;Set attributes for password cursor sprite.
+        lda #OAMDATA_PRIORITY
+        sta SpriteRAM.1.attrib
+        ; load cursor position
+        lda PasswordCursor
+        cmp #$0C
+        ;If the password cursor is at the 12th character or less, branch.
+        bcc L9238
+            ;Cursor is on the second row of password.
+            ;Calculate how many characters the password cursor is from the left.
+            sbc #$0C
         L9238:
-        tax                             ;is from the left if on the second row of password.
-        lda CursorPosXTbl,x              ;Load X position of PasswordCursor.
-        sta SpriteRAM+($01<<2)+3          ;
+        tax
+        ;Set X position of PasswordCursor based on this.
+        lda CursorPosXTbl,x
+        sta SpriteRAM.1.x
     L923F:
     ldx InputRow                    ;Load X and Y with row and column-->
     ldy InputColumn                 ;of current character selected.
@@ -2182,17 +2208,22 @@ CheckBackspace:
         L9294:
         stx InputRow                    ;row in InputRow.
     L9297:
-    lda FrameCount                  ;
-    and #$08                        ;If FrameCount bit 3 not set, branch.
-    beq RTS_92B3                    ;
-        lda CharSelectYTbl,x            ;Set Y-coord of character selection sprite.
-        sta SpriteRAM+($02<<2)            ;
-        lda #$6E                        ;Set pattern for character selection sprite.
-        sta SpriteRAM+($02<<2)+1          ;
-        lda #$20                        ;Set attributes for character selection sprite.
-        sta SpriteRAM+($02<<2)+2          ;
-        lda CharSelectXTbl,y            ;Set x-Coord of character selection sprite.
-        sta SpriteRAM+($02<<2)+3          ;
+    ;If FrameCount bit 3 not set, branch.
+    lda FrameCount
+    and #$08
+    beq RTS_92B3
+        ;Set Y-coord of character selection sprite.
+        lda CharSelectYTbl,x
+        sta SpriteRAM.2.y
+        ;Set pattern for character selection sprite.
+        lda #$6E
+        sta SpriteRAM.2.tileID
+        ;Set attributes for character selection sprite.
+        lda #$20
+        sta SpriteRAM.2.attrib
+        ;Set x-Coord of character selection sprite.
+        lda CharSelectXTbl,y
+        sta SpriteRAM.2.x
     RTS_92B3:
     rts
 
@@ -2218,11 +2249,12 @@ InitializeGame:
     jsr ClearRAM_33_DF              ;($C1D4)Clear RAM.
     jsr ClearSamusStats             ;($C578)Reset Samus stats for a new game.
     jsr LoadPasswordData            ;($8D12)Load data from password.
-    ldy #$00                        ;
-    sty SpritePagePos               ;
-    sty PageIndex                   ;Clear object data.
-    sty ObjectCntrl                 ;
-    sty ObjHi                       ;
+    ;Clear object data.
+    ldy #$00
+    sty SpritePagePos
+    sty PageIndex
+    sty ObjectCntrl
+    sty ObjHi
     jsr SilenceMusic                ;($CB8E)Turn off music.
     lda #_id_ObjFrame5A.b           ;
     sta ObjAnimFrame                ;Set animframe index. changed by initializing routines.
@@ -2323,12 +2355,14 @@ L937F:
     PPUStringEnd
 
 WaitForSTART:
-    lda Joy1Change                  ;Waits for START to be ressed proceed-->
-    and #$10                        ;past the GAME OVER screen.
-    beq RTS_939D                       ;If start not pressed, branch.
-        jmp CheckPassword               ;($8C5E)Check if password is correct.
-
-    RTS_939D:
+    ;Waits for START to be ressed proceed past the GAME OVER screen.
+    lda Joy1Change
+    and #BUTTON_START
+    ;If start not pressed, branch.
+    beq @RTS
+        ;Check if password is correct.
+        jmp CheckPassword
+    @RTS:
     rts
 
 GameOver:
@@ -2447,7 +2481,7 @@ PrepareEraseTiles:
     ldy #>TileSize.b
     stx $02
     sty $03
-    jmp EraseTile                   ;($C328)Erase the selected tiles.
+    jmp WriteTileBlast              ;($C328)Erase the selected tiles.
 
 ;---------------------------------------[ Unused intro routines ]------------------------------------
 
@@ -2838,7 +2872,7 @@ DecSpriteYCoord:
     @loop:
         ;Decrement y coord of 40 sprites.
         dec IntroStarSprite,x
-        dec SpriteRAM+($18<<2),x
+        dec SpriteRAM.24,x
         ;Move to next sprite.
         dex
         dex
@@ -2858,7 +2892,7 @@ LoadStarSprites:
     ldy #$9F
     @loop:
         lda IntroStarSprite,y
-        sta SpriteRAM+($18<<2),y
+        sta SpriteRAM.24,y
         dey
         cpy #$FF
         bne @loop
@@ -3010,10 +3044,10 @@ Restart:
     ;Erase PasswordByte00 thru PasswordByte11.
     ldy #$11
     lda #$00
-    L9A43:
+    @loop_erasePassword:
         sta PasswordByte,y
         dey
-        bpl L9A43
+        bpl @loop_erasePassword
     
     ;Erase Unique item history.
     iny ;Y = #$00.
@@ -3022,41 +3056,52 @@ Restart:
         iny
         bne L9A4A
     
+    ;If Samus does not have Maru Mari, branch.-->
     lda SamusGear
     and #gr_MARUMARI
-    beq L9A5C                       ;If Samus does not have Maru Mari, branch.-->
-        lda #$01                        ;Else load Maru Mari data into PasswordByte00.
-        sta PasswordByte              ;
+    beq L9A5C
+        ;Else load Maru Mari data into PasswordByte00.
+        lda #1<<(((ItemData_MaruMari-ItemData)/2)&7).b
+        sta PasswordByte+(((ItemData_MaruMari-ItemData)/2)/8)
     L9A5C:
     
+    ;If Samus does not have bombs, branch.-->
     lda SamusGear
     and #gr_BOMBS
-    beq L9A6B                       ;If Samus does not have bombs, branch.-->
-        lda PasswordByte              ;Else load bomb data into PasswordByte00.
-        ora #$40                        ;
-        sta PasswordByte              ;
+    beq L9A6B
+        ;Else load bomb data into PasswordByte00.
+        lda PasswordByte+(((ItemData_Bombs-ItemData)/2)/8)
+        ora #1<<(((ItemData_Bombs-ItemData)/2)&7).b
+        sta PasswordByte+(((ItemData_Bombs-ItemData)/2)/8)
     L9A6B:
     
+    ;If Samus does not have varia suit, branch.-->
     lda SamusGear
     and #gr_VARIA
-    beq L9A77                       ;If Samus does not have varia suit, branch.-->
-        lda #$08                        ;Else load varia suit data into PasswordByte01.
-        sta PasswordByte+$01              ;
+    beq L9A77
+        ;Else load varia suit data into PasswordByte01.
+        lda #1<<(((ItemData_Varia-ItemData)/2)&7).b
+        sta PasswordByte+(((ItemData_Varia-ItemData)/2)/8)
     L9A77:
     
+    ;If Samus does not have high jump, branch.-->
     lda SamusGear
     and #gr_HIGHJUMP
-    beq L9A83                       ;If Samus does not have high jump, branch.-->
-        lda #$01                        ;Else load high jump data into PasswordByte03.
-        sta PasswordByte+$03              ;
+    beq L9A83
+        ;Else load high jump data into PasswordByte03.
+        lda #1<<(((ItemData_HighJump-ItemData)/2)&7).b
+        sta PasswordByte+(((ItemData_HighJump-ItemData)/2)/8)
     L9A83:
     
-    lda SamusGear                   ;
-    and #gr_MARUMARI                        ;If Samus does not have Maru Mari, branch.-->
-    beq L9A92                       ;Else load screw attack data into PasswordByte03.-->
-        lda PasswordByte+$03              ;A programmer error?  Should check for screw-->
-        ora #$04                        ;attack data.
-        sta PasswordByte+$03              ;
+    ;If Samus does not have Maru Mari, branch.
+    lda SamusGear
+    ;A programmer error?  Should check for screw attack data.
+    and #gr_MARUMARI
+    beq L9A92
+        ;Else load screw attack data into PasswordByte03.
+        lda PasswordByte+(((ItemData_ScrewAttack-ItemData)/2)/8)
+        ora #1<<(((ItemData_ScrewAttack-ItemData)/2)&7).b
+        sta PasswordByte+(((ItemData_ScrewAttack-ItemData)/2)/8)
     L9A92:
     
     lda SamusGear                   ;
@@ -3474,24 +3519,26 @@ LoadEndSamusSprites:
         inx                             ;Increment X and Y.
         cpy SpriteByteCounter           ;
         bne L9CAA                       ;Repeat until sprite load is complete.
-    lda RoomPtr                     ;
+    lda RoomPtr
     cmp #$02                        ;If not running the EndSamusFlash routine, branch.
-    bcc RTS_9CF9                       ;
-    lda ColorCntIndex               ;
+    bcc RTS_9CF9
+    lda ColorCntIndex
     cmp #$08                        ;If EndSamusFlash routine is more than half-->
     bcc RTS_9CF9                       ;way done, Check ending type for the Samus helmet-->
     lda EndingType                  ;off ending.  If not helmet off ending, branch.
-    cmp #$03                        ;
-    bne RTS_9CF9                       ;
-    ldy #$00                        ;
-    ldx #$00                        ;
+    cmp #$03
+    bne RTS_9CF9
+    ldy #$00
+    ldx #$00
     L9CED:
-        lda SamusHeadSpriteTable,y      ;The following code loads the sprite graphics-->
-        sta SpriteRAM,x               ;when the helmet off ending is playing.  The-->
-        iny                             ;sprites below keep Samus head from flashing-->
-        inx                             ;while the rest of her body does.
-        cpy #$18                        ;
-        bne L9CED                       ;
+        ;The following code loads the sprite graphics when the helmet off ending is playing.
+        ;The sprites below keep Samus head from flashing while the rest of her body does.
+        lda SamusHeadSpriteTable,y
+        sta SpriteRAM,x
+        iny
+        inx
+        cpy #$18
+        bne L9CED
 RTS_9CF9:
     rts
 
@@ -3682,7 +3729,7 @@ LoadEndStarSprites:
     ldy #$00
     L9EAC:
         lda EndStarDataTable,y
-        sta SpriteRAM+($1C<<2),y               ;Load the table below into sprite RAM-->
+        sta SpriteRAM.28,y               ;Load the table below into sprite RAM-->
         iny                             ;starting at address $0270.
         cpy #$9C
         bne L9EAC
@@ -4400,27 +4447,35 @@ InitBank0:
     jsr ScreenNmiOff                ;($C45D)Waits for NMI to end then turns it off.
     jsr ClearNameTables             ;($C158)Erase name table data.
 
-    ldy #$A0                        ;
-    LC543:
-        lda IntroStarsData-1,y                     ;
-        sta IntroStarSprite-1,y                     ;Loads sprite info for stars into RAM $6E00 thru 6E9F.
-        dey                             ;
-        bne LC543                       ;
+    ;Loads sprite info for stars into RAM $6E00 thru 6E9F.
+    ldy #$A0
+    @loop:
+        lda IntroStarsData-1,y
+        sta IntroStarSprite-1,y
+        dey
+        bne @loop
 
     jsr InitTitleGFX                ;($C5D7)Load title GFX.
     jmp NMIOn                       ;($C487)Turn on VBlank interrupts.
 
 ;Brinstar memory page.
 InitBank1:
-    lda MainRoutine                 ;
-    cmp #$03                        ;Is game engine running? if so, branch.-->
-    beq LC56D                           ;Else do some housekeeping first.
-        lda #$00                        ;
-        sta MainRoutine                 ;Run InitArea routine next.
-        sta InArea                      ;Start in Brinstar.
-        sta GamePaused                  ;Make sure game is not paused.
-        jsr ClearRAM_33_DF              ;($C1D4)Clear game engine memory addresses.
-        jsr ClearSamusStats             ;($C578)Clear Samus' stats memory addresses.
+    ;Is game engine running? if so, branch.-->
+    lda MainRoutine
+    cmp #_id_GameEngine.b
+    beq LC56D
+        ;Else do some housekeeping first.
+        lda #_id_AreaInit.b
+        ;Run InitArea routine next.
+        sta MainRoutine
+        ;Start in Brinstar.
+        sta InArea
+        ;Make sure game is not paused.
+        sta GamePaused
+        ;($C1D4)Clear game engine memory addresses.
+        jsr ClearRAM_33_DF
+        ;($C578)Clear Samus' stats memory addresses.
+        jsr ClearSamusStats
         jsr LoadSamusGFX
     LC56D:
     jmp InitGenericAreaBank
@@ -4465,10 +4520,13 @@ InitTitleGFX:
     .byte TitleSPR/$400+3
 
 LoadSamusGFX:
-    ldy #SamusSuitGFX4/$400.b           ;facing forward gfx
-    lda JustInBailey                ;
-    beq LC5EB                           ;Branch if wearing suit
-        ldy #SamusSuitlessGFX4/$400.b   ;Switch to girl gfx
+    ldy #SamusSuitGFX4/$400.b
+
+    ;Branch if wearing suit
+    lda JustInBailey
+    beq LC5EB
+        ;Switch to girl gfx
+        ldy #SamusSuitlessGFX4/$400.b
     LC5EB:
     sty CHRBank2
     rts
@@ -4486,6 +4544,9 @@ InitBank3:
 InitGenericAreaBank:
     lda #$00                        ;GameMode = play.
     sta GameMode                    ;
+    sta TileAnimIndex
+    lda #$01
+    sta TileAnimDelay
     lda CurrentMainBank
     jsr ChooseRoutine
         .word ExitSub
@@ -4572,19 +4633,23 @@ LoadAreaGFX:
 ;sprite to the bottom right of the screen and uses a blank graphic for the sprite.
 
 RemoveIntroSprites:
-    ldy #>SpriteRAM.b               ;Start at address $200.
-    sty $01                         ;
-    ldy #<SpriteRAM.b               ;
-    sty $00                         ;($00) = $0200 (sprite page)
-    ldy #$5F                        ;Prepare to clear RAM $0200-$025F
-    lda #$F4                        ;
-    LC1C8:
-        sta ($00),y                     ;
-        dey                             ;Loop unitl $200 thru $25F is filled with #$F4.
-        bpl LC1C8                       ;
-    lda GameMode                    ;
-    beq Exit101                     ; branch if mode = Play.
-        jmp DecSpriteYCoord             ;($988A)Find proper y coord of sprites.
+    ;Start at address $200. ($00) = $0200 (sprite page)
+    ldy #>SpriteRAM.b
+    sty $01
+    ldy #<SpriteRAM.b
+    sty $00
+    ;Prepare to clear RAM $0200-$025F
+    ldy #$5F
+    lda #$F4
+    @loop:
+        sta ($00),y
+        dey
+        ;Loop unitl $200 thru $25F is filled with #$F4.
+        bpl @loop
+    ; branch if mode = Play.
+    lda GameMode
+    beq Exit101
+        jmp DecSpriteYCoord
 
 ;----------------------------------------[ Choose ending ]-------------------------------------------
 
@@ -4626,14 +4691,16 @@ DisplayBar:
     ldy #$00                        ;Reset data index.
     lda SpritePagePos               ;Load current sprite index.
     pha                             ;save sprite page pos.
-    tax                             ;
-    LE0C7:
-        lda DataDisplayTbl,y            ;
-        sta SpriteRAM,x               ;Stor contents of DataDisplayTbl in sprite RAM.
-        inx                             ;
-        iny                             ;
-        cpy #$28                        ;10*4. At end of DataDisplayTbl? If not, loop to-->
-        bne LE0C7                           ;load next byte from table.
+    tax
+    @loop:
+        ;Store contents of DataDisplayTbl in sprite RAM.
+        lda DataDisplayTbl,y
+        sta SpriteRAM,x
+        inx
+        iny
+        ;At end of DataDisplayTbl? If not, loop to load next byte from table.
+        cpy #10*4.b
+        bne @loop
 
 ;Display 2-digit health count.
     stx SpritePagePos               ;Save new location in sprite RAM.
@@ -4667,10 +4734,10 @@ LE10A:
     lda #$FF                        ;"Blank" tile.
     cpx #$F4                        ;If at last 3 sprites, branch to skip.
     bcs LE14A                          ;
-    sta SpriteRAM+($03<<2)+1,x             ;Erase left half of missile.
+    sta SpriteRAM.3.tileID,x             ;Erase left half of missile.
     cpx #$F0                        ;If at last 4 sprites, branch to skip.
     bcs LE14A                          ;
-    sta SpriteRAM+($04<<2)+1,x             ;Erase right half of missile.
+    sta SpriteRAM.4.tileID,x             ;Erase right half of missile.
     bne LE14A                          ;Branch always.
 
 ;Display 3-digit end sequence timer.
@@ -4685,17 +4752,17 @@ LE11C:
     jsr Adiv16                      ;($C2BF)Lower timer digit.
     jsr SPRWriteDigit               ;($E173)Display digit on screen.
     lda #$2E                        ;"TI" sprite(left half of "TIME").
-    sta SpriteRAM+1,x             ;
-    inc SpriteRAM+2,x             ;Change color of sprite.
+    sta SpriteRAM.0.tileID,x             ;
+    inc SpriteRAM.0.attrib,x             ;Change color of sprite.
     cpx #$FC                        ;If at last sprite, branch to skip.
     bcs LE14A                           ;
     lda #$2F                        ;"ME" sprite(right half of "TIME").
-    sta SpriteRAM+($01<<2)+1,x             ;
-    inc SpriteRAM+($01<<2)+2,x             ;Change color of sprite.
+    sta SpriteRAM.1.tileID,x             ;
+    inc SpriteRAM.1.attrib,x             ;Change color of sprite.
 
 LE14A:
     ldx SpritePagePos               ;Restore initial sprite page pos.
-    lda MaxHealth+1.b               ;
+    lda MaxHealth+1                 ;
     and #$F0                        ;
     beq RTS_E172                          ;Branch to exit if Samus has no energy tanks.
 
@@ -4733,7 +4800,7 @@ RTS_E172:
 SPRWriteDigit:
     clc
     adc #$30                        ;#$A0 is index into pattern table for numbers.
-    sta SpriteRAM+1,x             ;Store proper nametable pattern in sprite RAM.
+    sta SpriteRAM.0.tileID,x             ;Store proper nametable pattern in sprite RAM.
     jmp Xplus4                      ;Find next sprite pattern table byte.
 
 ;----------------------------------[ Add energy tank to display ]------------------------------------
@@ -4743,16 +4810,16 @@ SPRWriteDigit:
 AddOneTank:
     ;Y coord-1.
     lda EnergyTankYPositions,y
-    sta SpriteRAM,x
+    sta SpriteRAM.0.y,x
     ;Tile value.
     lda $00
-    sta SpriteRAM+1,x
+    sta SpriteRAM.0.tileID,x
     ;Palette #.
     lda #$01
-    sta SpriteRAM+2,x
+    sta SpriteRAM.0.attrib,x
     ;X coord.
     lda EnergyTankXPositions,y
-    sta SpriteRAM+3,x
+    sta SpriteRAM.0.x,x
     ; fallthrough
 
 ;-----------------------------------------[ Add 4 to x ]---------------------------------------------

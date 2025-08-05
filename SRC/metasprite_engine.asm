@@ -16,22 +16,22 @@ DrawMetasprite:
         iny
         clc
         adc Temp10_ScreenY
-        sta SpriteRAM,x
+        sta SpriteRAM.0.y,x
         ; tile index
         lda (Temp00_FramePtr),y
         iny
-        sta SpriteRAM+1,x
+        sta SpriteRAM.0.tileID,x
         ; attributes
         lda (Temp00_FramePtr),y
         iny
         eor Temp05_Cntrl
-        sta SpriteRAM+2,x
+        sta SpriteRAM.0.attrib,x
         ; x
         lda (Temp00_FramePtr),y
         iny
         clc
         adc Temp0E_ScreenX
-        sta SpriteRAM+3,x
+        sta SpriteRAM.0.x,x
 
         inx
         inx
@@ -54,16 +54,16 @@ DrawMetaspriteXFlipped:
         iny
         clc
         adc Temp10_ScreenY
-        sta SpriteRAM,x
+        sta SpriteRAM.0.y,x
         ; tile index
         lda (Temp00_FramePtr),y
         iny
-        sta SpriteRAM+1,x
+        sta SpriteRAM.0.tileID,x
         ; attributes
         lda (Temp00_FramePtr),y
         iny
         eor Temp05_Cntrl
-        sta SpriteRAM+2,x
+        sta SpriteRAM.0.attrib,x
         ; x
         lda Temp0E_ScreenX
         sec
@@ -71,7 +71,7 @@ DrawMetaspriteXFlipped:
         iny
         sec
         sbc #$08
-        sta SpriteRAM+3,x
+        sta SpriteRAM.0.x,x
 
         inx
         inx
@@ -98,7 +98,7 @@ DrawExplodingMetasprite:
         sty Temp11_FrameIndex
         clc
         adc Temp10_ScreenY
-        sta SpriteRAM,x
+        sta SpriteRAM.0.y,x
         ; displace y by explosion
         lda Temp03_ExplodePlaceIndex
         lsr
@@ -109,24 +109,24 @@ DrawExplodingMetasprite:
         tay
         lda ExplodePlacementTbl-1,y
         clc
-        adc SpriteRAM,x
-        sta SpriteRAM,x
+        adc SpriteRAM.0.y,x
+        sta SpriteRAM.0.y,x
         ; tile index
         ldy Temp11_FrameIndex
         lda (Temp00_FramePtr),y
         iny
-        sta SpriteRAM+1,x
+        sta SpriteRAM.0.tileID,x
         ; attributes
         lda (Temp00_FramePtr),y
         iny
         eor Temp05_Cntrl
-        sta SpriteRAM+2,x
+        sta SpriteRAM.0.attrib,x
         ; x
         lda (Temp00_FramePtr),y
         iny
         clc
         adc Temp0E_ScreenX
-        sta SpriteRAM+3,x
+        sta SpriteRAM.0.x,x
         ; displace x by explosion
         lda Temp03_ExplodePlaceIndex
         lsr
@@ -139,8 +139,8 @@ DrawExplodingMetasprite:
             adc #$01
         +
         clc
-        adc SpriteRAM+3,x
-        sta SpriteRAM+3,x
+        adc SpriteRAM.0.x,x
+        sta SpriteRAM.0.x,x
 
         inx
         inx
@@ -164,7 +164,7 @@ DrawExplodingMetaspriteXFlipped:
         sty Temp11_FrameIndex
         clc
         adc Temp10_ScreenY
-        sta SpriteRAM,x
+        sta SpriteRAM.0.y,x
         ; displace y by explosion
         lda Temp03_ExplodePlaceIndex
         lsr
@@ -175,18 +175,18 @@ DrawExplodingMetaspriteXFlipped:
         tay
         lda ExplodePlacementTbl-1,y
         clc
-        adc SpriteRAM,x
-        sta SpriteRAM,x
+        adc SpriteRAM.0.y,x
+        sta SpriteRAM.0.y,x
         ; tile index
         ldy Temp11_FrameIndex
         lda (Temp00_FramePtr),y
         iny
-        sta SpriteRAM+1,x
+        sta SpriteRAM.0.tileID,x
         ; attributes
         lda (Temp00_FramePtr),y
         iny
         eor Temp05_Cntrl
-        sta SpriteRAM+2,x
+        sta SpriteRAM.0.attrib,x
         ; x
         lda Temp0E_ScreenX
         sec
@@ -194,7 +194,7 @@ DrawExplodingMetaspriteXFlipped:
         iny
         sec
         sbc #$08
-        sta SpriteRAM+3,x
+        sta SpriteRAM.0.x,x
         ; displace x by explosion
         lda Temp03_ExplodePlaceIndex
         lsr
@@ -207,8 +207,8 @@ DrawExplodingMetaspriteXFlipped:
             adc #$00
         +
         clc
-        adc SpriteRAM+3,x
-        sta SpriteRAM+3,x
+        adc SpriteRAM.0.x,x
+        sta SpriteRAM.0.x,x
 
         inx
         inx

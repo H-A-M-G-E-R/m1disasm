@@ -61,21 +61,21 @@ SpecItmsTbl:
         .byte $06
         .byte $47
         .byte $18
-        .byte $05, $49
-        .byte $15, $4B
-        .byte $25, $3E
+        .byte $05, $47, $97
+        .byte $15, $47, $B7
+        .byte $25, $37, $E7
         .byte $00
     @@x03:
         .byte $03, @@x04 - @@x03
         .byte $37
         .byte $27
         .byte $08
-        .byte $05, $41
-        .byte $15, $43
-        .byte $25, $36
-        .byte $05, $49
-        .byte $15, $4B
-        .byte $35, $3E
+        .byte $05, $47, $17
+        .byte $15, $47, $37
+        .byte $25, $37, $67
+        .byte $05, $47, $97
+        .byte $15, $47, $B7
+        .byte $35, $37, $E7
         .byte $00
     @@x04:
         .byte $04, @@x05 - @@x04
@@ -83,12 +83,12 @@ SpecItmsTbl:
         .byte $17
         .byte $07
         .byte $08
-        .byte $05, $41
-        .byte $15, $43
-        .byte $25, $36
-        .byte $05, $49
-        .byte $15, $4B
-        .byte $35, $3E
+        .byte $05, $47, $17
+        .byte $15, $47, $37
+        .byte $25, $37, $67
+        .byte $05, $47, $97
+        .byte $15, $47, $B7
+        .byte $35, $37, $E7
         .byte $00
     @@x05:
         .byte $05, $FF

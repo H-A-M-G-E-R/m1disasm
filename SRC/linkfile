@@ -9,6 +9,11 @@ out/prg3_tourian.o
 out/prg4_kraid.o
 out/prg5_ridley.o
 out/prg6_audio.o
+out/prg8_brinstar_rooms.o
+out/prg9_norfair_rooms.o
+out/prgA_tourian_rooms.o
+out/prgB_kraid_rooms.o
+out/prgC_ridley_rooms.o
 out/prg7_engine.o
 out/chr.o
 
