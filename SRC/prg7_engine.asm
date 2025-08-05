@@ -2704,14 +2704,15 @@ StopHorzMovement:
 @RTS:
     rts
 
-SetSamusJumpPntUp:
-    ldy #ObjAnim_SamusJumpPntUp - ObjectAnimIndexTbl.b
-    jmp LCFC5
-    SetSamusJump:
-        ldy #ObjAnim_SamusJump - ObjectAnimIndexTbl.b
-    LCFC5:
+SetSamusJump:
+    ldy #ObjAnim_SamusJump - ObjectAnimIndexTbl.b
+    lda Joy1Status
+    and #BUTTON_UP
+    beq +
+        ldy #ObjAnim_SamusJumpPntUp - ObjectAnimIndexTbl.b
+    +
     sty ObjAnimResetIndex
-    ; - 1 to get ObjAnim_SamusJumpTransition and ObjAnim_SamusJumpPntUpFire respectively
+    ; - 1 to get ObjAnim_SamusJumpTransition and ObjAnim_SamusJumpPntUpTransition respectively
     dey
     sty ObjAnimIndex
     lda #$04
@@ -3086,7 +3087,7 @@ SamusPntUp:
         .word SetSamusRoll
         .word ExitSub       ;($C45C)rts
         .word ExitSub       ;($C45C)rts
-        .word SetSamusJumpPntUp
+        .word SetSamusJump
         .word ExitSub       ;($C45C)rts
         .word ExitSub       ;($C45C)rts
         .word ExitSub       ;($C45C)rts

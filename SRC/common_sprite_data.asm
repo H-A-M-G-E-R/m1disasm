@@ -90,7 +90,9 @@ ObjAnim_SamusExplode: ;$32
 
 ;Samus jump and point up animation.
 ObjAnim_SamusJumpPntUpFire: ;$34
-    .byte _id_ObjFrame39
+    .byte _id_ObjFrame39, $FF
+ObjAnim_SamusJumpPntUpTransition:
+    .byte _id_ObjFrame41
 ObjAnim_SamusJumpPntUp: ;$35
     .byte _id_ObjFrame38, $FF
 
