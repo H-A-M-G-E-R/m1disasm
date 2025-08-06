@@ -1822,7 +1822,8 @@ UpdateEndTimer:
     lda FrameCount
     and #$1F
     bne @endIf_A
-        jsr SFX_OutOfHole
+        lda #sfxSQ1_TimeBombTick
+        jsr SFX_SetSQ1SFXFlag
     @endIf_A:
     lda EndTimer
     ora EndTimer+1

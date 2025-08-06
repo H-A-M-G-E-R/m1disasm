@@ -167,6 +167,7 @@ SQ1SFXInitRoutineTbl:
     .word SamusJumpSFXStart                     ;Samus jump init SFX.
     .word EnemyHitSFXStart                     ;Enemy hit init SFX.
     .word BirdOutOfHoleSFXStart                     ;Bird out of hole init SFX.
+    .word TimeBombTickSFXStart
     .word BulletFireSFXStart                     ;Bullet fire init SFX.
     .word BulletFireSFXStart
     .word HasIceBeamSFXStart
@@ -182,6 +183,7 @@ SQ1SFXContRoutineTbl:
     .word SQ1SFXContinue                     ;Samus jump continue SFX.
     .word SQ1SFXContinue                     ;Enemy hit continue SFX.
     .word SQ1SFXContinue                     ;Bird out of hole continue SFX.
+    .word SQ1SFXContinue
     .word BulletFireSFXContinue                     ;Bullet fire continue SFX.
     .word BulletFireSFXContinue
     .word HasIceBeamSFXContinue
@@ -878,13 +880,11 @@ MetalSFXStart:
     bne SelectSFX1                  ;Branch always.
 
 BirdOutOfHoleSFXStart:
-    lda CurrentMusic                ;If escape music is playing, use this SFX to make-->
-    cmp #music_Escape               ;the bomb ticking sound, else play regular SFX.
-    beq LB749                       ;
     lda #$16                        ;Number of frames to play sound before a change.
     ldy #<BugOutOFHoleSFXData.b       ;Lower byte of sound data start address(base=$B200).
     bne SelectSFX1                  ;Branch always.
-LB749:
+
+TimeBombTickSFXStart:
     lda #$07                        ;Number of frames to play sound before a change.
     ldy #<TimeBombTickSFXData.b       ;Lower byte of sound data start address(base=$B200).
     bne SelectSFX1                  ;Branch always.
