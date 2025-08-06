@@ -395,6 +395,9 @@ NMI:
 ;is executed.
 
 GoMainRoutine:
+    lda #$00
+    sta BusDriveSFXFlag
+
     ;0 if game is running, 1 if at intro screen.
     ;Branch if mode=Play.
     lda GameMode
@@ -2005,24 +2008,15 @@ SFX_SetMultiSFXFlag:
 
 ;Initiate music
 
-SilenceMusic:
-    lda #$00
-    beq SetCurrentMusic
-
 PowerUpMusic:
     lda #music_PowerUp
     bne SetCurrentMusic
 
+SilenceMusic:
 IntroMusic:
-    lda #music_Intro
-    bne SetCurrentMusic
-
 MotherBrainMusic:
-    lda #music_MotherBrain
-    bne SetCurrentMusic
-
 TourianMusic:
-    lda #music_Tourian
+    lda #$00
 
 SetCurrentMusic:
     sta CurrentMusic
@@ -2152,8 +2146,8 @@ RTS_CC9X:
     rts
 
 SetSamusRun:
-    lda #$09
-    sta WalkSoundDelay
+    ;lda #$09
+    ;sta WalkSoundDelay
     ldx #$00
     lda ObjAnimResetIndex
     cmp #ObjAnim_SamusStand - ObjectAnimIndexTbl.b
@@ -2233,13 +2227,13 @@ SamusRun:
     samL08:
     jsr SamusRun_SetAnim
     ; time to play walk sound? branch if not
-    dec WalkSoundDelay
-    bne samL09
+    ;dec WalkSoundDelay
+    ;bne samL09
         ; # of frames till next walk sound trigger
-        lda #$09
-        sta WalkSoundDelay
-        jsr SFX_SamusWalk
-    samL09:
+    ;    lda #$09
+    ;    sta WalkSoundDelay
+    ;    jsr SFX_SamusWalk
+    ;samL09:
     jsr LCF2E
      ; branch if JUMP not pressed
     lda Joy1Change
@@ -2264,6 +2258,9 @@ SamusRun:
             jsr SetSamusStand
             jmp SetSamusData_3FrameAnimDelay
         samL12:
+        ldy SamusDir
+        iny
+        sty BusDriveSFXFlag
         jsr BitScan                     ;($E1E1)
         cmp SamusDir
         beq SetSamusData_3FrameAnimDelay
@@ -2307,14 +2304,14 @@ SetSamusData:
 
 SetMirrorCntrlBit:
     ;Facing left=#$01, facing right=#$00.
-    lda SamusDir
+    ;lda SamusDir
     ;Move bit 0 to bit 6 position.
-    lsr
-    ror
-    lsr
+    ;lsr
+    ;ror
+    ;lsr
     ;Use SamusDir bit to set mirror bit.
-    ora ObjectCntrl
-    sta ObjectCntrl
+    ;ora ObjectCntrl
+    ;sta ObjectCntrl
     rts
 
 ;------------------------------[ Check if screw attack is active ]-----------------------------------
@@ -2655,9 +2652,9 @@ RTS_X014:
     rts
 
 SetSamusStand:
-    lda SamusAccelX              ;Is Samus moving horizontally?-->
-    bne SetSamusStand_NoFootstep    ;If so, branch to stop movement.
-    jsr SFX_SamusWalk               ;($CB96)Play walk SFX.
+    ;lda SamusAccelX              ;Is Samus moving horizontally?-->
+    ;bne SetSamusStand_NoFootstep    ;If so, branch to stop movement.
+    ;jsr SFX_SamusWalk               ;($CB96)Play walk SFX.
 
 SetSamusStand_NoFootstep:
     jsr NoHorzMoveNoDelay           ;($CF81)Clear horizontal movement and animation delay data.
@@ -3007,7 +3004,14 @@ SamusRoll:
         bne Lx034
             ; not pressing right or left, stop
             jsr StopHorzMovement
+            beq + ; branch always
         Lx034:
+        lda SamusAccelY
+        bne +
+        ldy SamusDir
+        iny
+        sty BusDriveSFXFlag
+        +
         ; animate every 1 frame
         lda #$01
     LD144:
@@ -3422,9 +3426,8 @@ SamusDoor:
     Lx051:
         lda KraidRidleyPresent
         beq Lx052
-        lda AreaMinibossMusic
-        sta CurrentMusic
         lda #$00
+        sta CurrentMusic
         sta KraidRidleyPresent
         beq Lx050     ; branch always
 Lx052:
@@ -4237,7 +4240,7 @@ ElevatorD8BF:
 
 StartMusic:
     ;Load proper bit flag for area music.
-    lda AreaMusicFlag
+    lda #$00
     ldy ItemRoomMusicStatus
     bmi Lx114
     beq Lx114
@@ -4245,7 +4248,7 @@ StartMusic:
     ;Set flag to play item room music.
     lda #$81
     sta ItemRoomMusicStatus
-    lda #music_ItemRoom
+    lda #$00
     Lx114:
     ;Store music flag info.
     sta CurrentMusic
@@ -5780,7 +5783,7 @@ SamusMoveVertically: ; unreferenced label
         ;Samus has hit the ground after moving downwards.
         @landingNoBall:
             ;($CB96)Play walk SFX.
-            jsr SFX_SamusWalk
+            ;jsr SFX_SamusWalk
         @landingNoBounce:
             ;($D147)Clear vertical movement data.
             jsr StopVertMovement
@@ -5863,20 +5866,21 @@ CheckStopHorzMvmt:
     ; break loop of caller routine
     lda #$01
     sta ObjectCounter
+    jmp StopHorzMovement
     ; exit if samus is in the air
-    lda SamusAccelY
-    bne Exit10
+    ;lda SamusAccelY
+    ;bne Exit10
     ; exit if samus is a ball
-    lda ObjAction
-    cmp #sa_Roll
-    beq Exit10
-    cmp #sa_SpiderFall+1.b
-    bcs +
-    cmp #sa_SpiderIdle
-    bcs Exit10
+    ;lda ObjAction
+    ;cmp #sa_Roll
+    ;beq Exit10
+    ;cmp #sa_SpiderFall+1.b
+    ;bcs +
+    ;cmp #sa_SpiderIdle
+    ;bcs Exit10
     ;($CF55)Stop horizontal movement or play walk SFX if stopped.
-+
-    jmp SetSamusStand
+;+
+    ;jmp SetSamusStand
 
 ;-------------------------------------[ Samus vertical acceleration ]--------------------------------
 

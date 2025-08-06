@@ -1,0 +1,9 @@
+0.2:
+    Added bus engine and reverse SFX, but there's no way to honk the horn.
+    The bus can drive in reverse.
+
+0.1.1:
+    Fixed inaccessible room in Ridley's Lair.
+
+0.1:
+    Initial release.

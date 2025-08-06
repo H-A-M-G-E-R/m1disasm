@@ -95,6 +95,10 @@ StatueRaiseSFXData:
     .byte $03, $7F, $11, $09
 DoorSFXData:
     .byte $7F, $7F, $30, $B2
+BusIdleSFXData:
+    .byte $33, $10, $FC, $03
+BusReverseSFXData:
+    .byte $81, $00, $67, $00
 
 ;The following table is used by the CheckSFXFlag routine.  The first two bytes of each row
 ;are the address of the pointer table used for handling SFX and music  routines for set flags.
@@ -323,6 +327,68 @@ LoadSFXRegisters:
     bne LoadSFXRegisters            ;channel are loaded one after the other (the loop repeats four times).
 RTS_B3B3:
     rts
+
+HandleBusEngineSFX:
+    lda SQ2InUse
+    bne @notDriving
+        ldy #<BusIdleSFXData.b
+        jsr LoadSQ2ChannelSFX
+        lda BusDriveSFXFlag
+        beq @notDriving
+            lda #$3B
+            sta SQ2_VOL
+    @notDriving:
+    lda TriInUse
+    bne @triUsed
+        sta TRI_LINEAR
+        lda BusDriveSFXFlag
+        lsr
+        beq @noReverse
+            inc BusReverseSFXTimer
+            lda BusReverseSFXTimer
+            cmp #$18
+            bcs +
+            and #$01
+            beq +
+            ldy #<BusReverseSFXData.b
+            jsr LoadTriChannelSFX
+            +
+            cmp #$30
+            bne @triUsed
+            lda #$00
+        @noReverse:
+        sta BusReverseSFXTimer
+    @triUsed:
+    rts
+
+/*BusReverseSFXStart:
+    lda #$18
+    ldy #<BusReverseSFXData.b
+    jmp SelectSFXRoutine
+
+BusReverseSFXContinue:
+    lda #$00
+    sta TRI_LINEAR
+    lda #$18
+    sta TRI_HI
+    jsr IncrementSFXFrame
+    bne +
+        jmp EndTriSFX
+    +
+    lsr
+    bcc +
+        ldy #<BusReverseSFXData.b
+        jmp LoadTriChannelSFX
+    +
+    rts
+
+StopBusReverseSFX:
+    lda TriContSFX
+    cmp #sfxTri_BusReverse
+    bne +
+        jmp EndTriSFX
+    +
+    jmp LoadTriSFXContFlags*/
 
 ;------------------------------------[ Sound Engine Entry Point ]------------------------------------
 ;NOTES:
@@ -1367,7 +1433,9 @@ GotoLoadSQ1SQ2Channels:
 
 LoadCurrentMusicFrameData:
     lda CurrentMusic
-    beq RTS_BA8B
+    bne +
+        jmp HandleBusEngineSFX
+    +
     jsr ResetVolumeIndex            ;($B9F3)Reset index if at the beginning of a new note.
     lda #$00                        ;
     tax                             ;X = #$00.

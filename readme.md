@@ -43,4 +43,4 @@ Spider ball sprite by BBLIR from The Spriters Resource: https://www.spriters-res
 
 Samus uses her CrazyBus to make it easier to hunt her bounty!
 
-Bus sprites from the NES port of CrazyBus by FG Software (https://forums.nesdev.org/viewtopic.php?p=167597).
+Bus sprites and SFX from the NES port of CrazyBus by FG Software (https://forums.nesdev.org/viewtopic.php?p=167597).

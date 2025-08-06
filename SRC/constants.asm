@@ -835,6 +835,8 @@ TriInUse               = $0655   ;3=Triangle channel being used by SFX, 0=not in
 ChannelType            = $065C   ;Stores channel type being processed(0,1,2,3 or 4)
 ;CurrentMusicRepeat     = $065D   ;Stores flags of music to repeat
 ;MusicInitIndex         = $065E   ;index for loading $62B thru $637(base=$BD31).
+BusDriveSFXFlag        = $065D   ;0=not driving, 1=forward, 2=reverse
+BusReverseSFXTimer     = $065E
 
 NoiseSFXLength         = $0660   ;Stores number of frames to play Noise SFX
 SQ1SFXLength           = $0661   ;Stores number of frames to play SQ1 SFX

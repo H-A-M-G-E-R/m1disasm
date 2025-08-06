@@ -1193,8 +1193,8 @@ RTS_9ED5:
     rts
 
 L9ED6:
-    lda #music_Escape
-    sta CurrentMusic
+    ;lda #music_Escape
+    ;sta CurrentMusic
     lda #$05
     sta MotherBrainStatus
     lda #$80
