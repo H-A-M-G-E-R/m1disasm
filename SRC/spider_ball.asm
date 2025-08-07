@@ -45,7 +45,7 @@ SamusSpiderRoll:
         bne @exit
     @pressedDPad:
     ; halve speed in lava
-    lda SamusInLava
+    lda SamusInLiquidTile
     beq @notInLava
         lda FrameCount
         lsr

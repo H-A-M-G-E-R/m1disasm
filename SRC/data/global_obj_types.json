@@ -105,13 +105,13 @@
             }
         ]
     },
-    "mother_brain": {
+    "asmodeus": {
         "type": 6,
         "props": [
             {}
         ]
     },
-    "zebetite": {
+    "magic_barrier": {
         "type": 7,
         "props": [
             {
@@ -122,7 +122,7 @@
             }
         ]
     },
-    "rinka_spawner": {
+    "flying_star_spawner": {
         "type": 8,
         "props": [
             {

@@ -1,0 +1,80 @@
+Palette00:
+    PPUString $3F00, \
+        $0F, $32, $1C, $0C, $0F, $29, $0A, $0B, $0F, $20, $10, $00, $0F, $31, $22, $1C, $0F, $0C, $17, $27, $0F, $12, $30, $21, $0F, $22, $23, $31, $0F, $21, $1C, $0C
+    PPUStringEnd
+
+Palette01:
+    PPUString $3F12, \
+        $35, $16
+    PPUStringEnd
+
+Palette02:
+    PPUString $3F12, \
+        $35, $24
+    PPUStringEnd
+
+Palette03:
+Palette04:
+    PPUString $3F12, \
+        $35, $20
+    PPUStringEnd
+
+Palette05:
+    PPUString $3F00, \
+        $0F, $20, $10, $00, $0F, $20, $10, $00, $0F, $20, $10, $00, $0F, $20, $10, $00, $0F, $0C, $09, $07, $0F, $12, $30, $21, $0F, $27, $1B, $36, $0F, $17, $22, $31
+    PPUStringEnd
+
+Palette06:
+Palette07:
+Palette08:
+Palette09:
+Palette0A:
+Palette0B:
+Palette0C:
+Palette0D:
+Palette0E:
+Palette0F:
+Palette10:
+Palette11:
+Palette12:
+Palette13:
+    PPUString $3F11, \
+        $04, $09, $07
+    PPUStringEnd
+
+Palette14:
+    PPUString $3F11, \
+        $05, $09, $17
+    PPUStringEnd
+
+Palette15:
+    PPUString $3F11, \
+        $06, $0A, $26
+    PPUStringEnd
+
+Palette16:
+    PPUString $3F11, \
+        $0C, $19, $27
+    PPUStringEnd
+
+Palette17:
+    PPUString $3F00, \
+        $0F, $30, $30, $21
+    PPUStringEnd
+
+Palette18:
+    PPUString $3F10, \
+        $0F, $0C, $35, $25
+    PPUStringEnd
+
+Palette19:
+    PPUString $3F10, \
+        $0F, $0C, $35, $21
+    PPUStringEnd
+
+Palette1A:
+Palette1B:
+    PPUString $3F10, \
+        $0F, $0C, $35, $30
+    PPUStringEnd
+

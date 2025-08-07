@@ -237,9 +237,9 @@ KraidProjectileOffsetY:
     .byte -11,  -3,   5, -10,  -2
 KraidProjectileOffsetX: ;9BD1
 ; First column is for facing right, second for facing left
-    .byte  10, -10
-    .byte  12, -12
-    .byte  14, -14
+    .byte   1,  -1
+    .byte   1,  -1
+    .byte   1,  -1
     .byte  -8,   8
     .byte -12,  12
 KraidProjectileType: ; L9BDB

@@ -38,3 +38,11 @@ This is possible by using the MMC3 mapper to switch the upper 64 tiles on the fl
 
 
 Spider ball sprite by BBLIR from The Spriters Resource: https://www.spriters-resource.com/custom_edited/metroidcustoms/sheet/84367/
+
+# Junkoid Rejunked
+
+This is a WIP port of Pink Yoshi's Junkoid (https://metroidconstruction.com/hack.php?id=689) (more specifically, the 1.1 version) with music by Mindflower, with some improvements, to this disassembly.
+
+This project will eventually become Junkoid Rejunked.
+
+Original description: Afflicted with perpetual nightmares, Junko is determined to defeat the manifestation of her dreams - the serpent trickster Asmodeus.

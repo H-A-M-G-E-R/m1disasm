@@ -1,0 +1,70 @@
+[
+ {
+  "obj_type": "elevator",
+  "x": 3200,
+  "y": 2179,
+  "dir": 1,
+  "type": 0
+ },
+ {
+  "obj_type": "item",
+  "x": 3800,
+  "y": 2200,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 2488,
+  "y": 2968,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 3992,
+  "y": 3432,
+  "type": 11
+ },
+ {
+  "obj_type": "item",
+  "x": 2392,
+  "y": 3720,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 5032,
+  "y": 3960,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 2648,
+  "y": 4184,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 4984,
+  "y": 4488,
+  "type": 8
+ },
+ {
+  "obj_type": "item",
+  "x": 2424,
+  "y": 4680,
+  "type": 6
+ },
+ {
+  "obj_type": "item",
+  "x": 4216,
+  "y": 4936,
+  "type": 3
+ },
+ {
+  "obj_type": "elevator",
+  "x": 3200,
+  "y": 5507,
+  "dir": 0,
+  "type": 4
+ }
+]

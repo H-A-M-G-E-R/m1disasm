@@ -85,22 +85,22 @@ AreaRoutine: ; L95C3
 ; area init data
     .byte $FF                       ;Not used.
 AreaMusicFlag:
-    .byte music_Brinstar            ;Brinstar music init flag.
+    .byte music_Surface
 AreaMinibossMusic:
-    .byte music_Tourian
+    .byte $00
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:
-    .byte $2B, $2C, $28, $0B, $1C, $0A, $1A
+    .byte $0A, $63, $0B, $52
 
 AreaSamusMapPosX:
-    .byte $03   ;Samus start x coord on world map.
+    .byte $0A   ;Samus start x coord on world map.
 AreaSamusMapPosY:
-    .byte $0E   ;Samus start y coord on world map.
+    .byte $01   ;Samus start y coord on world map.
 AreaSamusX:
     .byte $80   ;Samus start horizontal screen position.
 AreaSamusY:
-    .byte $B0   ;Samus start vertical screen position.
+    .byte $B9   ;Samus start vertical screen position.
 AreaScrollDir:
     .byte $02   ;Starting scroll direction. 0 = vertical, 2 = horizontal
 
@@ -124,7 +124,10 @@ AreaMellowAnimIndex:
 ; duration, CHR bank
 ; 0 = end
 AreaTileAnim:
-    .byte $FF, BrinstarBG/$400
+    .byte $05, SurfaceBG_Frame0/$400
+    .byte $05, SurfaceBG_Frame1/$400
+    .byte $05, SurfaceBG_Frame2/$400
+    .byte $05, SurfaceBG_Frame3/$400
     .byte $00
 
 ; Enemy AI jump table
@@ -406,16 +409,16 @@ TileBlastBlastAnimIndexTable:
 
 ; Delay before tile respawns (* 4). 0 = never respawn
 TileBlastRespawnDelayTbl:
-    .byte $50 ; tile #$70
-    .byte $50 ; tile #$74
-    .byte $50 ; tile #$78
-    .byte $50 ; tile #$7C
-    .byte $50 ; tile #$80
-    .byte $50 ; tile #$84
-    .byte $50 ; tile #$88
-    .byte $50 ; tile #$8C
-    .byte $50 ; tile #$90
-    .byte $50 ; tile #$94
+    .byte $00 ; tile #$70
+    .byte $00 ; tile #$74
+    .byte $00 ; tile #$78
+    .byte $00 ; tile #$7C
+    .byte $00 ; tile #$80
+    .byte $00 ; tile #$84
+    .byte $00 ; tile #$88
+    .byte $00 ; tile #$8C
+    .byte $00 ; tile #$90
+    .byte $00 ; tile #$94
 
 ; Table used for indexing the respawning animations in TileBlastAnim
 TileBlastRespawnAnimIndexTable:
@@ -938,15 +941,15 @@ TileBlastFrame0F:
 TileBlastFrame10:
     ; nothing
 
-.include "data/brinstar/enemy_sprite_data.asm"
+.include "data/surface/enemy_sprite_data.asm"
 
 ;----------------------------------------[ Palette data ]--------------------------------------------
 
-.include "data/brinstar/palettes.asm"
+.include "data/surface/palettes.asm"
 
 ;------------------------------------[ Special items table ]-----------------------------------------
 
-.include "data/brinstar/global_objs.asm"
+.include "data/surface/global_objs.asm"
 
 .ends
 

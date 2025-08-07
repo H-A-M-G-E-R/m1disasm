@@ -47,22 +47,9 @@ RidleyProjectileAIRoutine:
     pla
     ldx PageIndex
     eor EnData05,x
-    ; branch if they differ in the horizontal facing direction
+    ; return if they don't differ in the horizontal facing direction
     lsr
-    bcs @RemoveProjectile
-    ; exit if projectile faces left
-    lda EnData05,x
-    lsr
-    bcs @RTS
-    ; exit if projectile is to the left of Samus
-    lda EnX,x
-    sec
-    sbc ObjX
     bcc @RTS
-    ; exit if projectile is not #$20 or more pixels (2 blocks) to the right of Samus
-    cmp #$20
-    bcc @RTS
-    ; fallthrough
 @RemoveProjectile:
     ; remove projectile
     lda #$00
@@ -114,9 +101,7 @@ RidleyTryToLaunchProjectile:
     
     ; all projectiles are currently launched
     ; undo decrement projectile counter so that it will try to launch again the next frame
-    ; (BUG! this is actually Kraid's lint counter, probably a remnant-->
-    ; of copy-pasting the KraidTryToLaunchLint routine to make this one)
-    inc KraidLintCounter
+    inc RidleyProjectileCounter
 RTS_9AA9:
     rts
 

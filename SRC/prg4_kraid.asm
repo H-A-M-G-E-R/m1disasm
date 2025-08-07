@@ -85,27 +85,27 @@ AreaRoutine:
 L95CC:
     .byte $1D                       ;Kraid's room.
 AreaMusicFlag:
-    .byte music_KraidArea           ;Kraid's hideout music init flag.
+    .byte music_Trench
 AreaMinibossMusic:
-    .byte music_Tourian
+    .byte music_JakeTheme
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:
-    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF
+.byte $22, $43, $FF, $FF
 
 AreaSamusMapPosX:
-    .byte $07   ;Samus start x coord on world map.
+    .byte $14   ;Samus start x coord on world map.
 AreaSamusMapPosY:
-    .byte $14   ;Samus start y coord on world map.
+    .byte $05   ;Samus start y coord on world map.
 AreaSamusX:
     .byte $80   ;Samus start horizontal screen position.
 AreaSamusY:
-    .byte $6E   ;Samus start vertical screen position.
+    .byte $71   ;Samus start vertical screen position.
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
 
 AreaPalToggle:
-    .byte _id_Palette05+1
+    .byte _id_Palette00+1
 
     .byte $00
 AreaFireballKilledAnimIndex:
@@ -122,7 +122,10 @@ AreaMellowAnimIndex:
     .byte EnAnim_64 - EnAnimTbl
 
 AreaTileAnim:
-    .byte $FF, KraidBG/$400
+    .byte $05, TrenchBG_Frame0/$400
+    .byte $05, TrenchBG_Frame1/$400
+    .byte $05, TrenchBG_Frame2/$400
+    .byte $05, TrenchBG_Frame3/$400
     .byte $00
 
 ChooseEnemyAIRoutine:
@@ -367,16 +370,16 @@ TileBlastBlastAnimIndexTable:
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$94
 
 TileBlastRespawnDelayTbl:
-    .byte $50 ; tile #$70
-    .byte $50 ; tile #$74
-    .byte $50 ; tile #$78
-    .byte $50 ; tile #$7C
-    .byte $50 ; tile #$80
-    .byte $50 ; tile #$84
-    .byte $50 ; tile #$88
-    .byte $50 ; tile #$8C
-    .byte $50 ; tile #$90
-    .byte $50 ; tile #$94
+    .byte $00 ; tile #$70
+    .byte $00 ; tile #$74
+    .byte $00 ; tile #$78
+    .byte $00 ; tile #$7C
+    .byte $00 ; tile #$80
+    .byte $00 ; tile #$84
+    .byte $00 ; tile #$88
+    .byte $00 ; tile #$8C
+    .byte $00 ; tile #$90
+    .byte $00 ; tile #$94
 
 TileBlastRespawnAnimIndexTable:
     .byte TileBlastAnim6 - TileBlastAnim ; tile #$70
@@ -783,15 +786,15 @@ TileBlastFrame0F:
 TileBlastFrame10:
     ;nothing
 
-.include "data/kraid/enemy_sprite_data.asm"
+.include "data/trench/enemy_sprite_data.asm"
 
 ;----------------------------------------[ Palette data ]--------------------------------------------
 
-.include "data/kraid/palettes.asm"
+.include "data/trench/palettes.asm"
 
 ;-----------------------------------[ Special items table ]-----------------------------------------
 
-.include "data/kraid/global_objs.asm"
+.include "data/trench/global_objs.asm"
 
 .ends
 

@@ -47,7 +47,7 @@ ObjAnim_SamusRunJump: ;$13
 
 ;Samus roll animation.
 ObjAnim_SamusRoll: ;$16
-    .byte _id_ObjFrame1E, _id_ObjFrame1D, _id_ObjFrame1C, _id_ObjFrame1B, $FF
+    .byte _id_ObjFrame1D, _id_ObjFrame1D, _id_ObjFrame1E, _id_ObjFrame1E, $FF
 
 ;Bullet animation.
 ObjAnim_RegularBullet: ;$1B
@@ -201,8 +201,6 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame18
     PtrTableEntry ObjFramePtrTable, ObjFrame19
     PtrTableEntry ObjFramePtrTable, ObjFrame1A
-    PtrTableEntry ObjFramePtrTable, ObjFrame1B
-    PtrTableEntry ObjFramePtrTable, ObjFrame1C
     PtrTableEntry ObjFramePtrTable, ObjFrame1D
     PtrTableEntry ObjFramePtrTable, ObjFrame1E
     PtrTableEntry ObjFramePtrTable, ObjFrame22
@@ -249,6 +247,7 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame58
     PtrTableEntry ObjFramePtrTable, ObjFrame59
     PtrTableEntry ObjFramePtrTable, ObjFrame5A
+    PtrTableEntry ObjFramePtrTable, ObjFrame5B
     PtrTableEntry ObjFramePtrTable, ObjFrame65
     PtrTableEntry ObjFramePtrTable, ObjFrame66
     PtrTableEntry ObjFramePtrTable, ObjFrame67
@@ -258,25 +257,23 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame_DoorOpened
 
 SamusCHRBankTable:
-    .byte SamusSuitGFX0/$400 ; ObjFrame03
-    .byte SamusSuitGFX1/$400 ; ObjFrame04
-    .byte SamusSuitGFX2/$400 ; ObjFrame05
-    .byte SamusSuitGFX4/$400 ; ObjFrame07
-    .byte SamusSuitGFX5/$400 ; ObjFrame08
-    .byte SamusSuitGFX0/$400 ; ObjFrame0C
-    .byte SamusSuitGFX1/$400 ; ObjFrame0D
-    .byte SamusSuitGFX2/$400 ; ObjFrame0E
-    .byte SamusSuitGFX6/$400 ; ObjFrame10
-    .byte SamusSuitGFX6/$400 ; ObjFrame12
-    .byte SamusSuitGFX7/$400 ; ObjFrame17
-    .byte SamusSuitGFX7/$400 ; ObjFrame18
-    .byte SamusSuitGFX7/$400 ; ObjFrame19
-    .byte SamusSuitGFX7/$400 ; ObjFrame1A
-    .byte SamusSuitGFX7/$400 ; ObjFrame1B
-    .byte SamusSuitGFX7/$400 ; ObjFrame1C
-    .byte SamusSuitGFX7/$400 ; ObjFrame1D
-    .byte SamusSuitGFX7/$400 ; ObjFrame1E
-    .byte SamusSuitGFX5/$400 ; ObjFrame22
+    .byte JunkoNormalGFX0/$400 ; ObjFrame03
+    .byte JunkoNormalGFX1/$400 ; ObjFrame04
+    .byte JunkoNormalGFX2/$400 ; ObjFrame05
+    .byte JunkoNormalGFX4/$400 ; ObjFrame07
+    .byte JunkoNormalGFX5/$400 ; ObjFrame08
+    .byte JunkoNormalGFX0/$400 ; ObjFrame0C
+    .byte JunkoNormalGFX1/$400 ; ObjFrame0D
+    .byte JunkoNormalGFX2/$400 ; ObjFrame0E
+    .byte JunkoNormalGFX6/$400 ; ObjFrame10
+    .byte JunkoNormalGFX6/$400 ; ObjFrame12
+    .byte JunkoNormalGFX7/$400 ; ObjFrame17
+    .byte JunkoNormalGFX7/$400 ; ObjFrame18
+    .byte JunkoNormalGFX7/$400 ; ObjFrame19
+    .byte JunkoNormalGFX7/$400 ; ObjFrame1A
+    .byte JunkoNormalGFX7/$400 ; ObjFrame1D
+    .byte JunkoNormalGFX7/$400 ; ObjFrame1E
+    .byte JunkoNormalGFX5/$400 ; ObjFrame22
     .byte $00 ; ObjFrame23
     .byte $00 ; ObjFrame25
     .byte $00 ; ObjFrame26
@@ -284,24 +281,24 @@ SamusCHRBankTable:
     .byte $00 ; ObjFrame28
     .byte $00 ; ObjFrameIceBulletHit
     .byte $00 ; ObjFrame2A
-    .byte SamusSuitGFX5/$400 ; ObjFrame2B
-    .byte SamusSuitGFX5/$400 ; ObjFrame30
+    .byte JunkoNormalGFX5/$400 ; ObjFrame2B
+    .byte JunkoNormalGFX5/$400 ; ObjFrame30
     .byte $00 ; ObjFrame31
     .byte $00 ; ObjFrame33
-    .byte SamusSuitGFX4/$400 ; ObjFrame35
-    .byte SamusSuitGFX6/$400 ; ObjFrame38
-    .byte SamusSuitGFX6/$400 ; ObjFrame39
+    .byte JunkoNormalGFX4/$400 ; ObjFrame35
+    .byte JunkoNormalGFX6/$400 ; ObjFrame38
+    .byte JunkoNormalGFX6/$400 ; ObjFrame39
     .byte $00 ; ObjFrame3C
-    .byte SamusSuitGFX0/$400 ; ObjFrame40
-    .byte SamusSuitGFX3/$400 ; ObjFrame41
-    .byte SamusSuitGFX3/$400 ; ObjFrame42
-    .byte SamusSuitGFX0/$400 ; ObjFrame46
-    .byte SamusSuitGFX3/$400 ; ObjFrame47
-    .byte SamusSuitGFX3/$400 ; ObjFrame48
-    .byte SamusSuitGFXSpider/$400 ; ObjFrame_SamusSpider0
-    .byte SamusSuitGFXSpider/$400 ; ObjFrame_SamusSpider1
-    .byte SamusSuitGFXSpider/$400 ; ObjFrame_SamusSpider2
-    .byte SamusSuitGFXSpider/$400 ; ObjFrame_SamusSpider3
+    .byte JunkoNormalGFX0/$400 ; ObjFrame40
+    .byte JunkoNormalGFX3/$400 ; ObjFrame41
+    .byte JunkoNormalGFX3/$400 ; ObjFrame42
+    .byte JunkoNormalGFX0/$400 ; ObjFrame46
+    .byte JunkoNormalGFX3/$400 ; ObjFrame47
+    .byte JunkoNormalGFX3/$400 ; ObjFrame48
+    .byte JunkoNormalGFXSpider/$400 ; ObjFrame_SamusSpider0
+    .byte JunkoNormalGFXSpider/$400 ; ObjFrame_SamusSpider1
+    .byte JunkoNormalGFXSpider/$400 ; ObjFrame_SamusSpider2
+    .byte JunkoNormalGFXSpider/$400 ; ObjFrame_SamusSpider3
 
 ;-------------------------------[ Sprite frame data tables ]---------------------------------------
 
@@ -364,7 +361,7 @@ ObjFrame07:
     .byte $00,$04,$20,$F8
     .byte $00,$05,$20,$00
     .byte $08,$06,$20,$F8
-    .byte $08,$06,$60,$00
+    .byte $08,$07,$60,$00
     .byte $80
 
 ;Samus stand.
@@ -496,39 +493,17 @@ ObjFrame1A:
     .byte $80
 
 ;Samus roll.
-ObjFrame1B:
-    .byte $07,$04 ; changed y radius from 8 to 7 to compensate for spider ball
-    .byte $F6,$0C,$20,$F8
-    .byte $F6,$0D,$20,$00
-    .byte $FE,$0E,$20,$F8
-    .byte $FE,$0F,$20,$00
-    .byte $80
-
-;Samus roll.
-ObjFrame1C:
-    .byte $07,$04
-    .byte $02,$0C,$A0,$F8
-    .byte $02,$0D,$A0,$00
-    .byte $FA,$0E,$A0,$F8
-    .byte $FA,$0F,$A0,$00
-    .byte $80
-
-;Samus roll.
-ObjFrame1D:
-    .byte $07,$04
-    .byte $02,$0C,$E0,$00
-    .byte $02,$0D,$E0,$F8
-    .byte $FA,$0E,$E0,$00
-    .byte $FA,$0F,$E0,$F8
+ObjFrame1D
+    .byte $04,$04
+    .byte $FC,$0E,$E0,$00
+    .byte $FC,$0F,$E0,$F8
     .byte $80
 
 ;Samus roll.
 ObjFrame1E:
-    .byte $07,$04
-    .byte $F6,$0C,$60,$00
-    .byte $F6,$0D,$60,$F8
-    .byte $FE,$0E,$60,$00
-    .byte $FE,$0F,$60,$F8
+    .byte $04,$04
+    .byte $FC,$0C,$60,$00
+    .byte $FC,$0D,$60,$F8
     .byte $80
 
 ;Samus stand and fire.
@@ -657,12 +632,12 @@ ObjFrame_DoorOpened:
 ;Samus explode.
 ObjFrame35:
     .byte $80,$00
-    .byte $00,$F0,$07,$20,$F8
-    .byte $01,$F0,$08,$20,$00
-    .byte $02,$F8,$09,$20,$F8
-    .byte $03,$F8,$0A,$20,$00
-    .byte $04,$00,$0B,$20,$F8
-    .byte $05,$00,$0C,$20,$00
+    .byte $00,$F0,$08,$20,$F8
+    .byte $01,$F0,$09,$20,$00
+    .byte $02,$F8,$0A,$20,$F8
+    .byte $03,$F8,$0B,$20,$00
+    .byte $04,$00,$0C,$20,$F8
+    .byte $05,$00,$0D,$20,$00
     .byte $80
 
 ;Samus jump and point up.
@@ -975,6 +950,12 @@ ObjFrame5A:
     .byte $FC,$EA,$23,$FC
     .byte $80
 
+;J (item $B).
+ObjFrame5B:
+    .byte $00,$00
+    .byte $FC,$60,$20,$FC
+    .byte $80
+
 ;Kraid statue.
 ObjFrame65:
     .byte $00,$08
@@ -1002,10 +983,8 @@ ObjFrame66:
     .byte $08,$FB,$21,$00
     .byte $E8,$C8,$21,$F8
     .byte $E8,$C9,$21,$00
-    .byte $F0,$EB,$21,$F0
     .byte $F0,$D8,$21,$F8
     .byte $F0,$D9,$21,$00
-    .byte $F8,$EA,$21,$F0
     .byte $F8,$E8,$21,$F8
     .byte $F8,$E9,$21,$00
     .byte $80

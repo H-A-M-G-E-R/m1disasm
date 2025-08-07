@@ -1,0 +1,51 @@
+[
+ {
+  "obj_type": "elevator",
+  "x": 5248,
+  "y": 1411,
+  "dir": 1,
+  "type": 0
+ },
+ {
+  "obj_type": "item",
+  "x": 6088,
+  "y": 1368,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 7352,
+  "y": 1656,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 5528,
+  "y": 1848,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 5208,
+  "y": 2648,
+  "type": 8
+ },
+ {
+  "obj_type": "item",
+  "x": 6264,
+  "y": 2632,
+  "type": 5
+ },
+ {
+  "obj_type": "item",
+  "x": 4936,
+  "y": 3208,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 6088,
+  "y": 3384,
+  "type": 9
+ }
+]

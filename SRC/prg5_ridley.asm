@@ -85,27 +85,27 @@ AreaRoutine:
 L95CC:
     .byte $12                       ;Ridley's room.
 AreaMusicFlag:
-    .byte music_RidleyArea          ;Ridley hideout music init flag.
+    .byte music_Labyrinth
 AreaMinibossMusic:
-    .byte music_Tourian
+    .byte music_ElwoodTheme
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:
-    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF
+    .byte $26, $27, $FF, $FF
 
 AreaSamusMapPosX:
-    .byte $19   ;Samus start x coord on world map.
+    .byte $0C   ;Samus start x coord on world map.
 AreaSamusMapPosY:
-    .byte $18   ;Samus start y coord on world map.
+    .byte $17   ;Samus start y coord on world map.
 AreaSamusX:
     .byte $80   ;Samus start horizontal screen position.
 AreaSamusY:
-    .byte $6E   ;Samus start vertical screen position.
+    .byte $71   ;Samus start vertical screen position.
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
 
 AreaPalToggle:
-    .byte _id_Palette05+1
+    .byte _id_Palette00+1
 
     .byte $00
 AreaFireballKilledAnimIndex:
@@ -122,7 +122,10 @@ AreaMellowAnimIndex:
     .byte EnAnim_25 - EnAnimTbl
 
 AreaTileAnim:
-    .byte $FF, RidleyBG/$400
+    .byte $05, LabyrinthBG_Frame0/$400
+    .byte $05, LabyrinthBG_Frame1/$400
+    .byte $05, LabyrinthBG_Frame2/$400
+    .byte $05, LabyrinthBG_Frame3/$400
     .byte $00
 
 ChooseEnemyAIRoutine:
@@ -368,16 +371,16 @@ TileBlastBlastAnimIndexTable:
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$94
 
 TileBlastRespawnDelayTbl:
-    .byte $50 ; tile #$70
-    .byte $50 ; tile #$74
-    .byte $50 ; tile #$78
-    .byte $50 ; tile #$7C
-    .byte $50 ; tile #$80
-    .byte $50 ; tile #$84
-    .byte $50 ; tile #$88
-    .byte $50 ; tile #$8C
-    .byte $50 ; tile #$90
-    .byte $50 ; tile #$94
+    .byte $00 ; tile #$70
+    .byte $00 ; tile #$74
+    .byte $00 ; tile #$78
+    .byte $00 ; tile #$7C
+    .byte $00 ; tile #$80
+    .byte $00 ; tile #$84
+    .byte $00 ; tile #$88
+    .byte $00 ; tile #$8C
+    .byte $00 ; tile #$90
+    .byte $00 ; tile #$94
 
 TileBlastRespawnAnimIndexTable:
     .byte TileBlastAnim6 - TileBlastAnim ; tile #$70
@@ -672,15 +675,15 @@ TileBlastFrame0F:
 TileBlastFrame10:
     ;nothing
 
-.include "data/ridley/enemy_sprite_data.asm"
+.include "data/labyrinth/enemy_sprite_data.asm"
 
 ;------------------------------------------[ Palette data ]------------------------------------------
 
-.include "data/ridley/palettes.asm"
+.include "data/labyrinth/palettes.asm"
 
 ;-----------------------------------[ Special items table ]-----------------------------------------
 
-.include "data/ridley/global_objs.asm"
+.include "data/labyrinth/global_objs.asm"
 
 .ends
 

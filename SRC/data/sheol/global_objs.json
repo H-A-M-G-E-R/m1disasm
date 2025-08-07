@@ -1,0 +1,168 @@
+[
+ {
+  "obj_type": "elevator",
+  "x": 640,
+  "y": 1411,
+  "dir": 1,
+  "type": 0
+ },
+ {
+  "obj_type": "elevator",
+  "x": 384,
+  "y": 1667,
+  "dir": 1,
+  "type": 127
+ },
+ {
+  "obj_type": "flying_star_spawner",
+  "x": 640,
+  "y": 2432,
+  "type": 1
+ },
+ {
+  "obj_type": "magic_barrier",
+  "x": 1152,
+  "y": 2432,
+  "id": 0
+ },
+ {
+  "obj_type": "magic_barrier",
+  "x": 1664,
+  "y": 2432,
+  "id": 4
+ },
+ {
+  "obj_type": "magic_barrier",
+  "x": 896,
+  "y": 2688,
+  "id": 2
+ },
+ {
+  "obj_type": "flying_star_spawner",
+  "x": 896,
+  "y": 2688,
+  "type": 0
+ },
+ {
+  "obj_type": "cannon",
+  "x": 903,
+  "y": 2599,
+  "type": 0
+ },
+ {
+  "obj_type": "cannon",
+  "x": 967,
+  "y": 2599,
+  "type": 3
+ },
+ {
+  "obj_type": "magic_barrier",
+  "x": 1152,
+  "y": 2688,
+  "id": 1
+ },
+ {
+  "obj_type": "item",
+  "x": 1416,
+  "y": 2920,
+  "type": 8
+ },
+ {
+  "obj_type": "flying_star_spawner",
+  "x": 1152,
+  "y": 4224,
+  "type": 0
+ },
+ {
+  "obj_type": "magic_barrier",
+  "x": 1408,
+  "y": 4224,
+  "id": 3
+ },
+ {
+  "obj_type": "cannon",
+  "x": 1671,
+  "y": 4231,
+  "type": 3
+ },
+ {
+  "obj_type": "cannon",
+  "x": 1687,
+  "y": 4151,
+  "type": 0
+ },
+ {
+  "obj_type": "cannon",
+  "x": 1719,
+  "y": 4151,
+  "type": 3
+ },
+ {
+  "obj_type": "cannon",
+  "x": 1639,
+  "y": 4231,
+  "type": 3
+ },
+ {
+  "obj_type": "door",
+  "x": 496,
+  "y": 4968,
+  "dir": 0,
+  "type": 3
+ },
+ {
+  "obj_type": "asmodeus",
+  "x": 640,
+  "y": 4992
+ },
+ {
+  "obj_type": "flying_star_spawner",
+  "x": 640,
+  "y": 4992,
+  "type": 1
+ },
+ {
+  "obj_type": "cannon",
+  "x": 615,
+  "y": 4967,
+  "type": 1
+ },
+ {
+  "obj_type": "door",
+  "x": 1008,
+  "y": 4968,
+  "dir": 0,
+  "type": 3
+ },
+ {
+  "obj_type": "cannon",
+  "x": 823,
+  "y": 4919,
+  "type": 0
+ },
+ {
+  "obj_type": "cannon",
+  "x": 855,
+  "y": 4919,
+  "type": 3
+ },
+ {
+  "obj_type": "cannon",
+  "x": 887,
+  "y": 4935,
+  "type": 3
+ },
+ {
+  "obj_type": "cannon",
+  "x": 919,
+  "y": 4935,
+  "type": 1
+ },
+ {
+  "obj_type": "door",
+  "x": 1040,
+  "y": 4968,
+  "dir": 1,
+  "type": 3
+ }
+]

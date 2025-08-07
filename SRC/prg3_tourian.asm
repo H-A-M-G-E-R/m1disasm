@@ -93,27 +93,27 @@ AreaRoutine:
 L95CC:
     .byte $FF                       ;Not used.
 AreaMusicFlag:
-    .byte music_Tourian             ;Tourian music init flag.
+    .byte music_Sheol
 AreaMinibossMusic:
-    .byte music_Tourian
+    .byte music_JunkoTheme
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:
-    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF
+.byte $FF, $FF, $FF, $FF
 
 AreaSamusMapPosX:
-    .byte $03   ;Samus start x coord on world map.
+    .byte $02   ;Samus start x coord on world map.
 AreaSamusMapPosY:
-    .byte $04   ;Samus start y coord on world map.
+    .byte $05   ;Samus start y coord on world map.
 AreaSamusX:
     .byte $80   ;Samus start horizontal screen position.
 AreaSamusY:
-    .byte $6E   ;Samus start vertical screen position.
+    .byte $71   ;Samus start vertical screen position.
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
 
 AreaPalToggle:
-    .byte _id_Palette05+1
+    .byte _id_Palette00+1
 
     .byte $00
 AreaFireballKilledAnimIndex:
@@ -130,7 +130,10 @@ AreaMellowAnimIndex:
     .byte $00
 
 AreaTileAnim:
-    .byte $FF, TourianBG/$400
+    .byte $05, SheolBG_Frame0/$400
+    .byte $05, SheolBG_Frame1/$400
+    .byte $05, SheolBG_Frame2/$400
+    .byte $05, SheolBG_Frame3/$400
     .byte $00
 
 ; Enemy AI Jump Table
@@ -377,16 +380,16 @@ TileBlastBlastAnimIndexTable:
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$94
 
 TileBlastRespawnDelayTbl:
-    .byte $50 ; tile #$70
-    .byte $50 ; tile #$74
-    .byte $50 ; tile #$78
-    .byte $50 ; tile #$7C
-    .byte $50 ; tile #$80
-    .byte $50 ; tile #$84
-    .byte $50 ; tile #$88
-    .byte $50 ; tile #$8C
-    .byte $50 ; tile #$90
-    .byte $50 ; tile #$94
+    .byte $00 ; tile #$70
+    .byte $00 ; tile #$74
+    .byte $00 ; tile #$78
+    .byte $00 ; tile #$7C
+    .byte $00 ; tile #$80
+    .byte $00 ; tile #$84
+    .byte $00 ; tile #$88
+    .byte $00 ; tile #$8C
+    .byte $00 ; tile #$90
+    .byte $00 ; tile #$94
 
 TileBlastRespawnAnimIndexTable:
     .byte TileBlastAnim6 - TileBlastAnim ; tile #$70
@@ -558,25 +561,17 @@ UpdateCannon:
     jsr UpdateCannon_CheckIfOnScreen
     tya
     bne RTS_9B4B
-    ; branch if escape timer is active
+    ; return if escape timer is active
     ldy EndTimer+1
     iny
-    bne @escape
-        ; escape timer is not active, behave normally
-        ; exit if cannon instr list is 5 (unused?)
-        lda Cannons.0.instrListID,x
-        cmp #$05
-        beq RTS_9B4B
-        ; run instructions
-        jsr UpdateCannon_RunInstructions
-        jmp DrawCannon_Normal
-    @escape:
-        ; escape timer is active, flash and do nothing
-        lda FrameCount
-        and #$02
-        bne RTS_9B4B
-        lda #_id_EnFrame19.b
-        jmp DrawCannon_Escape
+    bne RTS_9B4B
+    ; escape timer is not active, behave normally
+    ; exit if cannon instr list is 5 (unused?)
+    lda Cannons.0.instrListID,x
+    cmp #$05
+    beq RTS_9B4B
+    ; run instructions
+    ; fallthrough
 
 UpdateCannon_RunInstructions:
     ldy Cannons.0.instrListID,x
@@ -1082,7 +1077,7 @@ MotherBrain_9E22:
     jsr MotherBrain_9E22_UpdateAnimBrain
     jsr MotherBrain_9E22_UpdateAnimEye
 L9E2E:
-    jsr MotherBrain_DrawSprites
+    ;jsr MotherBrain_DrawSprites
 ClearMotherBrainIsHit:
     lda #$00
     sta MotherBrainIsHit
@@ -1367,9 +1362,9 @@ MotherBrain_9E22_HandleBeingHit:
     jsr SFX_BossHit
     ; increment mother brain hits quantity
     inc MotherBrainQtyHits
-    ; exit if hits quantity is less than 32
+    ; exit if hits quantity is less than 25
     lda MotherBrainQtyHits
-    cmp #$20
+    cmp #25
     ldy #$02 ; default mb status to hit
     lda #$10 ; default mb flash time to 16 frames
     bcc @notDead
@@ -1815,13 +1810,6 @@ UpdateEndTimer:
     jsr CommonJump_Base10Subtract
     sta EndTimer+1
     
-    ; play alarm sound effect every 32 frames
-    lda FrameCount
-    and #$1F
-    bne @endIf_A
-        lda #sfxSQ1_TimeBombTick
-        jsr SFX_SetSQ1SFXFlag
-    @endIf_A:
     lda EndTimer
     ora EndTimer+1
     bne @RTS
@@ -2128,15 +2116,15 @@ TileBlastFrame10:
     .byte $A0, $A0
     .byte $A0, $A0
 
-.include "data/tourian/enemy_sprite_data.asm"
+.include "data/sheol/enemy_sprite_data.asm"
 
 ;-----------------------------------------[ Palette data ]-------------------------------------------
 
-.include "data/tourian/palettes.asm"
+.include "data/sheol/palettes.asm"
 
 ;------------------------------------[ Special items table ]-----------------------------------------
 
-.include "data/tourian/global_objs.asm"
+.include "data/sheol/global_objs.asm"
 
 .ends
 

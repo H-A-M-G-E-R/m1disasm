@@ -23,6 +23,9 @@
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
+; Pause map code (by snarfblam)
+.include "pause_map.asm"
+
 MainTitleRoutine:
     ;If intro routines not running, branch.
     lda TitleRoutine
@@ -199,7 +202,7 @@ RamValueTbl: ;$80C8
     .byte $C0, $C4
 
 DrawIntroBackground:
-    lda #music_IntroMusic           ;Intro music.
+    lda #music_Title                ;Intro music.
     sta CurrentMusic                ;
     jsr ScreenOff                   ;($C439)Turn screen off.
     ;Compress the nametable to a buffer.
@@ -561,7 +564,7 @@ L82AF:
     lda IntroMusicRestart           ;Check to see if intro music needs to be restarted.-->
     bne L82EA                       ;Branch if not.
     lda #$FF                        ;
-    sta PreviousMusic               ;Restart intro music.
+    ;sta PreviousMusic               ;Restart intro music.
     lda #$02                        ;Set restart of intro music after another two cycles-->
     sta IntroMusicRestart           ;of the title routines.
 RTS_82E9:
@@ -1251,9 +1254,9 @@ UniqueItemSearch: ;($8B9C)
             ;If unique item found, branch to UniqueItemFound.
             beq UniqueItemFound
         L8BAF:
-        ;If the unique item is a Zebetite, return, else branch to find next unique item.
+        ;If the unique item $3F, return, else branch to find next unique item.
         inx
-        cpx #>ui_ZEBETITE1.b
+        cpx #$3F
         bcc L8B9E
     rts
 
@@ -1389,20 +1392,6 @@ CalculatePassword:
         bpl L8C7E
     
     jsr ProcessUniqueItems          ;($8B79)Determine what items Samus has collected.
-    ;Branch if mother brain has not been defeated
-    lda PasswordByte+$07
-    and #$04
-    beq L8C9E
-        ;Mother brain was defeated
-        ;Restore mother brain, zebetites and all missile doors in Tourian as punishment for-->
-        ;dying in the escape.
-        ;Only reset in the password.  Continuing without resetting will not restore those items.
-        lda #$00
-        sta PasswordByte+$07
-        lda PasswordByte+$06
-        and #$03
-        sta PasswordByte+$06
-    L8C9E:
     
     ;Store InArea in bits 0 thru 5 in address $6990.
     lda InArea
@@ -1576,9 +1565,10 @@ IncrementToNextItem:
     bcc L8D95                       ;Loop until all unique item history checked.
     lda $00                         ;
     jsr Amul16                      ;
-    ora #$09                        ;
+    clc                             ;
+    adc #$10                        ;
     sta MaxHealth+1                 ;Store the number of energy tanks found in MaxHealth.
-    lda #$99                        ;
+    lda #$00                        ;
     sta MaxHealth                   ;
     lda #$00                        ;
     ldy $02                         ;
@@ -1591,7 +1581,7 @@ IncrementToNextItem:
     L8DC6:
     ldy KraidStatueStatus           ;
     beq L8DCF                       ;
-        adc #$4B                        ;75 missiles are added to MaxMissiles-->
+        adc #25                         ;25 missiles are added to MaxMissiles-->
         bcs L8DD8                       ;if Kraid has been defeated and another-->
 L8DCF:
     ldy RidleyStatueStatus          ;75 missiles are added if the ridley-->
@@ -1817,79 +1807,47 @@ PasswordBitmaskTbl:
 ;on world map. See constants.asm for values of IIIIII.
 
 ItemData: ; $9029
-    ItemData_MaruMari:
-    .word ui_MARUMARI    + ($02 << 5) + $0E  ;Maru Mari at coord 02,0E                    (Item 0)
-
-    .word ui_MISSILES    + ($12 << 5) + $0B  ;Missiles at coord 12,0B                     (Item 1)
-    .word ui_MISSILEDOOR + ($07 << 5) + $05  ;Red door to long beam at coord 07,05        (Item 2)
-    .word ui_MISSILEDOOR + ($04 << 5) + $02  ;Red door to Tourian elevator at coord 05,02 (Item 3)
-    .word ui_ENERGYTANK  + ($19 << 5) + $07  ;Energy tank at coord 19,07                  (Item 4)
-    .word ui_MISSILEDOOR + ($19 << 5) + $05  ;Red door to bombs at coord 1A,05            (Item 5)
-
-    ItemData_Bombs:
-    .word ui_BOMBS       + ($19 << 5) + $05  ;Bombs at coord 19,05                        (Item 6)
-
-    .word ui_MISSILEDOOR + ($13 << 5) + $09  ;Red door to ice beam at coord 13,09         (Item 7)
-    .word ui_MISSILES    + ($18 << 5) + $03  ;Missiles at coord 18,03                     (Item 8)
-    .word ui_ENERGYTANK  + ($1B << 5) + $03  ;Energy tank at coord 1B,03                  (Item 9)
-    .word ui_MISSILEDOOR + ($0F << 5) + $02  ;Red door to varia suit at coord 0F,02       (Item 10)
-
-    ItemData_Varia:
-    .word ui_VARIA       + ($0F << 5) + $02  ;Varia suit at coord 0F,02                   (Item 11)
-
-    .word ui_ENERGYTANK  + ($09 << 5) + $0E  ;Energy tank at coord 09,0E                  (Item 12)
-    .word ui_MISSILES    + ($12 << 5) + $0E  ;Missiles at coord 12,0E                     (Item 13)
-    .word ui_MISSILES    + ($11 << 5) + $0F  ;Missiles at coord 11,0F                     (Item 14)
-    .word ui_MISSILEDOOR + ($1A << 5) + $0C  ;Red door to ice beam at coord 1B,0C         (Item 15)
-    .word ui_MISSILES    + ($1B << 5) + $0A  ;Missiles at coord 1B,0A                     (Item 16)
-    .word ui_MISSILES    + ($1C << 5) + $0A  ;Missiles at coord 1C,0A                     (Item 17)
-    .word ui_MISSILES    + ($1C << 5) + $0B  ;Missiles at coord 1C,0B                     (Item 18)
-    .word ui_MISSILES    + ($1B << 5) + $0B  ;Missiles at coord 1B,0B                     (Item 19)
-    .word ui_MISSILES    + ($1A << 5) + $0B  ;Missiles at coord 1A,0B                     (Item 20)
-    .word ui_MISSILES    + ($14 << 5) + $0F  ;Missiles at coord 14,0F                     (Item 21)
-    .word ui_MISSILES    + ($13 << 5) + $0F  ;Missiles at coord 13,0F                     (Item 22)
-    .word ui_MISSILEDOOR + ($1B << 5) + $11  ;Red door to high jump at coord 1C,11        (Item 23)
-
-    ItemData_HighJump:
-    .word ui_HIGHJUMP    + ($1B << 5) + $11  ;High jump at coord 1B,11                    (Item 24)
-
-    .word ui_MISSILEDOOR + ($0F << 5) + $10  ;Red door to screw attack at coord 0E,10     (Item 25)
-
-    ItemData_ScrewAttack:
-    .word ui_SCREWATTACK + ($0F << 5) + $10  ;Screw attack at coord 0D,1D                 (Item 26)
-
-    .word ui_MISSILES    + ($13 << 5) + $16  ;Missiles at coord 13,16                     (Item 27)
-    .word ui_MISSILES    + ($14 << 5) + $16  ;Misslies at coord 14,16                     (Item 28)
-    .word ui_MISSILEDOOR + ($12 << 5) + $15  ;Red door to wave beam at coord 1C,15        (Item 29)
-    .word ui_ENERGYTANK  + ($1A << 5) + $13  ;Energy tank at coord 1A,13                  (Item 30)
-    .word ui_MISSILES    + ($1C << 5) + $14  ;Missiles at coord 1C,14                     (Item 31)
-    .word ui_MISSILEDOOR + ($07 << 5) + $15  ;Red door at coord 07,15                     (Item 32)
-    .word ui_MISSILES    + ($09 << 5) + $15  ;Missiles at coord 09,15                     (Item 33)
-    .word ui_MISSILES    + ($04 << 5) + $15  ;Missiles at coord 04,15                     (Item 34)
-    .word ui_MISSILEDOOR + ($07 << 5) + $16  ;Red door at coord 07,16                     (Item 35)
-    .word ui_ENERGYTANK  + ($0A << 5) + $16  ;Energy tank at coord 0A,16                  (Item 36)
-    .word ui_MISSILEDOOR + ($07 << 5) + $18  ;Red door at coord 07,18                     (Item 37)
-    .word ui_MISSILEDOOR + ($03 << 5) + $1B  ;Red door at coord 03,1B                     (Item 38)
-    .word ui_MISSILES    + ($05 << 5) + $1B  ;Missiles at coord 05,1B                     (Item 39)
-    .word ui_MISSILES    + ($0A << 5) + $19  ;Missiles at coord 0A,19                     (Item 40)
-    .word ui_MISSILEDOOR + ($08 << 5) + $1D  ;Red door to Kraid at coord 08,1D            (Item 41)
-    .word ui_ENERGYTANK  + ($08 << 5) + $1D  ;Energy tank at coord 08,1D(Kraid's room)    (Item 42)
-    .word ui_MISSILES    + ($12 << 5) + $18  ;Missiles at coord 12,18                     (Item 43)
-    .word ui_MISSILEDOOR + ($11 << 5) + $19  ;Red door at coord 11,19                     (Item 44)
-    .word ui_ENERGYTANK  + ($11 << 5) + $19  ;Energy tank at coord 11,19                  (Item 45)
-    .word ui_MISSILES    + ($14 << 5) + $1E  ;Missiles at coord 14,1E                     (Item 46)
-    .word ui_MISSILEDOOR + ($10 << 5) + $1D  ;purple door at coord 10,1D(Ridley's room)   (Item 47)
-    .word ui_ENERGYTANK  + ($0F << 5) + $1D  ;Energy tank at coord 0F,1D                  (Item 48)
-    .word ui_MISSILES    + ($18 << 5) + $1B  ;Missile at coord 18,1B                      (Item 49)
-    .word ui_MISSILEDOOR + ($03 << 5) + $07  ;Orange door at coord 03,07                  (Item 50)
-    .word ui_MISSILEDOOR + ($09 << 5) + $07  ;Red door at coord 09,07                     (Item 51)
-    .word ui_MISSILEDOOR + ($09 << 5) + $0B  ;Red door at coord 0A,0B                     (Item 52)
-    .word ui_ZEBETITE1                       ;1st Zebetite in mother brain room           (Item 53)
-    .word ui_ZEBETITE2                       ;2nd Zebetite in mother brain room           (Item 54)
-    .word ui_ZEBETITE3                       ;3rd Zebetite in mother brain room           (Item 55)
-    .word ui_ZEBETITE4                       ;4th Zebetite in mother brain room           (Item 56)
-    .word ui_ZEBETITE5                       ;5th Zebetite in mother brain room           (Item 57)
-    .word ui_MOTHERBRAIN                     ;Mother brain                                (Item 58)
+    .word ui_BOMBS       + ($10 << 5) + $17
+    .word ui_HIGHJUMP    + ($0D << 5) + $03
+    .word ui_LONGBEAM    + ($19 << 5) + $02
+    .word ui_SCREWATTACK + ($10 << 5) + $13
+    .word ui_MARUMARI    + ($03 << 5) + $02
+    .word ui_VARIA       + ($18 << 5) + $0A
+    .word ui_WAVEBEAM    + ($09 << 5) + $12
+    .word ui_ICEBEAM     + ($04 << 5) + $04
+    .word ui_MISSILES    + ($1E << 5) + $01
+    .word ui_ENERGYTANK  + ($09 << 5) + $02
+    .word ui_MISSILES    + ($01 << 5) + $03
+    .word ui_MISSILES    + ($0B << 5) + $03
+    .word ui_MISSILES    + ($17 << 5) + $03
+    .word ui_MISSILES    + ($11 << 5) + $06
+    .word ui_MISSILES    + ($0E << 5) + $08
+    .word ui_MISSILES    + ($09 << 5) + $0B
+    .word $0B            + ($0F << 5) + $0D
+    .word ui_MISSILES    + ($09 << 5) + $0E
+    .word ui_MISSILES    + ($13 << 5) + $0F
+    .word ui_MISSILES    + ($0A << 5) + $10
+    .word ui_ENERGYTANK  + ($13 << 5) + $11
+    .word ui_MISSILES    + ($0E << 5) + $18
+    .word ui_MISSILES    + ($13 << 5) + $18
+    .word ui_MISSILES    + ($0A << 5) + $1A
+    .word ui_MISSILES    + ($08 << 5) + $1B
+    .word ui_MISSILES    + ($13 << 5) + $1B
+    .word ui_ENERGYTANK  + ($17 << 5) + $1B
+    .word ui_MISSILES    + ($17 << 5) + $05
+    .word ui_MISSILES    + ($1C << 5) + $06
+    .word ui_MISSILES    + ($15 << 5) + $07
+    .word ui_ENERGYTANK  + ($14 << 5) + $0A
+    .word ui_MISSILES    + ($13 << 5) + $0C
+    .word ui_MISSILES    + ($17 << 5) + $0D
+    .word ui_ENERGYTANK  + ($05 << 5) + $0B
+    .word ui_ZEBETITE1   + ($00 << 5) + $00
+    .word ui_ZEBETITE2   + ($00 << 5) + $00
+    .word ui_ZEBETITE3   + ($00 << 5) + $00
+    .word ui_ZEBETITE4   + ($00 << 5) + $00
+    .word ui_ZEBETITE5   + ($00 << 5) + $00
+    .word ui_MOTHERBRAIN + ($00 << 5) + $00
+    .byte $FF
 
 ClearAll:
     jsr ScreenOff                   ;($C439)Turn screen off.
@@ -2281,7 +2239,6 @@ InitializeGame:
     lda #$01                        ;
     sta MainRoutine                 ;Initialize starting area.
     jsr ScreenNmiOff                ;($C45D)Turn off screen.
-    jsr LoadSamusGFX                ;($C5DC)Load Samus GFX into pattern table.
     jsr NMIOn                       ;($C487)Turn on the non-maskable interrupt.
     ldy InArea                      ;Load area Samus is to start in.
     lda BankTable,y                 ;Change to proper memory page.
@@ -2304,11 +2261,10 @@ RestartXPosTbl:
 
 InitializeStats:
     ;Set all of Samus' stats to 0 when starting new game.
-    lda #$09
+    lda #$10
     sta MaxHealth+1
-    lda #$99
-    sta MaxHealth
     lda #$00
+    sta MaxHealth
     sta SamusGear
     sta MissileCount
     sta MaxMissiles
@@ -3056,55 +3012,10 @@ Restart:
         iny
         bne L9A4A
     
-    ;If Samus does not have Maru Mari, branch.-->
+    ;Store Samus gear data into PasswordByte00 (collected gear).
     lda SamusGear
-    and #gr_MARUMARI
-    beq L9A5C
-        ;Else load Maru Mari data into PasswordByte00.
-        lda #1<<(((ItemData_MaruMari-ItemData)/2)&7).b
-        sta PasswordByte+(((ItemData_MaruMari-ItemData)/2)/8)
-    L9A5C:
+    sta PasswordByte
     
-    ;If Samus does not have bombs, branch.-->
-    lda SamusGear
-    and #gr_BOMBS
-    beq L9A6B
-        ;Else load bomb data into PasswordByte00.
-        lda PasswordByte+(((ItemData_Bombs-ItemData)/2)/8)
-        ora #1<<(((ItemData_Bombs-ItemData)/2)&7).b
-        sta PasswordByte+(((ItemData_Bombs-ItemData)/2)/8)
-    L9A6B:
-    
-    ;If Samus does not have varia suit, branch.-->
-    lda SamusGear
-    and #gr_VARIA
-    beq L9A77
-        ;Else load varia suit data into PasswordByte01.
-        lda #1<<(((ItemData_Varia-ItemData)/2)&7).b
-        sta PasswordByte+(((ItemData_Varia-ItemData)/2)/8)
-    L9A77:
-    
-    ;If Samus does not have high jump, branch.-->
-    lda SamusGear
-    and #gr_HIGHJUMP
-    beq L9A83
-        ;Else load high jump data into PasswordByte03.
-        lda #1<<(((ItemData_HighJump-ItemData)/2)&7).b
-        sta PasswordByte+(((ItemData_HighJump-ItemData)/2)/8)
-    L9A83:
-    
-    ;If Samus does not have Maru Mari, branch.
-    lda SamusGear
-    ;A programmer error?  Should check for screw attack data.
-    and #gr_MARUMARI
-    beq L9A92
-        ;Else load screw attack data into PasswordByte03.
-        lda PasswordByte+(((ItemData_ScrewAttack-ItemData)/2)/8)
-        ora #1<<(((ItemData_ScrewAttack-ItemData)/2)&7).b
-        sta PasswordByte+(((ItemData_ScrewAttack-ItemData)/2)/8)
-    L9A92:
-    
-    lda SamusGear                   ;
     sta PasswordByte+$09              ;Store Samus gear data in PasswordByte09.
     lda #$00                        ;
     ldy JustInBailey                ;
@@ -3151,7 +3062,7 @@ L9AC0:
 LoadEndGFX:
     jsr ClearAll                    ;($909F)Turn off screen, erase sprites and nametables.
     jsr InitEndGFX                  ;($C5D0)Prepare to load end GFX.
-    lda #$04                        ;
+    lda #$05                        ;
     ldy JustInBailey                ;Checks if game was played as suitless-->
     bne L9AE4                       ;Samus.  If so, branch.
     lda #$00                        ;Loads SpritePointerIndex with #$00(suit on).
@@ -3163,7 +3074,7 @@ L9AE4:
     ldy #>LA052.b                     ;the surface of the planet in end of game.
     jsr PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
     jsr NMIOn                       ;($C487)Turn on non-maskable interrupt.
-    lda #music_EndMusic             ;Initiate end game music.
+    lda #music_Title                ;Initiate end game music.
     sta CurrentMusic                ;
     .if BUILDTARGET == "NES_NTSC"
         ;Loads Timer3 with a delay of 960 frames (16 seconds).
@@ -4476,7 +4387,6 @@ InitBank1:
         jsr ClearRAM_33_DF
         ;($C578)Clear Samus' stats memory addresses.
         jsr ClearSamusStats
-        jsr LoadSamusGFX
     LC56D:
     jmp InitGenericAreaBank
 
@@ -4502,33 +4412,38 @@ InitEndGFX:
     sta GameMode                    ;Game is at title/end game.
     lda #EndingSPR/$400.b
     sta CHRBank2
+    lda #EndingSPR/$400+1.b
+    sta CHRBank3
     jsr LoadAreaGFX
     .byte EndingBG/$400
     .byte EndingBG/$400+2
-    .byte EndingSPR/$400+1
     .byte EndingSPR/$400+2
     .byte EndingSPR/$400+3
 
 InitTitleGFX:
     lda #TitleSPR/$400.b
     sta CHRBank2
+    lda #TitleSPR/$400+1.b
+    sta CHRBank3
     jsr LoadAreaGFX
     .byte TitleBG/$400
     .byte TitleBG/$400+2
-    .byte TitleSPR/$400+1
     .byte TitleSPR/$400+2
     .byte TitleSPR/$400+3
 
 LoadSamusGFX:
-    ldy #SamusSuitGFX4/$400.b
+    ldx #JunkoNormalGFX4/$400.b
+    ldy #ItemsNormalGFX/$400.b
 
     ;Branch if wearing suit
     lda JustInBailey
     beq LC5EB
         ;Switch to girl gfx
-        ldy #SamusSuitlessGFX4/$400.b
+        ldx #JunkoPeaceGFX4/$400.b
+        ldy #ItemsPeaceGFX/$400.b
     LC5EB:
-    sty CHRBank2
+    stx CHRBank2
+    sty CHRBank3
     rts
 
 ;Tourian memory page.
@@ -4547,6 +4462,7 @@ InitGenericAreaBank:
     sta TileAnimIndex
     lda #$01
     sta TileAnimDelay
+    jsr LoadSamusGFX
     lda CurrentMainBank
     jsr ChooseRoutine
         .word ExitSub
@@ -4560,43 +4476,44 @@ InitGenericAreaBank:
 
 InitBrinstarGFX:
     jsr LoadAreaGFX
-    .byte BrinstarBG/$400
-    .byte BrinstarBG/$400+2
-    .byte ItemsGFX/$400
+    .byte SurfaceBG_Frame0/$400
+    .byte SurfaceBG_Frame0/$400+2
     .byte BlankSPR/$400
-    .byte BrinstarSPR/$400
+    .byte SurfaceEnemiesSPR/$400
 
 InitNorfairGFX:
     jsr LoadAreaGFX
-    .byte NorfairBG/$400
-    .byte NorfairBG/$400+2
-    .byte ItemsGFX/$400
+    .byte HeartBG_Frame0/$400
+    .byte HeartBG_Frame0/$400+2
     .byte BlankSPR/$400
-    .byte NorfairSPR/$400
+    .byte HeartEnemiesSPR/$400
 
 InitTourianGFX:
     jsr LoadAreaGFX
-    .byte TourianBG/$400
-    .byte TourianBG/$400+2
-    .byte ItemsGFX/$400
+    .byte SheolBG_Frame0/$400
+    .byte SheolBG_Frame0/$400+2
     .byte BlankSPR/$400
-    .byte TourianSPR/$400
+    .byte SheolEnemiesSPR/$400
 
 InitKraidGFX:
     jsr LoadAreaGFX
-    .byte KraidBG/$400
-    .byte KraidBG/$400+2
-    .byte ItemsGFX/$400
+    .byte TrenchBG_Frame0/$400
+    .byte TrenchBG_Frame0/$400+2
     .byte BlankSPR/$400
-    .byte KraidSPR/$400
+    .byte TrenchEnemiesSPR/$400
 
 InitRidleyGFX:
+    ldx #JunkoNudeGFX4/$400.b
+    lda JustInBailey
+    beq +
+        ldx #JunkoPeaceLabyrinthGFX4/$400.b
+    +
+    stx CHRBank2
     jsr LoadAreaGFX
-    .byte RidleyBG/$400
-    .byte RidleyBG/$400+2
-    .byte ItemsGFX/$400
+    .byte LabyrinthBG_Frame0/$400
+    .byte LabyrinthBG_Frame0/$400+2
     .byte BlankSPR/$400
-    .byte RidleySPR/$400
+    .byte LabyrinthEnemiesSPR/$400
 
 LoadAreaGFX:
     pla
@@ -4609,9 +4526,6 @@ LoadAreaGFX:
     iny
     lda ($07),y
     sta CHRBank1
-    iny
-    lda ($07),y
-    sta CHRBank3
     iny
     lda ($07),y
     sta CHRBank4
@@ -4652,7 +4566,7 @@ ChooseEnding:
     ldy #$01                        ;
 LCAF7:
     lda SamusAge+2                  ;If SamusAge+2 anything but #$00, load worst-->
-    bne LCB09                           ;ending(more than 37 hours of gameplay).
+    bne LCB09                           ;ending(Rat Junko, more than 218 minutes of gameplay).
     lda SamusAge+1                  ;
     cmp AgeTable-1,y                ;Loop four times to determine-->
     bcs LCB09                           ;ending type from table below.
@@ -4662,20 +4576,20 @@ LCAF7:
 LCB09:
     sty EndingType                  ;Store the ending # (1..5), 5=best ending
     lda #$00                        ;
-    cpy #$04                        ;Was the best or 2nd best ending achieved?
-    bcc LCB14                           ;Branch if not (suit stays on)
+    cpy #$04                        ;Was the best ending achieved?
+    bcc LCB14                           ;Branch if not (dress stays on)
         lda #$01                        ;
     LCB14:
-    sta JustInBailey                ;Suit OFF, baby!
+    sta JustInBailey                ;Dress OFF, baby!
 Exit101:
     rts
 
 ;Table used by above subroutine to determine ending type.
 AgeTable:
-    .byte $7A                       ;Max. 37 hours
-    .byte $16                       ;Max. 6.7 hours
-    .byte $0A                       ;Max. 3.0 hours
-    .byte $04                       ;Best ending. Max. 1.2 hours
+    .byte $0C                       ;Casual Junko. Max. 13107 seconds/218 minutes
+    .byte $08                       ;Classic Junko. Max. 8738 seconds/146 minutes
+    .byte $04                       ;Sailor Junko. Max. 4369 seconds/73 minutes
+    .byte $02                       ;Peace Junko. Best ending. Max. 2185 seconds/36 minutes
 
 ;---------------------------------------[ Display status bar ]---------------------------------------
 
@@ -4700,6 +4614,9 @@ DisplayBar:
     stx SpritePagePos               ;Save new location in sprite RAM.
     pla                             ;Restore initial sprite page pos.
     tax                             ;
+    lda Health+1
+    jsr Adiv16
+    jsr SPRWriteDigit
     lda Health+1                    ;
     and #$0F                        ;Extract upper health digit.
     jsr SPRWriteDigit               ;($E173)Display digit on screen.
@@ -4755,6 +4672,7 @@ LE11C:
     inc SpriteRAM.1.attrib,x             ;Change color of sprite.
 
 LE14A:
+    /*
     ldx SpritePagePos               ;Restore initial sprite page pos.
     lda MaxHealth+1                 ;
     and #$F0                        ;
@@ -4783,6 +4701,7 @@ AddTanks:
     bne AddTanks                    ;if not, loop to do another.
 
     stx SpritePagePos               ;Store new sprite page position.
+    */
 RTS_E172:
     rts
 
@@ -4827,12 +4746,10 @@ Xplus4:
     rts
 
 EnergyTankXPositions:
-    .byte $18,$22,$2C,$36
-    .byte $18,$22,$2C,$36
+    .byte $18,$22,$2C,$36,$40
 
 EnergyTankYPositions:
-    .byte $17,$17,$17,$17
-    .byte $0D,$0D,$0D,$0D
+    .byte $17,$17,$17,$17,$17
 
 ;------------------------------------[ Convert hex to decimal ]--------------------------------------
 
@@ -4874,16 +4791,16 @@ DivideByRepeatedSubtraction: ;($E1AD)
 ;Sprite data for Samus' data display
 
 DataDisplayTbl:
-    .byte $21,$30,$01,$30           ;Upper health digit.
+    .byte $21,$30,$01,$28           ;Upper health digit.
+    .byte $21,$30,$01,$30           ;Middle health digit.
     .byte $21,$30,$01,$38           ;Lower health digit.
-    .byte $2B,$FF,$01,$28           ;Upper missile digit.
-    .byte $2B,$FF,$01,$30           ;Middle missile digit.
-    .byte $2B,$FF,$01,$38           ;Lower missile digit.
-    .byte $2B,$12,$00,$18           ;Left half of missile.
-    .byte $2B,$13,$00,$20           ;Right half of missile.
-    .byte $21,$29,$01,$18           ;E
-    .byte $21,$2A,$01,$20           ;N
-    .byte $21,$2B,$00,$28           ;..
+    .byte $2B,$FF,$01,$28           ;Upper baseball digit.
+    .byte $2B,$FF,$01,$30           ;Middle baseball digit.
+    .byte $2B,$FF,$01,$38           ;Lower baseball digit.
+    .byte $2B,$12,$01,$18           ;Left half of baseball.
+    .byte $2B,$13,$01,$20           ;Right half of baseball.
+    .byte $21,$29,$00,$18           ;Left half of heart.
+    .byte $21,$2A,$00,$20           ;Left half of heart.
 
 ;-------------------------------------[ Compressed nametables ]-------------------------------------
 
@@ -4896,6 +4813,9 @@ TitleNametable_Compressed:
 
 WorldMap:
     .incbin "data/world_map.bin"
+
+PauseMap:
+    .incbin "data/pause_map.bin"
 
 .ends
 

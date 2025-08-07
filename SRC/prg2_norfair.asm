@@ -85,22 +85,22 @@ AreaRoutine:
 L95CC:
     .byte $FF                       ;Not used.
 AreaMusicFlag:
-    .byte music_Norfair             ;Norfair music init flag.
+    .byte music_Heart
 AreaMinibossMusic:
-    .byte music_Tourian
+    .byte $00
 
 ;Special room numbers(used to start item room music).
 AreaItemRoomNumbers:
-    .byte $10, $05, $27, $04, $0F, $FF, $FF
+    .byte $3C, $05, $28, $04
 
 AreaSamusMapPosX:
-    .byte $16   ;Samus start x coord on world map.
+    .byte $0C   ;Samus start x coord on world map.
 AreaSamusMapPosY:
-    .byte $0D   ;Samus start y coord on world map.
+    .byte $08   ;Samus start y coord on world map.
 AreaSamusX:
     .byte $80   ;Samus start horizontal screen position.
 AreaSamusY:
-    .byte $6E   ;Samus start vertical screen position.
+    .byte $71   ;Samus start vertical screen position.
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
 
@@ -122,7 +122,10 @@ AreaMellowAnimIndex:
     .byte EnAnim_Mella - EnAnimTbl
 
 AreaTileAnim:
-    .byte $FF, NorfairBG/$400
+    .byte $05, HeartBG_Frame0/$400
+    .byte $05, HeartBG_Frame1/$400
+    .byte $05, HeartBG_Frame2/$400
+    .byte $05, HeartBG_Frame3/$400
     .byte $00
 
 ; Enemy AI jump table
@@ -165,7 +168,7 @@ EnemyDeathAnimIndex:
     .byte $00, $00 ; unused enemy
 
 EnemyHealthTbl:
-    .byte $08, $08, $FF, $01, $01, $01, $02, $01, $01, $20, $FF, $FF, $08, $06, $FF, $00
+    .byte $08, $08, $FF, $01, $01, $01, $02, $01, $01, $20, $FF, $02, $08, $06, $FF, $00
 
 ; Base damage caused by area enemies.
 ; Normal, tough
@@ -368,16 +371,16 @@ TileBlastBlastAnimIndexTable:
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$94
 
 TileBlastRespawnDelayTbl:
-    .byte $50 ; tile #$70
-    .byte $50 ; tile #$74
-    .byte $50 ; tiles #$78 and #$76
-    .byte $50 ; tile #$7C
-    .byte $50 ; tile #$80
-    .byte $50 ; tile #$84
-    .byte $50 ; tile #$88
-    .byte $50 ; tile #$8C
-    .byte $50 ; tile #$90
-    .byte $50 ; tile #$94
+    .byte $00 ; tile #$70
+    .byte $00 ; tile #$74
+    .byte $00 ; tiles #$78 and #$76
+    .byte $00 ; tile #$7C
+    .byte $00 ; tile #$80
+    .byte $00 ; tile #$84
+    .byte $00 ; tile #$88
+    .byte $00 ; tile #$8C
+    .byte $00 ; tile #$90
+    .byte $00 ; tile #$94
 
 TileBlastRespawnAnimIndexTable:
     .byte TileBlastAnim6 - TileBlastAnim ; tile #$70
@@ -712,15 +715,15 @@ TileBlastFrame0F:
 TileBlastFrame10:
     ;nothing
 
-.include "data/norfair/enemy_sprite_data.asm"
+.include "data/heart/enemy_sprite_data.asm"
 
 ;-----------------------------------------[ Palette data ]-------------------------------------------
 
-.include "data/norfair/palettes.asm"
+.include "data/heart/palettes.asm"
 
 ;---------------------------------[ Special items table ]-----------------------------------------
 
-.include "data/norfair/global_objs.asm"
+.include "data/heart/global_objs.asm"
 
 .ends
 

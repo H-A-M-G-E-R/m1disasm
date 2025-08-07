@@ -466,6 +466,10 @@ SkreeProjectiles       instanceof SkreeProjectile 4 startfrom 0
     Mellows                instanceof Mellow 4 startfrom 0
 
     MoveSamusUp_IsUnrollCheck db
+
+    SamusInLiquidTile      db
+    TouchingHealyBlock     db
+    TouchingMissileRefill  db
 .nextu
     ; $B7 is unused
 
@@ -1093,6 +1097,14 @@ CHRBank3               db        ;PPU $1400-$17FF
 CHRBank4               db        ;PPU $1800-$1BFF
 CHRBank5               db        ;PPU $1C00-$1FFF
 
+MinimapX               db
+MinimapY               db
+BlipX                  db
+BlipY                  db
+MinimapPrevX           db
+MinimapPrevY           db
+MinimapTileIndices     ds 9
+
 .ende
 
 .enum $77F0
@@ -1169,12 +1181,12 @@ gr_ICEBEAM             = %10000000
 ;unique items IIIIII
 ui_BOMBS               = %000000 << 10
 ui_HIGHJUMP            = %000001 << 10
-ui_LONGBEAM            = %000010 << 10 ;(Not considered a unique item).
+ui_LONGBEAM            = %000010 << 10
 ui_SCREWATTACK         = %000011 << 10
 ui_MARUMARI            = %000100 << 10
 ui_VARIA               = %000101 << 10
-ui_WAVEBEAM            = %000110 << 10 ;(Not considered a unique item).
-ui_ICEBEAM             = %000111 << 10 ;(Not considered a unique item).
+ui_WAVEBEAM            = %000110 << 10
+ui_ICEBEAM             = %000111 << 10
 ui_ENERGYTANK          = %001000 << 10
 ui_MISSILES            = %001001 << 10
 ui_MISSILEDOOR         = %001010 << 10
@@ -1266,15 +1278,17 @@ sfxMulti_SamusHit      = $03
 sfxMulti_BossHit       = $02
 sfxMulti_IncorrectPassword = $01
 
-music_RidleyArea       = $01
-music_Tourian          = $02
-music_ItemRoom         = $03
-music_KraidArea        = $04
-music_Norfair          = $05
-music_Escape           = $06
-music_MotherBrain      = $07
-music_Brinstar         = $08
-music_Intro            = $09
-music_PowerUp          = $0A
-music_EndMusic         = $0B
-music_IntroMusic       = $0C
+music_Title            = $01
+music_Surface          = $02
+music_Trench           = $03
+music_JakeTheme        = $04
+music_Heart            = $05
+music_Labyrinth        = $06
+music_ElwoodTheme      = $07
+music_Sheol            = $08
+music_JunkoTheme       = $09
+music_Escape           = $0A
+music_Appearance       = $0B
+music_PowerUp          = $0C
+music_ItemRoom         = $0D
+music_ItemRoomHeart    = $0E

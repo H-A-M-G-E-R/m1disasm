@@ -30,19 +30,13 @@ banks = [
 ]
 
 class BuildTarget:
-    def __init__(self, md5_hash_expected_hex, filename):
-        self.md5_hash_expected_hex = md5_hash_expected_hex
+    def __init__(self, filename):
         self.filename = filename
 
 build_targets = {
     "NES_NTSC": BuildTarget(
-        md5_hash_expected_hex="d7da4a907be0012abca6625471ef2c9c",
-        filename="out/M1_NES_NTSC.nes",
-    ),
-    #"NES_PAL": BuildTarget(
-    #    md5_hash_expected_hex="442fcb92fce27cabdb7635bd35593d8a",
-    #    filename="out/M1_NES_PAL.nes",
-    #)
+        filename="out/Junkoid.nes",
+    )
 }
 
 for bt, bto in build_targets.items():
@@ -62,13 +56,3 @@ for bt, bto in build_targets.items():
         print("".join(log_lines[-10:]))
         exit(completed_process.returncode)
     print('Success\n')
-
-    #with open(bto.filename, "rb") as f:
-    #    md5_hash_generated = hashlib.md5(f.read())
-    #print('MD5 hash: ' + md5_hash_generated.hexdigest())
-
-    #if md5_hash_generated.hexdigest() == bto.md5_hash_expected_hex:
-    #    print("Hash matches vanilla ROM.")
-    #else:
-    #    print("Hash does not match vanilla ROM.")
-    #print()

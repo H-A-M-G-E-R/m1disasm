@@ -838,9 +838,6 @@ EndSQ1SFX:
     rts
 
 SamusJumpSFXStart:
-    lda CurrentMusic                ;If escape music is playing, exit without playing-->
-    cmp #music_Escape               ;Samus jump SFX.
-    beq RTS_MusicBranch03               ;
     lda #$0C                        ;Number of frames to play sound before a change.
     ldy #<JumpSFXData.b        ;Lower byte of sound data start address(base=$B200).
     bne SelectSFX1                  ;Branch always.
@@ -1567,18 +1564,20 @@ LoadNoiseChannelMusic:
 ;addresses $062B thru $0637.  Base is $BD31.
 
 InitMusicIndexTbl:
-    .word SongRidleyHeader                             ;Ridley area music.
-    .word SongTourianHeader                            ;Tourian music.
-    .word SongItemRoomHeader                           ;Item room music.
-    .word SongKraidHeader                              ;Kraid area music.
-    .word SongNorfairHeader                            ;Norfair music.
-    .word SongEscapeHeader                             ;Escape music.
-    .word SongMthrBrnRoomHeader                        ;Mother brain music.
-    .word SongBrinstarHeader                           ;Brinstar music.
-    .word SongFadeInHeader                             ;Fade in music.
-    .word SongPowerUpHeader                            ;Power up music.
-    .word SongEndHeader                                ;End music.
-    .word SongIntroHeader                              ;Intro music.
+    .word SongTitleHeader
+    .word SongSurfaceHeader
+    .word SongTrenchHeader
+    .word SongJakeThemeHeader
+    .word SongHeartHeader
+    .word SongLabyrinthHeader
+    .word SongElwoodThemeHeader
+    .word SongSheolHeader
+    .word SongJunkoThemeHeader
+    .word SongEscapeHeader
+    .word SongAppearanceHeader
+    .word SongPowerUpHeader
+    .word SongItemRoomHeader
+    .word SongItemRoomHeartHeader
 
 ;The following address table provides starting addresses of the volume data tables below:
 VolumeEnvelopePtrTable:
@@ -1624,55 +1623,33 @@ VolumeEnvelope5:
 ;Byte 6=Volume data for SQ2.
 
 
-.if BUILDTARGET == "NES_NTSC"
-    .include "songs/ntsc/item_room.asm"
+.include "songs/title.asm"
 
-    .include "songs/ntsc/power_up.asm"
+.include "songs/surface.asm"
 
-    .include "songs/ntsc/fade_in.asm"
+.include "songs/trench.asm"
 
-    .include "songs/ntsc/intro.asm"
+.include "songs/jake_theme.asm"
 
-    .include "songs/ntsc/brinstar.asm"
+.include "songs/heart.asm"
 
-    .include "songs/ntsc/norfair.asm"
+.include "songs/labyrinth.asm"
 
-    .include "songs/ntsc/kraid.asm"
+.include "songs/elwood_theme.asm"
 
-    .include "songs/ntsc/ridley.asm"
+.include "songs/sheol.asm"
 
-    .include "songs/ntsc/tourian.asm"
+.include "songs/junko_theme.asm"
 
-    .include "songs/ntsc/mthr_brn_room.asm"
+.include "songs/escape.asm"
 
-    .include "songs/ntsc/escape.asm"
+.include "songs/appearance.asm"
 
-    .include "songs/ntsc/end.asm"
-.elif BUILDTARGET == "NES_PAL"
-    .include "songs/pal/item_room.asm"
+.include "songs/power_up.asm"
 
-    .include "songs/pal/power_up.asm"
+.include "songs/item_room.asm"
 
-    .include "songs/pal/fade_in.asm"
-
-    .include "songs/pal/intro.asm"
-
-    .include "songs/pal/brinstar.asm"
-
-    .include "songs/pal/norfair.asm"
-
-    .include "songs/pal/kraid.asm"
-
-    .include "songs/pal/ridley.asm"
-
-    .include "songs/pal/tourian.asm"
-
-    .include "songs/pal/mthr_brn_room.asm"
-
-    .include "songs/pal/escape.asm"
-
-    .include "songs/pal/end.asm"
-.endif
+.include "songs/item_room_heart.asm"
 
 ;The following table contains the musical notes used by the music player.  The first byte is
 ;the period high information(3 bits) and the second byte is the period low information(8 bits).

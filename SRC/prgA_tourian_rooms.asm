@@ -4,7 +4,7 @@
 
 .redef BANK = $A
 .section "ROM Bank $00A" bank $A slot "ROMSwitchSlot" orga $8000 force
-    MacroDefs: .incbin "data/tourian/metatiles.bin"
+    MacroDefs: .incbin "data/sheol/metatiles.bin"
 
-    .include "data/tourian/rooms.asm"
+    .include "data/sheol/rooms.asm"
 .ends

@@ -32,7 +32,10 @@
 .include "metasprite_engine.asm"
 
 ; Spider ball code
-.include "spider_ball.asm"
+;.include "spider_ball.asm"
+
+; Health block code
+.include "health_blocks.asm"
 
 ;This routine generates pseudo random numbers and updates those numbers
 ;every frame. The random numbers are used for several purposes including
@@ -441,6 +444,10 @@ GoMainRoutine:
     beq @endIf_B
     lda #sfxSQ1_Pause
     sta SQ1SFXFlag
+    lda #:GetMapCoords.b
+    jsr MMCWritePrgBank
+    jsr GetMapCoords
+    jsr SetBankToMainBank
 
 @endIf_B:
     ;Use MainRoutine as index into routine table below.
@@ -1374,6 +1381,8 @@ SamusInit:
     stx EndTimer+1.w                  ;escape timer not currently active.
     stx RinkaSpawners.0.status
     stx RinkaSpawners.1.status
+    stx MinimapPrevX
+    stx MinimapPrevY
     ldy #$27
     lda AreaScrollDir
     sta ScrollDir
@@ -1405,8 +1414,10 @@ RTS_C92A:
 ;------------------------------------[ Main game engine ]--------------------------------------------
 
 GameEngine:
-    jsr ScrollDoor                  ;($E1F1)Scroll doors, if needed. 2 routine calls scrolls-->
-    jsr ScrollDoor                  ;($E1F1)twice as fast as 1 routine call.
+    jsr ScrollDoor                  ;($E1F1)Scroll doors, if needed. 4 routine calls scrolls-->
+    jsr ScrollDoor                  ;($E1F1)4 times as fast as 1 routine call.
+    jsr ScrollDoor
+    jsr ScrollDoor
 
     lda NARPASSWORD                 ;
     beq LC945                           ;
@@ -1507,6 +1518,29 @@ PrepareGameOver:
 ;------------------------------------------[ Pause mode ]--------------------------------------------
 
 PauseMode:
+    ;Set start of sprite RAM to $0200.
+    lda #$00
+    sta SpritePagePos
+
+    lda #:DisplayBar.b
+    jsr MMCWritePrgBank
+    jsr DisplayBar
+    jsr MapInputHandler
+    jsr DrawMap
+    jsr SetBankToMainBank
+
+    ;Clear remaining sprite RAM
+    ldx SpritePagePos
+    lda #$F4
+    @loop:
+        sta SpriteRAM,x
+        ; X = X + 4
+        inx
+        inx
+        inx
+        inx
+        bne @loop
+
     ;Load buttons currently being pressed on joypad 1.
     lda Joy1Status
     ; Exit if not both A & UP pressed.
@@ -1816,6 +1850,7 @@ UpdateWorld:
     lda #:DisplayBar.b
     jsr MMCWritePrgBank
     jsr DisplayBar                  ;($E0C1)Display of status bar.
+    jsr DrawMinimap
     jsr SetBankToMainBank
     jsr UpdateAllPipeBugHoles
     jsr CheckMissileToggle
@@ -1876,6 +1911,10 @@ PauseMusic:
     bne SFX_SetNoiseSFXFlag
 
 SFX_SamusWalk:
+    jsr IsJunkoWearingShoes
+    beq +
+    lda SamusInLiquidTile
+    bne +
     lda #sfxNoise_SamusWalk
     bne SFX_SetNoiseSFXFlag
 
@@ -2002,15 +2041,11 @@ PowerUpMusic:
     bne SetCurrentMusic
 
 IntroMusic:
-    lda #music_Intro
+    lda #music_Appearance
     bne SetCurrentMusic
 
 MotherBrainMusic:
-    lda #music_MotherBrain
-    bne SetCurrentMusic
-
-TourianMusic:
-    lda #music_Tourian
+    lda #music_JunkoTheme
 
 SetCurrentMusic:
     sta CurrentMusic
@@ -2046,9 +2081,9 @@ GoSamusHandler: ;($CC1A)
         .word SamusPntUp                ;($D198)Pointing up.
         .word ExitSub                   ;Was: ($D3A8)Inside door while screen scrolling.
         .word SamusJump                 ;($D002)Jumping while pointing up.
-        .word SamusSpiderIdle
-        .word SamusSpiderRoll
-        .word SamusSpiderFall
+        .word ExitSub;SamusSpiderIdle
+        .word ExitSub;SamusSpiderRoll
+        .word ExitSub;SamusSpiderFall
         .word SamusDead                 ;($D41A)Dead.
         .word SamusDead2                ;($D41F)More dead.
         .word SamusElevator             ;($D423)Samus on elevator.
@@ -2182,6 +2217,9 @@ SamusRun:
         bpl samL04 ; This fixes the spinjump height bug
         cpy #$18
         bcc samL04
+        lda SamusGear
+        and #gr_SCREWATTACK
+        beq samL02
         lda ObjAnimResetIndex
         cmp #ObjAnim_SamusJumpFire - ObjectAnimIndexTbl.b
         beq samL02
@@ -2201,7 +2239,7 @@ SamusRun:
             lda #ObjAnim_SamusJump - ObjectAnimIndexTbl.b
             sta ObjAnimResetIndex
         samL05:
-        lda SamusInLava
+        lda SamusInLiquidTile
         beq samL06
             ; allows Samus to jump in lava
             lda Joy1Change
@@ -2269,7 +2307,7 @@ SamusRun:
 
 SetSamusData:
     ; half animation speed in liquid
-    ldx SamusInLava
+    ldx SamusInLiquidTile
     beq +
         asl
     +
@@ -2282,6 +2320,8 @@ SetSamusData:
         sta ObjectCntrl                 ;Attack is active.
     LCD7E:
     jsr CheckHealthStatus           ;($CDFA)Check if Samus hit, blinking or Health low.
+    jsr SamusInLiquidBlockCheck
+    jsr HealthBlockCheck            ;See "health_blocks.asm"
     jsr LavaAndMoveCheck            ;($E269)Check if Samus is in lava or moving.
     lda MetroidOnSamus              ;Is a Metroid stuck to Samus?-->
     beq LCD8C                           ;If not, branch.
@@ -2468,6 +2508,9 @@ Lx009:
     sty ObjAnimFrame
 
 CheckHealthBeep:
+    lda InArea
+    cmp #$04
+    beq Lx011
     ; beep if health < 17
     lda Health
     cmp #$70
@@ -2769,7 +2812,7 @@ Lx019:
         sta ObjAction
     Lx020:
     jsr SamusJump_CheckFire
-    lda SamusInLava
+    lda SamusInLiquidTile
     beq Lx021
     lda Joy1Change
     bpl Lx021      ; branch if JUMP not pressed
@@ -2921,7 +2964,7 @@ SamusRoll:
     bne Lx032     ; branch if yes
     ;break out of "ball mode"
         lda ObjRadY
-        cmp #$07
+        cmp #$04
         bne Lx032
         sta MoveSamusUp_IsUnrollCheck
         lda ObjY
@@ -2929,7 +2972,7 @@ SamusRoll:
         lda ObjHi
         pha
         ; branch if not possible to stand up
-        lda #($0F-$07)*2
+        lda #($0F-$04)*2
         sta ObjectCounter
         -
             jsr MoveSamusUp
@@ -2942,12 +2985,12 @@ SamusRoll:
         sta ObjY
         lda #$0F
         sta ObjRadY
-        ; move Samus 8 pixels up
+        ; move Samus 11 pixels up
         ldx #$00
         stx MoveSamusUp_IsUnrollCheck
         jsr StoreObjectPositionToTemp
         stx Temp05_SpeedX
-        lda #-($0F-$07)
+        lda #-($0F-$04)
         sta Temp04_SpeedY
         jsr ApplySpeedToPosition
         jsr LoadObjectPositionFromTemp
@@ -3025,7 +3068,8 @@ CheckBombLaunch:
     ora Joy1Retrig
     asl             ; bit 7 = status of FIRE button
     bpl RTS_X036    ; exit if FIRE not pressed
-    lda SamusOnElevator
+    lda ObjSpeedY
+    ora SamusOnElevator
     bne RTS_X036
     ldx #$D0        ; try object slot D
     lda ObjAction,x
@@ -3130,16 +3174,17 @@ SearchOpenProjectileSlot:
     ; found open samus projectile slot
     ; clear ProjectileIsHit
     sta ProjectileIsHit,y
-    ; return set zero flag
-    lda #$00
+    ; return set zero flag if Samus is not shooting a missile
+    lda MissileToggle
+    beq @endIf_A
+        ; Samus is shooting a missile
+        ; return set zero flag if the slot found is $03D0 (missiles can only be in that slot)
+        cpy #$D0
+    @endIf_A:
     rts
 
 
 FireWeaponForwards:
-    ; exit if there is a metroid on samus
-    lda MetroidOnSamus
-    bne @exit
-    
     ; search for open samus projectile slot
     jsr SearchOpenProjectileSlot
     ; exit if no slots are available
@@ -3194,10 +3239,6 @@ BulletSpeedXTable:
     .byte  $04, -$04
 
 FireWeaponUpwards:
-    ; exit if there is a metroid on samus
-    lda MetroidOnSamus
-    bne @exit
-    
     ; search for open samus projectile slot
     jsr SearchOpenProjectileSlot
     ; exit if no slots are available
@@ -3294,6 +3335,8 @@ PlaceBulletAtArmCannon:
 CheckHorizontalMissileLaunch:
     lda MissileToggle
     beq Exit4       ; exit if Samus not in "missile fire" mode
+    cpy #$D0
+    bne Exit4
     ldx SamusDir
     lda HorizontalMissileAnims,x
 Lx047:
@@ -3316,6 +3359,8 @@ HorizontalMissileAnims:
 CheckVerticalMissileLaunch:
     lda MissileToggle
     beq Exit4
+    cpy #$D0
+    bne Exit4
     lda #ObjAnim_MissileUp - ObjectAnimIndexTbl.b
     bne Lx047 ; branch always
 
@@ -3716,33 +3761,33 @@ WaveBulletTrajectoryPointers:
 ; This repeats until table ends
 
 WaveBulletTrajectoryHorizontal:
-    SignMagSpeed $01,  3, -7
-    SignMagSpeed $01,  3, -5
-    SignMagSpeed $01,  3, -1
-    SignMagSpeed $01,  3,  1
-    SignMagSpeed $01,  3,  5
-    SignMagSpeed $01,  3,  7
-    SignMagSpeed $01,  3,  7
-    SignMagSpeed $01,  3,  5
-    SignMagSpeed $01,  3,  1
-    SignMagSpeed $01,  3, -1
-    SignMagSpeed $01,  3, -5
-    SignMagSpeed $01,  3, -7
+    SignMagSpeed $01,  5, -5
+    SignMagSpeed $01,  5, -1
+    SignMagSpeed $01,  5, -1
+    SignMagSpeed $01,  5,  1
+    SignMagSpeed $01,  5,  1
+    SignMagSpeed $01,  5,  5
+    SignMagSpeed $01,  5,  5
+    SignMagSpeed $01,  5,  1
+    SignMagSpeed $01,  5,  1
+    SignMagSpeed $01,  5, -1
+    SignMagSpeed $01,  5, -1
+    SignMagSpeed $01,  5, -5
     .byte $FF
 
 WaveBulletTrajectoryVertical:
-    SignMagSpeed $01,  7, -3
-    SignMagSpeed $01,  5, -3
-    SignMagSpeed $01,  1, -3
-    SignMagSpeed $01, -1, -3
-    SignMagSpeed $01, -5, -3
-    SignMagSpeed $01, -7, -3
-    SignMagSpeed $01, -7, -3
-    SignMagSpeed $01, -5, -3
-    SignMagSpeed $01, -1, -3
-    SignMagSpeed $01,  1, -3
-    SignMagSpeed $01,  5, -3
-    SignMagSpeed $01,  7, -3
+    SignMagSpeed $01,  5, -5
+    SignMagSpeed $01,  1, -5
+    SignMagSpeed $01,  1, -5
+    SignMagSpeed $01, -1, -5
+    SignMagSpeed $01, -1, -5
+    SignMagSpeed $01, -5, -5
+    SignMagSpeed $01, -5, -5
+    SignMagSpeed $01, -1, -5
+    SignMagSpeed $01, -1, -5
+    SignMagSpeed $01,  1, -5
+    SignMagSpeed $01,  1, -5
+    SignMagSpeed $01,  5, -5
     .byte $FF
 
 ; UpdateBulletExplode
@@ -3849,7 +3894,7 @@ RTS_X081:
 BombInit:
     lda #ObjAnim_BombTick - ObjectAnimIndexTbl.b
     jsr InitObjAnimIndex
-    lda #$18        ; fuse length :-)
+    lda #$01        ; fuse length :-)
     sta ProjectileDieDelay,x
     inc ObjAction,x       ; bomb update handler
     DrawBomb:
@@ -4164,16 +4209,8 @@ ElevatorD8BF:
     ; destination area is now in the low 7 bits of a
     ; load destination area bank
     jsr IsEngineRunning
-    ; toggle palette
-    lda PalToggle
-    eor #(_id_Palette00+1)~(_id_Palette05+1).b
-    sta PalToggle
-    ; if in tourian, load palette 0, else load palette PalToggle-1
-    ldy InArea
-    cpy #$02
-    bcc @endIf_D
-        lda #_id_Palette00+1.b
-    @endIf_D:
+    ; load palette 0
+    lda #_id_Palette00+1.b
     jsr WriteAreaPal
     ; update samus palette
     jsr SelectSamusPal
@@ -4234,6 +4271,10 @@ StartMusic:
     lda #$81
     sta ItemRoomMusicStatus
     lda #music_ItemRoom
+    ldy InArea
+    cpy #$01
+    bne Lx114
+    lda #music_ItemRoomHeart
     Lx114:
     ;Store music flag info.
     sta CurrentMusic
@@ -4711,7 +4752,7 @@ CheckOneItem:
     LDB9F:
         tya                             ;Transfer color data to A.
         sta SpriteRAM.1.attrib,x             ;Store power up color for beam weapon.
-        lda #$FF                        ;Indicate power up obtained is a beam weapon.
+        lda PowerUpType,y               ;Reload power up type data.
 
     LDBA5:
     pha                             ;Temporarily store power up type.
@@ -4722,16 +4763,13 @@ CheckOneItem:
     bcs Exit9                       ;Carry clear=Samus touching power up. Carry set=not touching.
 
     tay                             ;Store power-up type byte in Y.
-    jsr PowerUpMusic                ;($CBF9)Power up obtained! Play power up music.
+    ;Power up obtained!
     ldx ItemIndex                   ;X=index to power up item slot.
-    iny                             ;Is item obtained a beam weapon?-->
-    beq LDBC6                       ;If so, branch.
-        lda PowerUpNameTable,x          ;
-        sta Temp08_ItemHi               ;Temp storage of nametable and power-up type in $08-->
-        lda PowerUpType,x               ;and $09 respectively.
-        sta Temp09_ItemType             ;
-        jsr GetItemXYPos                ;($DC1C)Get proper X and Y coords of item, save in history.
-    LDBC6:
+    lda PowerUpNameTable,x          ;
+    sta Temp08_ItemHi               ;Temp storage of nametable and power-up type in $08-->
+    lda PowerUpType,x               ;and $09 respectively.
+    sta Temp09_ItemType             ;
+    jsr GetItemXYPos                ;($DC1C)Get proper X and Y coords of item, save in history.
     lda PowerUpType,x               ;Get power-up type byte again.
     tay                             ;
     cpy #pu_ENERGYTANK                        ;Is power-up item a missile or energy tank?-->
@@ -4745,9 +4783,10 @@ CheckOneItem:
     jsr MakeBitMask                 ;($DB2F)Create a bit mask for beam weapon just obtained.
     ora SamusGear                   ;
     sta SamusGear                   ;Update Samus gear with new beam weapon.
-LDBE3:
-    lda #$FF                        ;
+    jsr PowerUpMusic                ;($CBF9)Play power up music.
     sta PowerUpDelayFlag            ;Initiate delay while power up music plays.
+LDBE3:
+    lda #$FF
     sta PowerUpType,x               ;Clear out item data from RAM.
     ldy ItemRoomMusicStatus         ;Is Samus not in an item room?-->
     beq LDBF1                       ;If not, branch.
@@ -4763,6 +4802,7 @@ MissileEnergyTank:
     beq LDC00                       ;Branch if item is an energy tank.
         lda #$05                        ;
         jsr AddToMaxMissiles            ;($DD97)Increase missile capacity by 5.
+        jsr SFX_MissilePickup
         bne LDBE3                       ;Branch always.
 
     LDC00:
@@ -4774,6 +4814,7 @@ MissileEnergyTank:
     sta Health+1                    ;Set new tank count. Upper health digit set to 9.
     lda MaxHealth                   ;Max out low health digit.
     sta Health                      ;Health is now FULL!
+    jsr SFX_EnergyPickup
     bne LDBE3                       ;Branch always.
 
 ;It is possible for the current nametable in the PPU to not be the actual nametable the special item
@@ -5057,8 +5098,8 @@ LDD75:
     lsr
     tay
     sta KraidStatueStatus-1,y
-    ; Samus's missile capacity increases by 75 missiles
-    lda #75
+    ; Samus's missile capacity increases by 25 missiles
+    lda #25
     jsr AddToMaxMissiles
     bne LDD5B
 
@@ -5258,10 +5299,15 @@ LDE60:
     beq +
         tax
         lda SamusCHRBankTable,x
+        ldy InArea
+        cpy #$04
+        bne ++
+            adc #(JunkoNudeGFX0-JunkoNormalGFX0)/$400-1.b
+        ++
         ldy JustInBailey
         beq ++
             clc
-            adc #(SamusSuitlessGFX0-SamusSuitGFX0)/$400.b
+            adc #(JunkoPeaceGFX0-JunkoNormalGFX0)/$400.b
         ++
         sta CHRBank2
         txa
@@ -5550,12 +5596,7 @@ DoOneDoorScroll:
         ldy #$20+8
     +
     sty DoorDelay
-    lda ScrollDirBeforeDoor
-    ldy SamusDoorData               ;Check if scrolling should be toggled.
-    cpy #$02                        ;Is door not to toggle scrolling(item room,-->
-    beq +                           ;bridge room, etc.)? If so, branch to NOT toggle scrolling.
-        eor #$02
-    +
+    lda SamusDoorData
     eor ScrollDir
     and #$02
     beq +
@@ -5595,19 +5636,76 @@ ToggleScroll:
 
 ;The following function checks to see if Samus is in lava.  If she is, the carry bit is cleared,
 ;if she is not, the carry bit is set. Samus can only be in lava if in a horizontally scrolling
-;room. If Samus is 23 pixels or less away from the bottom of the screen, she is considered to be
-;in lava whether its actually there or not.
+;room. If Samus's feet are 16 pixels or less away from the bottom of the screen and is touching
+;a liquid block, she is considered to be in lava whether its actually there or not.
 
 IsSamusInLava:
     ;Set carry bit(and exit) if scrolling up or down.
     lda #$01
     cmp ScrollDir
     bcs RTS_E268
-    ;If Samus is Scrolling left or right and within 23 pixels-->
+    ;No lava if Samus isn't in a liquid tile.
+    lda #$00
+    cmp SamusInLiquidTile
+    bcs RTS_E268
+    ;If Samus is Scrolling left or right and her feet are within 16 pixels-->
     ;of the bottom of the screen, she is in lava. Clear carry bit.
-    lda #$D9
-    cmp ObjY
+    lda ObjY
+    clc
+    adc ObjRadY
+    sta $00
+    lda #$E0
+    cmp $00
 RTS_E268:
+    rts
+
+SamusInLiquidBlockCheck:
+    ; reset variables
+    ldx #$00
+    stx SamusInLiquidTile
+    stx TouchingHealyBlock
+    stx TouchingMissileRefill
+
+    ; get block 1 pixel above Samus's feet
+    jsr StoreObjectPositionToTemp
+    stx Temp05_SpeedX
+    ldy ObjRadY
+    dey
+    sty Temp04_SpeedY
+    jsr ApplySpeedToPosition
+    lda Temp08_PositionY
+    sta Temp02_PositionY
+    lda Temp09_PositionX
+    sta Temp03_PositionX
+    jsr MakeCartRAMPtr
+
+    ; check block
+    ldy #$00
+    lda (Temp04_CartRAMPtr),y
+    cmp #HealyTile
+    bne @NotHealyBlock
+        sta TouchingHealyBlock
+        sta SamusInLiquidTile
+        rts
+    @NotHealyBlock:
+    cmp #MissileRefillTile
+    bne @notMissileRefill
+        sta TouchingMissileRefill
+        rts
+    @notMissileRefill:
+    ; Sheol uses tile #$A7 as liquid
+    ldx InArea
+    cpx #$03
+    bne @notSheol
+        cmp #$A7
+        jmp @endif
+    @notSheol:
+    cmp #$F1
+    @endif:
+    bne @notLiquidTile
+        sta SamusInLiquidTile
+        rts
+    @notLiquidTile:
     rts
 
 ;----------------------------------[ Check lava and movement routines ]------------------------------
@@ -5626,7 +5724,7 @@ LavaAndMoveCheck:
     jsr IsSamusInLava
     ;branch if Samus not in lava.
     ldy #$FF
-    bcs @noLava
+    bcs @endIf_C
 
     ;Samus is in lava.
     ;Don't push Samus from lava damage.
@@ -5662,12 +5760,6 @@ LavaAndMoveCheck:
     sta HealthChange
     jsr SubtractHealth
 @endIf_C:
-    ;Prepare to indicate Samus is in lava.
-    ldy #$00
-@noLava:
-    ;Set Samus lava status.
-    iny
-    sty SamusInLava
 
     ;Spider idle and roll actions move Samus manually.
     lda ObjAction
@@ -5694,7 +5786,7 @@ SamusMoveVertically: ; unreferenced label
     ;($C3D4)Get twos complement of delta y.
     jsr TwosComplement
     ;branch if Samus isn't in lava
-    ldy SamusInLava
+    ldy SamusInLiquidTile
     beq @endIf_A
         ; samus is in lava, cut delta y in half
         lsr
@@ -5726,7 +5818,7 @@ SamusMoveVertically: ; unreferenced label
     ; branch if delta y is zero
     beq SamusMoveHorizontally
     ;branch if Samus isn't in lava
-    ldy SamusInLava
+    ldy SamusInLiquidTile
     beq @endIf_C
         ;samus is in lava, reduce Samus delta y by 75%(divide by 4).
         lsr
@@ -5747,19 +5839,23 @@ SamusMoveVertically: ; unreferenced label
             cmp #sa_Roll                    
             bne @landingNoBall
             ;Divide vertical speed by 2.
-            lsr ObjSpeedY
+            ;lsr ObjSpeedY
             ;branch if Speed is not falling fast enough to bounce (speed < 2px/frame)
-            beq @landingNoBounce        
+            ;beq @landingNoBounce        
             ; continue division of vertical speed by 2
-            ror SamusSpeedSubPixelY
+            ;ror SamusSpeedSubPixelY
             ; negate vertical speed
-            lda #$00
-            sec
-            sbc SamusSpeedSubPixelY
-            sta SamusSpeedSubPixelY
-            lda #$00
-            sbc ObjSpeedY
-            sta ObjSpeedY
+            ;lda #$00
+            ;sec
+            ;sbc SamusSpeedSubPixelY
+            ;sta SamusSpeedSubPixelY
+            ;lda #$00
+            ;sbc ObjSpeedY
+            ;sta ObjSpeedY
+            ;($D147)Clear vertical movement data.
+            jsr StopVertMovement
+            ;Clear Samus gravity value.
+            sty SamusAccelY
             ;($E31A)Attempt to move Samus left/right.
             jmp SamusMoveHorizontally
 
@@ -5797,7 +5893,7 @@ SamusMoveHorizontally:
     ;($C3D4)Get twos complement of delta x.
     jsr TwosComplement
     ; branch if samus is not in lava
-    ldy SamusInLava
+    ldy SamusInLiquidTile
     beq LE333
         ;samus is in lava, cut delta x in half.
         lsr
@@ -5822,7 +5918,7 @@ LE347:
     ;Branch to exit if Samus not moving horizontally.
     beq Exit10
     ; branch if samus is not in lava
-    ldy SamusInLava
+    ldy SamusInLiquidTile
     beq LE350
         ;samus is in lava, cut horizontal speed in half.
         lsr
@@ -6693,7 +6789,7 @@ LE733:
         cmp AreaItemRoomNumbers,y       ;Is it a special room?-->
         beq LE76A                       ;If so, branch to set flag to play item room music.
         iny                             ;
-        cpy #$07                        ;
+        cpy #$04                        ;
         bne LE758                       ;Loop until all special room numbers are checked.
 
     lda ItemRoomMusicStatus         ;Load item room music status.
@@ -11278,6 +11374,16 @@ UpdateTileAnim:
     iny
     sty TileAnimIndex
 @RTS:
+    rts
+
+;-------------------------------------------------------------------------------
+IsJunkoWearingShoes:
+    lda InArea
+    cmp #$04
+    beq +
+    lda JustInBailey
+    cmp #$01
++
     rts
 
 .ends
