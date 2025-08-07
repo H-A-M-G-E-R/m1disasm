@@ -1875,6 +1875,7 @@ InitializeMusic:
     sta SoundE0
     lda InitMusicIndexTbl-1,y
     sta SoundE0+1.b
+    jsr ClearMusicChannels
     ldy #$00
     
     ;The following loop repeats 13 times to load the initial music addresses -->
