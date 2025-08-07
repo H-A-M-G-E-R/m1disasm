@@ -972,7 +972,7 @@ ObjFrame59:
 ;Skree burrow.
 ObjFrame5A:
     .byte $04,$04
-    .byte $FC,$F2,$23,$FC
+    .byte $FC,$EA,$23,$FC
     .byte $80
 
 ;Kraid statue.
