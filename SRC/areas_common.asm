@@ -1309,28 +1309,9 @@ UpdateDoor_LetSamusIn:
     jsr WriteDoorBGTiles_Solid
     ; set door animation to closing the door
     jsr DoorSubRoutine8C76
-    ; branch if we are not in a palette change room
     ldx PageIndex
-    lda DoorPalChangeDir
-    beq L8CA7
-    ; branch if door is on the same wall as the one you entered the room with
-    txa
-    jsr Adiv16
-    eor DoorPalChangeDir
-    lsr
-    bcc L8CA7
-    ; change the palette
-    lda PalToggle
-    eor #(_id_Palette00+1)~(_id_Palette05+1).b
-    sta PalToggle
-    jsr WriteAreaPal
-    jsr SelectSamusPal
-L8CA7:
     ; increment door status to "scroll"
     inc DoorStatus,x
-    ; clear DoorPalChangeDir
-    lda #$00
-    sta DoorPalChangeDir
     ; branch if door isnt a blue door that changes the music
     lda DoorType,x
     cmp #$03

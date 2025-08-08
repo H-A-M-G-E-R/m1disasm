@@ -104,10 +104,6 @@ AreaSamusY:
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
 
-AreaPalToggle:
-    .byte _id_Palette00+1
-
-    .byte $00
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl
 AreaExplosionAnimIndex:
@@ -121,9 +117,9 @@ AreaFireballSplatterAnimIndex:
 AreaMellowAnimIndex:
     .byte EnAnim_Mella - EnAnimTbl
 
-AreaTileAnim:
-    .byte $FF, NorfairBG/$400
-    .byte $00
+AreaTilesets:
+    .word TileAnim0, PalAnim0
+    .word TileAnim1, PalAnim1
 
 ; Enemy AI jump table
 ChooseEnemyAIRoutine:
@@ -711,6 +707,19 @@ TileBlastFrame0E:
 TileBlastFrame0F:
 TileBlastFrame10:
     ;nothing
+
+TileAnim0:
+TileAnim1:
+    .byte $FF, NorfairBG/$400
+    .byte $00
+
+PalAnim0:
+    .byte _id_Palette00+1
+    .byte $00
+
+PalAnim1:
+    .byte _id_Palette05+1
+    .byte $00
 
 .include "data/norfair/enemy_sprite_data.asm"
 

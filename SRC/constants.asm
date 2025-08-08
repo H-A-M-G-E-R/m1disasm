@@ -357,7 +357,8 @@ InArea                 db        ;#$00=Brinstar, #$01=Norfair, #$02=Kraid hideou
                                    ;#$03=Tourian, #$04=Ridley hideout.
 
 SpareMem75             db        ;Initialized to #$FF in AreaInit. Not used.
-PalToggle              db   
+;PalToggle              db   
+SpareMem76             db
 SamusKnockbackIsBomb77 db        ;set to SamusKnockbackIsBomb
 
 SpareMem78             db
@@ -416,9 +417,10 @@ ItemRoomMusicStatus    db        ;#$00=Item room music not playing.
 
 ;----------------------------------------------------------------------------------------------------
 
-DoorPalChangeDir       db       ;When Samus enters a palette change room, this stores the ScrollDir
+;DoorPalChangeDir       db       ;When Samus enters a palette change room, this stores the ScrollDir
                                   ;she entered with, so that if the next door she enters is also
                                   ;in that direction, we can change the palette.
+SpareMem91             db
 
 MetroidOnSamus         db        ;#$01=Metroid on Samus, #$00=Metroid not on Samus.
 
@@ -1082,8 +1084,15 @@ DecompressedRoomBuffer = $7000   ;$7000-$7130+
 
 .enum $7300
 
+TilesetIndex           db
+
 TileAnimDelay          db
 TileAnimIndex          db
+
+PalAnimDelay           db
+PalAnimIndex           db
+
+TilesetIndexAheadOfElevator db   ;for readahead
 
 SpiderOrientation      db        ;0=on floor, 1=on right wall, 2=on ceiling, 3=on left wall
 

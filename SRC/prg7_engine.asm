@@ -612,6 +612,22 @@ ProcessPalPPUString:
     @rts:
     rts
 
+WriteAreaPal_KeepSamusPal:
+    ldy PalRam+$11
+    sty $03
+    ldy PalRam+$12
+    sty $04
+    ldy PalRam+$13
+    sty $05
+    jsr WriteAreaPal
+    ldy $03
+    sty PalRam+$11
+    ldy $04
+    sty PalRam+$12
+    ldy $05
+    sty PalRam+$13
+    rts
+
 ;----------------------------------------[Read joy pad status ]--------------------------------------
 
 ;The following routine reads the status of both joypads
@@ -1239,8 +1255,9 @@ AreaInit:
 ;------------------------------------------[ MoreInit ]---------------------------------------------
 
 MoreInit:
-    lda #_id_Palette00+1.b          ;
-    jsr WriteAreaPal                ;Write area palette 0.
+    ; tileset #$00
+    lda #$00
+    jsr ChangeTileset
     ldx #$FF                        ;
     stx SpareMem75                  ;$75 Not referenced ever again in the game.
     inx                             ;X=0.
@@ -1277,8 +1294,6 @@ MoreInit:
     lda AreaSamusMapPosY            ;Get Samus start y pos on map.
     sta SamusMapPosY                ;
 
-    lda AreaPalToggle               ; Get ??? Something to do with palette switch
-    sta PalToggle
     jsr CopyAreaPointers    ; copy pointers from ROM to RAM
     jsr GetRoomNum                  ;($E720)Put room number at current map pos in $5A.
     jsr SetupRoom                   ;($EA2B)
@@ -1309,7 +1324,6 @@ MoreInit:
         dex
         bne Lx001
 
-    stx DoorPalChangeDir
     lda #$01                        ;
     jsr WriteAreaPal                ;Write area palette 0.
     stx SpareMem30                  ;Not accessed by game.
@@ -1827,7 +1841,7 @@ UpdateWorld:
     jsr CheckMissileToggle
     jsr UpdateItems                 ;($DB37)Display of power-up items.
     jsr UpdateTourianItems          ;($FDE3)
-    jsr UpdateTileAnim
+    jsr UpdateTilesetAnim
 
 ;Clear remaining sprite RAM
     ldx SpritePagePos
@@ -4168,47 +4182,45 @@ ElevatorD8BF:
     @endIf_A:
     
     ; destination area is now in the low 7 bits of a
-    ; load destination area bank
-    jsr IsEngineRunning
-    ; toggle palette
-    lda PalToggle
-    eor #(_id_Palette00+1)~(_id_Palette05+1).b
-    sta PalToggle
-    ; if in tourian, load palette 0, else load palette PalToggle-1
-    ldy InArea
-    cpy #$02
-    bcc @endIf_D
-        lda #_id_Palette00+1.b
-    @endIf_D:
-    jsr WriteAreaPal
-    ; update samus palette
-    jsr SelectSamusPal
-    ; check if there's item room music ahead
-    lda SamusMapPosY
-    pha
-    tay
-    ldx PageIndex
-    lda ElevatorType-$20,x
-    bpl @down
-        dey
-        jmp @endif_B
-    @down:
-        iny
-    @endif_B:
-    sty SamusMapPosY
-    jsr GetRoomNum
-    pla
-    sta SamusMapPosY
-    lda #$FF
-    sta RoomNumber
+    ; branch if it leads to a different area
+    lda InArea
+    eor ElevatorType-$20,x
+    asl
+    bne @else_C
+        ; same area
+        ; fallthrough to not change tileset if there's no tileset change object
+        lda TilesetIndex
+        sta TilesetIndexAheadOfElevator
+        ; do readahead
+        jsr ElevatorReadahead
+        ; change tileset if it's different
+        lda TilesetIndex
+        cmp TilesetIndexAheadOfElevator
+        beq @endif_C
+
+        jsr ChangeTileset
+        bne @endif_C ; branch always
+    @else_C:
+        ; different area
+        ; load destination area bank
+        lda ElevatorType-$20,x
+        and #$7F
+        jsr IsEngineRunning
+        ; fallthrough to change tileset to #$00 if there's no tileset change object
+        lda #$00
+        sta TilesetIndexAheadOfElevator
+        ; do readahead
+        jsr ElevatorReadahead
+        ; always change tileset
+        lda TilesetIndexAheadOfElevator
+        jsr ChangeTileset
+        ; copy area pointers
+        jsr CopyAreaPointers
+        ; clear all enemy slots
+        jsr DestroyEnemies
+    @endif_C:
     ;($D92C)Start music.
     jsr StartMusic
-    ; turn the screen on (when had it turned off?)
-    jsr ScreenOn
-    ; copy area pointers
-    jsr CopyAreaPointers
-    ; clear all enemy slots
-    jsr DestroyEnemies
     ; load elevator slot into PageIndex
     ldx #$20
     stx PageIndex
@@ -7317,6 +7329,9 @@ SetupRoom:
     jsr UpdateRoomSpriteInfo        ;($EC9B)Update which sprite belongs on which name table.
 
     jsr ScanForItems                ;($ED98)Set up any special items.
+    bcc +
+        jsr ItemsStart
+    +
 
     ; Switch bank to room bank
     lda CurrentMainBank
@@ -7998,49 +8013,59 @@ ScanForItems:
     sta $00                         ;
     lda AreaPointers+1             ;High byte of ptr to 1st item data.
 
-ScanOneItem:
+@loop_Y:
     sta $01                         ;
     ldy #$00                        ;Index starts at #$00.
     lda ($00),y                     ;Load map Ypos of item.-->
     cmp SamusMapPosY                ;Does it equal Samus' Ypos on map?-->
-    beq LEDBE                       ;If yes, check Xpos too.
+    beq @checkX                     ;If yes, check Xpos too.
 
-    bcs Exit11                      ;Exit if item Y pos >  Samus Y Pos.
+    bcs @noItem                     ;Exit if item Y pos >  Samus Y Pos.
     iny                             ;
     lda ($00),y                     ;Low byte of ptr to next item data.
     tax                             ;
     iny                             ;
     and ($00),y                     ;AND with hi byte of item ptr.
     cmp #$FF                        ;if result is FFh, then this was the last item-->
-    beq Exit11                      ;(item ptr = FFFF). Branch to exit.
+    beq @noItem                     ;(item ptr = FFFF). Branch to exit.
 
     lda ($00),y                     ;High byte of ptr to next item data.
     stx $00                         ;Write low byte for next item.
-    jmp ScanOneItem                 ;Process next item.
+    jmp @loop_Y                     ;Process next item.
 
-LEDBE:
+@checkX:
     lda #$03                        ;Get ready to look at byte containing X pos.
     jsr AddToPtr00                  ;($EF09)Add 3 to pointer at $0000.
 
-ScanItemX:
+@loop_X:
     ldy #$00                        ;
     lda ($00),y                     ;Load map Xpos of object.-->
     cmp SamusMapPosX                ;Does it equal Samus' Xpos on map?-->
-    beq LEDD4                       ;If so, then load object.
-    bcs Exit11                      ;Exit if item pos X > Samus Pos X.
+    beq @hasItem                    ;If so, then load object.
+    bcs @noItem                     ;Exit if item pos X > Samus Pos X.
 
     iny
-    ;Check for another item on same Y pos.
-    ;This will double return if there are no more items (from AnotherItem routine and from this routine)
-    jsr AnotherItem
+    ;Is there another item with same Y pos? If so, A is amount to add to ptr. to find X pos.
+    lda ($00),y
+    cmp #$FF
+    beq @noItem
+    jsr AddToPtr00
     ;Try next X coord.
-    jmp ScanItemX
+    jmp @loop_X
 
-LEDD4:
+@noItem:
+    clc
+    rts
+
+@hasItem:
     lda #$02                        ;Move ahead two bytes to find item data.
+    jsr AddToPtr00
+    sec
+    rts
 
 ChooseSpawningRoutine:
     jsr AddToPtr00                  ;($EF09)Add A to pointer at $0000.
+ItemsStart:
     ldy #$00                        ;
     lda ($00),y                     ;Object type
     and #$0F                        ;Object handling routine index stored in 4 LSBs.
@@ -8055,7 +8080,7 @@ ChooseSpawningRoutine:
         .word SpawnZebetite         ;($EECA)Zebetites.
         .word SpawnRinkaSpawner     ;($EEEE)Rinkas.
         .word SpawnDoor             ;($EEF4)Some doors.
-        .word SpawnPalette          ;($EEFA)Background palette change.
+        .word SpawnTilesetChange
         .word SpawnRoomState
 
 ;---------------------------------------[ Squeept handler ]------------------------------------------
@@ -8263,21 +8288,6 @@ SpawnRinkaSpawner:
 SpawnDoor:
     jsr SpawnDoorRoutine
     jmp ChooseSpawningRoutine        ;($EDD6)Exit handler routines.
-
-SpawnPalette:
-    lda ScrollDir
-    sta DoorPalChangeDir
-    bne SpawnMotherBrain_exit
-
-AnotherItem: ;($EF00)
-    ;Is there another item with same Y pos? If so, A is amount to add to ptr. to find X pos.
-    lda ($00),y
-    cmp #$FF
-    bne AddToPtr00
-    ;No more items to check. Pull last subroutine off stack and exit.
-    pla
-    pla
-    rts
 
 AddToPtr00: ;($EF09)
     ;A is added to the 16 bit address stored in $0000.
@@ -11256,30 +11266,80 @@ UpdateTileBlastAnim:
 
 ;-------------------------------------------------------------------------------
 ; Tile animation
-UpdateTileAnim:
+UpdateTilesetAnim:
+    ; get index to AreaTilesets
+    lda TilesetIndex
+    asl
+    asl
+    tax
+
     dec TileAnimDelay
-    bne @RTS
+    bne @tile_done
     ; update
+    lda AreaTilesets,x
+    sta $00
+    lda AreaTilesets+1,x
+    sta $01
+
     ldy TileAnimIndex
     ; get duration
-    lda AreaTileAnim,y
+    lda ($00),y
     ; reset anim if duration == 0
-    bne @noReset
+    bne @tile_noReset
         tay
-        lda AreaTileAnim,y
-    @noReset:
+        lda ($00),y
+    @tile_noReset:
     sta TileAnimDelay
     ; get CHR bank
     iny
-    ldx AreaTileAnim,y
-    stx CHRBank0
-    inx
-    inx
-    stx CHRBank1
+    lda ($00),y
+    sta CHRBank0
+    clc
+    adc #$02
+    sta CHRBank1
 
     iny
     sty TileAnimIndex
-@RTS:
+@tile_done:
+    dec PalAnimDelay
+    bne @pal_done
+    ; update
+    lda AreaTilesets+2,x
+    sta $06 ; not clobbered by WriteAreaPal_KeepSamusPal
+    lda AreaTilesets+3,x
+    sta $07
+
+    ldy PalAnimIndex
+    bne @pal_notFirst
+        ; initial pal
+        lda ($06),y
+        jsr WriteAreaPal_KeepSamusPal
+        ldy #$01
+    @pal_notFirst:
+    ; get duration
+    lda ($06),y
+    ; reset anim if duration == 0
+    bne @pal_noReset
+        ; branch if no anim
+        cpy #$01
+        beq @pal_noAnim
+        ; there's an anim
+        ldy #$01
+        lda ($06),y
+    @pal_noReset:
+    sta PalAnimDelay
+    ; write pal
+    iny
+    lda ($06),y
+    iny
+    sty PalAnimIndex
+    jsr WriteAreaPal_KeepSamusPal
+@pal_done:
+    rts
+
+@pal_noAnim:
+    lda #$00
+    sta PalAnimDelay
     rts
 
 .ends

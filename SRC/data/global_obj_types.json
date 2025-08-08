@@ -149,10 +149,16 @@
             }
         ]
     },
-    "pal_change": {
+    "tileset_change": {
         "type": 10,
         "props": [
-            {}
+            {},
+            {
+                "new_tileset": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
         ]
     },
     "room_state_vert_scroll": {

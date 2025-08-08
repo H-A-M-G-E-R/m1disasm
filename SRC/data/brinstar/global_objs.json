@@ -37,9 +37,16 @@
   "type": 0
  },
  {
-  "obj_type": "pal_change",
-  "x": 3200,
-  "y": 1920
+  "obj_type": "tileset_change",
+  "x": 2944,
+  "y": 1920,
+  "new_tileset": 0
+ },
+ {
+  "obj_type": "tileset_change",
+  "x": 3456,
+  "y": 1920,
+  "new_tileset": 1
  },
  {
   "obj_type": "item",
@@ -89,5 +96,11 @@
   "y": 4739,
   "dir": 0,
   "type": 2
+ },
+ {
+  "obj_type": "tileset_change",
+  "x": 5760,
+  "y": 2944,
+  "new_tileset": 1
  }
 ]
