@@ -1273,7 +1273,7 @@ UniqueItemFound:
     ldx $05                         ;
     lda PasswordByte,x              ;
     ldy $06                         ;
-    ora PasswordBitmaskTbl,y        ;
+    ora GenericBitmaskTbl,y         ;
     sta PasswordByte,x              ;Masks each unique item in the proper item address-->
     rts                             ;(addresses $6988 thru $698E).
 
@@ -1808,9 +1808,6 @@ TwoLowerAndSixLower:
     lda PasswordChar+1,y            ;Add six lower bits to previous results.
     ora $00                         ;
     rts
-
-PasswordBitmaskTbl:
-    .byte $01, $02, $04, $08, $10, $20, $40, $80
 
 ;The following table contains the unique items in the game.  The two bytes can be deciphered
 ;as follows:IIIIIIXX XXXYYYYY. I = item type, X = X coordinate on world map, Y = Y coordinate

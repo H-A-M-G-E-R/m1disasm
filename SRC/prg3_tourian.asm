@@ -911,16 +911,13 @@ SpawnMotherBrainRoutine:
     sta MotherBrainHi
     eor #$01
     tax
-    lda L9D3C
+    lda #$04
     ora ScrollBlockOnNameTable3,x
     sta ScrollBlockOnNameTable3,x
     lda #$20
     sta MotherBrainAnimBrainDelay
     sta MotherBrainAnimEyeDelay
     rts
-
-L9D3B:  .byte $02
-L9D3C:  .byte $01
 
 ;-------------------------------------------------------------------------------
 ; Spawns a new Zebetite into Zebetite slot

@@ -25,6 +25,9 @@
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
+GenericBitmaskTbl:
+    .byte $01, $02, $04, $08, $10, $20, $40, $80
+
 ; LZSA1 decompressor for decompressing rooms
 .include "decompress_faster_v1.asm"
 
@@ -33,6 +36,9 @@
 
 ; Spider ball code
 .include "spider_ball.asm"
+
+; More object types
+.include "more_obj_types.asm"
 
 ;This routine generates pseudo random numbers and updates those numbers
 ;every frame. The random numbers are used for several purposes including
@@ -6647,20 +6653,15 @@ EndOfRoomHorizontal:
 ;If valid room number, the room number is stored in $5A.
 
 GetRoomNum:
-    lda ScrollDir                   ;
-    lsr                             ;Branch if scrolling vertical.
-    beq LE733                       ;
-
-    rol                             ;Restore value of a
-    adc #$FF                        ;A=#$01 if scrolling left, A=#$02 if scrolling right.
-    pha                             ;Save A.
+    ldy ScrollDir
+    ldx GenericBitmaskTbl,y
     jsr OnNameTable0                ;($EC93)Y=1 if name table=0, Y=0 if name table=3.
-    pla                             ;Restore A.
+    txa
     and ScrollBlockOnNameTable3,y   ;
     sec                             ;
-    bne RTS_E76F                    ;Can't load room, a door is in the way. This has the-->
+    bne RTS_E76F                    ;Can't load room, a scroll block is in the way. This has the-->
                                     ;effect of stopping the scrolling until Samus walks-->
-                                    ;through the door(horizontal scrolling only).
+                                    ;through the door.
 
 LE733:
     lda #:WorldMap.b
@@ -7474,7 +7475,7 @@ EnemyStart:
         .word ExitSub                   ;($C45C)Rts.
         .word LoadEnemy                 ;($EB06)Room enemies.
         .word LoadDoor                  ;($EB8C)Room doors.
-        .word ExitSub                   ;($C45C)Rts.
+        .word LoadScrollBlock
         .word LoadElevator              ;($EC04)Elevator.
         .word ExitSub                   ;($C45C)Rts.
         .word LoadStatues               ;($EC2F)Kraid & Ridley statues.
@@ -7695,8 +7696,8 @@ DoorXs:
     .byte $F0        ; X coord of RIGHT door
     .byte $10        ; X coord of LEFT door
 DoorScrollBlocks:
-    .byte $02        ; right
-    .byte $01        ; left
+    .byte $08        ; right
+    .byte $04        ; left
 DoorSlots:
     .byte $80        ; right on white square
     .byte $B0        ; left on white square
@@ -8055,6 +8056,7 @@ ChooseSpawningRoutine:
         .word SpawnRinkaSpawner     ;($EEEE)Rinkas.
         .word SpawnDoor             ;($EEF4)Some doors.
         .word SpawnPalette          ;($EEFA)Background palette change.
+        .word SpawnRoomState
 
 ;---------------------------------------[ Squeept handler ]------------------------------------------
 

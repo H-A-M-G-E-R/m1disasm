@@ -154,5 +154,59 @@
         "props": [
             {}
         ]
+    },
+    "room_state_vert_scroll": {
+        "type": 11,
+        "props": [
+            {},
+            {
+                "new_room": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "room_state_item": {
+        "type": 27,
+        "props": [
+            {},
+            {
+                "item_type": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            },
+            {
+                "item_x": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            },
+            {
+                "item_y": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            },
+            {
+                "new_room": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "room_state_miniboss_dead": {
+        "type": 43,
+        "props": [
+            {},
+            {
+                "new_room": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
     }
 }
