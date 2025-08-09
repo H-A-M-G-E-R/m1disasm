@@ -5748,11 +5748,6 @@ LavaAndMoveCheck:
 SamusMoveVertically: ; unreferenced label
     ;($E37A)Calculate vertical acceleration.
     jsr VertAccelerate
-    ;Calculate Samus' screen y position.
-    lda ObjY
-    sec
-    sbc ScrollY                     
-    sta SamusScrY
     ;Load temp copy of delta y. branch if Samus is moving downwards
     lda $00
     bpl @downwards
@@ -5850,11 +5845,6 @@ SamusMoveVertically: ; unreferenced label
 SamusMoveHorizontally:
     ;($E3E5)Horizontally accelerate Samus.
     jsr HorzAccelerate
-    ;Calculate Samus' x position on screen.
-    lda ObjX
-    sec
-    sbc ScrollX
-    sta SamusScrX
     ;Load Samus' current delta x.
     lda $00
     ;Branch if moving right.
@@ -6121,14 +6111,13 @@ MoveSamusUp:
     Lx151:
     lda MoveSamusUp_IsUnrollCheck
     bne Lx152
-    lda SamusScrY
+    lda ObjY
+    sec
+    sbc ScrollY
     cmp #$66        ; reached up scroll limit?
     bcs Lx152      ; branch if not
         jsr ScrollUp
-        bcc Lx153
     Lx152:
-        dec SamusScrY
-    Lx153:
     lda ObjY
     bne Lx155
         lda ScrollDir
@@ -6169,14 +6158,13 @@ MoveSamusDown:
         lda OnFrozenEnemy
         bne RTS_X156
     Lx158:
-    lda SamusScrY
+    lda ObjY
+    sec
+    sbc ScrollY
     cmp #$84        ; reached down scroll limit?
     bcc Lx159      ; branch if not
         jsr ScrollDown
-        bcc Lx160
     Lx159:
-        inc SamusScrY
-    Lx160:
     lda ObjY
     cmp #239
     bne Lx162
@@ -6560,14 +6548,13 @@ MoveSamusLeft: ;($E626)
     cmp #$41
     clc
     beq Lx181
-    lda SamusScrX
+    lda ObjX
+    sec
+    sbc ScrollX
     cmp #$71        ; reached left scroll limit?
     bcs Lx178      ; branch if not
         jsr ScrollLeft
-        bcc Lx179
     Lx178:
-        dec SamusScrX
-    Lx179:
     lda ObjX
     bne Lx180
         lda ScrollDir
@@ -6597,14 +6584,13 @@ MoveSamusRight:
     cmp #$40
     clc
     beq Lx181
-    lda SamusScrX
+    lda ObjX
+    sec
+    sbc ScrollX
     cmp #$8F        ; reached right scroll limit?
     bcc Lx183      ; branch if not
         jsr ScrollRight
-        bcc Lx184
     Lx183:
-        inc SamusScrX
-    Lx184:
     inc ObjX      ; go right, Samus!
     bne Lx185
         lda ScrollDir
