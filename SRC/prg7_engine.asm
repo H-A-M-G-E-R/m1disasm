@@ -9402,24 +9402,14 @@ Lx317:
         bne Lx319 ; branch always
     Lx318:
     ; play different enemy hurt sound effects depending on which enemy it is
-    jsr ReadTableAt968B
-    and #$0C
-    beq PlaySnd1
-    cmp #$04
-    beq PlaySnd2
-    cmp #$08
-    beq PlaySnd3
-    jsr SFX_MetroidHit
-    bne Lx319       ; branch always
-PlaySnd1:
-    jsr SFX_EnemyHit
-    bne Lx319       ; branch always
-PlaySnd2:
-    jsr SFX_EnemyHit
-    bne Lx319       ; branch always
-PlaySnd3:
-    jsr SFX_BigEnemyHit             ;($CBCE)
-    ; fallthrough
+    lda EnsExtra.0.type,x
+    asl
+    tay
+    ldx EnemyHitSFXTbl,y
+    lda EnemyHitSFXTbl+1,y
+    cmp NoiseSFXFlag,x
+    bcc Lx319
+    sta NoiseSFXFlag,x
 
 Lx319:
     ; check if enemy is a metroid

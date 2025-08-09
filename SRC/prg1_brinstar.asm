@@ -190,6 +190,27 @@ MellowDamage:
 EnemyPrimaryPaletteTbl:
     .byte $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02
 
+; First byte: channel (0 = noise, 1 = SQ1, 2 = SQ2, 3 = tri, 4 = multi)
+; Second byte: sound
+; Minibosses ignore this table and use SFX_BossHit
+EnemyHitSFXTbl:
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $03, sfxTri_BigEnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+
 ; ResetAnimIndex table for resting enemy
 EnemyRestingAnimIndex:
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl ; unused enemy
@@ -251,7 +272,7 @@ L967B:
 ; Bit 5: EnemyMovementInstr_FE failure -> 0=nothing. 1=set EnData05 to (~(facing dir bits) | (bits 0-4 of this)) 
 ; Bits 0-4 are used when bit 5 is set
 ; Bit 4: is enemy intangible (unsure of this)
-; Bits 2-3: #$00,#$04=normal enemy hit sound, #$08=big enemy hit sound, #$0C=metroid hit sound
+; Bits 2-3: Was: #$00,#$04=normal enemy hit sound, #$08=big enemy hit sound, #$0C=metroid hit sound
 ; Bit 1: force enemy speed to point towards samus
 ; Bit 0: can drop big energy
 L968B:

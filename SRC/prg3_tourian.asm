@@ -198,6 +198,24 @@ MellowDamage:
 EnemyPrimaryPaletteTbl:
     .byte $03, $03, $02, $02, $03, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02
 
+EnemyHitSFXTbl:
+    .byte $03, sfxTri_MetroidHit
+    .byte $03, sfxTri_MetroidHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+
 EnemyRestingAnimIndex:
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
