@@ -354,13 +354,10 @@ GetMetroidAccel:
     rts
 
 GetMetroidRepelSpeed:
-    ; use bit 6 of accel as an index for MetroidRepelSpeed table
-    asl
+    ; use bit 7 of accel as an index for MetroidRepelSpeed table
     rol
     and #$01
     tay
     lda MetroidRepelSpeed,y
     rts
-
-    .byte $F8, $08, $30, $D0, $60, $A0, $02, $04, $00, $00, $00, $00, $00, $00
 

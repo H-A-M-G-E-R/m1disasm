@@ -9918,9 +9918,6 @@ UpdateEnemy_Resting_TryBecomingActive:
     bpl Lx351
         ; the enemy uses acceleration and speed and subpixels
         ; initialize those to what they should be
-        lda #$00
-        sta EnSpeedSubPixelY,x
-        sta EnSpeedSubPixelX,x
         ldy EnMovementIndex,x
 
         lda EnAccelYTable,y
@@ -9928,9 +9925,16 @@ UpdateEnemy_Resting_TryBecomingActive:
         lda EnAccelXTable,y
         sta EnsExtra.0.accelX,x
 
+        tya
+        asl
+        tay
         lda EnSpeedYTable,y
+        sta EnSpeedSubPixelY,x
+        lda EnSpeedYTable+1,y
         sta EnSpeedY,x
         lda EnSpeedXTable,y
+        sta EnSpeedSubPixelX,x
+        lda EnSpeedXTable+1,y
         sta EnSpeedX,x
         
         lda EnData05,x
@@ -9971,25 +9975,6 @@ Lx352:
     lda EnsExtra.0.type,x
     rol
     tay
-    rts
-
-CrawlerAIRoutine_ShouldCrawlerMove:
-CommonJump_CrawlerAIRoutine_ShouldCrawlerMove:
-    ; load enemy slot into a
-    txa
-    ; divide by 8
-    lsr
-    lsr
-    lsr
-    ; add frame count
-    adc FrameCount
-    ; divide by two
-    lsr
-    ; this returns
-    ; enemy slot  %----7654
-    ; frame count %07654321
-    ; whenever this is called, only the bits 0-1 are used
-    ; if bits 0-1 are zero, the crawler does not move
     rts
 
 InitEnemyData0DAndHealth:

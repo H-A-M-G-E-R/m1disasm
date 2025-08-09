@@ -24,8 +24,6 @@
 ;    jmp LF438
 ;CommonJump_02: ;$8006 (no anim, no common AI)
 ;    jmp LF416
-;CommonJump_CrawlerAIRoutine_ShouldCrawlerMove: ;$8009
-;    jmp CrawlerAIRoutine_ShouldCrawlerMove
 ;CommonJump_UpdateEnemyAnim: ;$800C
 ;    jmp UpdateEnemyAnim             ;($E094)
 ;CommonJump_InitEnAnimIndex: ;$800F
@@ -73,11 +71,6 @@
 CommonEnemyAI:
     ; Set x to point to enemy
     ldx PageIndex
-    
-    ; Exit if bit 6 of EnData05 is set
-    lda EnData05,x
-    asl
-    bmi @RTS
     
     ; Exit if enemy is not active
     lda EnsExtra.0.status,x
@@ -519,20 +512,29 @@ EnemyGetDeltaY_CommonCase:
     iny
     lda (EnemyMovementPtr),y
 
-EnemyGetDeltaY_8296: ;referenced in bank 7
     ; Save the sign bit to the carry flag
     asl
     php
     ; Get the magnitude
     jsr Adiv32                      ;($C2BE)Divide by 32.
+    ; Half it because I made the enemy move at 60FPS
+    lsr
+    bcc @endIf_C
+        tay
+        lda EnsExtra.0.subPixelY,x
+        adc #$7F
+        sta EnsExtra.0.subPixelY,x
+        tya
+        adc #$00
+    @endIf_C:
     ; Negate the magnitude if necessary
     plp
-    bcc @endIf_A
+    bcc @endIf_B
         eor #$FF
         adc #$00 ; Since carry is set in this branch, this increments A
-    @endIf_A:
-    ; Store this frame's delta y in temp
+    @endIf_B:
 L82A2:
+    ; Store this frame's delta y in temp
     sta $00
     rts
 
@@ -642,6 +644,19 @@ EnemyGetDeltaY_CaseFA:
     jsr SetBit5OfEnData05_AndClearEnAccelY
     jmp L82A2 ; Set delta-y to zero and exit
 
+EnemyGetDeltaY_8296: ;referenced in bank 7
+    ; Same as above, but without halving it
+    asl
+    php
+    jsr Adiv32
+    plp
+    bcc @endIf_A
+        eor #$FF
+        adc #$00
+    @endIf_A:
+    sta $00
+    rts
+
 ;-------------------------------------------------------------------------------
 ; Horizontal Movement Related?
 EnemyGetDeltaX:
@@ -663,16 +678,40 @@ CommonJump_EnemyGetDeltaX:
     ldy EnMovementInstrIndex,x
     iny
     lda (EnemyMovementPtr),y ; $81/$82 were loaded during EnemyGetDeltaY earlier
-EnemyGetDeltaX_832F:
-    tax
+
+    tay
     ; Save the sign bit to the processor flags
     and #$08
     php
-    txa
+    tya
     ; Get the lower three bits
     and #$07
+    ; Half it because I made the enemy move at 60FPS
+    lsr
+    bcc @endIf_C
+        tay
+        lda EnsExtra.0.subPixelX,x
+        adc #$7F
+        sta EnsExtra.0.subPixelX,x
+        tya
+        adc #$00
+    @endIf_C:
     plp
     ; Negate, according to the sign bit
+    beq @endIf_B
+        jsr TwosComplement
+    @endIf_B:
+    sta $00
+    rts
+
+EnemyGetDeltaX_832F:
+    ; Same as above, but without halving it
+    tax
+    and #$08
+    php
+    txa
+    and #$07
+    plp
     beq @endIf_A
         jsr TwosComplement
     @endIf_A:
@@ -684,8 +723,8 @@ L833C:
 ; apply acceleration to speed and return delta y for enemy
 EnemyGetDeltaY_UsingAcceleration:
 CommonJump_EnemyGetDeltaY_UsingAcceleration:
-    ; default max speed at 14 px/f
-    ldy #$0E
+    ; default max speed at 7 px/f
+    ldy #$07
     ; branch if enemy is accelerating to the left
     lda EnsExtra.0.accelY,x
     bmi @else_A
@@ -706,7 +745,7 @@ CommonJump_EnemyGetDeltaY_UsingAcceleration:
             ; negate speed in a to get absolute speed
             jsr TwosComplement
             ; negate max speed in y
-            ldy #$F2
+            ldy #-$07
             bne @endIf_B ; branch always
 
     @else_A:
@@ -727,7 +766,7 @@ CommonJump_EnemyGetDeltaY_UsingAcceleration:
     @endIf_B:
 @endIf_A:
     ; branch if absolute speed is below absolute max
-    cmp #$0E
+    cmp #$07
     bcc @endIf_C
         ; speed is at or above max
         ; cap speed at max

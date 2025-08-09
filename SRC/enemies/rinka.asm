@@ -124,49 +124,44 @@ L9A7A:
     endIf9AB0:
 
 L9AB0:
-    ; branch if bit 6 of EnData05 is set (30FPS)
-    lda EnData05,x
-    asl
-    bmi L9AF4
-        ; move rinka
-        
-        ; apply y sub-pixel speed to sub-pixel position
-        lda EnSpeedSubPixelY,x
-        clc
-        adc EnsExtra.0.subPixelY,x
-        sta EnsExtra.0.subPixelY,x
-        ; if sub-pixel position overflowed, add 1 to temp speed
-        lda EnSpeedY,x
-        adc #$00
-        sta Temp04_SpeedY
+    ; move rinka
+    
+    ; apply y sub-pixel speed to sub-pixel position
+    lda EnSpeedSubPixelY,x
+    clc
+    adc EnsExtra.0.subPixelY,x
+    sta EnsExtra.0.subPixelY,x
+    ; if sub-pixel position overflowed, add 1 to temp speed
+    lda EnSpeedY,x
+    adc #$00
+    sta Temp04_SpeedY
 
-        ; apply x sub-pixel speed to sub-pixel position
-        lda EnSpeedSubPixelX,x
-        clc
-        adc EnsExtra.0.subPixelX,x
-        sta EnsExtra.0.subPixelX,x
-        ; if sub-pixel position overflowed, add 1 to temp speed
-        lda EnSpeedX,x
-        adc #$00
-        sta Temp05_SpeedX
+    ; apply x sub-pixel speed to sub-pixel position
+    lda EnSpeedSubPixelX,x
+    clc
+    adc EnsExtra.0.subPixelX,x
+    sta EnsExtra.0.subPixelX,x
+    ; if sub-pixel position overflowed, add 1 to temp speed
+    lda EnSpeedX,x
+    adc #$00
+    sta Temp05_SpeedX
 
-        ; store position to temp
-        lda EnY,x
-        sta Temp08_PositionY
-        lda EnX,x
-        sta Temp09_PositionX
-        lda EnsExtra.0.hi,x
-        sta Temp0B_PositionHi
-        ; apply speed
-        jsr CommonJump_ApplySpeedToPosition
-        ; branch if movement succeeded
-        bcs L9AF1
-            ; movement failed, remove rinka
-            lda #$00
-            sta EnsExtra.0.status,x
-        L9AF1:
-        jsr LoadEnemyPositionFromTemp_
-    L9AF4:
+    ; store position to temp
+    lda EnY,x
+    sta Temp08_PositionY
+    lda EnX,x
+    sta Temp09_PositionX
+    lda EnsExtra.0.hi,x
+    sta Temp0B_PositionHi
+    ; apply speed
+    jsr CommonJump_ApplySpeedToPosition
+    ; branch if movement succeeded
+    bcs L9AF1
+        ; movement failed, remove rinka
+        lda #$00
+        sta EnsExtra.0.status,x
+    L9AF1:
+    jsr LoadEnemyPositionFromTemp_
     ; change animation frame every 8 frames
     lda #$08
     jmp CommonJump_01
@@ -194,6 +189,18 @@ SetRinkaSpeed:
     ; write lower nibble to enemy x speed subpixels
     jsr Amul16_
     sta EnSpeedSubPixelX,x
+
+    ; half both speeds because I made it move at 60FPS
+    lda EnSpeedY,x
+    asl
+    ror EnSpeedY,x
+    ror EnSpeedSubPixelY,x
+
+    lda EnSpeedX,x
+    asl
+    ror EnSpeedX,x
+    ror EnSpeedSubPixelX,x
+
     rts
 
 
