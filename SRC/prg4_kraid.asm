@@ -104,10 +104,6 @@ AreaSamusY:
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
 
-AreaPalToggle:
-    .byte _id_Palette00+1
-
-    .byte $00
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl
 AreaExplosionAnimIndex:
@@ -121,12 +117,9 @@ AreaFireballSplatterAnimIndex:
 AreaMellowAnimIndex:
     .byte EnAnim_64 - EnAnimTbl
 
-AreaTileAnim:
-    .byte $05, TrenchBG_Frame0/$400
-    .byte $05, TrenchBG_Frame1/$400
-    .byte $05, TrenchBG_Frame2/$400
-    .byte $05, TrenchBG_Frame3/$400
-    .byte $00
+AreaTilesets:
+    .word TileAnim0, PalAnim0
+    .word TileAnim1, PalAnim1
 
 ChooseEnemyAIRoutine:
     lda EnsExtra.0.type,x
@@ -277,14 +270,14 @@ EnemyInitDelayTbl:
     .byte $08, $08, $01, $01, $01, $01, $10, $08, $10, $00, $00, $01, $01, $00, $00, $00
 
 EnemyMovementChoiceOffset:
-    .byte EnemyMovementChoice00 - EnemyMovementChoices ; enemy can't use movement strings
-    .byte EnemyMovementChoice01 - EnemyMovementChoices ; enemy can't use movement strings
+    .byte EnemyMovementChoice00 - EnemyMovementChoices
+    .byte EnemyMovementChoice01 - EnemyMovementChoices
     .byte $00 ; unused enemy
     .byte EnemyMovementChoice02 - EnemyMovementChoices
     .byte EnemyMovementChoice03 - EnemyMovementChoices
     .byte EnemyMovementChoice05 - EnemyMovementChoices ; enemy moves manually
     .byte $00 ; unused enemy
-    .byte EnemyMovementChoice04 - EnemyMovementChoices ; enemy can't use movement strings
+    .byte EnemyMovementChoice04 - EnemyMovementChoices
     .byte EnemyMovementChoice06 - EnemyMovementChoices
     .byte EnemyMovementChoice07 - EnemyMovementChoices
     .byte EnemyMovementChoice08 - EnemyMovementChoices
@@ -425,15 +418,15 @@ TileBlastFramePtrTable:
     .word TileBlastFrame10
 
 EnemyMovementChoices:
-EnemyMovementChoice00: ; enemy can't use movement strings
+EnemyMovementChoice00:
     EnemyMovementChoiceEntry $01, $02
-EnemyMovementChoice01: ; enemy can't use movement strings
+EnemyMovementChoice01:
     EnemyMovementChoiceEntry $03, $04
 EnemyMovementChoice02:
     EnemyMovementChoiceEntry $06
 EnemyMovementChoice03:
     EnemyMovementChoiceEntry $07
-EnemyMovementChoice04: ; enemy can't use movement strings
+EnemyMovementChoice04:
     EnemyMovementChoiceEntry $09
 EnemyMovementChoice05: ; enemy moves manually
     EnemyMovementChoiceEntry $00
@@ -785,6 +778,19 @@ TileBlastFrame0E:
 TileBlastFrame0F:
 TileBlastFrame10:
     ;nothing
+
+TileAnim0:
+TileAnim1:
+    .byte $05, TrenchBG_Frame0/$400
+    .byte $05, TrenchBG_Frame1/$400
+    .byte $05, TrenchBG_Frame2/$400
+    .byte $05, TrenchBG_Frame3/$400
+    .byte $00
+
+PalAnim0:
+PalAnim1:
+    .byte _id_Palette00+1
+    .byte $00
 
 .include "data/trench/enemy_sprite_data.asm"
 

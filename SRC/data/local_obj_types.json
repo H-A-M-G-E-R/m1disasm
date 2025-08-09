@@ -52,6 +52,29 @@
             }
         ]
     },
+    "scroll_block": {
+        "type": 3,
+        "props": [
+            {
+                "right": {
+                    "len": 1,
+                    "shifts": 7
+                },
+                "left": {
+                    "len": 1,
+                    "shifts": 6
+                },
+                "down": {
+                    "len": 1,
+                    "shifts": 5
+                },
+                "up": {
+                    "len": 1,
+                    "shifts": 4
+                }
+            }
+        ]
+    },
     "elevator": {
         "type": 4,
         "props": [

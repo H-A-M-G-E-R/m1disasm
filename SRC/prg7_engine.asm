@@ -25,6 +25,9 @@
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
+GenericBitmaskTbl:
+    .byte $01, $02, $04, $08, $10, $20, $40, $80
+
 ; LZSA1 decompressor for decompressing rooms
 .include "decompress_faster_v1.asm"
 
@@ -36,6 +39,9 @@
 
 ; Health block code
 .include "health_blocks.asm"
+
+; More object types
+.include "more_obj_types.asm"
 
 ;This routine generates pseudo random numbers and updates those numbers
 ;every frame. The random numbers are used for several purposes including
@@ -77,48 +83,68 @@ RESET:
     lda #$80                        ;
     sta $A001                       ;Enable MMC3 PRG RAM
 
-;Clear RAM at $000-$7FF.
-    ldy #$07                        ;High byte of start address.
-    sty $01                         ;
-    ldy #$00                        ;Low byte of start address.
-    sty $00                         ;$0000 = #$0700
-    tya                             ;A = 0
-    LC048:
-        sta ($00),y                     ;clear address
-        iny                             ;
-        bne LC048                       ;Repeat for entire page.
-        dec $01                         ;Decrement high byte of address.
-        bmi LC057                       ;If $01 < 0, all pages are cleared.
-        ldx $01                         ;
-        cpx #$01                        ;Keep looping until ram is cleared.
-        bne LC048                       ;
+;Clear RAM at $0000-$07FF.
+    ;$0000 = #$0700
+    ;High byte of start address.
+    ldy #$07
+    sty $01
+    ;Low byte of start address.
+    ldy #$00
+    sty $00
+    tya ;A = 0
+    @loop_A:
+        @loop_B:
+            ;clear address
+            sta ($00),y
+            ;Repeat for entire page.
+            iny
+            bne @loop_B
+        ;Decrement high byte of address.
+        dec $01
+        ;If $01 < 0, all pages are cleared.
+        bmi @exitLoop_A
+        ;Keep looping until ram is cleared.
+        ldx $01
+        cpx #$01
+        bne @loop_A
+    @exitLoop_A:
 
-;Clear cartridge RAM at $6000-$7FFF.
-LC057:
-    ldy #$7F                        ;High byte of start address.
-    sty $01                         ;
-    ldy #$00                        ;Low byte of start address.
-    sty $00                         ;$0000 points to $7F00
-    tya                             ;A = 0
-    LC060:
-        sta ($00),y                     ;
-        iny                             ;Clears 256 bytes of memory before decrementing to next-->
-        bne LC060                       ;256 bytes.
-        dec $01                         ;
-        ldx $01                         ;Is address < $6000?-->
-        cpx #$60                        ;If not, do another page.
-        bcs LC060                       ;
+    ;Clear cartridge RAM at $6000-$7FFF.
+    ;$0000 points to $7F00
+    ;High byte of start address.
+    ldy #$7F
+    sty $01
+    ;Low byte of start address.
+    ldy #$00
+    sty $00
+    tya ;A = 0
+    @loop_C:
+        @loop_D:
+            ;Clears 256 bytes of memory before decrementing to next 256 bytes.
+            sta ($00),y
+            iny
+            bne @loop_D
+        dec $01
+        ldx $01
+        ;Is address < $6000? If not, do another page.
+        cpx #$60
+        bcs @loop_C
 
 
-    ldy #$00                        ;
-    sty ScrollX                     ;ScrollX = 0
-    sty ScrollY                     ;ScrollY = 0
-    sty PPUSCROLL                   ;Clear hardware scroll x
-    sty PPUSCROLL                   ;Clear hardware scroll y
-    iny                             ;Y = #$01
-    sty GameMode                    ;Title screen mode
-    jsr ClearNameTables             ;($C158)
-    jsr EraseAllSprites             ;($C1A3)
+
+    ; clear scroll and hardware scroll
+    ldy #$00
+    sty ScrollX
+    sty ScrollY
+    sty PPUSCROLL ;Clear hardware scroll x
+    sty PPUSCROLL ;Clear hardware scroll y
+    
+    ;Title screen mode
+    iny ;Y = #$01
+    sty GameMode
+    
+    jsr ClearNameTables
+    jsr EraseAllSprites
 
     ;Clear sounds. 
     lda #$10
@@ -170,7 +196,7 @@ LC057:
     lda #$FF
     sta RandomNumber2
 
-    iny                             ;Y = 1
+    iny ;Y = 1
     sty SwitchPending               ;Prepare to switch page 0 into lower PRGROM.
     jsr CheckSwitch                 ;($C4DE)
     jmp WaitNMIEnd
@@ -472,7 +498,7 @@ IncrementRoutine:
 
 ;-------------------------------------[ Clear name tables ]------------------------------------------
 
-ClearNameTables:
+ClearNameTables: ;($C158)
     jsr ClearNameTable0             ;($C16D)Always clear name table 0 first.
     lda GameMode                    ;
     beq LC165                       ;Branch if mode = Play.
@@ -538,7 +564,7 @@ HiPPUTable:
 
 ;-------------------------------------[ Erase all sprites ]------------------------------------------
 
-EraseAllSprites:
+EraseAllSprites: ;($C1A3)
     ; load SpriteRAM address into $00-01
     ldy #>SpriteRAM.b
     sty $01
@@ -564,14 +590,14 @@ Exit101:
 ;The routine below clears RAM associated with rooms and enemies.
 
 ClearRAM_33_DF:
-    ldx #RoomPtr
+    ldx #RoomPtr.b
     lda #$00
     @loop:
         ;Clear RAM addresses $33 through $DF.
         sta $00,x
         inx
         ;Loop until all desired addresses are cleared.
-        cpx #SoundE0
+        cpx #SoundE0.b
         bcc @loop
     rts
 
@@ -613,62 +639,106 @@ ProcessPalPPUString:
     @rts:
     rts
 
+WriteAreaPal_KeepSamusPal:
+    ldy PalRam+$11
+    sty $03
+    ldy PalRam+$12
+    sty $04
+    ldy PalRam+$13
+    sty $05
+    jsr WriteAreaPal
+    ldy $03
+    sty PalRam+$11
+    ldy $04
+    sty PalRam+$12
+    ldy $05
+    sty PalRam+$13
+    rts
+
 ;----------------------------------------[Read joy pad status ]--------------------------------------
 
 ;The following routine reads the status of both joypads
 
 ReadJoyPads:
-    ldx #$00                        ;Load x with #$00. Used to read status of joypad 1.
-    stx $01                         ;
-    jsr ReadOnePad                  ;
-    inx                             ;Load x with #$01. Used to read status of joypad 2.
-    inc $01                         ;
+    ;Load x with #$00. Used to read status of joypad 1.
+    ldx #$00
+    stx $01
+    jsr ReadOnePad
+    ;Load x with #$01. Used to read status of joypad 2.
+    inx
+    inc $01
+    ; fallthrough
 
 ReadOnePad:
-    ldy #$01                        ;These lines strobe the -->
-    sty JOY1                        ;joystick to enable the -->
-    dey                             ;program to read the -->
-    sty JOY1                        ;buttons pressed.
+    ;These lines strobe the joystick to enable the program to read the buttons pressed.
+    ldy #$01
+    sty JOY1
+    dey
+    sty JOY1
+    ;Do 8 buttons.
+    ldy #$08
+    @loop:
+        ;Store A.
+        pha
+        ;Read button status. Joypad 1 or 2.
+        lda JOY1,x
+        ;Store button press at location $00.
+        sta $00
+        ;Also accept button press from joypad that is plugged into the console's expansion port
+        lsr
+        ora $00
+        ;Move button press to carry bit.
+        lsr
+        ;Restore A.
+        pla
+        ;Add button press status to A.
+        rol
+        ;Loop 8 times to get status of all 8 buttons.
+        dey
+        bne @loop
+    ; a now contains the new joypad status
 
-    ldy #$08                        ;Do 8 buttons.
-    LC22A:
-        pha                             ;Store A.
-        lda JOY1,x                      ;Read button status. Joypad 1 or 2.
-        sta $00                         ;Store button press at location $00.
-        lsr                             ;Move button push to carry bit.
-        ora $00                         ;If joystick not connected, -->
-        lsr                             ;fills Joy1Status with all 1s.
-        pla                             ;Restore A.
-        rol                             ;Add button press status to A.
-        dey                             ;Loop 8 times to get -->
-        bne LC22A                       ;status of all 8 buttons.
-
-    ldx $01                         ;Joypad #(0 or 1).
-    ldy Joy1Status,x                ;Get joypad status of previous refresh.
-    sty $00                         ;Store at $00.
-    sta Joy1Status,x                ;Store current joypad status.
-    eor $00                         ;
-    beq LC24D                       ;Branch if no buttons changed.
-        lda $00                         ;
-        and #~BUTTON_B.b                  ;Remove the previous status of the B button.
-        sta $00                         ;
-        eor Joy1Status,x                ;
-    LC24D:
-    and Joy1Status,x                ;Save any button changes from the current frame-->
-    sta Joy1Change,x                ;and the last frame to the joy change addresses.
-    sta Joy1Retrig,x                ;Store any changed buttons in JoyRetrig address.
-    ldy #$20                        ;
-    lda Joy1Status,x                ;Checks to see if same buttons are being-->
-    cmp $00                         ;pressed this frame as last frame.-->
-    bne LC263                       ;If none, branch.
-    dec RetrigDelay1,x              ;Decrement RetrigDelay if same buttons pressed.
-    bne RTS_C265                       ;
-    sta Joy1Retrig,x                ;Once RetrigDelay=#$00, store buttons to retrigger.
-    ldy #$08                        ;
-LC263:
-    sty RetrigDelay1,x              ;Reset retrigger delay to #$20(32 frames)-->
+    ;Get joypad status of previous refresh.
+    ldx $01 ;Joypad #(0 or 1).
+    ldy Joy1Status,x
+    ;Store at $00.
+    sty $00
+    
+    ;Store current joypad status.
+    sta Joy1Status,x
+    
+    ;Branch if no buttons changed.
+    eor $00
+    beq @endIf_A
+        ;Remove the previous status of the B button.
+        lda $00
+        and #~BUTTON_B.b
+        sta $00
+        eor Joy1Status,x
+    @endIf_A:
+    ;Save any button changes from the current frame and the last frame to the joy change addresses.
+    and Joy1Status,x
+    sta Joy1Change,x
+    ;Store any changed buttons in JoyRetrig address.
+    sta Joy1Retrig,x
+    
+    ldy #$20
+    ;Checks to see if same buttons are being pressed this frame as last frame.
+    lda Joy1Status,x
+    cmp $00
+    ;If none, branch.
+    bne @endIf_B
+        ;Decrement RetrigDelay if same buttons pressed.
+        dec RetrigDelay1,x
+        bne RTS_C265
+        ;Once RetrigDelay=#$00, store buttons to retrigger.
+        sta Joy1Retrig,x
+        ldy #$08
+    @endIf_B:
+    ;Reset retrigger delay to #$20(32 frames) or #$08(8 frames) if already retriggering.
+    sty RetrigDelay1.b,x
 RTS_C265:
-    rts                             ;or #$08(8 frames) if already retriggering.
+    rts
 
 ;-------------------------------------------[ Update timer ]-----------------------------------------
 
@@ -1240,8 +1310,9 @@ AreaInit:
 ;------------------------------------------[ MoreInit ]---------------------------------------------
 
 MoreInit:
-    lda #_id_Palette00+1.b          ;
-    jsr WriteAreaPal                ;Write area palette 0.
+    ; tileset #$00
+    lda #$00
+    jsr ChangeTileset
     ldx #$FF                        ;
     stx SpareMem75                  ;$75 Not referenced ever again in the game.
     inx                             ;X=0.
@@ -1265,7 +1336,7 @@ MoreInit:
     jsr ScreenOff                   ;($C439)Turn off Background and visibility.
     jsr ClearNameTables             ;($C158)Clear screen data.
     jsr EraseAllSprites             ;($C1A3)Erase all sprites from sprite RAM.
-    jsr DestroyEnemies              ;($C8BB)
+    jsr DestroyEnemies
 
     stx ScrollBlockOnNameTable3     ;Clear data about doors on the name tables.
     stx ScrollBlockOnNameTable0     ;
@@ -1278,8 +1349,6 @@ MoreInit:
     lda AreaSamusMapPosY            ;Get Samus start y pos on map.
     sta SamusMapPosY                ;
 
-    lda AreaPalToggle               ; Get ??? Something to do with palette switch
-    sta PalToggle
     jsr CopyAreaPointers    ; copy pointers from ROM to RAM
     jsr GetRoomNum                  ;($E720)Put room number at current map pos in $5A.
     jsr SetupRoom                   ;($EA2B)
@@ -1310,7 +1379,6 @@ MoreInit:
         dex
         bne Lx001
 
-    stx DoorPalChangeDir
     lda #$01                        ;
     jsr WriteAreaPal                ;Write area palette 0.
     stx SpareMem30                  ;Not accessed by game.
@@ -1332,7 +1400,7 @@ CopyAreaPointers:
 ; DestroyEnemies
 ; ==============
 
-DestroyEnemies: ; LC8BB
+DestroyEnemies: ;($C8BB)
     lda #$00
     tax
     @loop:
@@ -1470,17 +1538,17 @@ GameEngine:
 UpdateAge:
     ;Exit if at title/password screen.
     lda GameMode
-    bne RTS_C9A5
+    bne @RTS
     
     ;Exit if game engine is notrunning.
     lda MainRoutine
     cmp #_id_GameEngine.b
-    bne RTS_C9A5
+    bne @RTS
     
     ;Only update age when FrameCount is zero-->
     ;(which is approx. every 4.266666666667 seconds).
     ldx FrameCount
-    bne RTS_C9A5
+    bne @RTS
     
     ;Minor Age = Minor Age + 1.
     inc SamusAge,x
@@ -1488,19 +1556,19 @@ UpdateAge:
     lda SamusAge
     cmp #$D0
     ;If not, we're done.-->
-    bcc RTS_C9A5
+    bcc @RTS
     ;Else reset minor age.
     lda #$00
     sta SamusAge
     ;Loop to update middle age and possibly major age.
-    LC99B:
+    @loop:
         cpx #$03
-        bcs RTS_C9A5
+        bcs @RTS
         inx
         inc SamusAge,x
         ;Branch if middle age overflowed, need to increment major age too. Else exit.
-        beq LC99B
-RTS_C9A5:
+        beq @loop
+@RTS:
     rts
 
 ;-------------------------------------------[ Game over ]--------------------------------------------
@@ -1830,8 +1898,9 @@ ClearScreenData:
 ; ===== THE REAL GUTS OF THE GAME ENGINE! =====
 
 UpdateWorld:
-    ldx #$00                        ;Set start of sprite RAM to $0200.
-    stx SpritePagePos               ;
+    ;Set start of sprite RAM to $0200.
+    ldx #$00
+    stx SpritePagePos
 
     jsr UpdateAllEnemies            ;($F345)Display of enemies.
     jsr UpdateProjectiles           ;($D4BF)Display of bullets/missiles/bombs.
@@ -1856,7 +1925,7 @@ UpdateWorld:
     jsr CheckMissileToggle
     jsr UpdateItems                 ;($DB37)Display of power-up items.
     jsr UpdateTourianItems          ;($FDE3)
-    jsr UpdateTileAnim
+    jsr UpdateTilesetAnim
 
 ;Clear remaining sprite RAM
     ldx SpritePagePos
@@ -4207,39 +4276,45 @@ ElevatorD8BF:
     @endIf_A:
     
     ; destination area is now in the low 7 bits of a
-    ; load destination area bank
-    jsr IsEngineRunning
-    ; load palette 0
-    lda #_id_Palette00+1.b
-    jsr WriteAreaPal
-    ; update samus palette
-    jsr SelectSamusPal
-    ; check if there's item room music ahead
-    lda SamusMapPosY
-    pha
-    tay
-    ldx PageIndex
-    lda ElevatorType-$20,x
-    bpl @down
-        dey
-        jmp @endif_B
-    @down:
-        iny
-    @endif_B:
-    sty SamusMapPosY
-    jsr GetRoomNum
-    pla
-    sta SamusMapPosY
-    lda #$FF
-    sta RoomNumber
+    ; branch if it leads to a different area
+    lda InArea
+    eor ElevatorType-$20,x
+    asl
+    bne @else_C
+        ; same area
+        ; fallthrough to not change tileset if there's no tileset change object
+        lda TilesetIndex
+        sta TilesetIndexAheadOfElevator
+        ; do readahead
+        jsr ElevatorReadahead
+        ; change tileset if it's different
+        lda TilesetIndex
+        cmp TilesetIndexAheadOfElevator
+        beq @endif_C
+
+        jsr ChangeTileset
+        bne @endif_C ; branch always
+    @else_C:
+        ; different area
+        ; load destination area bank
+        lda ElevatorType-$20,x
+        and #$7F
+        jsr IsEngineRunning
+        ; fallthrough to change tileset to #$00 if there's no tileset change object
+        lda #$00
+        sta TilesetIndexAheadOfElevator
+        ; do readahead
+        jsr ElevatorReadahead
+        ; always change tileset
+        lda TilesetIndexAheadOfElevator
+        jsr ChangeTileset
+        ; copy area pointers
+        jsr CopyAreaPointers
+        ; clear all enemy slots
+        jsr DestroyEnemies
+    @endif_C:
     ;($D92C)Start music.
     jsr StartMusic
-    ; turn the screen on (when had it turned off?)
-    jsr ScreenOn
-    ; copy area pointers
-    jsr CopyAreaPointers
-    ; clear all enemy slots
-    jsr DestroyEnemies
     ; load elevator slot into PageIndex
     ldx #$20
     stx PageIndex
@@ -5773,11 +5848,6 @@ LavaAndMoveCheck:
 SamusMoveVertically: ; unreferenced label
     ;($E37A)Calculate vertical acceleration.
     jsr VertAccelerate
-    ;Calculate Samus' screen y position.
-    lda ObjY
-    sec
-    sbc ScrollY                     
-    sta SamusScrY
     ;Load temp copy of delta y. branch if Samus is moving downwards
     lda $00
     bpl @downwards
@@ -5879,11 +5949,6 @@ SamusMoveVertically: ; unreferenced label
 SamusMoveHorizontally:
     ;($E3E5)Horizontally accelerate Samus.
     jsr HorzAccelerate
-    ;Calculate Samus' x position on screen.
-    lda ObjX
-    sec
-    sbc ScrollX
-    sta SamusScrX
     ;Load Samus' current delta x.
     lda $00
     ;Branch if moving right.
@@ -6150,14 +6215,13 @@ MoveSamusUp:
     Lx151:
     lda MoveSamusUp_IsUnrollCheck
     bne Lx152
-    lda SamusScrY
+    lda ObjY
+    sec
+    sbc ScrollY
     cmp #$66        ; reached up scroll limit?
     bcs Lx152      ; branch if not
         jsr ScrollUp
-        bcc Lx153
     Lx152:
-        dec SamusScrY
-    Lx153:
     lda ObjY
     bne Lx155
         lda ScrollDir
@@ -6198,14 +6262,13 @@ MoveSamusDown:
         lda OnFrozenEnemy
         bne RTS_X156
     Lx158:
-    lda SamusScrY
+    lda ObjY
+    sec
+    sbc ScrollY
     cmp #$84        ; reached down scroll limit?
     bcc Lx159      ; branch if not
         jsr ScrollDown
-        bcc Lx160
     Lx159:
-        inc SamusScrY
-    Lx160:
     lda ObjY
     cmp #239
     bne Lx162
@@ -6589,14 +6652,13 @@ MoveSamusLeft: ;($E626)
     cmp #$41
     clc
     beq Lx181
-    lda SamusScrX
+    lda ObjX
+    sec
+    sbc ScrollX
     cmp #$71        ; reached left scroll limit?
     bcs Lx178      ; branch if not
         jsr ScrollLeft
-        bcc Lx179
     Lx178:
-        dec SamusScrX
-    Lx179:
     lda ObjX
     bne Lx180
         lda ScrollDir
@@ -6626,14 +6688,13 @@ MoveSamusRight:
     cmp #$40
     clc
     beq Lx181
-    lda SamusScrX
+    lda ObjX
+    sec
+    sbc ScrollX
     cmp #$8F        ; reached right scroll limit?
     bcc Lx183      ; branch if not
         jsr ScrollRight
-        bcc Lx184
     Lx183:
-        inc SamusScrX
-    Lx184:
     inc ObjX      ; go right, Samus!
     bne Lx185
         lda ScrollDir
@@ -6743,20 +6804,15 @@ EndOfRoomHorizontal:
 ;If valid room number, the room number is stored in $5A.
 
 GetRoomNum:
-    lda ScrollDir                   ;
-    lsr                             ;Branch if scrolling vertical.
-    beq LE733                       ;
-
-    rol                             ;Restore value of a
-    adc #$FF                        ;A=#$01 if scrolling left, A=#$02 if scrolling right.
-    pha                             ;Save A.
+    ldy ScrollDir
+    ldx GenericBitmaskTbl,y
     jsr OnNameTable0                ;($EC93)Y=1 if name table=0, Y=0 if name table=3.
-    pla                             ;Restore A.
+    txa
     and ScrollBlockOnNameTable3,y   ;
     sec                             ;
-    bne RTS_E76F                    ;Can't load room, a door is in the way. This has the-->
+    bne RTS_E76F                    ;Can't load room, a scroll block is in the way. This has the-->
                                     ;effect of stopping the scrolling until Samus walks-->
-                                    ;through the door(horizontal scrolling only).
+                                    ;through the door.
 
 LE733:
     lda #:WorldMap.b
@@ -7412,6 +7468,9 @@ SetupRoom:
     jsr UpdateRoomSpriteInfo        ;($EC9B)Update which sprite belongs on which name table.
 
     jsr ScanForItems                ;($ED98)Set up any special items.
+    bcc +
+        jsr ItemsStart
+    +
 
     ; Switch bank to room bank
     lda CurrentMainBank
@@ -7570,7 +7629,7 @@ EnemyStart:
         .word ExitSub                   ;($C45C)Rts.
         .word LoadEnemy                 ;($EB06)Room enemies.
         .word LoadDoor                  ;($EB8C)Room doors.
-        .word ExitSub                   ;($C45C)Rts.
+        .word LoadScrollBlock
         .word LoadElevator              ;($EC04)Elevator.
         .word ExitSub                   ;($C45C)Rts.
         .word LoadStatues               ;($EC2F)Kraid & Ridley statues.
@@ -7791,8 +7850,8 @@ DoorXs:
     .byte $F0        ; X coord of RIGHT door
     .byte $10        ; X coord of LEFT door
 DoorScrollBlocks:
-    .byte $02        ; right
-    .byte $01        ; left
+    .byte $08        ; right
+    .byte $04        ; left
 DoorSlots:
     .byte $80        ; right on white square
     .byte $B0        ; left on white square
@@ -8093,49 +8152,59 @@ ScanForItems:
     sta $00                         ;
     lda AreaPointers+1             ;High byte of ptr to 1st item data.
 
-ScanOneItem:
+@loop_Y:
     sta $01                         ;
     ldy #$00                        ;Index starts at #$00.
     lda ($00),y                     ;Load map Ypos of item.-->
     cmp SamusMapPosY                ;Does it equal Samus' Ypos on map?-->
-    beq LEDBE                       ;If yes, check Xpos too.
+    beq @checkX                     ;If yes, check Xpos too.
 
-    bcs Exit11                      ;Exit if item Y pos >  Samus Y Pos.
+    bcs @noItem                     ;Exit if item Y pos >  Samus Y Pos.
     iny                             ;
     lda ($00),y                     ;Low byte of ptr to next item data.
     tax                             ;
     iny                             ;
     and ($00),y                     ;AND with hi byte of item ptr.
     cmp #$FF                        ;if result is FFh, then this was the last item-->
-    beq Exit11                      ;(item ptr = FFFF). Branch to exit.
+    beq @noItem                     ;(item ptr = FFFF). Branch to exit.
 
     lda ($00),y                     ;High byte of ptr to next item data.
     stx $00                         ;Write low byte for next item.
-    jmp ScanOneItem                 ;Process next item.
+    jmp @loop_Y                     ;Process next item.
 
-LEDBE:
+@checkX:
     lda #$03                        ;Get ready to look at byte containing X pos.
     jsr AddToPtr00                  ;($EF09)Add 3 to pointer at $0000.
 
-ScanItemX:
+@loop_X:
     ldy #$00                        ;
     lda ($00),y                     ;Load map Xpos of object.-->
     cmp SamusMapPosX                ;Does it equal Samus' Xpos on map?-->
-    beq LEDD4                       ;If so, then load object.
-    bcs Exit11                      ;Exit if item pos X > Samus Pos X.
+    beq @hasItem                    ;If so, then load object.
+    bcs @noItem                     ;Exit if item pos X > Samus Pos X.
 
     iny
-    ;Check for another item on same Y pos.
-    ;This will double return if there are no more items (from AnotherItem routine and from this routine)
-    jsr AnotherItem
+    ;Is there another item with same Y pos? If so, A is amount to add to ptr. to find X pos.
+    lda ($00),y
+    cmp #$FF
+    beq @noItem
+    jsr AddToPtr00
     ;Try next X coord.
-    jmp ScanItemX
+    jmp @loop_X
 
-LEDD4:
+@noItem:
+    clc
+    rts
+
+@hasItem:
     lda #$02                        ;Move ahead two bytes to find item data.
+    jsr AddToPtr00
+    sec
+    rts
 
 ChooseSpawningRoutine:
     jsr AddToPtr00                  ;($EF09)Add A to pointer at $0000.
+ItemsStart:
     ldy #$00                        ;
     lda ($00),y                     ;Object type
     and #$0F                        ;Object handling routine index stored in 4 LSBs.
@@ -8150,7 +8219,8 @@ ChooseSpawningRoutine:
         .word SpawnZebetite         ;($EECA)Zebetites.
         .word SpawnRinkaSpawner     ;($EEEE)Rinkas.
         .word SpawnDoor             ;($EEF4)Some doors.
-        .word SpawnPalette          ;($EEFA)Background palette change.
+        .word SpawnTilesetChange
+        .word SpawnRoomState
 
 ;---------------------------------------[ Squeept handler ]------------------------------------------
 
@@ -8228,7 +8298,7 @@ LEE41:
 CheckForItem:
     ; if Samus has no unique items, Load item and exit.
     ldy NumberOfUniqueItems
-    beq @samusDoesNotHaveThisItem                         
+    beq @samusDoesNotHaveThisItem
     @loop:
         ;Look for upper byte of unique item. branch if it doesn't match
         lda Temp06_ItemID+1.b
@@ -8357,21 +8427,6 @@ SpawnRinkaSpawner:
 SpawnDoor:
     jsr SpawnDoorRoutine
     jmp ChooseSpawningRoutine        ;($EDD6)Exit handler routines.
-
-SpawnPalette:
-    lda ScrollDir
-    sta DoorPalChangeDir
-    bne SpawnMotherBrain_exit
-
-AnotherItem: ;($EF00)
-    ;Is there another item with same Y pos? If so, A is amount to add to ptr. to find X pos.
-    lda ($00),y
-    cmp #$FF
-    bne AddToPtr00
-    ;No more items to check. Pull last subroutine off stack and exit.
-    pla
-    pla
-    rts
 
 AddToPtr00: ;($EF09)
     ;A is added to the 16 bit address stored in $0000.
@@ -8845,7 +8900,7 @@ CollisionDetectionEnemy_ReactToCollisionWithSamus:
     
     jsr LF2E8
     ;branch if screw attack is active.
-    jsr IsScrewAttackActive         
+    jsr IsScrewAttackActive
     ldy #$00
     bcc Lx289
     
@@ -11350,30 +11405,80 @@ UpdateTileBlastAnim:
 
 ;-------------------------------------------------------------------------------
 ; Tile animation
-UpdateTileAnim:
+UpdateTilesetAnim:
+    ; get index to AreaTilesets
+    lda TilesetIndex
+    asl
+    asl
+    tax
+
     dec TileAnimDelay
-    bne @RTS
+    bne @tile_done
     ; update
+    lda AreaTilesets,x
+    sta $00
+    lda AreaTilesets+1,x
+    sta $01
+
     ldy TileAnimIndex
     ; get duration
-    lda AreaTileAnim,y
+    lda ($00),y
     ; reset anim if duration == 0
-    bne @noReset
+    bne @tile_noReset
         tay
-        lda AreaTileAnim,y
-    @noReset:
+        lda ($00),y
+    @tile_noReset:
     sta TileAnimDelay
     ; get CHR bank
     iny
-    ldx AreaTileAnim,y
-    stx CHRBank0
-    inx
-    inx
-    stx CHRBank1
+    lda ($00),y
+    sta CHRBank0
+    clc
+    adc #$02
+    sta CHRBank1
 
     iny
     sty TileAnimIndex
-@RTS:
+@tile_done:
+    dec PalAnimDelay
+    bne @pal_done
+    ; update
+    lda AreaTilesets+2,x
+    sta $06 ; not clobbered by WriteAreaPal_KeepSamusPal
+    lda AreaTilesets+3,x
+    sta $07
+
+    ldy PalAnimIndex
+    bne @pal_notFirst
+        ; initial pal
+        lda ($06),y
+        jsr WriteAreaPal_KeepSamusPal
+        ldy #$01
+    @pal_notFirst:
+    ; get duration
+    lda ($06),y
+    ; reset anim if duration == 0
+    bne @pal_noReset
+        ; branch if no anim
+        cpy #$01
+        beq @pal_noAnim
+        ; there's an anim
+        ldy #$01
+        lda ($06),y
+    @pal_noReset:
+    sta PalAnimDelay
+    ; write pal
+    iny
+    lda ($06),y
+    iny
+    sty PalAnimIndex
+    jsr WriteAreaPal_KeepSamusPal
+@pal_done:
+    rts
+
+@pal_noAnim:
+    lda #$00
+    sta PalAnimDelay
     rts
 
 ;-------------------------------------------------------------------------------

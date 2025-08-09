@@ -104,10 +104,6 @@ AreaSamusY:
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
 
-AreaPalToggle:
-    .byte _id_Palette00+1
-
-    .byte $00
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl
 AreaExplosionAnimIndex:
@@ -121,12 +117,9 @@ AreaFireballSplatterAnimIndex:
 AreaMellowAnimIndex:
     .byte EnAnim_Mella - EnAnimTbl
 
-AreaTileAnim:
-    .byte $05, HeartBG_Frame0/$400
-    .byte $05, HeartBG_Frame1/$400
-    .byte $05, HeartBG_Frame2/$400
-    .byte $05, HeartBG_Frame3/$400
-    .byte $00
+AreaTilesets:
+    .word TileAnim0, PalAnim0
+    .word TileAnim1, PalAnim1
 
 ; Enemy AI jump table
 ChooseEnemyAIRoutine:
@@ -135,19 +128,19 @@ ChooseEnemyAIRoutine:
         .word SwooperAIRoutine00 ; 00 - swooper has not seen samus
         .word SwooperAIRoutine01 ; 01 - swooper targetting samus
         .word RipperAIRoutine ; 02 - ripper II
-        .word InvalidEnemy ; 03 - disappears
-        .word InvalidEnemy ; 04 - same as 3
-        .word InvalidEnemy ; 05 - same as 3
+        .word RemoveEnemy_ ; 03 - disappears
+        .word RemoveEnemy_ ; 04 - same as 3
+        .word RemoveEnemy_ ; 05 - same as 3
         .word CrawlerAIRoutine ; 06 - crawler
         .word PipeBugAIRoutine ; 07 - gamet
-        .word InvalidEnemy ; 08 - same as 3
-        .word InvalidEnemy ; 09 - same as 3
-        .word InvalidEnemy ; 0A - same as 3
+        .word RemoveEnemy_ ; 08 - same as 3
+        .word RemoveEnemy_ ; 09 - same as 3
+        .word RemoveEnemy_ ; 0A - same as 3
         .word SqueeptAIRoutine ; 0B - lava jumper
         .word MultiviolaAIRoutine ; 0C - bouncy orb
         .word SeahorseAIRoutine ; 0D - seahorse
         .word PolypAIRoutine ; 0E - rock launcher thing
-        .word InvalidEnemy ; 0F - same as 3
+        .word RemoveEnemy_ ; 0F - same as 3
 
 EnemyDeathAnimIndex:
     .byte EnAnim_GerutaExplode - EnAnimTbl, EnAnim_GerutaExplode - EnAnimTbl
@@ -278,19 +271,19 @@ EnemyInitDelayTbl:
     .byte $10, $01, $01, $01, $10, $10, $01, $08, $09, $10, $01, $10, $01, $20, $00, $00
 
 EnemyMovementChoiceOffset:
-    .byte EnemyMovementChoice07 - EnemyMovementChoices ; enemy can't use movement strings
-    .byte EnemyMovementChoice08 - EnemyMovementChoices ; enemy can't use movement strings
+    .byte EnemyMovementChoice07 - EnemyMovementChoices
+    .byte EnemyMovementChoice08 - EnemyMovementChoices
     .byte EnemyMovementChoice00 - EnemyMovementChoices
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte EnemyMovementChoice01 - EnemyMovementChoices ; enemy moves manually
-    .byte EnemyMovementChoice01 - EnemyMovementChoices ; enemy can't use movement strings
+    .byte EnemyMovementChoice01 - EnemyMovementChoices
     .byte $00 ; unused enemy
     .byte EnemyMovementChoice02 - EnemyMovementChoices ; unused enemy
     .byte EnemyMovementChoice03 - EnemyMovementChoices ; unused enemy
-    .byte EnemyMovementChoice04 - EnemyMovementChoices ; enemy can't use movement strings
-    .byte EnemyMovementChoice05 - EnemyMovementChoices ; enemy can't use movement strings
+    .byte EnemyMovementChoice04 - EnemyMovementChoices
+    .byte EnemyMovementChoice05 - EnemyMovementChoices
     .byte EnemyMovementChoice06 - EnemyMovementChoices
     .byte EnemyMovementChoice07 - EnemyMovementChoices ; enemy doesn't move
     .byte $00 ; unused enemy
@@ -434,15 +427,15 @@ EnemyMovementChoice02: ; unused enemy
     EnemyMovementChoiceEntry $0D
 EnemyMovementChoice03: ; unused enemy
     EnemyMovementChoiceEntry $0E, $0F
-EnemyMovementChoice04: ; enemy can't use movement strings
+EnemyMovementChoice04:
     EnemyMovementChoiceEntry $00, $01, $02, $03
-EnemyMovementChoice05: ; enemy can't use movement strings
+EnemyMovementChoice05:
     EnemyMovementChoiceEntry $10
 EnemyMovementChoice06:
     EnemyMovementChoiceEntry $11
 EnemyMovementChoice07: ; enemy doesn't move
     EnemyMovementChoiceEntry $00
-EnemyMovementChoice08: ; enemy can't use movement strings
+EnemyMovementChoice08:
     EnemyMovementChoiceEntry $01
 
 
@@ -542,7 +535,7 @@ EnemyFireballMovement3:
     .byte $FF
 
 ;-------------------------------------------------------------------------------
-InvalidEnemy:
+RemoveEnemy_:
     lda #$00
     sta EnsExtra.0.status,x
     rts
@@ -611,7 +604,7 @@ L9963:
 
 ;-------------------------------------------------------------------------------
 
-StorePositionToTemp:
+StoreEnemyPositionToTemp_:
     lda EnY,x
     sta Temp08_PositionY
     lda EnX,x
@@ -620,7 +613,7 @@ StorePositionToTemp:
     sta Temp0B_PositionHi
     rts
 
-LoadPositionFromTemp:
+LoadEnemyPositionFromTemp_:
     lda Temp0B_PositionHi
     and #$01
     sta EnsExtra.0.hi,x
@@ -714,6 +707,19 @@ TileBlastFrame0E:
 TileBlastFrame0F:
 TileBlastFrame10:
     ;nothing
+
+TileAnim0:
+TileAnim1:
+    .byte $05, HeartBG_Frame0/$400
+    .byte $05, HeartBG_Frame1/$400
+    .byte $05, HeartBG_Frame2/$400
+    .byte $05, HeartBG_Frame3/$400
+    .byte $00
+
+PalAnim0:
+PalAnim1:
+    .byte _id_Palette00+1
+    .byte $00
 
 .include "data/heart/enemy_sprite_data.asm"
 

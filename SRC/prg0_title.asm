@@ -1276,7 +1276,7 @@ UniqueItemFound:
     ldx $05                         ;
     lda PasswordByte,x              ;
     ldy $06                         ;
-    ora PasswordBitmaskTbl,y        ;
+    ora GenericBitmaskTbl,y         ;
     sta PasswordByte,x              ;Masks each unique item in the proper item address-->
     rts                             ;(addresses $6988 thru $698E).
 
@@ -1799,9 +1799,6 @@ TwoLowerAndSixLower:
     ora $00                         ;
     rts
 
-PasswordBitmaskTbl:
-    .byte $01, $02, $04, $08, $10, $20, $40, $80
-
 ;The following table contains the unique items in the game.  The two bytes can be deciphered
 ;as follows:IIIIIIXX XXXYYYYY. I = item type, X = X coordinate on world map, Y = Y coordinate
 ;on world map. See constants.asm for values of IIIIII.
@@ -1880,24 +1877,32 @@ TurnOnDisplay:
     jmp ScreenOn                    ;($C447)Turn screen on.
 
 ChooseStartContinue:
-    lda Joy1Change                  ;
-    and #$30                        ;Checks both select and start buttons.
-    cmp #$10                        ;Check if START has been pressed.
-    bne L90EB                       ;Branch if START not pressed.
-    ldy StartContinue               ;
-    bne L90E7                       ;if CONTINUE selected, branch.
-    jmp InitializeStats             ;($932B)Zero out all stats.
-L90E7:
-    ldy #_id_LoadPasswordScreen.b   ;Next routine is LoadPasswordScreen.
-    sty TitleRoutine                ;
-L90EB:
-    cmp #$20                        ;check if SELECT has been pressed.
-    bne L90FF                       ;Branch if SELECT not pressed.
-    lda StartContinue               ;
-    eor #$01                        ;Chooses between START and CONTINUE-->
-    sta StartContinue               ;on game select screen.
-    jsr SFX_Beep                    ;Set SFX flag for select being pressed. Uses triangle channel.
-L90FF:
+    ;Checks both select and start buttons.
+    lda Joy1Change
+    and #BUTTON_START | BUTTON_SELECT.b
+    ;Branch if START not pressed.
+    cmp #BUTTON_START
+    bne @endIf_A
+        ;if CONTINUE selected, branch.
+        ldy StartContinue
+        bne @endIf_B
+            ;Zero out all stats.
+            jmp InitializeStats
+        @endIf_B:
+        ;Next routine is LoadPasswordScreen.
+        ldy #_id_LoadPasswordScreen.b
+        sty TitleRoutine
+    @endIf_A:
+    ;Branch if SELECT not pressed.
+    cmp #BUTTON_SELECT
+    bne @endIf_C
+        ;Toggles between START and CONTINUE on game select screen.
+        lda StartContinue
+        eor #$01
+        sta StartContinue
+        ;Set SFX flag for select being pressed. Uses triangle channel.
+        jsr SFX_Beep
+    @endIf_C:
     ldy StartContinue
     ;Load sprite info for square selection sprite.
     lda StartContTbl,y
@@ -1939,12 +1944,12 @@ EnterPassword:
     
     ;Check to see if START has been pressed.
     lda Joy1Change
-    and #$10
+    and #BUTTON_START
     ;If not, branch.
-    beq L9153
-        ;($8C5E)Check if password is correct.
+    beq @endIf_A
+        ;Check if password is correct.
         jmp CheckPassword
-    L9153:
+    @endIf_A:
     
     ;Prepare to write the password screen data to PPU.
     ldx #$01
@@ -1962,38 +1967,39 @@ EnterPassword:
     jsr WritePPUByte
     
     lda Timer3
-    beq L9178
+    beq @else_B
         ;Writes 'ERROR TRY AGAIN' on the screen if Timer3 is anything but #$00.
         lda #<L8759.b
         sta $02
         lda #>L8759.b
         sta $03
-        jmp L9180
-    L9178:
+        jmp @endIf_B
+    @else_B:
         ;Writes the blank lines that cover the message 'ERROR TRY AGAIN'.
         lda #<L8768.b
         sta $02
         lda #>L8768.b
         sta $03
-    L9180:
+    @endIf_B:
     ; loop to write all the bytes from those strings to ppu string buffer
     ldy #$00
-    L9182:
+    @loop:
         lda ($02),y
         jsr WritePPUByte
         iny
         cpy #$0F
-        bne L9182
+        bne @loop
     
     ;If button A pressed, branch.
     lda Joy1Change
-    bmi L9193
-        ;($91FB)Check if backspace pressed.
+    bmi @endIf_C
+        ;Check if backspace pressed.
         jmp CheckBackspace
-    L9193:
+    @endIf_C:
     
     ;Initiate BombLaunch SFX if a character has been written to the screen.
     jsr SFX_BombLaunch
+    
     ;Check to see if password cursor is on character 19 thru 24.  If not, branch.
     lda PasswordCursor
     cmp #$12
@@ -2066,19 +2072,22 @@ LoadRowAndColumn: ;($91BF)
     L91F8:
     sta PasswordCursor
 
-CheckBackspace:
-    lda Joy1Change                  ;
-    and #$40                        ;If button B (backspace) has not-->
-    beq L920E                       ;been pressed, branch.
-        lda PasswordCursor              ;
-        sec                             ;Subtract 1 from PasswordCursor.  If-->
-        sbc #$01                        ;PasswordCursor is negative, load-->
-        bcs L920B                       ;PasswordCursor with #$17 (last character).
-            lda #$17                        ;
+CheckBackspace: ;($91FB)
+    ;If button B (backspace) has not been pressed, branch.
+    lda Joy1Change
+    and #BUTTON_B
+    beq L920E
+        ;Subtract 1 from PasswordCursor.
+        lda PasswordCursor
+        sec
+        sbc #$01
+        ;If PasswordCursor is negative, load PasswordCursor with #$17 (last character).
+        bcs L920B
+            lda #$17
         L920B:
-        sta PasswordCursor              ;
+        sta PasswordCursor
     L920E:
-    ldy PasswordStat00              ;Appears to have no function.
+    ldy PasswordStat00 ;Appears to have no function.
     ;If FrameCount bit 3 not set, branch.
     ;This flashes the cursor on and off.
     lda FrameCount
@@ -2236,7 +2245,7 @@ InitializeGame:
         inc SamusStat0B+1
     L930D:
     
-    lda #$01                        ;
+    lda #_id_MoreInit.b
     sta MainRoutine                 ;Initialize starting area.
     jsr ScreenNmiOff                ;($C45D)Turn off screen.
     jsr NMIOn                       ;($C487)Turn on the non-maskable interrupt.
@@ -2259,7 +2268,7 @@ RestartXPosTbl:
     .byte $78                       ;All other areas.
     .byte $5C                       ;Not used.
 
-InitializeStats:
+InitializeStats: ;($932B)
     ;Set all of Samus' stats to 0 when starting new game.
     lda #$10
     sta MaxHealth+1
@@ -2277,7 +2286,7 @@ InitializeStats:
     sta AtEnding
     sta JustInBailey
     ;Prepare to switch to Brinstar memory page.
-    lda #$02
+    lda #$01+1
     sta SwitchPending
     rts
 
@@ -3323,10 +3332,10 @@ RTS_9C44:
 LoadCredits:
     ;If credits are not being displayed, exit.
     ldy CreditPageNumber
-    beq @RET
+    beq @RTS
     ;If CreditPageNumber is higher than #$06, exit.
     cpy #$07
-    bcs @RET
+    bcs @RTS
     ;If ScrollY is less than #$80 (128), branch.
     ldx #$00
     lda ScrollY
@@ -3338,7 +3347,7 @@ LoadCredits:
     @endIf_A:
     ;If (ScrollY & #$7F) is greater or equal to #$04, branch to exit.
     cmp #$04
-    bcs @RET
+    bcs @RTS
     ;Store #$00, #$01, #$02 or #$03 in address $01.
     sta $01
     ;Y now contains CreditPageNumber - 1.
@@ -3349,7 +3358,7 @@ LoadCredits:
         ;Y now contains CreditPageNumber - 2.
         dey
         ;If on Credit page less than two, branch to exit.
-        bmi @RET
+        bmi @RTS
         ;Start with ((CreditPageNumber - 2) * 8 + 4 + $01) * 2.
         ;Equivalent to CreditPageNumber * 16 - 22
         ;This formula is used when ScrollY = 0, 1, 2 and 3.
@@ -3377,7 +3386,7 @@ LoadCredits:
     lda CreditsPointerTbl+1,y       ;Upper byte of pointer to PPU string.
     tay
     jmp PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
-@RET:
+@RTS:
     rts
 
 LoadWaveSprites:
