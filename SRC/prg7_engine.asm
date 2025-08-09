@@ -11348,8 +11348,9 @@ UpdateTilesetAnim:
     rts
 
 @pal_noAnim:
-    lda #$00
-    sta PalAnimDelay
+    sty PalAnimIndex
+    dey
+    sty PalAnimDelay
     rts
 
 .ends
