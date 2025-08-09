@@ -7613,7 +7613,7 @@ CommonJump_0E:
     ldy EnsExtra.0.type,x               ;Load A with index to enemy data.
     asl EnData05,x                     ;*2
     jsr LFB7B
-    jmp InitEnemyData0DAndHealth
+    jmp InitEnemyForceSpeedTowardsSamusDelayAndHealth
 
 IsSlotTaken:
     lda EnsExtra.0.status,x
@@ -9183,7 +9183,7 @@ UpdateEnemy_Frozen: ; ($F43E)
                 lda EnPrevStatus,x
                 sta EnsExtra.0.status,x
                 ldy EnsExtra.0.type,x
-                lda EnemyData0DTbl,y
+                lda EnemyForceSpeedTowardsSamusDelayTbl,y
                 sta EnData0D,x
     Lx303:
     lda EnData0D,x
@@ -9364,7 +9364,7 @@ EnemyReactToSamusWeapon:
     ; freeze enemy
     ; set state to frozen
     jsr LF515
-    ; set freeze timer to 64 frames
+    ; set freeze timer to 512 frames
     lda #$40
     sta EnData0D,x
     ; exit if enemy is not a metroid
@@ -9636,7 +9636,7 @@ UpdateEnemy_ForceSpeedTowardsSamus:
     ; write EnData0D from table
     pha
     ldy EnsExtra.0.type,x
-    lda EnemyData0DTbl,y
+    lda EnemyForceSpeedTowardsSamusDelayTbl,y
     sta EnData0D,x
     pla
     ; branch if bit 7 of L968B[EnsExtra.0.type] is not set
@@ -9977,12 +9977,12 @@ Lx352:
     tay
     rts
 
-InitEnemyData0DAndHealth:
-CommonJump_InitEnemyData0DAndHealth:
+InitEnemyForceSpeedTowardsSamusDelayAndHealth:
+CommonJump_InitEnemyForceSpeedTowardsSamusDelayAndHealth:
     ldy EnsExtra.0.type,x
     
     ; initialoze EnData0D
-    lda EnemyData0DTbl,y
+    lda EnemyForceSpeedTowardsSamusDelayTbl,y
     sta EnData0D,x
 
     ; initialize enemy's health
@@ -10497,7 +10497,7 @@ UpdatePipeBugHole:
     ldy EnsExtra.0.type,x
     jsr LFB7B
     ; init health and stuff
-    jmp InitEnemyData0DAndHealth
+    jmp InitEnemyForceSpeedTowardsSamusDelayAndHealth
 
 @clearEnemySlot:
     sta EnsExtra.0.type,x

@@ -30,9 +30,9 @@
 ;    jmp InitEnAnimIndex
 ;CommonJump_GetEnemyTypeTimes2PlusFacingDirectionBit0: ;$8012 (unused?)
 ;    jmp GetEnemyTypeTimes2PlusFacingDirectionBit0
-;CommonJump_InitEnemyData0DAndHealth: ;$8015
-;    jmp InitEnemyData0DAndHealth
-;CommonJump_InitEnResetAnimIndex: ;$8018
+;CommonJump_InitEnemyForceSpeedTowardsSamusDelayAndHealth: ;$8015 (unused?)
+;    jmp InitEnemyForceSpeedTowardsSamusDelayAndHealth
+;CommonJump_InitEnResetAnimIndex: ;$8018 (unused?)
 ;    jmp InitEnResetAnimIndex
 ;CommonJump_EnemyFlipAfterDisplacement: ;$801B
 ;    jmp EnemyFlipAfterDisplacement
