@@ -282,7 +282,7 @@ L999E:
     lda ObjectCntrl
     bmi L99AB
         lda EnsExtra.0.type,x
-        ora #$03 ~ $02
+        eor #$03 ~ $02
         sta ObjectCntrl
     L99AB:
     jmp CommonEnemyJump_00_01_02
