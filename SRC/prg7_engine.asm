@@ -8426,6 +8426,10 @@ Lx269:
         ; check next enemy if enemy is currently exploding
         cmp #enemyStatus_Explode
         beq NextEnemy
+        ; check next enemy if enemy initializes next frame
+        lda EnsExtra.0.animIndex,x
+        cmp #$FF
+        beq NextEnemy
         
         ; skip projectile collision if enemy is a pickup
         jsr GetEnemyXSlotPosition
