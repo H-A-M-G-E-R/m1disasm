@@ -35,9 +35,13 @@ SpecItmsTbl:
 @y07:
     .byte $07
     .word @y09
-    @@x0C:
-        .byte $0C, @@x19 - @@x0C
-        .byte $0A
+    @@x0B:
+        .byte $0B, @@x0D - @@x0B
+        .byte $0A, $00
+        .byte $00
+    @@x0D:
+        .byte $0D, @@x19 - @@x0D
+        .byte $0A, $01
         .byte $00
     @@x19:
         .byte $19, $FF
@@ -64,6 +68,7 @@ SpecItmsTbl:
     @@x16:
         .byte $16, $FF
         .byte $04, $01
+        .byte $0A, $01
         .byte $00
 @y0E:
     .byte $0E

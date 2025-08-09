@@ -77,9 +77,13 @@ SpecItmsTbl:
 @y11:
     .byte $11
     .word @y13
-    @@x16:
-        .byte $16, @@x18 - @@x16
-        .byte $0A
+    @@x15:
+        .byte $15, @@x17 - @@x15
+        .byte $0A, $01
+        .byte $00
+    @@x17:
+        .byte $17, @@x18 - @@x17
+        .byte $0A, $00
         .byte $00
     @@x18:
         .byte $18, @@x19 - @@x18

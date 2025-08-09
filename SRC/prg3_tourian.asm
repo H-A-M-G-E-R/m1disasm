@@ -112,10 +112,6 @@ AreaSamusY:
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
 
-AreaPalToggle:
-    .byte _id_Palette05+1
-
-    .byte $00
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl
 AreaExplosionAnimIndex:
@@ -129,9 +125,9 @@ AreaFireballSplatterAnimIndex:
 AreaMellowAnimIndex:
     .byte $00
 
-AreaTileAnim:
-    .byte $FF, TourianBG/$400
-    .byte $00
+AreaTilesets:
+    .word TileAnim0, PalAnim0
+    .word TileAnim1, PalAnim1
 
 ; Enemy AI Jump Table
 ChooseEnemyAIRoutine:
@@ -140,19 +136,19 @@ ChooseEnemyAIRoutine:
         .word MetroidAIRoutine ; 00 - red metroid
         .word MetroidAIRoutine ; 01 - green metroid
         .word L9A27 ; 02 - i dunno but it takes 30 damage with varia
-        .word InvalidEnemy ; 03 - disappears
+        .word RemoveEnemy_ ; 03 - disappears
         .word RinkaAIRoutine ; 04 - rinka
-        .word InvalidEnemy ; 05 - same as 3
-        .word InvalidEnemy ; 06 - same as 3
-        .word InvalidEnemy ; 07 - same as 3
-        .word InvalidEnemy ; 08 - same as 3
-        .word InvalidEnemy ; 09 - same as 3
-        .word InvalidEnemy ; 0A - same as 3
-        .word InvalidEnemy ; 0B - same as 3
-        .word InvalidEnemy ; 0C - same as 3
-        .word InvalidEnemy ; 0D - same as 3
-        .word InvalidEnemy ; 0E - same as 3
-        .word InvalidEnemy ; 0F - same as 3
+        .word RemoveEnemy_ ; 05 - same as 3
+        .word RemoveEnemy_ ; 06 - same as 3
+        .word RemoveEnemy_ ; 07 - same as 3
+        .word RemoveEnemy_ ; 08 - same as 3
+        .word RemoveEnemy_ ; 09 - same as 3
+        .word RemoveEnemy_ ; 0A - same as 3
+        .word RemoveEnemy_ ; 0B - same as 3
+        .word RemoveEnemy_ ; 0C - same as 3
+        .word RemoveEnemy_ ; 0D - same as 3
+        .word RemoveEnemy_ ; 0E - same as 3
+        .word RemoveEnemy_ ; 0F - same as 3
 
 
 EnemyDeathAnimIndex:
@@ -284,8 +280,8 @@ EnemyInitDelayTbl:
     .byte $01, $01, $00, $00, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
 EnemyMovementChoiceOffset:
-    .byte EnemyMovementChoice00 - EnemyMovementChoices ; enemy can't use movement strings
-    .byte EnemyMovementChoice01 - EnemyMovementChoices ; enemy can't use movement strings
+    .byte EnemyMovementChoice00 - EnemyMovementChoices
+    .byte EnemyMovementChoice01 - EnemyMovementChoices
     .byte EnemyMovementChoice00 - EnemyMovementChoices ; enemy doesn't move
     .byte EnemyMovementChoice00 - EnemyMovementChoices ; unused enemy
     .byte EnemyMovementChoice02 - EnemyMovementChoices ; enemy moves manually
@@ -434,7 +430,7 @@ TileBlastFramePtrTable:
 EnemyMovementChoices:
 EnemyMovementChoice00:
     EnemyMovementChoiceEntry $00
-EnemyMovementChoice01: ; enemy can't use movement strings
+EnemyMovementChoice01:
     EnemyMovementChoiceEntry $01
 EnemyMovementChoice02: ; enemy moves manually
     ; nothing
@@ -489,7 +485,7 @@ EnemyFireballMovement2:
 EnemyFireballMovement3:
     .byte $FF
 
-InvalidEnemy:
+RemoveEnemy_:
     lda #$00
     sta EnsExtra.0.status,x
     rts
@@ -699,7 +695,7 @@ Cannon_ShootFireball:
     ; apply offset to cannon position
     jsr CommonJump_ApplySpeedToPosition
     ; use as fireball position
-    jsr LoadPositionFromTemp
+    jsr LoadEnemyPositionFromTemp_
     ldx CannonIndex
     rts
 
@@ -911,16 +907,13 @@ SpawnMotherBrainRoutine:
     sta MotherBrainHi
     eor #$01
     tax
-    lda L9D3C
+    lda #$04
     ora ScrollBlockOnNameTable3,x
     sta ScrollBlockOnNameTable3,x
     lda #$20
     sta MotherBrainAnimBrainDelay
     sta MotherBrainAnimEyeDelay
     rts
-
-L9D3B:  .byte $02
-L9D3C:  .byte $01
 
 ;-------------------------------------------------------------------------------
 ; Spawns a new Zebetite into Zebetite slot
@@ -960,19 +953,19 @@ GetVRAMPtrHi:
 ; Rinka Handler
 SpawnRinkaSpawnerRoutine:
     ldx #$03
-    jsr L9D75
-        bmi RTS_9D87
+    jsr @endIf_A
+        bmi @RTS
         ldx #$00
-    L9D75:
+    @endIf_A:
     lda RinkaSpawners.0.status,x
-    bpl RTS_9D87
+    bpl @RTS
     lda ($00),y
     jsr Adiv16_
     sta RinkaSpawners.0.status,x
     jsr GetNameTableAtScrollDir_
     sta RinkaSpawners.0.hi,x
     lda #$FF
-RTS_9D87:
+@RTS:
     rts
 
 GetNameTableAtScrollDir_:
@@ -1037,8 +1030,8 @@ MotherBrainStatusHandler:
         .word MotherBrain_9F02_05     ;#$05=Mother brain gone
         .word MotherBrain_9F49     ;#$06=Time bomb set,
         .word MotherBrain_9FC0     ;#$07=Time bomb exploded
-        .word MotherBrain_9F02_08     ;#$08=Initialize mother brain
-        .word MotherBrain_9FDA     ;#$09
+        .word MotherBrain_9F02_08     ;#$08=Initialize mother brain already dead (part 1)
+        .word MotherBrain_9FDA     ;#$09=Initialize mother brain already dead (part 2)
         .word RTS_9DF1    ;#$0A=Mother brain already dead.
 RTS_9DF1:
     rts
@@ -1232,6 +1225,7 @@ MotherBrain_9F02_08:
     bmi L9F33
         cmp #$08
         beq L9F36
+        ; draw the TIME BOMB SET GET OUT FAST! message
         tay
         lda L9F41,y
         sta TileBlastAnimFrame
@@ -1265,18 +1259,23 @@ L9F39:  .byte $00, $40, $08, $48, $80, $C0, $88, $C8
 L9F41:  .byte $08, $02, $09, $03, $0A, $04, $0B, $05
 
 MotherBrain_9F49:
+    ; try to spawn door until it succeeds
     jsr MotherBrain_SpawnDoor
-    bcs RTS_9F64
+    bcs @RTS
+    ; mother brain status = not in room
     lda #$00
     sta MotherBrainStatus
+    ; timer = 9999 frames = 166.65 seconds
     lda #$99
     sta EndTimer
     sta EndTimer+1
+    ; enable end timer enemy
     lda #$01
     sta EndTimerEnemyIsEnabled
+    ; place end timer enemy
     lda MotherBrainHi
     sta EndTimerEnemyHi
-RTS_9F64:
+@RTS:
     rts
 
 L9F65:  .byte $80, $B0, $A0, $90
@@ -1332,29 +1331,39 @@ MotherBrain_SpawnDoor:
 
 ;-------------------------------------------------------------------------------
 MotherBrain_9FC0:
+    ; play BombExplode SFX every frame
     jsr SFX_BombExplode
+    ; branch if time bomb is still exploding
     lda Timer3
-    bne RTS_9FD9
-    lda #$08
+    bne @RTS
+    ; Time bomb finishes exploding
+    ; Bug? Doesn't set ObjAnimDelay to 0
+    lda #sa_Dead2
     sta ObjAction
+    ; mother brain status = already dead (RTS)
     lda #$0A
     sta MotherBrainStatus
+    ; reload palette #$00
     lda #_id_Palette00+1.b
     jsr WriteAreaPal
-RTS_9FD9:
+@RTS:
     rts
 
 ;-------------------------------------------------------------------------------
 MotherBrain_9FDA:
+    ; try to spawn door until it succeeds
     jsr MotherBrain_SpawnDoor
-    bcs RTS_9FEC
+    bcs @RTS
+    ; place end timer enemy
     lda MotherBrainHi
     sta EndTimerEnemyHi
+    ; enable end timer enemy
     ldy #$01
     sty EndTimerEnemyIsEnabled
+    ; mother brain status = not in room (RTS)
     dey
     sty MotherBrainStatus
-RTS_9FEC:
+@RTS:
     rts
 
 ;-------------------------------------------------------------------------------
@@ -2127,6 +2136,16 @@ TileBlastFrame10:
     .byte $A0, $A0
     .byte $A0, $A0
     .byte $A0, $A0
+
+TileAnim0:
+TileAnim1:
+    .byte $FF, TourianBG/$400
+    .byte $00
+
+PalAnim0:
+PalAnim1:
+    .byte _id_Palette00+1
+    .byte $00
 
 .include "data/tourian/enemy_sprite_data.asm"
 

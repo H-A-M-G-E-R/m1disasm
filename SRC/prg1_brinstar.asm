@@ -104,10 +104,6 @@ AreaSamusY:
 AreaScrollDir:
     .byte $02   ;Starting scroll direction. 0 = vertical, 2 = horizontal
 
-AreaPalToggle:
-    .byte _id_Palette00+1
-
-    .byte $00
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl
 AreaExplosionAnimIndex:
@@ -121,11 +117,9 @@ AreaFireballSplatterAnimIndex:
 AreaMellowAnimIndex:
     .byte EnAnim_Mellow - EnAnimTbl
 
-; duration, CHR bank
-; 0 = end
-AreaTileAnim:
-    .byte $FF, BrinstarBG/$400
-    .byte $00
+AreaTilesets:
+    .word TileAnim0, PalAnim0
+    .word TileAnim1, PalAnim1
 
 ; Enemy AI jump table
 ChooseEnemyAIRoutine:
@@ -150,8 +144,8 @@ ChooseEnemyAIRoutine:
 
 ; Animation related table ?
 EnemyDeathAnimIndex:
-    .byte EnAnim_27 - EnAnimTbl, EnAnim_27 - EnAnimTbl
-    .byte EnAnim_29 - EnAnimTbl, EnAnim_29 - EnAnimTbl
+    .byte EnAnim_27 - EnAnimTbl, EnAnim_27 - EnAnimTbl ; unused enemy
+    .byte EnAnim_29 - EnAnimTbl, EnAnim_29 - EnAnimTbl ; unused enemy
     .byte EnAnim_2D - EnAnimTbl, EnAnim_2B - EnAnimTbl
     .byte EnAnim_RipperExplodeFacingRight - EnAnimTbl, EnAnim_RipperExplodeFacingLeft - EnAnimTbl
     .byte EnAnim_SkreeExplode - EnAnimTbl, EnAnim_SkreeExplode - EnAnimTbl
@@ -198,8 +192,8 @@ EnemyPrimaryPaletteTbl:
 
 ; ResetAnimIndex table for resting enemy
 EnemyRestingAnimIndex:
-    .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
-    .byte EnAnim_0B - EnAnimTbl, EnAnim_0B - EnAnimTbl
+    .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl ; unused enemy
+    .byte EnAnim_0B - EnAnimTbl, EnAnim_0B - EnAnimTbl ; unused enemy
     .byte EnAnim_17 - EnAnimTbl, EnAnim_13 - EnAnimTbl
     .byte EnAnim_RipperFacingRight - EnAnimTbl, EnAnim_RipperFacingLeft - EnAnimTbl
     .byte EnAnim_Skree - EnAnimTbl, EnAnim_Skree - EnAnimTbl
@@ -217,8 +211,8 @@ EnemyRestingAnimIndex:
 
 ; ResetAnimIndex table for active enemy
 EnemyActiveAnimIndex:
-    .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
-    .byte EnAnim_0B - EnAnimTbl, EnAnim_0B - EnAnimTbl
+    .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl ; unused enemy
+    .byte EnAnim_0B - EnAnimTbl, EnAnim_0B - EnAnimTbl ; unused enemy
     .byte EnAnim_17 - EnAnimTbl, EnAnim_13 - EnAnimTbl
     .byte EnAnim_RipperFacingRight - EnAnimTbl, EnAnim_RipperFacingLeft - EnAnimTbl
     .byte EnAnim_Skree - EnAnimTbl, EnAnim_Skree - EnAnimTbl
@@ -236,8 +230,8 @@ EnemyActiveAnimIndex:
 
 ;another animation related table
 L967B:
-    .byte $00
-    .byte $00
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
     .byte $00
     .byte $00 | $80
     .byte $00
@@ -272,8 +266,8 @@ EnemyData0DTbl:
 ; bit 4-6: zero
 ; bit 0-3: number of blocks distance threshold in the axis indicated by EnData05 bit 7
 EnemyDistanceToSamusThreshold:
-    .byte $00
-    .byte $00
+    .byte $00 ; unused enemy
+    .byte $00 ; unused enemy
     .byte $6 | (0 << 7)
     .byte $00
     .byte $3 | (1 << 7)
@@ -294,14 +288,14 @@ EnemyInitDelayTbl:
 
 ; Index to a table starting at EnemyMovementChoices
 EnemyMovementChoiceOffset:
-    .byte EnemyMovementChoice00 - EnemyMovementChoices ; enemy can't use movement strings
-    .byte EnemyMovementChoice01 - EnemyMovementChoices ; enemy can't use movement strings
+    .byte EnemyMovementChoice00 - EnemyMovementChoices ; unused enemy
+    .byte EnemyMovementChoice01 - EnemyMovementChoices ; unused enemy
     .byte EnemyMovementChoice02 - EnemyMovementChoices
     .byte EnemyMovementChoice03 - EnemyMovementChoices
     .byte EnemyMovementChoice04 - EnemyMovementChoices
     .byte EnemyMovementChoice07 - EnemyMovementChoices ; enemy moves manually
-    .byte EnemyMovementChoice05 - EnemyMovementChoices ; enemy can't use movement strings
-    .byte EnemyMovementChoice06 - EnemyMovementChoices ; enemy can't use movement strings
+    .byte EnemyMovementChoice05 - EnemyMovementChoices
+    .byte EnemyMovementChoice06 - EnemyMovementChoices
     .byte EnemyMovementChoice09 - EnemyMovementChoices ; unused enemy
     .byte EnemyMovementChoice0A - EnemyMovementChoices ; unused enemy
     .byte EnemyMovementChoice0B - EnemyMovementChoices ; unused enemy
@@ -468,9 +462,9 @@ TileBlastFramePtrTable:
 ;  EnData08 = EnemyMovementChoices[(EnemyMovementChoices[EnemyMovementChoiceOffset[EnemyDataIndex]] and (FrameCount xor RandomNumber1))+1]
 ; These values are used as indexes into EnAccelYTable, EnAccelXTable, EnSpeedYTable, EnSpeedXTable.
 EnemyMovementChoices:
-EnemyMovementChoice00: ; enemy can't use movement strings
+EnemyMovementChoice00:
     EnemyMovementChoiceEntry $01, $02
-EnemyMovementChoice01: ; enemy can't use movement strings
+EnemyMovementChoice01:
     EnemyMovementChoiceEntry $03, $04
 EnemyMovementChoice02:
     EnemyMovementChoiceEntry $05
@@ -478,9 +472,9 @@ EnemyMovementChoice03:
     EnemyMovementChoiceEntry $06
 EnemyMovementChoice04:
     EnemyMovementChoiceEntry $07
-EnemyMovementChoice05: ; enemy can't use movement strings
+EnemyMovementChoice05:
     EnemyMovementChoiceEntry $08
-EnemyMovementChoice06: ; enemy can't use movement strings
+EnemyMovementChoice06:
     EnemyMovementChoiceEntry $09
 EnemyMovementChoice07: ; enemy moves manually
     EnemyMovementChoiceEntry $00
@@ -937,6 +931,24 @@ TileBlastFrame0E:
 TileBlastFrame0F:
 TileBlastFrame10:
     ; nothing
+
+; duration, CHR bank
+; 0 = end
+TileAnim0:
+TileAnim1:
+    .byte $FF, BrinstarBG/$400
+    .byte $00
+
+; first entry is initial palette index
+; other entries are duration, palette index
+; 0 = end
+PalAnim0:
+    .byte _id_Palette00+1
+    .byte $00
+
+PalAnim1:
+    .byte _id_Palette05+1
+    .byte $00
 
 .include "data/brinstar/enemy_sprite_data.asm"
 

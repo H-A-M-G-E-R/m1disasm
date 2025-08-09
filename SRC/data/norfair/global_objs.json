@@ -96,9 +96,16 @@
   "type": 3
  },
  {
-  "obj_type": "pal_change",
-  "x": 5760,
-  "y": 4480
+  "obj_type": "tileset_change",
+  "x": 5504,
+  "y": 4480,
+  "new_tileset": 1
+ },
+ {
+  "obj_type": "tileset_change",
+  "x": 6016,
+  "y": 4480,
+  "new_tileset": 0
  },
  {
   "obj_type": "enemy",
