@@ -4414,7 +4414,7 @@ ClearSamusStats:
 ;Table used by above subroutine and loads the initial data used to describe
 ;metroid's behavior in the Tourian section of the game.
 MetroidData:
-    .byte $F8, $08, $30, $D0, $60, $A0, $02, $04, $00, $00, $00, $00, $00, $00
+    .byte -$02, $02, $0C, -$0C, $18, -$18, $01, $02, $00, $00, $00, $00, $00, $00
 
 InitEndGFX:
     lda #$01                        ;

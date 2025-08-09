@@ -1,7 +1,11 @@
 ; Zoomer Routine (Crawler)
 CrawlerAIRoutine:
     ; move only 6 frames out of 8 (0.75px per frame)
-    jsr CommonJump_CrawlerAIRoutine_ShouldCrawlerMove
+    txa
+    lsr
+    lsr
+    lsr
+    adc FrameCount
     and #$03
     beq Crawler03
 

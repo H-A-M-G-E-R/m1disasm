@@ -189,6 +189,24 @@ MellowDamage:
 EnemyPrimaryPaletteTbl:
     .byte $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02
 
+EnemyHitSFXTbl:
+    .byte $03, sfxTri_BigEnemyHit
+    .byte $03, sfxTri_BigEnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $03, sfxTri_BigEnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+
 EnemyRestingAnimIndex:
     .byte EnAnim_GerutaIdle - EnAnimTbl, EnAnim_GerutaIdle - EnAnimTbl
     .byte EnAnim_GerutaIdle - EnAnimTbl, EnAnim_GerutaIdle - EnAnimTbl
@@ -246,7 +264,7 @@ L967B:
 L968B:
     .byte $89, $89, $00, $42, $00, $00, $04, $80, $80, $81, $00, $00, $05, $89, $00, $00
 
-EnemyData0DTbl:
+EnemyForceSpeedTowardsSamusDelayTbl:
     .byte $01, $01, $01, $01, $01, $01, $01, $01, $28, $10, $00, $00, $00, $01, $00, $00
 
 EnemyDistanceToSamusThreshold:
@@ -310,13 +328,89 @@ EnemyMovementPtrs:
     .byte $00, $00, $00, $00, $00, $00, $00, $00
 
 EnAccelYTable:
-    .byte $80, $80, $00, $00, $00, $00, $00, $00, $00, $00, $E0, $16, $15, $7F, $7F, $7F, $00, $00, $00, $00
+    .byte -$20 ; $00
+    .byte -$20 ; $01
+    .byte  $00 ; $02
+    .byte  $00 ; $03
+    .byte  $00 ; $04
+    .byte  $00 ; $05
+    .byte  $00 ; $06
+    .byte  $00 ; $07
+    .byte  $00 ; $08
+    .byte  $00 ; $09
+    .byte -$08 ; $0A
+    .byte  $06 ; $0B
+    .byte  $05 ; $0C
+    .byte  $20 ; $0D
+    .byte  $20 ; $0E
+    .byte  $20 ; $0F
+    .byte  $00 ; $10
+    .byte  $00 ; $11
+    .byte  $00 ; $12
+    .byte  $00 ; $13
 EnAccelXTable:
-    .byte $00, $00, $00, $00, $00, $00, $38, $38, $C8, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+    .byte  $00 ; $00
+    .byte  $00 ; $01
+    .byte  $00 ; $02
+    .byte  $00 ; $03
+    .byte  $00 ; $04
+    .byte  $00 ; $05
+    .byte  $0E ; $06
+    .byte  $0E ; $07
+    .byte -$0E ; $08
+    .byte  $00 ; $09
+    .byte  $00 ; $0A
+    .byte  $00 ; $0B
+    .byte  $00 ; $0C
+    .byte  $00 ; $0D
+    .byte  $00 ; $0E
+    .byte  $00 ; $0F
+    .byte  $00 ; $10
+    .byte  $00 ; $11
+    .byte  $00 ; $12
+    .byte  $00 ; $13
 EnSpeedYTable:
-    .byte $0C, $0C, $02, $01, $00, $00, $01, $01, $01, $FC, $06, $FE, $FE, $F8, $F9, $FB, $FD, $00, $00, $00
+    .word  $05F0 ; $00
+    .word  $05F0 ; $01
+    .word  $0100 ; $02
+    .word  $0080 ; $03
+    .word  $0000 ; $04
+    .word  $0000 ; $05
+    .word  $0080 ; $06
+    .word  $0080 ; $07
+    .word  $0080 ; $08
+    .word -$0200 ; $09
+    .word  $02FC ; $0A
+    .word -$00FD ; $0B
+    .word -$00FD ; $0C
+    .word -$03F0 ; $0D
+    .word -$0370 ; $0E
+    .word -$0270 ; $0F
+    .word -$0180 ; $10
+    .word  $0000 ; $11
+    .word  $0000 ; $12
+    .word  $0000 ; $13
 EnSpeedXTable:
-    .byte $00, $02, $01, $01, $00, $00, $FA, $FC, $06, $00, $01, $01, $01, $00, $01, $01, $03, $00, $00, $00
+    .word  $0000 ; $00
+    .word  $0100 ; $01
+    .word  $0080 ; $02
+    .word  $0080 ; $03
+    .word  $0000 ; $04
+    .word  $0000 ; $05
+    .word -$02F9 ; $06
+    .word -$01F9 ; $07
+    .word  $02F9 ; $08
+    .word  $0000 ; $09
+    .word  $0080 ; $0A
+    .word  $0080 ; $0B
+    .word  $0080 ; $0C
+    .word  $0000 ; $0D
+    .word  $0080 ; $0E
+    .word  $0080 ; $0F
+    .word  $0180 ; $10
+    .word  $0000 ; $11
+    .word  $0000 ; $12
+    .word  $0000 ; $13
 
 L977B:
     .byte $4C, $4C, $01, $00, $00, $00, $00, $40, $00, $64, $44, $44, $40, $00, $00, $00
@@ -447,11 +541,11 @@ EnemyMovement01_L:
 
 ; ripper II
 EnemyMovement02_R:
-    SignMagSpeed $01,  3,  0
+    SignMagSpeed $02,  3,  0
     EnemyMovementInstr_Restart
 
 EnemyMovement02_L:
-    SignMagSpeed $01, -3,  0
+    SignMagSpeed $02, -3,  0
     EnemyMovementInstr_Restart
 
 EnemyMovement03_R:
@@ -487,11 +581,11 @@ EnemyMovement10_L:
 ; seahorse
 EnemyMovement11_R:
 EnemyMovement11_L:
-    SignMagSpeed $14,  0, -1
-    SignMagSpeed $0A,  0,  0
+    SignMagSpeed $28,  0, -1
+    SignMagSpeed $14,  0,  0
     EnemyMovementInstr_ClearEnJumpDsplcmnt
-    SignMagSpeed $30,  0,  0
-    SignMagSpeed $14,  0,  1
+    SignMagSpeed $60,  0,  0
+    SignMagSpeed $28,  0,  1
     EnemyMovementInstr_StopMovementSeahorse
 
 EnemyFireballMovement0:
@@ -569,34 +663,6 @@ CommonEnemyJump_00_01_02:
 ;-------------------------------------------------------------------------------
 
 .include "enemies/swooper.asm"
-
-;-------------------------------------------------------------------------------
-; is this unused?
-L9963:
-    jsr CommonJump_EnemyFlipAfterDisplacement
-    lda #$06
-    sta $00
-    jmp CommonEnemyJump_00_01_02
-
-    jsr CommonJump_EnemyFlipAfterDisplacement
-    lda #$06
-    sta $00
-    jmp CommonEnemyJump_00_01_02
-
-    jsr CommonJump_EnemyFlipAfterDisplacement
-    lda #$06
-    sta $00
-    lda EnemyMovementPtr
-    cmp #$02
-    bne L9993
-    cmp EnsExtra.0.status,x
-    bne L9993
-    jsr CommonJump_CrawlerAIRoutine_ShouldCrawlerMove
-    and #$03
-    bne L9993
-        jmp L984D
-    L9993:
-    jmp CommonEnemyJump_00_01_02
 
 ;-------------------------------------------------------------------------------
 ; Crawler Routine

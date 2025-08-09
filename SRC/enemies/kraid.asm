@@ -52,10 +52,6 @@ KraidLintRemove:
     beq KraidLintDraw ; branch always
 
 KraidLintMain:
-    ; exit if bit7 of EnData05 is set
-    lda EnData05,x
-    asl
-    bmi KraidLintDraw
     ; exit if lint is not active
     lda EnsExtra.0.status,x
     cmp #enemyStatus_Active

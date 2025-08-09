@@ -7717,7 +7717,7 @@ CommonJump_0E:
     ldy EnsExtra.0.type,x               ;Load A with index to enemy data.
     asl EnData05,x                     ;*2
     jsr LFB7B
-    jmp InitEnemyData0DAndHealth
+    jmp InitEnemyForceSpeedTowardsSamusDelayAndHealth
 
 IsSlotTaken:
     lda EnsExtra.0.status,x
@@ -9287,7 +9287,7 @@ UpdateEnemy_Frozen: ; ($F43E)
                 lda EnPrevStatus,x
                 sta EnsExtra.0.status,x
                 ldy EnsExtra.0.type,x
-                lda EnemyData0DTbl,y
+                lda EnemyForceSpeedTowardsSamusDelayTbl,y
                 sta EnData0D,x
     Lx303:
     lda EnData0D,x
@@ -9468,7 +9468,7 @@ EnemyReactToSamusWeapon:
     ; freeze enemy
     ; set state to frozen
     jsr LF515
-    ; set freeze timer to 64 frames
+    ; set freeze timer to 512 frames
     lda #$40
     sta EnData0D,x
     ; exit if enemy is not a metroid
@@ -9506,24 +9506,14 @@ Lx317:
         bne Lx319 ; branch always
     Lx318:
     ; play different enemy hurt sound effects depending on which enemy it is
-    jsr ReadTableAt968B
-    and #$0C
-    beq PlaySnd1
-    cmp #$04
-    beq PlaySnd2
-    cmp #$08
-    beq PlaySnd3
-    jsr SFX_MetroidHit
-    bne Lx319       ; branch always
-PlaySnd1:
-    jsr SFX_EnemyHit
-    bne Lx319       ; branch always
-PlaySnd2:
-    jsr SFX_EnemyHit
-    bne Lx319       ; branch always
-PlaySnd3:
-    jsr SFX_BigEnemyHit             ;($CBCE)
-    ; fallthrough
+    lda EnsExtra.0.type,x
+    asl
+    tay
+    ldx EnemyHitSFXTbl,y
+    lda EnemyHitSFXTbl+1,y
+    cmp NoiseSFXFlag,x
+    bcc Lx319
+    sta NoiseSFXFlag,x
 
 Lx319:
     ; check if enemy is a metroid
@@ -9740,7 +9730,7 @@ UpdateEnemy_ForceSpeedTowardsSamus:
     ; write EnData0D from table
     pha
     ldy EnsExtra.0.type,x
-    lda EnemyData0DTbl,y
+    lda EnemyForceSpeedTowardsSamusDelayTbl,y
     sta EnData0D,x
     pla
     ; branch if bit 7 of L968B[EnsExtra.0.type] is not set
@@ -10022,9 +10012,6 @@ UpdateEnemy_Resting_TryBecomingActive:
     bpl Lx351
         ; the enemy uses acceleration and speed and subpixels
         ; initialize those to what they should be
-        lda #$00
-        sta EnSpeedSubPixelY,x
-        sta EnSpeedSubPixelX,x
         ldy EnMovementIndex,x
 
         lda EnAccelYTable,y
@@ -10032,9 +10019,16 @@ UpdateEnemy_Resting_TryBecomingActive:
         lda EnAccelXTable,y
         sta EnsExtra.0.accelX,x
 
+        tya
+        asl
+        tay
         lda EnSpeedYTable,y
+        sta EnSpeedSubPixelY,x
+        lda EnSpeedYTable+1,y
         sta EnSpeedY,x
         lda EnSpeedXTable,y
+        sta EnSpeedSubPixelX,x
+        lda EnSpeedXTable+1,y
         sta EnSpeedX,x
         
         lda EnData05,x
@@ -10077,31 +10071,12 @@ Lx352:
     tay
     rts
 
-CrawlerAIRoutine_ShouldCrawlerMove:
-CommonJump_CrawlerAIRoutine_ShouldCrawlerMove:
-    ; load enemy slot into a
-    txa
-    ; divide by 8
-    lsr
-    lsr
-    lsr
-    ; add frame count
-    adc FrameCount
-    ; divide by two
-    lsr
-    ; this returns
-    ; enemy slot  %----7654
-    ; frame count %07654321
-    ; whenever this is called, only the bits 0-1 are used
-    ; if bits 0-1 are zero, the crawler does not move
-    rts
-
-InitEnemyData0DAndHealth:
-CommonJump_InitEnemyData0DAndHealth:
+InitEnemyForceSpeedTowardsSamusDelayAndHealth:
+CommonJump_InitEnemyForceSpeedTowardsSamusDelayAndHealth:
     ldy EnsExtra.0.type,x
     
     ; initialoze EnData0D
-    lda EnemyData0DTbl,y
+    lda EnemyForceSpeedTowardsSamusDelayTbl,y
     sta EnData0D,x
 
     ; initialize enemy's health
@@ -10616,7 +10591,7 @@ UpdatePipeBugHole:
     ldy EnsExtra.0.type,x
     jsr LFB7B
     ; init health and stuff
-    jmp InitEnemyData0DAndHealth
+    jmp InitEnemyForceSpeedTowardsSamusDelayAndHealth
 
 @clearEnemySlot:
     sta EnsExtra.0.type,x
@@ -11477,8 +11452,9 @@ UpdateTilesetAnim:
     rts
 
 @pal_noAnim:
-    lda #$00
-    sta PalAnimDelay
+    sty PalAnimIndex
+    dey
+    sty PalAnimDelay
     rts
 
 ;-------------------------------------------------------------------------------
