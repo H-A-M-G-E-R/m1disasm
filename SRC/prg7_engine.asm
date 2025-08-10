@@ -8913,19 +8913,13 @@ SetEnemyTouchingSamusFlags:
 CollisionDetectionFireball_ReactToCollisionWithSamus:
     ; exit if collision didn't happen
     bcs RTS_X294
-    lda Temp10_DistHi
-    ora EnIsHit,x
-    sta EnIsHit,x
-    tya
-    pha
+    jsr SetEnemyTouchingSamusFlags
     jsr IsScrewAttackActive         ;($CD9C)Check if screw attack active.
-    pla
-    tay
+    ldy #$00
     bcc RTS_X294
     lda #$80
     sta SamusHurt010F
-    jsr GetEnemyIsHitFlags
-    jsr SetSamusIsHitFlags
+    jsr SetSamusIsHitByEnemy
 
     ; apply fireball damage
     stx PageIndex
