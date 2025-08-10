@@ -8614,7 +8614,7 @@ Lx275:
         jsr GetRadiusSumsOfEnXSlotAndObjYSlot
         jsr GetEnemyXSlotPosition
         jsr CheckCollisionOfXSlotAndYSlot
-        jsr CollisionDetectionFireball_F2ED
+        jsr CollisionDetectionFireball_ReactToCollisionWithSamus
     Lx277:
         txa
         clc
@@ -8907,14 +8907,14 @@ CollisionDetectionEnemy_ReactToCollisionWithSamus:
     ; exit if collision didn't happen
     bcs Exit17
     
-    jsr LF2E8
+    jsr SetEnemyTouchingSamusFlags
     ;branch if screw attack is active.
     jsr IsScrewAttackActive
     ldy #$00
     bcc Lx289
     
     ; screw attack is not active
-    ; exit if enemy is frozen
+    ; exit if enemy is frozen, pickup or hurt
     lda EnsExtra.0.status,x
     cmp #enemyStatus_Frozen
     bcs Exit17
@@ -9011,25 +9011,19 @@ Lx292:
 Lx293:
     rts
 
-LF2E8:
+SetEnemyTouchingSamusFlags:
     jsr LF340
-    bne Lx292
-CollisionDetectionFireball_F2ED:
+    bne Lx292 ; branch always
+CollisionDetectionFireball_ReactToCollisionWithSamus:
     ; exit if collision didn't happen
     bcs RTS_X294
-    lda Temp10_DistHi
-    ora EnIsHit,x
-    sta EnIsHit,x
-    tya
-    pha
+    jsr SetEnemyTouchingSamusFlags
     jsr IsScrewAttackActive         ;($CD9C)Check if screw attack active.
-    pla
-    tay
+    ldy #$00
     bcc RTS_X294
     lda #$80
     sta SamusHurt010F
-    jsr GetEnemyIsHitFlags
-    jsr SetSamusIsHitFlags
+    jsr SetSamusIsHitByEnemy
 
     ; apply fireball damage
     stx PageIndex
