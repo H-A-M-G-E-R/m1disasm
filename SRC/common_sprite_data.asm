@@ -1002,10 +1002,8 @@ ObjFrame66:
     .byte $08,$FB,$21,$00
     .byte $E8,$C8,$21,$F8
     .byte $E8,$C9,$21,$00
-    .byte $F0,$EB,$21,$F0
     .byte $F0,$D8,$21,$F8
     .byte $F0,$D9,$21,$00
-    .byte $F8,$EA,$21,$F0
     .byte $F8,$E8,$21,$F8
     .byte $F8,$E9,$21,$00
     .byte $80
