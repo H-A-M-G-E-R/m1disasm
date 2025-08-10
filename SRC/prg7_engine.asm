@@ -2151,7 +2151,12 @@ SamusStand:
     cmp #BUTTONBIT_DOWN
     bcs LCC54
         ;1=left, 0=right.
+        cmp SamusDir
+        beq LCC54
+        ; turn around
         sta SamusDir
+        lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
+        jsr SetSamusNextAnim
     LCC54:
     ;Load proper Samus status from table below.
     tax
@@ -2216,12 +2221,6 @@ SetSamusRun:
     cmp #ObjAnim_SamusStand - ObjectAnimIndexTbl.b
     beq LCCBX
     inx
-    cmp #ObjAnim_SamusPntUp - ObjectAnimIndexTbl.b
-    beq LCCBX
-        ; Samus is previously in a run animation
-        ; turnaround animation
-        lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
-        jsr SetSamusNextAnim
     LCCBX:
     lda RunAnimationTbl,x
     sta ObjAnimResetIndex
@@ -2326,7 +2325,8 @@ SamusRun:
         beq SetSamusData_3FrameAnimDelay
         ; turn around
         sta SamusDir
-        jsr SetSamusRun
+        lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
+        jsr SetSamusNextAnim
     SetSamusData_3FrameAnimDelay:
     ; animate every 3 frames
     lda #$03
@@ -3134,7 +3134,12 @@ SamusPntUp:
         jsr BitScan                     ;($E1E1)
         cmp #BUTTONBIT_DOWN
         bcs Lx038
+            cmp SamusDir
+            beq Lx038
+            ; turn around
             sta SamusDir
+            lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
+            jsr SetSamusNextAnim
         Lx038:
         tax
         lda Table07,x
