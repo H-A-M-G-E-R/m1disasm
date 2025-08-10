@@ -2186,7 +2186,12 @@ SamusStand:
     cmp #BUTTONBIT_DOWN
     bcs LCC54
         ;1=left, 0=right.
+        cmp SamusDir
+        beq LCC54
+        ; turn around
         sta SamusDir
+        lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
+        jsr SetSamusNextAnim
     LCC54:
     ;Load proper Samus status from table below.
     tax
@@ -2251,12 +2256,6 @@ SetSamusRun:
     cmp #ObjAnim_SamusStand - ObjectAnimIndexTbl.b
     beq LCCBX
     inx
-    cmp #ObjAnim_SamusPntUp - ObjectAnimIndexTbl.b
-    beq LCCBX
-        ; Samus is previously in a run animation
-        ; turnaround animation
-        lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
-        jsr SetSamusNextAnim
     LCCBX:
     lda RunAnimationTbl,x
     sta ObjAnimResetIndex
@@ -2364,7 +2363,8 @@ SamusRun:
         beq SetSamusData_3FrameAnimDelay
         ; turn around
         sta SamusDir
-        jsr SetSamusRun
+        lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
+        jsr SetSamusNextAnim
     SetSamusData_3FrameAnimDelay:
     ; animate every 3 frames
     lda #$03
@@ -3178,7 +3178,12 @@ SamusPntUp:
         jsr BitScan                     ;($E1E1)
         cmp #BUTTONBIT_DOWN
         bcs Lx038
+            cmp SamusDir
+            beq Lx038
+            ; turn around
             sta SamusDir
+            lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
+            jsr SetSamusNextAnim
         Lx038:
         tax
         lda Table07,x
@@ -8530,6 +8535,10 @@ Lx269:
         ; check next enemy if enemy is currently exploding
         cmp #enemyStatus_Explode
         beq NextEnemy
+        ; check next enemy if enemy initializes next frame
+        lda EnsExtra.0.animIndex,x
+        cmp #$FF
+        beq NextEnemy
         
         ; skip projectile collision if enemy is a pickup
         jsr GetEnemyXSlotPosition
@@ -10620,18 +10629,20 @@ CommonJump_EnemyFlipAfterDisplacement:
     jsr GetEnemyTypeTimes2PlusFacingDirection
     
     lda EnsExtra.0.jumpDsplcmnt,x
-    ; branch if EnData1F is zero
+    ; branch if EnData1F is not zero
     inc EnsExtra.0.data1F,x
     dec EnsExtra.0.data1F,x
     bne Lx382
-        ; EnData1F is not zero
+        ; EnData1F is zero
         ; set negative flag for EnJumpDsplcmnt
         pha
         pla
     Lx382:
-    ; branch if EnData1F is zero or if EnJumpDsplcmnt is positive
+    ; branch if EnData1F is zero and if EnJumpDsplcmnt is positive,
+    ; or if EnData1F == #$40
     bpl Lx383
-        ; EnData1F is not zero and EnJumpDsplcmnt is negative
+        ; EnData1F is zero and EnJumpDsplcmnt is negative
+        ; or EnData1F == #$80 or #$C0
         ; negate EnJumpDsplcmnt to get the absolute distance
         jsr TwosComplement              ;($C3D4)
     Lx383:

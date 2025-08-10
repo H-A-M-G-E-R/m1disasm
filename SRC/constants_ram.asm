@@ -17,9 +17,9 @@
 
 .struct SkreeProjectile
     dieDelay db        ;Delay until projectile dies.
-    y       db
-    x       db
-    hi      db
+    y        db
+    x        db
+    hi       db
 .endst
 
 .struct Mellow
@@ -50,7 +50,15 @@
     data1C           db ; Unused
     jumpDsplcmnt     db ;Number of pixels vertically/horizontally displaced from jump point; skree blow up delay
     type             db ;Enemy type used as index into enemy data tables.
-    data1F           db ; Unknown
+    data1F           db ;For EnemyFlipAfterDisplacement:
+                          ;#$00:         displacement = abs(jumpDsplcmnt)
+                          ;#$40:         displacement = jumpDsplcmnt
+                          ;#$80 or #$C0: displacement = -jumpDsplcmnt
+                        ;For EnemyIfMoveFailed:
+                          ;#$00:         bounce
+                          ;#$40:         land on floor/right wall
+                          ;#$80 or #$C0: land on ceiling/left wall
+                        
 .endst
 
 .struct Cannon
@@ -359,7 +367,7 @@ ItemRoomMusicStatus    db        ;#$00=Item room music not playing.
 
     EndMsgWrite            db        ;0=don't write end message, 1=write end message.
     IsCredits              db        ;0=credits not rolling, 1=credits rolling.
-    SpriteByteCounter      db       ;Used to indicate when Samus sprite load complete.
+    SpriteByteCounter      db        ;Used to indicate when Samus sprite load complete.
     SpritePointerIndex     db        ;Index to proper Samus sprite graphics at end game.
     SpriteAttribByte       db        ;#$00.  Attribute byte of some sprites.
     ColorCntIndex          db        ;Index for finding count number for ClrChangeCounter.
