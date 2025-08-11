@@ -5746,8 +5746,11 @@ SamusMoveVertically: ; unreferenced label
             ;Samus bounce after hitting the ground in ball form.
             ;branch if Samus isn't rolled into a ball
             lda ObjAction
-            cmp #sa_Roll                    
+            cmp #sa_Roll
+            beq @landingBall
+            cmp #sa_SpiderFall
             bne @landingNoBall
+        @landingBall:
             ;Divide vertical speed by 2.
             lsr ObjSpeedY
             ;branch if Speed is not falling fast enough to bounce (speed < 2px/frame)
