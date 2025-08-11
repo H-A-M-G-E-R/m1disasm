@@ -484,7 +484,8 @@ SoundE4               dw
 SoundChannelBase       dw
 ; SoundChannelBase+1     = $E7
 
-SpareMemE8             dw
+SoundRandomNumber1     db        ;Seperate RNG from RandomNumber1/2 in case-->
+SoundRandomNumber2     db          ;NMI happens while the latter is generated.
 
 Cntrl0Data             db        ;Temp storage for data of first address sound channel
 VolumeEnvelopeIndex     db        ;Desired address number in VolumeCntrlAdressTbl

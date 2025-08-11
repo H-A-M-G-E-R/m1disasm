@@ -1505,7 +1505,7 @@ MotherBrain_9E22_UpdateAnimBrain:
     bne @RTS
     
     ; set brain frame to one of four randomly chosen frames from MotherBrainAnimFrameTable
-    lda RandomNumber1
+    jsr RandomNumbers
     and #$03
     sta MotherBrainAnimFrameTableID
     

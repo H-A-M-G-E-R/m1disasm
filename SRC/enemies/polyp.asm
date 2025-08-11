@@ -44,7 +44,7 @@ PolypAIRoutine:
     lda #$03
     sta SpawnFireball_87
     ; set horizontal facing flag to a random bit
-    lda RandomNumber1
+    jsr RandomNumbers
     lsr
     rol EnData05,x
     ; exit if misfired (25% random chance)

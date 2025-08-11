@@ -189,9 +189,11 @@ RESET:
     ;Initialize RandomNumber1 to #$11
     lda #$11
     sta RandomNumber1
+    sta SoundRandomNumber1
     ;Initialize RandomNumber2 to #$FF
     lda #$FF
     sta RandomNumber2
+    sta SoundRandomNumber2
 
     iny ;Y = 1
     sty SwitchPending               ;Prepare to switch page 0 into lower PRGROM.
@@ -5001,7 +5003,7 @@ LDCFC:
     
     lda #$60
     sta EnData0D,x
-    lda RandomNumber1
+    jsr RandomNumbers
     cmp #$10
     bcc LDD5B
 LDD30:
@@ -8162,7 +8164,7 @@ SpawnMellows:
     ; try to spawn a mellow in all available mellow slots
     ldx #(4-1)*$08
     ; store random number in MellowRandomNumber
-    lda RandomNumber1
+    jsr RandomNumbers
     adc FrameCount
     sta MellowRandomNumber
     @loop:
@@ -9824,8 +9826,8 @@ UpdateEnemy_Resting_TryBecomingActive:
     adc #>EnemyMovementChoices.b
     sta $01
     ; create randomly generated offset
-    lda FrameCount
-    eor RandomNumber1
+    jsr RandomNumbers
+    eor FrameCount
     ; and this with enemy's EnemyMovementChoice possibility bitflag
     ; for example, if there are 4 possible EnemyMovement indexes in the -->
     ; EnemyMovementChoice, the bitflag will be #$03, because 2 bits is 4 possibilities.
@@ -10636,7 +10638,7 @@ UpdateAllMellows:
     
     lda #$03
     jsr UpdateEnemyAnim
-    lda RandomNumber1
+    jsr RandomNumbers
     sta MellowRandomNumber
     lda #(4-1)*$08
     @loop:

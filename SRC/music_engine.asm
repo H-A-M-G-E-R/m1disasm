@@ -337,6 +337,27 @@ LoadSFXData:
 @RTS:
     rts
 
+;RNG from https://www.nesdev.org/wiki/Random_number_generator
+
+SoundRandomNumbers:
+    txa
+    pha
+    ldx #$08
+    lda SoundRandomNumber1
+    -
+        asl
+        rol SoundRandomNumber2
+        bcc +
+            eor #$39
+        +
+        dex
+        bne -
+    sta SoundRandomNumber1
+    pla
+    tax
+    lda SoundRandomNumber1
+    rts
+
 ;------------------------------------[ Sound Engine Entry Point ]------------------------------------
 ;NOTES:
 ;SFX take priority over music.
@@ -351,6 +372,7 @@ LoadSFXData:
 ;SQ1=0, SQ2=1, Tri=2, Noise=3
 
 SoundEngine:
+    jsr SoundRandomNumbers
     ;Set APU to 5 frame cycle, disable frame interrupt.
     ;This syncs the APU's frame counter with the PPU.
     lda #APU_5STEP | APU_IRQDISABLE.b
@@ -699,7 +721,7 @@ BossHitSFXContinue:
     beq GotoEndMultiSFX             ;
     cmp #$06                        ;After six or more frames of SFX, branch.
     bcc LB620                       ;
-    lda RandomNumber1               ;
+    jsr SoundRandomNumbers          ;
     ora #$10                        ;Set bit 5.
     and #$7F                        ;Randomly set bits 7, 3, 2, 1 and 0.
     sta SQ1SFXPeriodLow             ;Store in SQ1 period low.
@@ -733,12 +755,12 @@ SamusHitSFXContinue:
 LB658:
     ldy #<SamusHitSQ1SQ2SFXData.b     ;Low byte of SQ1 sound data start address(base=$B200).
     jsr LoadSQ1ChannelSFX           ;($B368)Set SQ1 SFX data.
-    lda RandomNumber1               ;
+    jsr SoundRandomNumbers          ;
     and #$0F                        ;Randomly set last four bits of SQ1 period low.
     sta SQ1_LO                      ;
     ldy #<SamusHitSQ1SQ2SFXData.b     ;Low byte of SQ2 sound data start address(base=$B200).
     jsr LoadSQ2ChannelSFX           ;($B374)Set SQ2 SFX data.
-    lda RandomNumber1               ;
+    jsr SoundRandomNumbers          ;
     lsr                             ;Multiply random number by 4.
     lsr                             ;
     and #$0F                        ;
@@ -748,16 +770,16 @@ LB658:
 SamusHitSFXStart:
     ldy #<SamusHitSQ1SQ2SFXData.b     ;Low byte of SQ1 sound data start address(base=$B200).
     jsr LoadSQ1ChannelSFX           ;($B368)Set SQ1 SFX data.
-    lda RandomNumber1               ;
+    jsr SoundRandomNumbers          ;
     and #$0F                        ;Randomly set last four bits of SQ1 period low.
     sta SQ1_LO                      ;
     clc                             ;
-    lda RandomNumber1               ;Randomly set last three bits of SQ2 period low+1.
+    jsr SoundRandomNumbers          ;Randomly set last three bits of SQ2 period low+1.
     and #$03                        ;
     adc #$01                        ;Number of frames to play sound before a change.
     ldy #<SamusHitSQ1SQ2SFXData.b     ;Low byte of SQ2 sound data start address(base=$B200).
     jsr MultiSFXInit                ;($B5A5)Initiate multi channel SFX.
-    lda RandomNumber1               ;
+    jsr SoundRandomNumbers          ;
     lsr                             ;Multiply random number by 4.
     lsr                             ;
     and #$0F                        ;
@@ -1020,7 +1042,7 @@ BigEnemyHitSFXContinue:
         jmp EndTriSFX              ;($B896)End SFX
     @dontEnd:
     jsr IncreaseTriPeriods          ;($B978)Increase periods.
-    lda RandomNumber1               ;
+    jsr SoundRandomNumbers          ;
     and #$3C                        ;
     sta TriSFXData                  ;
     lda TriPeriodLow                ;Randomly set or clear bits 2, 3, 4 and 5 in-->
@@ -1111,7 +1133,7 @@ MetroidHitSFXContinue:
     jmp EndTriSFX                   ;($B896)End SFX.
 
 RndTriPeriods:
-    lda RandomNumber1               ;Randomly set or reset bits 7, 4, 2 and 1 of-->
+    jsr SoundRandomNumbers          ;Randomly set or reset bits 7, 4, 2 and 1 of-->
     ora #$6C                        ;triangle channel period low.
     sta TRI_LO                      ;
     and #$01                        ;

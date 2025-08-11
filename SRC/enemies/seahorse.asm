@@ -17,7 +17,7 @@ SeahorseAIRoutine:
     lda FrameCount
     and #$1F
     bne L9B3C
-        lda RandomNumber1
+        jsr RandomNumbers
         and #$03
         beq L9B59
         
