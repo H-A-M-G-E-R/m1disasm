@@ -4552,9 +4552,6 @@ InitBank3:
 InitGenericAreaBank:
     lda #$00                        ;GameMode = play.
     sta GameMode                    ;
-    sta TileAnimIndex
-    lda #$01
-    sta TileAnimDelay
     lda CurrentMainBank
     jsr ChooseRoutine
         .word ExitSub
