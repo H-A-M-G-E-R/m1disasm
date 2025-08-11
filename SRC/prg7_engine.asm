@@ -3559,10 +3559,9 @@ SamusDead2:
 SamusElevator:
     lda ElevatorStatus
     cmp #$03
-    beq Lx056
-        cmp #$08
-        bne Lx062
-    Lx056:
+    bcc LD47E
+    cmp #$06
+    bcs LD47E
     lda ElevatorType
     bmi Lx059
         lda ObjY
@@ -3596,15 +3595,7 @@ SamusElevator:
         Lx061:
         dey
         sty ObjY
-        jmp LD47E
 
-Lx062:
-    ldy #$00
-    sty ObjSpeedY
-    cmp #$05
-    beq Lx063
-    cmp #$07
-    beq Lx063
 LD47E:
     lda FrameCount
     lsr
@@ -3827,9 +3818,7 @@ UpdateBulletExplode:
     lda ObjAnimFrame,x
     sec
     sbc #$F7
-    bne Lx075
-    sta ObjAction,x  ; kill bullet
-Lx075:
+    beq Lx077 ; kill bullet if ObjAnimFrame is blank
     jmp DrawBullet
 
 UpdateBullet_ExplodeIfHitSprite:
@@ -3841,27 +3830,27 @@ UpdateBullet_ExplodeIfHitSprite:
     sta ProjectileIsHit,x
 BulletExplode:
     ; explode the projectile
-    lda #ObjAnim_BulletHit - ObjectAnimIndexTbl.b
     ldy ObjAction,x
     cpy #wa_BulletExplode
     beq Exit5
-    cpy #wa_Missile
-    bne Lx076
-    lda #ObjAnim_MissileExplode - ObjectAnimIndexTbl.b
-Lx076:
-    cpy #wa_IceBeam
-    beq +
-    cpy #wa_WaveIceBeam
-    bne ++
-    +
-    lda #ObjAnim_IceBulletHit - ObjectAnimIndexTbl.b
-    ++
+    lda BulletExplodeAnimTbl-1,y
     jsr InitObjAnimIndex
     lda #wa_BulletExplode
 Lx077:
     sta ObjAction,x
 Exit5:
     rts
+
+BulletExplodeAnimTbl:
+    .byte ObjAnim_BulletHit - ObjectAnimIndexTbl ; regular beam
+    .byte ObjAnim_BulletHit - ObjectAnimIndexTbl ; wave beam
+    .byte ObjAnim_IceBulletHit - ObjectAnimIndexTbl ; ice beam
+    .byte ObjAnim_IceBulletHit - ObjectAnimIndexTbl ; wave + ice beam
+    .byte $00
+    .byte $00
+    .byte $00
+    .byte $00
+    .byte ObjAnim_MissileExplode - ObjectAnimIndexTbl ; missile
 
 UpdateBullet_DeleteIfOffScreen:
     lda ObjOnScreen,x
@@ -3937,12 +3926,7 @@ BombCountdown:
     dec ProjectileDieDelay,x
     bne Lx085
     ; countdown is over, time to explode
-    lda #ObjAnim_SamusRunPntUp - ObjectAnimIndexTbl.b ; ?
-    ldy ObjAction,x
-    cpy #wa_BombCount
-    bne Lx084
-        lda #ObjAnim_BombExplode - ObjectAnimIndexTbl.b
-    Lx084:
+    lda #ObjAnim_BombExplode - ObjectAnimIndexTbl.b
     jsr InitObjAnimIndex
     inc ObjAction,x
     jsr SFX_BombExplode
@@ -4046,9 +4030,6 @@ UpdateElevator:
         .word ElevatorScrollXToCenter
         .word ElevatorMove
         .word ElevatorScrollY
-        .word ElevatorFade ; fade out samus (vestigial)
-        .word ElevatorD8BF
-        .word ElevatorFade ; fade in samus (vestigial)
         .word ElevatorMove
         .word ElevatorStop
 
@@ -4165,27 +4146,9 @@ ElevatorMove:
 ElevatorScrollY:
     ; scroll until ScrollY = 0
     lda ScrollY
-    bne ElevScrollRoom
+    bne ElevatorMove
     ; scroll y is 0
-    ; set samus animation to fade out
-    lda #ObjAnim_SamusFadeOutArea_Reset - ObjectAnimIndexTbl.b
-    sta ObjAnimResetIndex
-    lda #ObjAnim_SamusFadeOutArea - ObjectAnimIndexTbl.b
-    sta ObjAnimIndex
-    ; set elevator animation to fade out
-    lda #ObjAnim_ElevatorFadeOutArea_Reset - ObjectAnimIndexTbl.b
-    sta ElevatorAnimResetIndex-$20,x
-    lda #ObjAnim_ElevatorFadeOutArea - ObjectAnimIndexTbl.b
-    sta ElevatorAnimIndex-$20,x
-    ; increment elevator routine to ElevatorFade
-    inc ObjAction,x
-    ; set timer for 64 frames (useless)
-    ; the timer may have once been checked in ElevatorFade to handle the fade out / fade in, -->
-    ; but right now, ElevatorFade runs for a single frame instead of 64 frames. -->
-    ; the fade out / fade in plays fully in the FDS version, so it's probably a remnant from that
-    lda #$40
-    sta Timer1
-    jmp DrawElevator
+    jmp ElevatorD8BF
 
 ElevScrollRoom:
     ; branch if elevator going down
@@ -4196,23 +4159,6 @@ ElevScrollRoom:
     @scrollDown:
         jsr ScrollDown
         jmp DrawElevator
-
-ElevatorFade:
-    ; increment elevator routine
-    inc ObjAction,x
-    ; branch if new elevator routine is not ElevatorMove
-    lda ObjAction,x
-    cmp #$08
-    bne @endIf_A
-        lda #_id_ObjFrame23.b
-        sta ElevatorAnimFrame-$20,x
-        lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
-        jsr SetSamusAnim
-        jmp DrawElevator
-    @endIf_A:
-        ; draw elevator by animating it every frame
-        lda #$01
-        jmp AnimDrawObject
 
 ElevatorD8BF:
     lda ElevatorType-$20,x
@@ -4278,22 +4224,9 @@ ElevatorD8BF:
     ; load elevator slot into PageIndex
     ldx #$20
     stx PageIndex
-    ; set samus animation to fade in
-    lda #ObjAnim_SamusFadeInArea_Reset - ObjectAnimIndexTbl.b
-    sta ObjAnimResetIndex
-    lda #ObjAnim_SamusFadeInArea - ObjectAnimIndexTbl.b
-    sta ObjAnimIndex
-    ; set elevator animation to fade in
-    lda #ObjAnim_ElevatorFadeInArea_Reset - ObjectAnimIndexTbl.b
-    sta ObjAnimResetIndex,x
-    lda #ObjAnim_ElevatorFadeInArea - ObjectAnimIndexTbl.b
-    sta ObjAnimIndex,x
-    ; increment elevator routine to ElevatorFade
+    ; increment elevator routine to ElevatorMove
     inc ObjAction,x
-    ; set timer for 64 frames (useless)
-    lda #$40
-    sta Timer1
-    rts
+    jmp ElevatorMove
 
 StartMusic:
     ;Load proper bit flag for area music.
@@ -10647,9 +10580,13 @@ UpdateSkreeProjectile:
     pha
     jsr ObjDrawFrame
     
-    ; exit if samus is in i-frames
+    ; exit if samus is in i-frames or in door
     lda SamusBlink
+    ora DoorEntryStatus
     bne @endIf_A
+    ; exit if samus can't be hurt
+    jsr IsSamusDead
+    beq @endIf_A
     ; exit if samus is not touching the skree projectile
     ldy #$00
     ldx #$40
