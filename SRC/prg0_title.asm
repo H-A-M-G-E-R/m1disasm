@@ -1461,7 +1461,6 @@ CalculatePassword:
     ;(Does not allow RandomNumber1 to be a multiple of 16).
     @loop_random:
         jsr RandomNumbers
-        lda RandomNumber1
         and #$0F
         beq @loop_random
     sta PasswordByte+$10
@@ -4468,9 +4467,6 @@ InitBank3:
 InitGenericAreaBank:
     lda #$00                        ;GameMode = play.
     sta GameMode                    ;
-    sta TileAnimIndex
-    lda #$01
-    sta TileAnimDelay
     jsr LoadSamusGFX
     lda CurrentMainBank
     jsr ChooseRoutine

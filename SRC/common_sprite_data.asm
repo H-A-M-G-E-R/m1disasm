@@ -55,7 +55,7 @@ ObjAnim_RegularBullet: ;$1B
 
 ;Bullet hit animation.
 ObjAnim_BulletHit: ;$1D
-    .byte _id_ObjFrame2A, $F7, $FF
+    .byte _id_ObjFrame2A, _id_ObjFrame2A, _id_ObjFrame2A, $F7, $FF
 
 ;Samus jump and fire animation.
 ObjAnim_SamusJumpFire: ;$20
@@ -112,32 +112,6 @@ ObjAnim_SamusRunPntUpFire2: ;$3D
 ObjAnim_SamusRunPntUpFire3: ;$3F
     .byte _id_ObjFrame48, $FF
 
-;Samus front fade out of old area. (plays for only one frame on NES)
-ObjAnim_SamusFadeOutArea: ;$41
-    .byte _id_ObjFrame07, $F7, $F7, _id_ObjFrame07, $F7, $F7, $F7, _id_ObjFrame07, $F7, $F7, $F7, $F7, _id_ObjFrame07
-ObjAnim_SamusFadeOutArea_Reset: ;$4E
-    .byte $F7, $FF
-
-;Elevator fade out of old area. (plays for only one frame on NES)
-ObjAnim_ElevatorFadeOutArea: ;$50
-    .byte _id_ObjFrame23, $F7, $F7, _id_ObjFrame23, $F7
-ObjAnim_55: ;$55 (referenced in MotherBrain_SpawnDoor)
-    .byte $F7, $F7, _id_ObjFrame23, $F7, $F7, $F7, $F7, _id_ObjFrame23
-ObjAnim_ElevatorFadeOutArea_Reset: ;$5D
-    .byte $F7, $FF
-
-;Samus front fade into new area. (plays for only one frame on NES)
-ObjAnim_SamusFadeInArea: ;$5F
-    .byte _id_ObjFrame07, $F7, $F7, $F7, $F7, _id_ObjFrame07, $F7, $F7, $F7, _id_ObjFrame07, $F7, $F7
-ObjAnim_SamusFadeInArea_Reset: ;$6B
-    .byte _id_ObjFrame07, $F7, $FF
-
-;Elevator fade into new area. (plays for only one frame on NES)
-ObjAnim_ElevatorFadeInArea: ;$6E
-    .byte _id_ObjFrame23, $F7, $F7, $F7, $F7, _id_ObjFrame23, $F7, $F7, $F7, _id_ObjFrame23, $F7, $F7
-ObjAnim_ElevatorFadeInArea_Reset: ;$7A
-    .byte _id_ObjFrame23, $F7, $FF
-
 ;Wave beam animation.
 ObjAnim_WaveBeam: ;$7D
     .byte _id_ObjFrame4B, $FF
@@ -168,11 +142,11 @@ ObjAnim_MissileExplode: ;$91
 
 ;Ice bullet animation.
 ObjAnim_IceBullet:
-    .byte _id_ObjFrameIceBullet, $FF
+    .byte _id_ObjFrame_IceBullet, $FF
 
 ;Ice bullet hit animation.
 ObjAnim_IceBulletHit:
-    .byte _id_ObjFrameIceBulletHit, $F7, $FF
+    .byte _id_ObjFrame_IceBulletHit, _id_ObjFrame_IceBulletHit, _id_ObjFrame_IceBulletHit, $F7, $FF
 
 ;Wave + ice beam animation.
 ObjAnim_WaveIceBeam: ;$7D
@@ -209,7 +183,7 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame26
     PtrTableEntry ObjFramePtrTable, ObjFrame27
     PtrTableEntry ObjFramePtrTable, ObjFrame28
-    PtrTableEntry ObjFramePtrTable, ObjFrameIceBulletHit
+    PtrTableEntry ObjFramePtrTable, ObjFrame_IceBulletHit
     PtrTableEntry ObjFramePtrTable, ObjFrame2A
     PtrTableEntry ObjFramePtrTable, ObjFrame2B
     PtrTableEntry ObjFramePtrTable, ObjFrame30
@@ -253,7 +227,7 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame67
     PtrTableEntry ObjFramePtrTable, ObjFrame68
     PtrTableEntry ObjFramePtrTable, ObjFrame69
-    PtrTableEntry ObjFramePtrTable, ObjFrameIceBullet
+    PtrTableEntry ObjFramePtrTable, ObjFrame_IceBullet
     PtrTableEntry ObjFramePtrTable, ObjFrame_DoorOpened
 
 SamusCHRBankTable:
@@ -279,7 +253,7 @@ SamusCHRBankTable:
     .byte $00 ; ObjFrame26
     .byte $00 ; ObjFrame27
     .byte $00 ; ObjFrame28
-    .byte $00 ; ObjFrameIceBulletHit
+    .byte $00 ; ObjFrame_IceBulletHit
     .byte $00 ; ObjFrame2A
     .byte JunkoNormalGFX5/$400 ; ObjFrame2B
     .byte JunkoNormalGFX5/$400 ; ObjFrame30
@@ -563,13 +537,13 @@ ObjFrame2A:
     .byte $80
 
 ;Ice bullet fire.
-ObjFrameIceBullet:
+ObjFrame_IceBullet:
     .byte $02,$02
     .byte $FC,$16,$21,$FC
     .byte $80
 
 ;Ice bullet hit.
-ObjFrameIceBulletHit:
+ObjFrame_IceBulletHit:
     .byte $00,$00
     .byte $FC,$17,$21,$FC
     .byte $80
@@ -939,9 +913,9 @@ ObjFrame58:
 ObjFrame59:
     .byte $03,$03
     .byte $F8,$5E,$20,$F8
-    .byte $F8,$5E,$40,$00
-    .byte $00,$5F,$00,$F8
-    .byte $00,$5F,$40,$00
+    .byte $F8,$5E,$60,$00
+    .byte $00,$5F,$20,$F8
+    .byte $00,$5F,$60,$00
     .byte $80
 
 ;Skree burrow.

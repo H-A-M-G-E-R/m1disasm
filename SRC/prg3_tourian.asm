@@ -1394,12 +1394,12 @@ MotherBrain_SpawnDoor:
     sta ObjY,x
     ; init door animation (because of the 1/2 chance that it plays only for 1 frame,
     ; the first frame has to be $F7)
-    lda #ObjAnim_55 - ObjectAnimIndexTbl.b
+    lda #ObjAnim_DoorOpen_Reset - ObjectAnimIndexTbl.b
     sta ObjAnimResetIndex,x
     sta ObjAnimIndex,x
     lda #$00
     sta ObjAnimDelay,x
-    lda #$F7
+    lda #_id_ObjFrame_DoorOpened.b
     sta ObjAnimFrame,x
     ; create door tiles
     lda #$10
@@ -1497,7 +1497,7 @@ MotherBrain_9E22_UpdateAnimBrain:
     bne @RTS
     
     ; set brain frame to one of four randomly chosen frames from MotherBrainAnimFrameTable
-    lda RandomNumber1
+    jsr RandomNumbers
     and #$03
     sta MotherBrainAnimFrameTableID
     
