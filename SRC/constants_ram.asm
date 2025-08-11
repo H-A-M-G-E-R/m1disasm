@@ -257,8 +257,9 @@ SamusDir               db        ;0 = Right, 1 = Left.
 SamusDoorDir           db        ;Direction Samus passed through door.
 SamusMapPosY           db        ;Current y position on world map of the screen to load into VRAM.
 SamusMapPosX           db        ;Current x position on world map of the screen to load into VRAM.
-SamusScrX              db        ;Samus x position on screen.
-SamusScrY              db        ;Samus y position on screen.
+;SamusScrX              db        ;Samus x position on screen.
+;SamusScrY              db        ;Samus y position on screen.
+SpareMem51             dw
 WalkSoundDelay         db   
 StatuesBridgeIsSpawned db        ;0=Bridge is not spawned, 1=Bridge is spawned and will build itself.
 IsSamus                db        ;1=Samus object being accessed, 0=not Samus.
