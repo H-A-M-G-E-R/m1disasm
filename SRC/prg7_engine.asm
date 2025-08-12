@@ -1319,7 +1319,7 @@ MoreInit:
             sta OnFrozenEnemy.b,x           ;Clear RAM $7A thru $DE.
         LC836:                   ;
         sta ObjAction,x                 ;
-        sta TileBlastRoutine,x          ;Clear RAM pages 3,5,7.
+        sta TileBlasts.0.routine,x      ;Clear RAM pages 3,5,7.
         sta PipeBugHoles.0.status,x     ;
         inx                             ;
         bne LC830                       ;Loop until all required RAM is cleared.
@@ -4362,16 +4362,16 @@ UpdateStatue_StartRaising:
 UpdateStatueBGTiles:
     ; set destination pointer low byte
     lda StatueTileBlastWRAMPtrLoTable,y
-    sta TileBlastWRAMPtr+$C0
+    sta TileBlasts.12.wramPtr
     ; set destination pointer high byte
     lda StatueHi
     asl
     asl
     ora StatueTileBlastWRAMPtrHiTable,y
-    sta TileBlastWRAMPtr+1+$C0
+    sta TileBlasts.12.wramPtr+1
     ; set 2x3 tile region of solid blank tiles
     lda #$09
-    sta TileBlastAnimFrame+$C0
+    sta TileBlasts.12.animFrame
     ; set page index to #$C0 (what is this parameter used for?)
     lda #$C0
     sta PageIndex
@@ -4412,29 +4412,29 @@ UpdateAllStatues_Bridge:
     sta StatuesBridgeIsSpawned
     
     ; loop through all 8 blasts to create for the bridge
-    ldx #$70
+    ldx #(8-1)*_sizeof_TileBlasts.0.b
     ldy #$08
     @loop:
         ; set tile blast routine to await respawning
         lda #$03
-        sta TileBlastRoutine,x
+        sta TileBlasts.0.routine,x
         ; set respawn delay to y*2
         tya
         asl
-        sta TileBlastDelay,x
+        sta TileBlasts.0.delay,x
         ; set tile blast animation to generic shot block
         lda #$04
-        sta TileBlastType,x
+        sta TileBlasts.0.type,x
         ; set tile blast nametable pointer
         lda StatueHi
         asl
         asl
         ora #$62
-        sta TileBlastWRAMPtr+1,x
+        sta TileBlasts.0.wramPtr+1,x
         tya
         asl
         adc #$08
-        sta TileBlastWRAMPtr,x
+        sta TileBlasts.0.wramPtr,x
         ; continue looping if there are still more tile blasts to make
         jsr Xminus16
         dey
@@ -7023,40 +7023,40 @@ IsBlastTile_SkipCheckUpdatingProjectile:
     lda Temp04_CartRAMPtr
     and #$DE
     sta TempY
-    ldx #$C0
+    ldx #_sizeof_TileBlasts - _sizeof_TileBlasts.0.b
     -
-        lda TileBlastRoutine,x
+        lda TileBlasts.0.routine,x
         beq ++
         lda TempY
-        cmp TileBlastWRAMPtr,x
+        cmp TileBlasts.0.wramPtr,x
         bne ++
         lda Temp04_CartRAMPtr+1.b
-        cmp TileBlastWRAMPtr+1,x
+        cmp TileBlasts.0.wramPtr+1,x
         beq +
         ++
         txa
         sec
-        sbc #$10
+        sbc #_sizeof_TileBlasts.0
         tax
         bne -
 ; attempt to find a vacant tile slot
-    ldx #$C0
+    ldx #_sizeof_TileBlasts - _sizeof_TileBlasts.0.b
     sec
     Lx219:
-        lda TileBlastRoutine,x
+        lda TileBlasts.0.routine,x
         beq Lx220                           ; 0 = free slot
         txa
-        sbc #$10
+        sbc #_sizeof_TileBlasts.0
         tax
         bne Lx219
-    lda TileBlastRoutine,x
+    lda TileBlasts.0.routine,x
     bne Lx223                        ; no more slots, can't blast tile
 Lx220:
-    inc TileBlastRoutine,x
+    inc TileBlasts.0.routine,x
     lda TempY
-    sta TileBlastWRAMPtr,x
+    sta TileBlasts.0.wramPtr,x
     lda Temp04_CartRAMPtr+1.b
-    sta TileBlastWRAMPtr+1,x
+    sta TileBlasts.0.wramPtr+1,x
     lda InArea
     cmp #$01                        ; In Norfair?
     bne Lx221
@@ -7072,7 +7072,7 @@ Lx221:
     lsr
 Lx222:
     lsr
-    sta TileBlastType,x
+    sta TileBlasts.0.type,x
 +
     lda UpdatingProjectile
     bne Lx223
@@ -7650,16 +7650,16 @@ UpdateRoomSpriteInfo:
     asl
     tay
     ; tile blasts
-    ldx #$C0
+    ldx #_sizeof_TileBlasts - _sizeof_TileBlasts.0.b
     @loop_tileBlasts:
         tya
-        eor TileBlastWRAMPtr+1,x
+        eor TileBlasts.0.wramPtr+1,x
         and #$04
         bne @dontDeleteTileBlast
-            sta TileBlastRoutine,x
+            sta TileBlasts.0.routine,x
         @dontDeleteTileBlast:
         jsr Xminus16
-        cmp #$F0
+        cmp #-_sizeof_TileBlasts.0.b
         bne @loop_tileBlasts
     tya
     lsr
@@ -10756,7 +10756,7 @@ CheckZebetite: ; $FE05
 ;-------------------------------------------------------------------------------
 ; Tile degenerate/regenerate
 UpdateAllTileBlasts:
-    ldx #$C0
+    ldx #_sizeof_TileBlasts - _sizeof_TileBlasts.0.b
     @loop:
         jsr UpdateTileBlast
         ldx PageIndex
@@ -10764,7 +10764,7 @@ UpdateAllTileBlasts:
         bne @loop
 UpdateTileBlast:
     stx PageIndex
-    lda TileBlastRoutine,x
+    lda TileBlasts.0.routine,x
     beq SetTileAnim@RTS          ; exit if tile not active
     jsr ChooseRoutine
         .word ExitSub       ;($C45C) rts
@@ -10775,17 +10775,17 @@ UpdateTileBlast:
         .word UpdateTileBlast_Respawned
 
 UpdateTileBlast_Init:
-    inc TileBlastRoutine,x
+    inc TileBlasts.0.routine,x
     ; set anim to blasting
-    ldy TileBlastType,x
+    ldy TileBlasts.0.type,x
     lda TileBlastBlastAnimIndexTable,y
     jsr SetTileAnim
     ; tile respawns after TileBlastRespawnDelayTbl[TileBlastType] * 4 frames
     lda TileBlastRespawnDelayTbl,y
-    sta TileBlastDelay,x
-    lda TileBlastWRAMPtr,x     ; low WRAM addr of blasted tile
+    sta TileBlasts.0.delay,x
+    lda TileBlasts.0.wramPtr,x     ; low WRAM addr of blasted tile
     sta $00
-    lda TileBlastWRAMPtr+1,x     ; high WRAM addr
+    lda TileBlasts.0.wramPtr+1,x     ; high WRAM addr
     sta $01
 
 UpdateTileBlast_Animating:
@@ -10794,10 +10794,10 @@ UpdateTileBlast_Animating:
     jmp UpdateTileBlastAnim
 
 UpdateTileBlast_WaitToRespawn:
-    lda TileBlastDelay,x
+    lda TileBlasts.0.delay,x
     bne @canRespawn
         ; tile can't respawn, delete tile blast and return
-        sta TileBlastRoutine,x
+        sta TileBlasts.0.routine,x
         rts
     @canRespawn:
     ; only update tile timer every 4th frame
@@ -10806,31 +10806,31 @@ UpdateTileBlast_WaitToRespawn:
     bne SetTileAnim@RTS
     
     ; exit if timer not reached zero
-    dec TileBlastDelay,x
+    dec TileBlasts.0.delay,x
     bne SetTileAnim@RTS
     
-    inc TileBlastRoutine,x
-    ldy TileBlastType,x
+    inc TileBlasts.0.routine,x
+    ldy TileBlasts.0.type,x
     lda TileBlastRespawnAnimIndexTable,y
     
 SetTileAnim:
-    sta TileBlastAnimIndex,x
-    sta TileBlast0505,x
+    sta TileBlasts.0.animIndex,x
+    sta TileBlasts.0.spare05,x
     lda #$00
-    sta TileBlastAnimDelay,x
+    sta TileBlasts.0.animDelay,x
 @RTS:
     rts
 
 UpdateTileBlast_Respawned:
     ; delete tile blast
     lda #$00
-    sta TileBlastRoutine,x
+    sta TileBlasts.0.routine,x
     ; ($03, $02) = position of center of tile
-    lda TileBlastWRAMPtr,x
+    lda TileBlasts.0.wramPtr,x
     clc
     adc #$21
     sta $00
-    lda TileBlastWRAMPtr+1,x
+    lda TileBlasts.0.wramPtr+1,x
     sta $01
     jsr GetPosAtNameTableAddr
     ; check if colliding with Samus
@@ -10866,7 +10866,7 @@ UpdateTileBlast_Respawned:
     jmp SubtractHealth
 
 GetTileBlastFramePtr:
-    lda TileBlastAnimFrame,x
+    lda TileBlasts.0.animFrame,x
     asl
     tay
     lda TileBlastFramePtrTable,y
@@ -10885,9 +10885,9 @@ CommonJump_DrawTileBlast:
     bcs GetTileBlastFramePtr@RTS
     ldx PageIndex
     ; $01.$00 = TileBlastWRAMPtr
-    lda TileBlastWRAMPtr,x
+    lda TileBlasts.0.wramPtr,x
     sta $00
-    lda TileBlastWRAMPtr+1,x
+    lda TileBlasts.0.wramPtr+1,x
     sta $01
     jsr GetTileBlastFramePtr
     ; $11 = room RAM index = 0
@@ -10974,37 +10974,37 @@ GetPosAtNameTableAddr:
 
 UpdateTileBlastAnim:
     ldx PageIndex
-    ldy TileBlastAnimDelay,x
+    ldy TileBlasts.0.animDelay,x
     beq @update
-        dec TileBlastAnimDelay,x
+        dec TileBlasts.0.animDelay,x
         bne @RTS
     @update:
     ; TileBlastAnimDelay = A
-    sta TileBlastAnimDelay,x
+    sta TileBlasts.0.animDelay,x
     ; get frame index
-    ldy TileBlastAnimIndex,x
+    ldy TileBlasts.0.animIndex,x
     lda TileBlastAnim,y
     cmp #$FE            ; end of "tile-blast" animation?
     beq @end
     ; set frame
-    sta TileBlastAnimFrame,x
+    sta TileBlasts.0.animFrame,x
     ; inc anim index
     iny
     tya
-    sta TileBlastAnimIndex,x
+    sta TileBlasts.0.animIndex,x
     ; try to draw it
     jsr DrawTileBlast
     bcc @RTS
     ; Failed to draw, retry drawing it next frame.
     ldx PageIndex
-    dec TileBlastAnimIndex,x
+    dec TileBlasts.0.animIndex,x
     lda #$00
-    sta TileBlastAnimDelay,x
+    sta TileBlasts.0.animDelay,x
 @RTS:
     rts
 @end:
     ; TileBlastRoutine = wait to respawn
-    inc TileBlastRoutine,x
+    inc TileBlasts.0.routine,x
     rts
 
 ;-------------------------------------------------------------------------------
