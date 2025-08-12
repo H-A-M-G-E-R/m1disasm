@@ -4436,7 +4436,10 @@ UpdateAllStatues_Bridge:
         adc #$08
         sta TileBlasts.0.wramPtr,x
         ; continue looping if there are still more tile blasts to make
-        jsr Xminus16
+        txa
+        sec
+        sbc #_sizeof_TileBlasts.0
+        tax
         dey
         bne @loop
 Exit0:
@@ -7049,7 +7052,7 @@ IsBlastTile_SkipCheckUpdatingProjectile:
         sbc #_sizeof_TileBlasts.0
         tax
         bne Lx219
-    lda TileBlasts.0.routine,x
+    lda TileBlasts.0.routine
     bne Lx223                        ; no more slots, can't blast tile
 Lx220:
     inc TileBlasts.0.routine,x
@@ -7658,7 +7661,10 @@ UpdateRoomSpriteInfo:
         bne @dontDeleteTileBlast
             sta TileBlasts.0.routine,x
         @dontDeleteTileBlast:
-        jsr Xminus16
+        txa
+        sec
+        sbc #_sizeof_TileBlasts.0
+        tax
         cmp #-_sizeof_TileBlasts.0.b
         bne @loop_tileBlasts
     tya
@@ -10759,8 +10765,10 @@ UpdateAllTileBlasts:
     ldx #_sizeof_TileBlasts - _sizeof_TileBlasts.0.b
     @loop:
         jsr UpdateTileBlast
-        ldx PageIndex
-        jsr Xminus16
+        lda PageIndex
+        sec
+        sbc #_sizeof_TileBlasts.0
+        tax
         bne @loop
 UpdateTileBlast:
     stx PageIndex
@@ -10815,7 +10823,6 @@ UpdateTileBlast_WaitToRespawn:
     
 SetTileAnim:
     sta TileBlasts.0.animIndex,x
-    sta TileBlasts.0.spare05,x
     lda #$00
     sta TileBlasts.0.animDelay,x
 @RTS:

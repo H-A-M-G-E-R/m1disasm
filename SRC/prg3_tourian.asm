@@ -1512,10 +1512,13 @@ MotherBrain_9E22_HandleBeingHit:
         
         ; clear all tile blasts
         ldx #$00
+        clc
         @loop:
             lda #$00
             sta TileBlasts.0.routine,x
-            jsr Xplus16
+            txa
+            adc #_sizeof_TileBlasts.0
+            tax
             cmp #_sizeof_TileBlasts
             bne @loop
         ; set mother brain status to dying
@@ -1709,11 +1712,14 @@ UpdateBullet_CollisionWithZebetiteAndMotherBrainGlass:
         ; tile is #$98, mother brain glass must be destroyed
         ; find open TileBlast slot
         ldx #$00
+        clc
         @loop_Slot:
             lda TileBlasts.0.routine,x
             beq @slotFound
             ; slot occupied, try next slot
-            jsr Xplus16
+            txa
+            adc #_sizeof_TileBlasts.0
+            tax
             cmp #_sizeof_TileBlasts
             bne @loop_Slot
         ; no slots found, exit

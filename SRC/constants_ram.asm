@@ -35,16 +35,13 @@
 
 .struct TileBlast
     routine          db
-    spare01          dw
     animFrame        db
     animDelay        db
-    spare05          db
     animIndex        db
     delay            db
     wramPtr          dw
     ; wramPtr+1     = $0509
     type             db
-    spare0B          ds 5
 .endst
 
 .struct PipeBugHole
@@ -662,7 +659,7 @@ EnExplosionAnimFrame   = $0407
 .enum $0500 export
 
 ;Tile respawning
-; 13 slots of 16 bytes each ($0500-$05CF)
+; 13 slots of 16 bytes each ($0500-$0567)
 TileBlasts             instanceof TileBlast $D startfrom 0
 
 .ende
