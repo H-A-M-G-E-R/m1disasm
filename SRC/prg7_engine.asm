@@ -1295,9 +1295,6 @@ AreaInit:
     and #$FC                        ;Sets nametable address = $2000.
     sta PPUCTRL_ZP                  ;
     inc MainRoutine                 ;Increment MainRoutine to MoreInit.
-    lda Joy1Status                  ;
-    and #BUTTON_A | BUTTON_B.b        ;Stores status of both the A and B buttons.
-    sta ABStatus                    ;Appears to never be accessed.
     jsr EraseAllSprites             ;($C1A3)Clear all sprite info.
     lda #$00                        ;Prepare to load Brinstar memory page.
     jsr IsEngineRunning             ;($CA18)Check to see if ok to switch lower memory page.
@@ -1308,9 +1305,7 @@ MoreInit:
     ; tileset #$00
     lda #$00
     jsr ChangeTileset
-    ldx #$FF                        ;
-    stx SpareMem75                  ;$75 Not referenced ever again in the game.
-    inx                             ;X=0.
+    ldx #$00
     stx AtEnding                    ;Not playing ending scenes.
     stx DoorEntryStatus                  ;Samus not in door.
     stx SamusDoorData               ;Samus is not inside a door.
@@ -1318,13 +1313,13 @@ MoreInit:
     txa                             ;A=0.
 
     LC830:
-        cpx #SoundE0-SpareMem7A.b   ;Check to see if more RAM to clear in $7A thru $DF.
+        cpx #SoundE0-OnFrozenEnemy.b ;Check to see if more RAM to clear in $7A thru $DF.
         bcs LC836                           ;
-            sta SpareMem7A.b,x              ;Clear RAM $7A thru $DE.
+            sta OnFrozenEnemy.b,x           ;Clear RAM $7A thru $DE.
         LC836:                   ;
         sta ObjAction,x                 ;
         sta TileBlastRoutine,x          ;Clear RAM pages 3,5,7.
-        sta Mem0700,x                   ;
+        sta PipeBugHoles.0.status,x     ;
         inx                             ;
         bne LC830                       ;Loop until all required RAM is cleared.
 
@@ -1335,9 +1330,8 @@ MoreInit:
 
     stx ScrollBlockOnNameTable3     ;Clear data about doors on the name tables.
     stx ScrollBlockOnNameTable0     ;
-    inx                             ;X=1.
-    stx SpareMem30                  ;Not accessed by game.
     inx                             ;X=2.
+    inx                             ;
     stx ScrollDir                   ;Set initial scroll direction as left.
     lda AreaSamusMapPosX            ;Get Samus start x pos on map.
     sta SamusMapPosX                ;
@@ -1376,7 +1370,6 @@ MoreInit:
 
     lda #$01                        ;
     jsr WriteAreaPal                ;Write area palette 0.
-    stx SpareMem30                  ;Not accessed by game.
     jmp SamusInit
 
 ; CopyAreaPointers
@@ -1384,10 +1377,10 @@ MoreInit:
 ; Copy 7 16-bit pointers from $959A thru $95A7 to $3B thru $48.
 
 CopyAreaPointers:
-    ldx #$0D
+    ldx #$03
     @loop:
         lda AreaPointers+2,x
-        sta SpareMem3C,x
+        sta EnmyFrameTbl1Ptr,x
         dex
         bpl @loop
     rts
@@ -1694,172 +1687,6 @@ BankTable:
     .byte $04+1                       ;Kraid hideout.
     .byte $03+1                       ;Tourian.
     .byte $05+1                       ;Ridley hideout.
-
-;----------------------------------[ Saved game routines (not used) ]--------------------------------
-
-/*
-AccessSavedGame:
-    pha                             ;Save two copies of A. Why? Who knows. This code is-->
-    pha                             ;Never implemented. A contains data slot to work on.
-    jsr GetGameDataIndex            ;($CA96)Get index to this save game Samus data info.
-    lda EraseGame                   ;
-    bpl LCA4C                           ;Is MSB set? If so, erase saved game data. Else branch.
-        and #$01                        ;
-        sta EraseGame                   ;Clear MSB so saved game data is not erased again.
-        jsr EraseAllGameData            ;($CAA1)Erase selected saved game data.
-        lda #$01                        ;Indicate this saved game has been erased.-->
-        sta SamusData02,y                     ;Saved game 0=$780C, saved game 1=$781C, saved game 2=$782C.
-    LCA4C:
-    ;If initializing the area at the start of the game, branch to load Samus' saved game info.
-    lda MainRoutine
-    cmp #_id_MoreInit.b
-    beq LoadGameData
-
-SaveGameData:
-    ;Save game based on current area Samus is in. Don't know why.
-    lda InArea
-    jsr SavedDataBaseAddr           ;($CAC6)Find index to unique item history for this saved game.
-    ;Prepare to save unique item history which is 64 bytes in length.
-    ldy #$3F
-    LCA59:
-        ;Save unique item history in appropriate saved game slot.
-        lda NumberOfUniqueItems,y
-        sta ($00),y
-        dey
-        ;Loop until unique item history transfer complete.
-        bpl LCA59
-    ;Prepare to save Samus' data.
-    ldy SamusDataIndex
-    ldx #$00
-    LCA66:
-        ;Save Samus' data in appropriate saved game slot.
-        lda MaxHealth,x
-        sta SamusData00,y
-        iny
-        inx
-        cpx #$10
-        ;Loop until Samus' data transfer complete.
-        bne LCA66
-    ;fallthrough
-
-LoadGameData:
-    ;Restore A to find appropriate saved game to load.
-    pla
-    jsr SavedDataBaseAddr           ;($CAC6)Find index to unique item history for this saved game.
-    ;Prepare to load unique item history which is 64 bytes in length.
-    ldy #$3F
-    LCA78:
-        ;Loop until unique item history is loaded.
-        lda ($00),y
-        sta NumberOfUniqueItems,y
-        dey
-        bpl LCA78
-    ;Branch always.
-    bmi LCA83
-        pha ; unused instruction
-    LCA83:
-    ;Prepare to load Samus' data.
-    ldy SamusDataIndex
-    ldx #$00
-    LCA88:
-        ;Load Samus' data from appropriate saved game slot.
-        lda SamusData00,y
-        sta MaxHealth,x
-        iny
-        inx
-        cpx #$10
-        ;Loop until Samus' data transfer complete.
-        bne LCA88
-    pla
-    rts
-
-GetGameDataIndex:
-    ;A contains the save game slot to work on (0, 1 or 2).-->
-    ;This number is transferred to the upper four bits to-->
-    ;find the offset for Samus' data for this particular-->
-    ;saved game (#$00, #$10 or #$20).
-    lda DataSlot
-    asl
-    asl
-    asl
-    asl
-    sta SamusDataIndex
-    rts
-
-EraseAllGameData:
-    lda #$00                        ;Always start at saved game 0. Erase all 3 saved games.
-    jsr SavedDataBaseAddr           ;($CAC6)Find index to unique item history for this saved game.
-    inc $03                         ;Prepare to erase saved game info at $6A00 and above.
-    ldy #$00                        ;Fill saved game data with #$00.
-    tya                             ;
-    LCAAB:
-        sta ($00),y                     ;Erase unique item histories from $69B4 to $69FF.
-        cpy #$40                        ;
-        bcs LCAB3                           ;IF 64 bytes alrady erased, no need to erase any more-->
-            sta ($02),y                     ;in the $6A00 and above range.
-        LCAB3:
-        iny                             ;
-        bne LCAAB                       ;Loop until all saved game data is erased.
-    ldy SamusDataIndex              ;Load proper index to desired Samus data to erase.
-    ldx #$00                        ;
-    txa                             ;
-    LCABC:
-        sta SamusData00,y               ;Erase Samus' data.
-        iny                             ;
-        inx                             ;
-        cpx #$0C                        ;
-        bne LCABC                       ;Loop until all data is erased.
-    rts
-
-;This routine finds the base address of the unique item history for the desired saved game (0, 1 or 2).
-;The memory set aside for each unique item history is 64 bytes and occupies memory addresses $69B4 thru
-;$6A73.
-
-SavedDataBaseAddr:
-    pha                             ;Save contents of A.
-    lda DataSlot                    ;Load saved game data slot to load.
-    asl                             ;*2. Table values below are two bytes.
-    tax                             ;
-    lda SavedDataTable,x            ;
-    sta $00                         ;Load $0000 and $0002 with base addresses from-->
-    sta $02                         ;table below($69B4).
-    lda SavedDataTable+1,x          ;
-    sta $01                         ;
-    sta $03                         ;
-    pla                             ;Restore A.
-    and #$0F                        ;Discard upper four bits in A.
-    tax                             ;X used for counting loop.
-    beq RTS_CAEE                       ;Exit if at saved game 0.  No further calculations required.
-    LCAE0:
-        lda $00                         ;
-        clc                             ;
-        adc #$40                        ;
-        sta $00                         ;Loop to add #$40 to base address of $69B4 in order to find-->
-        bcc LCAEB                           ;the proper base address for this saved game data. (save-->
-            inc $01                         ;slot 0 = $69B4, save slot 1 = $69F4, save slot 2 = $6A34).
-        LCAEB:
-        dex
-        bne LCAE0
-RTS_CAEE:
-    rts
-
-;Table used by above subroutine to find base address to load saved game data from. The slot 0
-;starts at $69B4, slot 1 starts at $69F4 and slot 2 starts at $6A34.
-
-SavedDataTable:
-    .word ItemHistory               ;($69B4)Base for save game slot 0.
-    .word ItemHistory               ;($69B4)Base for save game slot 1.
-    .word ItemHistory               ;($69B4)Base for save game slot 2.
-
-;--------------------------------[ Clear screen data (not used) ]------------------------------------
-
-ClearScreenData:
-    jsr ScreenOff                   ;($C439)Turn off screen.
-    lda #$FF                        ;
-    sta $00                         ;Prepare to fill nametable with #$FF.
-    jsr ClearNameTable              ;($C175)Clear selected nametable.
-    jmp EraseAllSprites             ;($C1A3)Clear sprite data.
-*/
 
 ;----------------------------------------------------------------------------------------------------
 
@@ -4694,7 +4521,6 @@ CheckOneItem:
     sta ObjectCntrl                 ;Change color of item every other frame.
     lda SpritePagePos               ;Load current index into sprite RAM.
     pha                             ;Temp save sprite RAM position.
-    lda PowerUps.0.data07,x         ;this read is redundant
     jsr ObjDrawFrame                   ;($DE4A)Display special item.
 
     pla                             ;Restore sprite page position byte.
@@ -7876,19 +7702,6 @@ UpdateRoomSpriteInfo:
     bne Lx246
         sta ElevatorStatus
     Lx246:
-    ; unused RAM $0700-$0723
-    ldx #_sizeof_Mem0700 - _sizeof_Mem0700.0.b
-    Lx247:
-        lda Mem0700.0.data04,x
-        bne Lx248
-            lda #$FF
-            sta Mem0700.0.data00,x
-        Lx248:
-        txa
-        sec
-        sbc #_sizeof_Mem0700.0
-        tax
-        bpl Lx247
     ; statues
     cpy StatueHi
     bne Lx249

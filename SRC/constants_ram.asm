@@ -33,15 +33,6 @@
     unused           db
 .endst
 
-.struct Struct0700 ; unused
-    data00           db
-    data01           db
-    data02           db
-    data03           db
-    data04           db
-    data05           db
-.endst
-
 .struct PipeBugHole
     status           db   ;bit0-3: spawned enemy type (often $7, pipe bug)
                                    ;bit7: strong variant
@@ -203,24 +194,17 @@ RetrigDelay2           db        ;The retriggering of held down buttons.
 
 NMIStatus              db        ;0=NMI in progress. anything else, NMI not in progress.
 PPUDataPending         db        ;1=not PPU data pending, 1=data pending.
-;PalDataPending         db       ;Not used in this mod. Was pending palette data. Palette # = PalDataPending - 1.
 CollisionDirection     db        ;Used when Samus or an enemy checks for tile collision. 0 = right, 1 = left, 2 = down, 3 = up
 GameMode               db        ;0 = Game is playing, 1 = At title/password screen
 MainRoutine            db        ;5 = Game paused, 3 = Game engine running
 TitleRoutine           db        ;Stores title routine number currently running.
 NextRoutine            db        ;Stores next routine to jump to after WaitTimer expires.
 
-SpareMem21             dw
-
 CurrentBank            db        ;0 thru 7. current memory page in lower memory block.
 SwitchPending          db        ;Switch memory page. Page # = SwitchPending - 1.
 CurrentMainBank        db
 AttrTableHorizontalUpdatePending db
 AttrTableVerticalUpdatePending db
-;SwitchUpperBits        db        ;Not used in this mod. Was used to store bits 3 and 4 for MMC1 register 3.  Bits-->
-                                   ;3 and 4 should always be 0 under normal conditions.
-
-SpareMem28             db
 
 TimerDelay             db        ;Count down from 9 to 0. Decremented every frame.
 Timer1                 db        ;Decremented every frame after set.
@@ -232,10 +216,7 @@ FrameCount             db        ;Increments every frame(overflows every 256 fra
 RandomNumber1          db        ;Random numbers used-->
 RandomNumber2          db        ;throughout the game.
 
-SpareMem30             db        ;Written to, but never accessed.
 GamePaused             db        ;#$00=Game running, #$01=Game paused.
-
-SpareMem32             db
 
 RoomPtr                dw        ;Low byte of room pointer address.
 ; RoomPtr+1              = $34     ;High byte of room pointer address.
@@ -257,27 +238,8 @@ CartRAMPtr             dw        ;Low byte of pointer to room RAM (#$00).
                                    ;RAM conatins a completed room in it, the entire contents-->
                                    ;of the room RAM is loaded into the PPU.
 
-;RoomPtrTable           dw        ;Low byte of start of room pointer table.
-; RoomPtrTable+1         = $3C     ;High byte of start of room pointer table.
-
-;StructPtrTable         dw        ;Low byte of start of structure pointer table.
-; StructPtrTable+1       = $3E     ;High byte of structure pointer table.
-
-;MacroPtr               dw        ;Low byte of pointer into macro definitions.
-; MacroPtr+1             = $40     ;High byte of pointer into macro definitions.
-
-SpareMem3C             ds 6
-
 EnmyFrameTbl1Ptr       dw        ;Low byte of pointer into address table to find enemy animations.
 ; EnmyFrameTbl1Ptr+1     = $42     ;High byte of pointer into address table to find enemy animations.
-
-;EnmyFrameTbl2Ptr       dw        ;Same as above except in a second table because there are-->
-; EnmyFrameTbl2Ptr+1     = $44     ;too many entries to fit into one table.
-
-;EnmyPlaceTblPtr        dw        ;Low byte of pointer into enemy frame placement table.
-; EnmyPlaceTblPtr+1      = $46     ;High byte of pointer into enemy frame placement table.
-
-SpareMem44             ds 4
 
 EnemyAnimPtr           dw        ;Low byte of start of EnemyAnimIndexTbl.
 ; EnemyAnimPtr+1         = $48     ;High byte of start of EnemyAnimIndexTbl.
@@ -296,9 +258,6 @@ SamusDir               db        ;0 = Right, 1 = Left.
 SamusDoorDir           db        ;Direction Samus passed through door.
 SamusMapPosY           db        ;Current y position on world map of the screen to load into VRAM.
 SamusMapPosX           db        ;Current x position on world map of the screen to load into VRAM.
-;SamusScrX              db        ;Samus x position on screen.
-;SamusScrY              db        ;Samus y position on screen.
-SpareMem51             dw
 WalkSoundDelay         db   
 StatuesBridgeIsSpawned db        ;0=Bridge is not spawned, 1=Bridge is spawned and will build itself.
 IsSamus                db        ;1=Samus object being accessed, 0=not Samus.
@@ -359,12 +318,7 @@ SamusKnockbackIsBomb   db        ;bit 7: 0=samus was hurt, 1=samus was bombed
 InArea                 db        ;#$00=Brinstar, #$01=Norfair, #$02=Kraid hideout,-->
                                    ;#$03=Tourian, #$04=Ridley hideout.
 
-SpareMem75             db        ;Initialized to #$FF in AreaInit. Not used.
-;PalToggle              db   
-SpareMem76             db
 SamusKnockbackIsBomb77 db        ;set to SamusKnockbackIsBomb
-
-SpareMem78             db
 
 ItemRoomMusicStatus    db        ;#$00=Item room music not playing.
                                    ;#$01=Play item room music.
@@ -373,10 +327,6 @@ ItemRoomMusicStatus    db        ;#$00=Item room music not playing.
 
 ; $7A-$DE cleared in MoreInit (should clear $DF, off-by-one bug?)
 .union
-    SpareMem7A             db        ;cleared in MoreInit, never used in gameplay
-
-    SpareMem7B             dw
-
     OnFrozenEnemy          db        ;#$01=Samus standing on frozen enemy, #$00=she is not.
 
     KraidLintCounter       db        ;Used to determine when to fire Kraid's lint. Accidentally used by Ridley too.
@@ -395,8 +345,6 @@ ItemRoomMusicStatus    db        ;#$00=Item room music not playing.
     ; EnemyFlipAfterDisplacementAnimIndex+1 = $86     ;left facing anim index for enemy using EnemyFlipAfterDisplacement routine
     SpawnFireball_87       db        ;fireball status?
     SpawnFireball_EnData0A db
-
-    SpareMem89             db
 
     MellowRandomNumber     db
 
@@ -420,23 +368,7 @@ ItemRoomMusicStatus    db        ;#$00=Item room music not playing.
 
 ;----------------------------------------------------------------------------------------------------
 
-;DoorPalChangeDir       db       ;When Samus enters a palette change room, this stores the ScrollDir
-                                  ;she entered with, so that if the next door she enters is also
-                                  ;in that direction, we can change the palette.
-SpareMem91             db
-
 MetroidOnSamus         db        ;#$01=Metroid on Samus, #$00=Metroid not on Samus.
-
-;MissilePickupQtyMax    db        ;Maximum missile drops that can be picked up. Randomly-->
-                                   ;recalculated whenever Samus goes through a door.
-;EnergyPickupQtyMax     db        ;Maximum energy drops that can be picked up. Randomly-->
-                                   ;recalculated whenever Samus goes through a door.
-;MissilePickupQtyCur    db        ;Number of missile drops currently collected by Samus-->
-                                   ;Reset to 0 when Samus goes through a door.
-;EnergyPickupQtyCur     db        ;Number of energy drops currently collected by Samus-->
-                                   ;Reset to 0 when Samus goes through a door.
-
-SpareMem93             ds 4
 
 CannonIndex            db        ;Current cannon being processed
 
@@ -473,18 +405,10 @@ SkreeProjectiles       instanceof SkreeProjectile 4 startfrom 0
 
     MoveSamusUp_IsUnrollCheck db
 .nextu
-    ; $B7 is unused
-
-    SpareMemB0             ds 7
-    SpareMemB7             db        ;Written to in title routine and accessed by unused routine.
-    SpareMemB8             ds 3      ;Written to in title routine and accessed by unused routine.
-    SpareMemBB             db        ;Written to in title routine, but never accessed.
-
     CrossMsl0to3SlowDelay  db        ;This address holds an 8 frame delay. when the delay is up,-->
                                     ;The crosshair sprites double their speed.
     CrossMsl4to7SpawnDelay db        ;This address holds a 32 frame delay.  When the delay is-->
                                     ;up, the second set of crosshair sprites start their movement.
-    SpareMemBE             db
     SecondCrosshairSprites db        ;#$01=Second crosshair sprites active in intro.
 
     FlashScreen            db        ;#$01=Flash screen during crosshairs routine.
@@ -493,23 +417,10 @@ SkreeProjectiles       instanceof SkreeProjectile 4 startfrom 0
     IntroStarOffset        db        ;Contains offset into IntroStarPntr table for twinkle effect.
     FadeDataIndex          db        ;Index to palette data to fade items in and out during intro.
 
-    SpareMemC5             db        ;Written to in title routine, but never accessed.
     CrossExplodeLengthIndex db       ;#$00 thru #$04. Index to find cross sprite data.
     IsUpdatingCrossExplode db        ;#$01=Draw cross on screen during crosshairs routine.
     SpriteLoadPending      db        ;Set to #$00 after sprite RAM load complete.
-    SpareMemC9             dw        ;Written to in title routine, but never accessed.
-    SpareMemCB             db        ;Written to in title routine, but never accessed.
-    SpareMemCC             db        ;Written to in title routine, but never accessed.
-    SpareMemCD             db        ;Written to in title routine, but never accessed.
-    SpareMemCE             db        ;Written to in title routine, but never accessed.
-    SpareMemCF             db        ;Written to in title routine, but never accessed.
-    SpareMemD0             db        ;Written to in title routine, but never accessed.
-    SpareMemD1             db        ;Written to in title routine, but never accessed.
-    SpareMemD2             db        ;Written to in title routine, but never accessed.
-    SpareMemD3             ds 4      ;Written to in title routine, but never accessed.
-    SpareMemD7             db        ;Written to in title routine, but never accessed.
     IntroMusicRestart      db        ;After all title routines run twice, restarts intro music.
-    SpareMemD9             ds 7
 .endu
 
 SoundE0               dw
@@ -533,17 +444,9 @@ VolumeEnvelopeIndex     db        ;Desired address number in VolumeCntrlAdressTb
 VolumeEnvelopePtr      dw
 ; VolumeEnvelopePtr+1    = $ED
 
-SpareMemEE             dw
-
-ABStatus               db        ;Stores A and B button status in AreaInit. Never used.
-
-SpareMemF1             ds 9
-
 MirrorCntrl            db        ;If bit 3 is set, PPU set to horizontal mirroring-->
                                    ;else if bit 3 is clear, PPU is set to vertical-->
                                    ;mirroring. No other bits seem to matter.
-
-SpareMemFB             db
 
 ScrollY                db        ;Y value loaded into scroll register.
 ScrollX                db        ;X value loaded into scroll register.
@@ -869,8 +772,6 @@ SQ2VolumeIndex         db        ;Stores index to SQ2 volume data in a volume da
 SQ1VolumeData          db        ;stores duty cycle and this frame volume data of SQ1
 SQ2VolumeData          db        ;Stores duty cycle and this frame volume data of SQ2
 
-SpareMem066E           dw
-
 NoiseSFXData           db        ;Stores additional info for Noise SFX
 SQ1SFXData             db        ;Stores additional info for SQ1 SFX
 SQ2SFXData             db        ;Stores additional info for SQ2 SFX
@@ -909,11 +810,6 @@ PreviousMusic          db
 
 .enum $0700 export
 
-; 6 slots of 6 bytes each ($0700-$0723)
-Mem0700                instanceof Struct0700 6 startfrom 0
-
-SpareMem0724           ds 4
-
 ; 4 slots of 8 bytes each ($0728-$0747)
 PipeBugHoles           instanceof PipeBugHole 4 startfrom 0
 
@@ -930,8 +826,6 @@ TileInfo2              db        ;Tile patterns to replace blasted tiles.
 TileInfo3              db        ;
 TileInfo4              db        ;
 TileInfo5              db        ;
-
-SpareMem0787           ds $19
 
 PPUStrIndex            db        ;# of bytes of data in PPUDataString. #$4F bytes max.
 

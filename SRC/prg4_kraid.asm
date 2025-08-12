@@ -59,12 +59,7 @@ PalPntrTbl:
 
 AreaPointers:
     .word SpecItmsTbl               ;($A26D)Beginning of special items table.
-    .word $0000                     ;($A1D5)Was beginning of room pointer table.
-    .word $0000                     ;($A21F)Was beginning of structure pointer table.
-    .word $0000                     ;($AC32)Was beginning of macro definitions.
     .word EnFramePtrTable1          ;($9CF7)Address table into enemy animation data.
-    .word $0000                     ;
-    .word $0000                     ;($9F0E)Was pointers to enemy frame placement data.
     .word EnAnimTbl                 ;($9C86)Index to values in addr tables for enemy animations.
 
 ; Tourian-specific jump table (dummied out in other banks)
