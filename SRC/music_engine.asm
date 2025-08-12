@@ -1526,9 +1526,11 @@ LBB40:
 LBB8C:
     lda Cntrl0Data                  ;
     sta SQ1_VOL,y                 ;Write Cntrl0Data.
+    jmp +
 LBB91:
     lda Cntrl0Data                  ;
     sta SQ1VolumeData,x             ;Store volume data index to volume data.
++
     lda MusicSQ1PeriodLow,y         ;
     sta SQ1_LO,y                 ;
     lda MusicSQ1PeriodHigh,y        ;Write data to three sound channel addresses.
