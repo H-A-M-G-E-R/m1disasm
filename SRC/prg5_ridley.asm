@@ -17,6 +17,7 @@
 .include "hardware.asm"
 .include "constants.asm"
 .include "macros.asm"
+.include "config.asm"
 
 .redef BANK = 5
 .section "ROM Bank $005" bank 5 slot "ROMSwitchSlot" orga $8000 force

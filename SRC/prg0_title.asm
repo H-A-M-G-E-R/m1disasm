@@ -17,6 +17,7 @@
 .include "hardware.asm"
 .include "constants.asm"
 .include "macros.asm"
+.include "config.asm"
 
 .def BANK = 0
 .section "ROM Bank $000" bank 0 slot "ROMSwitchSlot" orga $8000 force
@@ -4244,13 +4245,21 @@ InitTitleGFX:
     .byte TitleSPR/$400+3
 
 LoadSamusGFX:
+.if CFG_NUM_SAMUS_TILES == 16
     ldy #SamusSuitGFX4/$400.b
+.elif CFG_NUM_SAMUS_TILES == 32
+    ldy #SamusSuitGFX1/$400.b
+.endif
 
     ;Branch if wearing suit
     lda JustInBailey
     beq LC5EB
         ;Switch to girl gfx
+    .if CFG_NUM_SAMUS_TILES == 16
         ldy #SamusSuitlessGFX4/$400.b
+    .elif CFG_NUM_SAMUS_TILES == 32
+        ldy #SamusSuitlessGFX1/$400.b
+    .endif
     LC5EB:
     sty CHRBank2
     rts
@@ -4466,12 +4475,12 @@ LE11C:
     lda EndTimer                  ;
     jsr Adiv16                      ;($C2BF)Lower timer digit.
     jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    lda #$2E                        ;"TI" sprite(left half of "TIME").
+    lda #$1E+CFG_NUM_SAMUS_TILES.b  ;"TI" sprite(left half of "TIME").
     sta SpriteRAM.0.tileID,x             ;
     inc SpriteRAM.0.attrib,x             ;Change color of sprite.
     cpx #$FC                        ;If at last sprite, branch to skip.
     bcs LE14A                           ;
-    lda #$2F                        ;"ME" sprite(right half of "TIME").
+    lda #$1F+CFG_NUM_SAMUS_TILES.b  ;"ME" sprite(right half of "TIME").
     sta SpriteRAM.1.tileID,x             ;
     inc SpriteRAM.1.attrib,x             ;Change color of sprite.
 
@@ -4485,7 +4494,7 @@ LE14A:
     jsr Adiv16
     sta $03                         ;Temp store tank count.
     ldy #$00                        ;Tank index.
-    lda #$2D                        ;"Full energy tank" tile.
+    lda #$1D+CFG_NUM_SAMUS_TILES.b  ;"Full energy tank" tile.
     sta $00                         ;
     lda Health+1                    ;
     jsr Adiv16                      ;($C2BF)/16. A contains # of full energy tanks.
@@ -4514,7 +4523,7 @@ RTS_E172:
 
 SPRWriteDigit:
     clc
-    adc #$30                        ;#$A0 is index into pattern table for numbers.
+    adc #$20+CFG_NUM_SAMUS_TILES.b  ;#$A0 is index into pattern table for numbers.
     sta SpriteRAM.0.tileID,x             ;Store proper nametable pattern in sprite RAM.
     jmp Xplus4                      ;Find next sprite pattern table byte.
 
@@ -4595,16 +4604,16 @@ DivideByRepeatedSubtraction: ;($E1AD)
 ;Sprite data for Samus' data display
 
 DataDisplayTbl:
-    .byte $21,$30,$01,$30           ;Upper health digit.
-    .byte $21,$30,$01,$38           ;Lower health digit.
+    .byte $21,$20+CFG_NUM_SAMUS_TILES,$01,$30           ;Upper health digit.
+    .byte $21,$20+CFG_NUM_SAMUS_TILES,$01,$38           ;Lower health digit.
     .byte $2B,$FF,$01,$28           ;Upper missile digit.
     .byte $2B,$FF,$01,$30           ;Middle missile digit.
     .byte $2B,$FF,$01,$38           ;Lower missile digit.
-    .byte $2B,$12,$00,$18           ;Left half of missile.
-    .byte $2B,$13,$00,$20           ;Right half of missile.
-    .byte $21,$29,$01,$18           ;E
-    .byte $21,$2A,$01,$20           ;N
-    .byte $21,$2B,$00,$28           ;..
+    .byte $2B,$02+CFG_NUM_SAMUS_TILES,$00,$18           ;Left half of missile.
+    .byte $2B,$03+CFG_NUM_SAMUS_TILES,$00,$20           ;Right half of missile.
+    .byte $21,$19+CFG_NUM_SAMUS_TILES,$01,$18           ;E
+    .byte $21,$1A+CFG_NUM_SAMUS_TILES,$01,$20           ;N
+    .byte $21,$1B+CFG_NUM_SAMUS_TILES,$00,$28           ;..
 
 ;-------------------------------------[ Compressed nametables ]-------------------------------------
 

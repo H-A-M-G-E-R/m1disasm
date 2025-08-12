@@ -19,6 +19,7 @@
 .include "hardware.asm"
 .include "constants.asm"
 .include "macros.asm"
+.include "config.asm"
 
 .redef BANK = $F
 .section "ROM Bank $00F" bank $F slot "ROMFixedSlot" orga $C000 force

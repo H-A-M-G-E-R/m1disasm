@@ -17,6 +17,7 @@
 .include "hardware.asm"
 .include "constants.asm"
 .include "macros.asm"
+.include "config.asm"
 
 .redef BANK = 3
 .section "ROM Bank $003" bank 3 slot "ROMSwitchSlot" orga $8000 force
@@ -1980,13 +1981,13 @@ DrawEndTimerEnemy:
     ror
     and #$0F
     clc
-    adc #$30
+    adc #$20+CFG_NUM_SAMUS_TILES.b
     sta SpriteRAM+($00<<2)+$01,x
     ; set tile of tens digit
     lda EndTimer+1
     and #$0F
     clc
-    adc #$30
+    adc #$20+CFG_NUM_SAMUS_TILES.b
     sta SpriteRAM+($01<<2)+$01,x
     ; set tile of ones digit
     lda EndTimer
@@ -1997,7 +1998,7 @@ DrawEndTimerEnemy:
     ror
     and #$0F
     clc
-    adc #$30
+    adc #$20+CFG_NUM_SAMUS_TILES.b
     sta SpriteRAM+($02<<2)+$01,x
 RTS_A28A:
     rts
