@@ -35,12 +35,6 @@ MainTitleRoutine:
     lda Joy1Change
     and #BUTTON_START
     beq L8022
-        ; clear unused variables
-        ldy #$00
-        sty SpareMemD1
-        sty SpareMemBB
-        sty SpareMemB7
-        sty SpareMemB8
         ;Set name table to name table 0.
         lda PPUCTRL_ZP
         and #$FC
@@ -113,11 +107,6 @@ L8027:
 ;----------------------------------------[ Intro routines ]------------------------------------------
 
 ClearSpareMem:
-    ;Clears two memory addresses not used by the game.
-    lda #$00
-    sta SpareMemCB
-    sta SpareMemC9
-
 IncTitleRoutine0A:
 IncTitleRoutine0B:
     ;Increment to next title routine.
@@ -125,23 +114,10 @@ IncTitleRoutine0B:
     rts
 
 InitializeAfterReset:
-    ldy #$02
-    sty SpareMemCF
-    sty SpareMemCC
-    dey ;Y=1.
-    sty SpareMemCE
-    sty SpareMemD1
-    dey ;Y=0.
-    sty SpareMemD0
-    sty SpareMemCD
-    sty SpareMemD3
+    ldy #$00
     sty NARPASSWORD                 ;Set NARPASSWORD not active.
-    sty SpareMemCB
-    sty SpareMemC9
     lda #$02                        ;A=2.
     sta IntroMusicRestart           ;Title rountines cycle twice before restart of music.
-    sty SpareMemB7
-    sty SpareMemB8
     sty PalDataIndex                ;Reset index to palette data.
     sty ScreenFlashPalIndex         ;Reset index into screen flash palette data.
     sty IntroStarOffset             ;Reset index into IntroStarPntr table.
@@ -246,13 +222,10 @@ DrawIntroBackground:
 
     lda #$01                        ;
     jsr WriteTitlePal               ;Write palette 0.
-    sta SpareMemC5                  ;Not accessed by game.
     lda PPUCTRL_ZP                  ;
     and #$FC                        ;Switch to name table 0
     sta PPUCTRL_ZP                  ;
     inc TitleRoutine                ;Next routine sets up METROID fade in delay.
-    lda #$00                        ;
-    sta SpareMemD7                  ;Not accessed by game.
     jmp ScreenOn                    ;($C447)Turn screen on.
 
 FadeInDelay:
@@ -409,44 +382,6 @@ L81DB:
     sta ObjAnimIndex                ;
     rts
 
-;Unused intro routine.
-UnusedIntroRoutine1:
-    lda #$01
-    sta SpareMemBB
-    lda #$04
-    sta SpritePagePos
-    sta Joy1Change
-    sta Joy1Status
-    sta Joy1Retrig
-    lda #$03
-    sta ObjAction
-    sta ScrollDir
-    inc TitleRoutine
-    rts
-
-;Unused intro routine. It looks like this routine-->
-;was going to be used to manipulate sprite objects.
-UnusedIntroRoutine2:
-    lda ObjAction
-    cmp #$04
-    bne RTS_822D
-    lda #$00
-    sta ObjAction
-    lda #ObjAnim_SamusJumpTransition - ObjectAnimIndexTbl.b
-    sta ObjAnimResetIndex
-    lda #ObjAnim_SamusJump - ObjectAnimIndexTbl.b
-    sta ObjAnimIndex
-    lda #_id_ObjFrame07.b
-    sta ObjAnimFrame
-    lda #$08
-    sta Timer3
-    lda #$00
-    sta SpareMemC9 ;Not accessed by game.
-    sta SpareMemCB ;Not accessed by game.
-    inc TitleRoutine
-RTS_822D:
-    rts
-
 ChangeIntroNameTable:
     ;Change to name table 1.
     lda PPUCTRL_ZP
@@ -460,8 +395,6 @@ ChangeIntroNameTable:
     ;Index to FadeInPalData.
     lda #$06
     sta FadeDataIndex
-    lda #$00
-    sta SpareMemC9 ;Not accessed by game.
     rts
 
 MessageFadeIn:
@@ -495,8 +428,6 @@ MessageFadeOut:
     bne L827F                       ;If not, branch.
     lda #$06                        ;
     sta FadeDataIndex               ;Set index to start of fade in data.
-    lda #$00                        ;
-    sta SpareMemCB                  ;Not accessed by game.
     inc TitleRoutine                ;Next routine is DelayIntroReplay.
     bne RTS_8282                    ;Branch always.
 L827F:
@@ -512,28 +443,9 @@ DelayIntroReplay:
     sta Timer3
     rts
 
-;Unused intro routine.
-UnusedIntroRoutine3:
-    lda Timer3
-    bne RTS_82A2
-    lda SpareMemB7
-    bne RTS_82A2
-    lda SpareMemB8
-    and #$0F
-    bne RTS_82A2
-    lda #$01
-    sta SpareMemD2
-    lda #$10
-    sta Timer3
-    inc TitleRoutine
-RTS_82A2:
-    rts
-
 PrepIntroRestart:
     lda Timer3                      ;Check if delay timer has expired.  If not, branch-->
     bne RTS_82E9                    ;to exit, else run this rouine.
-    sta SpareMemD2                  ;Not accessed by game.
-    sta SpareMemBB                  ;Not accessed by game.
     sta IsSamus                     ;Clear IsSamus memory address.
     ldy #$1F                        ;
 L82AF:
@@ -544,22 +456,14 @@ L82AF:
     and #$FC                        ;
     sta PPUCTRL_ZP                  ;
     iny                             ;Y=0.
-    sty SpareMemB7                  ;Accessed by unused routine.
-    sty SpareMemB8                  ;Accessed by unused routine.
     sty PalDataIndex                ;
     sty ScreenFlashPalIndex         ;Clear all index values from these addresses.
     sty IntroStarOffset             ;
     sty FadeDataIndex               ;
-    sty SpareMemCD                  ;Not accessed by game.
     sty Joy1Change                  ;
     sty Joy1Status                  ;Clear addresses that were going to be written to by an-->
     sty Joy1Retrig                  ;unused intro routine.
-    sty SpareMemD7                  ;Not accessed by game.
-    iny                             ;Y=1.
-    sty SpareMemCE                  ;Not accessed by game.
-    iny                             ;Y=2.
-    sty SpareMemCC                  ;Not accessed by game.
-    sty SpareMemCF                  ;Not accessed by game.
+    ldy #$02                        ;
     sty TitleRoutine                ;Next routine sets up METROID fade in delay.
     lda IntroMusicRestart           ;Check to see if intro music needs to be restarted.-->
     bne L82EA                       ;Branch if not.
@@ -2446,194 +2350,6 @@ PrepareEraseTiles:
     stx $02
     sty $03
     jmp WriteTileBlast              ;($C328)Erase the selected tiles.
-
-;---------------------------------------[ Unused intro routines ]------------------------------------
-
-;The following routines are intro routines that are not used in this version of the game.  It
-;appears that the intro routine was originally going to be more complex with a more advanced
-;sprite control mechanism and name table writing routines. The intro routines are a mess! In
-;addition to unused routines, there are several unused memory addresses that are written to but
-;never read.
-
-;The following unused routine writes something to the-->
-;PPU string and prepares for a PPU write.
-UnusedIntroRoutine4:
-    stx PPUStrIndex
-    lda #$00
-    sta PPUDataString,x
-    lda #$01
-    sta PPUDataPending
-    rts
-
-
-;Unused intro routine. It looks like originally the-->
-;title routines were going to write data to the name-->
-;tables in the middle of the title sequences.
-UnusedIntroRoutine5:
-    ; run subroutine for high nybble
-    sta $05
-    and #$F0
-    lsr
-    lsr
-    lsr
-    lsr
-    jsr @subroutine
-    ; run subroutine for low nybble
-    lda $05
-    and #$0F
-    ; fallthrough
-    
-@subroutine:
-    ; store nybble to current location in PPUDataString buffer
-    sta PPUDataString,x
-    ; move to next byte in buffer
-    inx
-    ; exit if we haven't moved outside the bounds of the buffer
-    txa
-    cmp #$55
-    bcc @RTS
-
-    ; oh no. we are out of bounds
-    ; cancel writing the current ppu string to the buffer
-    ldx PPUStrIndex
-    @loop_infinite:
-        ; cancel repeatedly forever
-        ; pretty sure this is a bug
-        lda #$00 
-        sta PPUDataString,x
-        beq @loop_infinite
-@RTS:
-    rts
-
-;Another unused intro routine.
-UnusedIntroRoutine6:
-    ; push y
-    tya
-    pha
-    
-    ; y = y*16
-    jsr Amul16
-    tay
-    ; load hex number into $0A-$0B
-    lda UnusedIntro684A+1,y
-    sta $0B
-    lda UnusedIntro684A,y
-    sta $0A
-    ; transform into BCD
-    jsr UnusedIntroRoutine8
-    ; save BCD to UnusedIntro683C
-    lda $06
-    sta UnusedIntro683C+1,x
-    lda $07
-    sta UnusedIntro683C,x
-    
-    ; pop y
-    pla
-    tay
-    rts
-
-;Another unused intro routine.
-UnusedIntroRoutine7:
-    ; push y
-    tya
-    pha
-    
-    ; y = y*16
-    jsr Amul16
-    tay
-    ; load hex number into $0A-$0B
-    lda UnusedIntro684C+1,y
-    sta $0B
-    lda UnusedIntro684C,y
-    sta $0A
-    ; transform into BCD
-    jsr UnusedIntroRoutine8
-    ; save BCD to UnusedIntro6833
-    lda $06
-    sta UnusedIntro6833+1,x
-    lda $07
-    sta UnusedIntro6833,x
-    
-    ; push UnusedIntro6842,y to stack
-    lda UnusedIntro6842,y
-    pha
-    ; y = x*2
-    txa
-    lsr
-    tay
-    ; save pushed value
-    pla
-    sta UnusedIntro6839,y
-    
-    ; pop y
-    pla
-    tay
-    rts
-
-;Unused intro routine. A 16-bit version of HexToDec.
-;Convert 16-bit value in $0A-$0B to 4 decimal digits.
-;Stored as a 16-bit BCD value in $06-$07.
-UnusedIntroRoutine8: ;($94DA)
-    lda #$FF
-    sta $01
-    sta $02
-    sta $03
-    sec
-    @loop_A:
-        ; subtract 1000 from $0A-$0B
-        lda $0A
-        sbc #$E8
-        sta $0A
-        lda $0B
-        sbc #$03
-        sta $0B
-        ; increment the thousands digit
-        inc $03
-        bcs @loop_A
-    ; undo the last subtraction
-    lda $0A
-    adc #$E8
-    sta $0A
-    lda $0B
-    adc #$03
-    sta $0B
-    ; hundreds
-    lda $0A
-    @loop_B:
-        sec
-        @loop_C:
-            sbc #$64
-            inc $02
-            bcs @loop_C
-        dec $0B
-        bpl @loop_B
-    ; undo the last subtraction
-    adc #$64
-    ; tens
-    sec
-    @loop_D:
-        sbc #$0A
-        inc $01
-        bcs @loop_D
-    ; undo the last subtraction
-    adc #$0A
-    
-    ; all digits have now been isolated:
-    ; thousands in $03, hundreds in $02, tens in $01, ones in a
-    
-    ; store ones in $06
-    sta $06
-    ; add tens multiplied by 16 to $06
-    lda $01
-    jsr Amul16
-    ora $06
-    sta $06
-    ; store thousands multiplied by 16 + hundreds in $07
-    lda $03
-    jsr Amul16
-    ora $02
-    sta $07
-    rts
 
 ;--------------------------------------[ Palette data ]---------------------------------------------
 

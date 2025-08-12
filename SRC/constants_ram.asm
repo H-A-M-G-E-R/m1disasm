@@ -33,6 +33,36 @@
     unused           db
 .endst
 
+.struct PipeBugHole
+    status           db   ;bit0-3: spawned enemy type (often $7, pipe bug)
+                                   ;bit7: strong variant
+                                   ;#$FF=no hole
+    enemySlot        db   ; enemy slot to spawn pipe bug in
+    y                db   ; y position of hole
+    x                db   ; x position of hole
+    hi               db   ; nametable position of hole
+    unused           ds 3
+.endst
+
+.struct PowerUp
+    type             db   ;Holds the byte describing what power-up is on name table.
+    y                db   ;Y coordinate of the power-up.
+    x                db   ;X coordiante of the power-up
+    hi               db   ;#$00 if on name table 0, #$01 if on name table 3.
+    unused           ds 3
+    data07           db   ;stored to A before ObjDrawFrame immediately overwrites it
+.endst
+
+.struct Zebetite
+    status           db
+    vramPtr          dw   ;Pointer to top-left tile of Zebetite in the nametable.
+    ; vramPtr+1      = $075A
+    qtyHits          db   ;Number of missile hits dealt to Zebetite. Dies at 8 hits.
+    healingDelay     db   ;Heals 1 hit when counts down from #$40 to #$00.
+    isHit            db   ;#$01 if zebetite got hit by a missile this frame, else #$00
+    unused           dw
+.endst
+
 .struct EnExtra
     status           db ;Keeps track of enemy statuses. #$00=Enemy slot not in use,-->
                           ;#$04=Enemy frozen.
@@ -164,24 +194,17 @@ RetrigDelay2           db        ;The retriggering of held down buttons.
 
 NMIStatus              db        ;0=NMI in progress. anything else, NMI not in progress.
 PPUDataPending         db        ;1=not PPU data pending, 1=data pending.
-;PalDataPending         db       ;Not used in this mod. Was pending palette data. Palette # = PalDataPending - 1.
 CollisionDirection     db        ;Used when Samus or an enemy checks for tile collision. 0 = right, 1 = left, 2 = down, 3 = up
 GameMode               db        ;0 = Game is playing, 1 = At title/password screen
 MainRoutine            db        ;5 = Game paused, 3 = Game engine running
 TitleRoutine           db        ;Stores title routine number currently running.
 NextRoutine            db        ;Stores next routine to jump to after WaitTimer expires.
 
-SpareMem21             dw
-
 CurrentBank            db        ;0 thru 7. current memory page in lower memory block.
 SwitchPending          db        ;Switch memory page. Page # = SwitchPending - 1.
 CurrentMainBank        db
 AttrTableHorizontalUpdatePending db
 AttrTableVerticalUpdatePending db
-;SwitchUpperBits        db        ;Not used in this mod. Was used to store bits 3 and 4 for MMC1 register 3.  Bits-->
-                                   ;3 and 4 should always be 0 under normal conditions.
-
-SpareMem28             db
 
 TimerDelay             db        ;Count down from 9 to 0. Decremented every frame.
 Timer1                 db        ;Decremented every frame after set.
@@ -193,10 +216,7 @@ FrameCount             db        ;Increments every frame(overflows every 256 fra
 RandomNumber1          db        ;Random numbers used-->
 RandomNumber2          db        ;throughout the game.
 
-SpareMem30             db        ;Written to, but never accessed.
 GamePaused             db        ;#$00=Game running, #$01=Game paused.
-
-SpareMem32             db
 
 RoomPtr                dw        ;Low byte of room pointer address.
 ; RoomPtr+1              = $34     ;High byte of room pointer address.
@@ -218,27 +238,8 @@ CartRAMPtr             dw        ;Low byte of pointer to room RAM (#$00).
                                    ;RAM conatins a completed room in it, the entire contents-->
                                    ;of the room RAM is loaded into the PPU.
 
-;RoomPtrTable           dw        ;Low byte of start of room pointer table.
-; RoomPtrTable+1         = $3C     ;High byte of start of room pointer table.
-
-;StructPtrTable         dw        ;Low byte of start of structure pointer table.
-; StructPtrTable+1       = $3E     ;High byte of structure pointer table.
-
-;MacroPtr               dw        ;Low byte of pointer into macro definitions.
-; MacroPtr+1             = $40     ;High byte of pointer into macro definitions.
-
-SpareMem3C             ds 6
-
 EnmyFrameTbl1Ptr       dw        ;Low byte of pointer into address table to find enemy animations.
 ; EnmyFrameTbl1Ptr+1     = $42     ;High byte of pointer into address table to find enemy animations.
-
-;EnmyFrameTbl2Ptr       dw        ;Same as above except in a second table because there are-->
-; EnmyFrameTbl2Ptr+1     = $44     ;too many entries to fit into one table.
-
-;EnmyPlaceTblPtr        dw        ;Low byte of pointer into enemy frame placement table.
-; EnmyPlaceTblPtr+1      = $46     ;High byte of pointer into enemy frame placement table.
-
-SpareMem44             ds 4
 
 EnemyAnimPtr           dw        ;Low byte of start of EnemyAnimIndexTbl.
 ; EnemyAnimPtr+1         = $48     ;High byte of start of EnemyAnimIndexTbl.
@@ -257,9 +258,6 @@ SamusDir               db        ;0 = Right, 1 = Left.
 SamusDoorDir           db        ;Direction Samus passed through door.
 SamusMapPosY           db        ;Current y position on world map of the screen to load into VRAM.
 SamusMapPosX           db        ;Current x position on world map of the screen to load into VRAM.
-;SamusScrX              db        ;Samus x position on screen.
-;SamusScrY              db        ;Samus y position on screen.
-SpareMem51             dw
 WalkSoundDelay         db   
 StatuesBridgeIsSpawned db        ;0=Bridge is not spawned, 1=Bridge is spawned and will build itself.
 IsSamus                db        ;1=Samus object being accessed, 0=not Samus.
@@ -320,12 +318,7 @@ SamusKnockbackIsBomb   db        ;bit 7: 0=samus was hurt, 1=samus was bombed
 InArea                 db        ;#$00=Brinstar, #$01=Norfair, #$02=Kraid hideout,-->
                                    ;#$03=Tourian, #$04=Ridley hideout.
 
-SpareMem75             db        ;Initialized to #$FF in AreaInit. Not used.
-;PalToggle              db   
-SpareMem76             db
 SamusKnockbackIsBomb77 db        ;set to SamusKnockbackIsBomb
-
-SpareMem78             db
 
 ItemRoomMusicStatus    db        ;#$00=Item room music not playing.
                                    ;#$01=Play item room music.
@@ -334,10 +327,6 @@ ItemRoomMusicStatus    db        ;#$00=Item room music not playing.
 
 ; $7A-$DE cleared in MoreInit (should clear $DF, off-by-one bug?)
 .union
-    SpareMem7A             db        ;cleared in MoreInit, never used in gameplay
-
-    SpareMem7B             dw
-
     OnFrozenEnemy          db        ;#$01=Samus standing on frozen enemy, #$00=she is not.
 
     KraidLintCounter       db        ;Used to determine when to fire Kraid's lint. Accidentally used by Ridley too.
@@ -356,8 +345,6 @@ ItemRoomMusicStatus    db        ;#$00=Item room music not playing.
     ; EnemyFlipAfterDisplacementAnimIndex+1 = $86     ;left facing anim index for enemy using EnemyFlipAfterDisplacement routine
     SpawnFireball_87       db        ;fireball status?
     SpawnFireball_EnData0A db
-
-    SpareMem89             db
 
     MellowRandomNumber     db
 
@@ -381,23 +368,7 @@ ItemRoomMusicStatus    db        ;#$00=Item room music not playing.
 
 ;----------------------------------------------------------------------------------------------------
 
-;DoorPalChangeDir       db       ;When Samus enters a palette change room, this stores the ScrollDir
-                                  ;she entered with, so that if the next door she enters is also
-                                  ;in that direction, we can change the palette.
-SpareMem91             db
-
 MetroidOnSamus         db        ;#$01=Metroid on Samus, #$00=Metroid not on Samus.
-
-;MissilePickupQtyMax    db        ;Maximum missile drops that can be picked up. Randomly-->
-                                   ;recalculated whenever Samus goes through a door.
-;EnergyPickupQtyMax     db        ;Maximum energy drops that can be picked up. Randomly-->
-                                   ;recalculated whenever Samus goes through a door.
-;MissilePickupQtyCur    db        ;Number of missile drops currently collected by Samus-->
-                                   ;Reset to 0 when Samus goes through a door.
-;EnergyPickupQtyCur     db        ;Number of energy drops currently collected by Samus-->
-                                   ;Reset to 0 when Samus goes through a door.
-
-SpareMem93             ds 4
 
 CannonIndex            db        ;Current cannon being processed
 
@@ -438,18 +409,10 @@ SkreeProjectiles       instanceof SkreeProjectile 4 startfrom 0
     TouchingHealyBlock     db
     TouchingMissileRefill  db
 .nextu
-    ; $B7 is unused
-
-    SpareMemB0             ds 7
-    SpareMemB7             db        ;Written to in title routine and accessed by unused routine.
-    SpareMemB8             ds 3      ;Written to in title routine and accessed by unused routine.
-    SpareMemBB             db        ;Written to in title routine, but never accessed.
-
     CrossMsl0to3SlowDelay  db        ;This address holds an 8 frame delay. when the delay is up,-->
                                     ;The crosshair sprites double their speed.
     CrossMsl4to7SpawnDelay db        ;This address holds a 32 frame delay.  When the delay is-->
                                     ;up, the second set of crosshair sprites start their movement.
-    SpareMemBE             db
     SecondCrosshairSprites db        ;#$01=Second crosshair sprites active in intro.
 
     FlashScreen            db        ;#$01=Flash screen during crosshairs routine.
@@ -458,23 +421,10 @@ SkreeProjectiles       instanceof SkreeProjectile 4 startfrom 0
     IntroStarOffset        db        ;Contains offset into IntroStarPntr table for twinkle effect.
     FadeDataIndex          db        ;Index to palette data to fade items in and out during intro.
 
-    SpareMemC5             db        ;Written to in title routine, but never accessed.
     CrossExplodeLengthIndex db       ;#$00 thru #$04. Index to find cross sprite data.
     IsUpdatingCrossExplode db        ;#$01=Draw cross on screen during crosshairs routine.
     SpriteLoadPending      db        ;Set to #$00 after sprite RAM load complete.
-    SpareMemC9             dw        ;Written to in title routine, but never accessed.
-    SpareMemCB             db        ;Written to in title routine, but never accessed.
-    SpareMemCC             db        ;Written to in title routine, but never accessed.
-    SpareMemCD             db        ;Written to in title routine, but never accessed.
-    SpareMemCE             db        ;Written to in title routine, but never accessed.
-    SpareMemCF             db        ;Written to in title routine, but never accessed.
-    SpareMemD0             db        ;Written to in title routine, but never accessed.
-    SpareMemD1             db        ;Written to in title routine, but never accessed.
-    SpareMemD2             db        ;Written to in title routine, but never accessed.
-    SpareMemD3             ds 4      ;Written to in title routine, but never accessed.
-    SpareMemD7             db        ;Written to in title routine, but never accessed.
     IntroMusicRestart      db        ;After all title routines run twice, restarts intro music.
-    SpareMemD9             ds 7
 .endu
 
 SoundE0               dw
@@ -498,17 +448,9 @@ VolumeEnvelopeIndex     db        ;Desired address number in VolumeCntrlAdressTb
 VolumeEnvelopePtr      dw
 ; VolumeEnvelopePtr+1    = $ED
 
-SpareMemEE             dw
-
-ABStatus               db        ;Stores A and B button status in AreaInit. Never used.
-
-SpareMemF1             ds 9
-
 MirrorCntrl            db        ;If bit 3 is set, PPU set to horizontal mirroring-->
                                    ;else if bit 3 is clear, PPU is set to vertical-->
                                    ;mirroring. No other bits seem to matter.
-
-SpareMemFB             db
 
 ScrollY                db        ;Y value loaded into scroll register.
 ScrollX                db        ;X value loaded into scroll register.
@@ -727,183 +669,169 @@ ProjectileWaveDir      = $0502   ; bullet direction, used to get movement string
 
 ;---------------------------------[ Sound engine memory addresses ]----------------------------------
 
-MusicSQ1PeriodLow      = $0600   ;Loaded into SQ1_LO when playing music
-MusicSQ1PeriodHigh     = $0601   ;Loaded into SQ1_HI when playing music
+.enum $0600 export
 
-;SFXPaused              = $0602   ;0=Game not paused, 1=Game paused
-;PauseSFXStatus         = $0603   ;Plays PauseMusic SFX if less than #$12
+MusicSQ1PeriodLow      db        ;Loaded into SQ1_LO when playing music
+MusicSQ1PeriodHigh     db        ;Loaded into SQ1_HI when playing music
 
-MusicSQ2PeriodLow      = $0604   ;Loaded into SQ2_LO when playing music
-MusicSQ2PeriodHigh     = $0605   ;Loaded into SQ2_HI when playing music
+Mem0602                db
+Mem0603                db
 
-WriteMultiChannelData  = $0607   ;1=data needs to be written, 0=no data to write
+MusicSQ2PeriodLow      db        ;Loaded into SQ2_LO when playing music
+MusicSQ2PeriodHigh     db        ;Loaded into SQ2_HI when playing music
 
-MusicTriPeriodLow      = $0608   ;Loaded into TRI_LO when playing music
-MisicTriPeriodHigh     = $0609   ;Loaded into TRI_HI when playing music
+Mem0606                db        ;Don't remove it, it's needed
 
-TriPeriodLow           = $0610   ;Stores triangle SFX period low for processing
-TriPeriodHigh          = $0611   ;Stroes triangle SFX period high for processing
-TriChangeLow           = $0612   ;Stores triangle SFX change in period low
-TriChangeHigh          = $0613   ;Stores triangle SFX change in period high
+WriteMultiChannelData  db        ;1=data needs to be written, 0=no data to write
 
-TriPeriodDividedLow    = $0614   ;Low result of DivideTriPeriods division. Used as TriChangeLow.
-TriPeriodDividedHigh   = $0615   ;High result of DivideTriPeriods division. Used as TriChangeHigh.
-TriPeriodDivisor       = $0616   ;Used in DivideTriPeriods as divisor for TriPeriod values.
-DivideData             = $0617   ;Used in DivideTriPeriods
+MusicTriPeriodLow      db        ;Loaded into TRI_LO when playing music
+MisicTriPeriodHigh     db        ;Loaded into TRI_HI when playing music
 
-;HasBeamSFX             = $061F   ;Was: Bit 7 set=has long beam, bit 0 set=has ice beam
+TriPeriodLow           db        ;Stores triangle SFX period low for processing
+TriPeriodHigh          db        ;Stroes triangle SFX period high for processing
+TriChangeLow           db        ;Stores triangle SFX change in period low
+TriChangeHigh          db        ;Stores triangle SFX change in period high
+
+TriPeriodDividedLow    db        ;Low result of DivideTriPeriods division. Used as TriChangeLow.
+TriPeriodDividedHigh   db        ;High result of DivideTriPeriods division. Used as TriChangeHigh.
+TriPeriodDivisor       db        ;Used in DivideTriPeriods as divisor for TriPeriod values.
+DivideData             db        ;Used in DivideTriPeriods
 
 ;The following addresses are loaded into $0640 thru $0643 when those
 ;addresses decrement to zero.  These addresses do not decrement.
 
-SQ1FrameCountInit      = $0620   ;Holds number of frames to play SQ1 channel data
-SQ2FrameCountInit      = $0621   ;Holds number of frames to play SQ2 channel data
-TriFrameCountInit      = $0622   ;Holds number of frames to play Triangle channel data
-NoiseFrameCountInit    = $0623   ;Holds number of frames to play Noise channel data
+SQ1FrameCountInit      db        ;Holds number of frames to play SQ1 channel data
+SQ2FrameCountInit      db        ;Holds number of frames to play SQ2 channel data
+TriFrameCountInit      db        ;Holds number of frames to play Triangle channel data
+NoiseFrameCountInit    db        ;Holds number of frames to play Noise channel data
 
-SQ1RepeatCounter       = $0624   ;Number of times to repeat SQ1 music loop
-SQ2RepeatCounter       = $0625   ;Number of times to repeat SQ2 music loop
-TriRepeatCounter       = $0626   ;Number of times to repeat Triangle music loop
-NoiseRepeatCounter     = $0627   ;Number of times to repeat Noise music loop
+SQ1RepeatCounter       db        ;Number of times to repeat SQ1 music loop
+SQ2RepeatCounter       db        ;Number of times to repeat SQ2 music loop
+TriRepeatCounter       db        ;Number of times to repeat Triangle music loop
+NoiseRepeatCounter     db        ;Number of times to repeat Noise music loop
 
-SQ1DutyEnvelope        = $0628   ;Loaded into SQ1_VOL when playing music
-SQ2DutyEnvelope        = $0629   ;Loaded into SQ2_VOL when playing music
-TriLinearCount         = $062A   ;disable\enable counter, linear count length
+SQ1DutyEnvelope        db        ;Loaded into SQ1_VOL when playing music
+SQ2DutyEnvelope        db        ;Loaded into SQ2_VOL when playing music
+TriLinearCount         db        ;disable\enable counter, linear count length
 
-NoteLengthTblOffset    = $062B   ;Stores the offset to find proper note length table
-MusicRepeat            = $062C   ;0=Music does not repeat, Nonzero=music repeats
-TriCounterCntrl        = $062D   ;$F0=disable length cntr, $00=long note, $0F=short note
-SQ1VolumeEnvelopeIndex = $062E   ;Entry number in VolumeEnvelopePtrTable for SQ1
-SQ2VolumeEnvelopeIndex = $062F   ;Entry number in VolumeEnvelopePtrTable for SQ2
-SQ1Base                = $0630   ;Low byte of base address for SQ1 music data
+NoteLengthTblOffset    db        ;Stores the offset to find proper note length table
+MusicRepeat            db        ;0=Music does not repeat, Nonzero=music repeats
+TriCounterCntrl        db        ;$F0=disable length cntr, $00=long note, $0F=short note
+SQ1VolumeEnvelopeIndex db        ;Entry number in VolumeEnvelopePtrTable for SQ1
+SQ2VolumeEnvelopeIndex db        ;Entry number in VolumeEnvelopePtrTable for SQ2
+SQ1Base                dw        ;Low byte of base address for SQ1 music data
 ; SQ1Base+1              = $0631   ;High byte of base address for SQ1 music data
-SQ2Base                = $0632   ;Low byte of base address for SQ2 music data
+SQ2Base                dw        ;Low byte of base address for SQ2 music data
 ; SQ2Base+1              = $0633   ;High byte of base address for SQ2 music data
-TriBase                = $0634   ;Low byte of base address for Triangle music data
+TriBase                dw        ;Low byte of base address for Triangle music data
 ; TriBase+1              = $0635   ;High byte of base address for Triangle music data
-NoiseBase              = $0636   ;Low byte of base address for Noise music data
+NoiseBase              dw        ;Low byte of base address for Noise music data
 ; NoiseBase+1            = $0637   ;High byte of base address for Noise music data
 
-SQ1MusicIndexIndex     = $0638   ;Index to find SQ1 sound data index. Base=$630,$631
-SQ2MusicIndexIndex     = $0639   ;Index to find SQ2 sound data index. Base=$632,$633
-TriMusicIndexIndex     = $063A   ;Index to find Tri sound data index. Base=$634,$635
-NoiseMusicIndexIndex   = $063B   ;Index to find Noise sound data index. Base=$636,$637
+SQ1MusicIndexIndex     db        ;Index to find SQ1 sound data index. Base=$630,$631
+SQ2MusicIndexIndex     db        ;Index to find SQ2 sound data index. Base=$632,$633
+TriMusicIndexIndex     db        ;Index to find Tri sound data index. Base=$634,$635
+NoiseMusicIndexIndex   db        ;Index to find Noise sound data index. Base=$636,$637
 
-SQ1LoopIndex           = $063C   ;SQ1 Loop start index
-SQ2LoopIndex           = $063D   ;SQ2 loop start index
-TriLoopIndex           = $063E   ;Triangle loop start index
-NoiseLoopIndex         = $063F   ;Noise loop start index
+SQ1LoopIndex           db        ;SQ1 Loop start index
+SQ2LoopIndex           db        ;SQ2 loop start index
+TriLoopIndex           db        ;Triangle loop start index
+NoiseLoopIndex         db        ;Noise loop start index
 
-SQ1MusicFrameCount     = $0640   ;Decrements every sq1 frame. When 0, load new data
-SQ2MusicFrameCount     = $0641   ;Decrements every sq2 frame. when 0, load new data
-TriMusicFrameCount     = $0642   ;Decrements every triangle frame. When 0, load new data
-NoiseMusicFrameCount   = $0643   ;Decrements every noise frame. When 0, load new data
+SQ1MusicFrameCount     db        ;Decrements every sq1 frame. When 0, load new data
+SQ2MusicFrameCount     db        ;Decrements every sq2 frame. when 0, load new data
+TriMusicFrameCount     db        ;Decrements every triangle frame. When 0, load new data
+NoiseMusicFrameCount   db        ;Decrements every noise frame. When 0, load new data
 
-MusicSQ1Sweep          = $0648   ;Value is loaded into SQ1_SWEEP when playing music
-MusicSQ2Sweep          = $0649   ;Value is loaded into SQ2_SWEEP when playing music
-TriSweep               = $064A   ;Loaded into TRI_UNUSED(not used)
+MusicSQ1Sweep          db        ;Value is loaded into SQ1_SWEEP when playing music
+MusicSQ2Sweep          db        ;Value is loaded into SQ2_SWEEP when playing music
+TriSweep               db        ;Loaded into TRI_UNUSED(not used)
 
-ThisSoundChannel       = $064B   ;Least sig. byte of current channel(00,04,08 or 0C)
+ThisSoundChannel       db        ;Least sig. byte of current channel(00,04,08 or 0C)
 
-CurrentSFXFlags        = $064D   ;Stores flags of SFX currently being processed.
+CurrentSFXFlags        db        ;Stores flags of SFX currently being processed.
 
-NoiseInUse             = $0652   ;Noise in use? (Not used)
-SQ1InUse               = $0653   ;1=SQ1 channel being used by SFX, 0=not in use
-SQ2InUse               = $0654   ;2=SQ2 channel being used by SFX, 0=not in use
-TriInUse               = $0655   ;3=Triangle channel being used by SFX, 0=not in use
+NoiseInUse             db        ;Noise in use? (Not used)
+SQ1InUse               db        ;1=SQ1 channel being used by SFX, 0=not in use
+SQ2InUse               db        ;2=SQ2 channel being used by SFX, 0=not in use
+TriInUse               db        ;3=Triangle channel being used by SFX, 0=not in use
 
-ChannelType            = $065C   ;Stores channel type being processed(0,1,2,3 or 4)
-;CurrentMusicRepeat     = $065D   ;Stores flags of music to repeat
-;MusicInitIndex         = $065E   ;index for loading $62B thru $637(base=$BD31).
+ChannelType            db        ;Stores channel type being processed(0,1,2,3 or 4)
 
-NoiseSFXLength         = $0660   ;Stores number of frames to play Noise SFX
-SQ1SFXLength           = $0661   ;Stores number of frames to play SQ1 SFX
-SQ2SFXLngth            = $0662   ;Stores number of frames to play SQ2 SFX
-TriSFXLength           = $0663   ;Stores number of frames to play Triangle SFX
-MultiSFXLength         = $0664   ;Stores number of frames to play Multi SFX
+NoiseSFXLength         db        ;Stores number of frames to play Noise SFX
+SQ1SFXLength           db        ;Stores number of frames to play SQ1 SFX
+SQ2SFXLngth            db        ;Stores number of frames to play SQ2 SFX
+TriSFXLength           db        ;Stores number of frames to play Triangle SFX
+MultiSFXLength         db        ;Stores number of frames to play Multi SFX
 
-ThisNoiseFrame         = $0665   ;Stores current frame number for noise SFX
-ThisSQ1Frame           = $0666   ;Stores current frame number for sq1 SFX
-ThisSQ2Frame           = $0667   ;Stores current frame number for SQ2 SFX
-ThisTriFrame           = $0668   ;Stores current frame number for triangle SFX
-ThisMultiFrame         = $0669   ;Stores current frame number for Multi SFX
+ThisNoiseFrame         db        ;Stores current frame number for noise SFX
+ThisSQ1Frame           db        ;Stores current frame number for sq1 SFX
+ThisSQ2Frame           db        ;Stores current frame number for SQ2 SFX
+ThisTriFrame           db        ;Stores current frame number for triangle SFX
+ThisMultiFrame         db        ;Stores current frame number for Multi SFX
 
-SQ1VolumeIndex         = $066A   ;Stores index to SQ1 volume data in a volume data tbl
-SQ2VolumeIndex         = $066B   ;Stores index to SQ2 volume data in a volume data tbl
+SQ1VolumeIndex         db        ;Stores index to SQ1 volume data in a volume data tbl
+SQ2VolumeIndex         db        ;Stores index to SQ2 volume data in a volume data tbl
 
-SQ1VolumeData          = $066C   ;stores duty cycle and this frame volume data of SQ1
-SQ2VolumeData          = $066D   ;Stores duty cycle and this frame volume data of SQ2
+SQ1VolumeData          db        ;stores duty cycle and this frame volume data of SQ1
+SQ2VolumeData          db        ;Stores duty cycle and this frame volume data of SQ2
 
-NoiseSFXData           = $0670   ;Stores additional info for Noise SFX
-SQ1SFXData             = $0671   ;Stores additional info for SQ1 SFX
-SQ2SFXData             = $0672   ;Stores additional info for SQ2 SFX
-TriSFXData             = $0673   ;Stores additional info for triangle SFX
-MultiSFXData           = $0674   ;Stores additional info for Multi SFX
-SQ1SQ2SFXData          = $0675   ;Stores additional info for SQ1 and SQ2 SFX
+NoiseSFXData           db        ;Stores additional info for Noise SFX
+SQ1SFXData             db        ;Stores additional info for SQ1 SFX
+SQ2SFXData             db        ;Stores additional info for SQ2 SFX
+TriSFXData             db        ;Stores additional info for triangle SFX
 
-ScrewAttackSFXData     = $0678   ;Contains extra data for screw attack SFX
-SQ1SFXPeriodLow        = $0679   ;Period low data for processing multi SFX routines
+NoiseSFXData1          db        ;Stores additional info for Noise SFX
+SQ1SFXData1            .db       ;Stores additional info for SQ1 SFX
+SQ1SQ2SFXData          db        ;Stores additional info for SQ1 and SQ2 SFX (for multi SFX)
+SQ2SFXData1            db        ;Stores additional info for SQ2 SFX
+TriSFXData1            db        ;Stores additional info for triangle SFX
 
-NoiseSFXFlag           = $0680   ;Initialization flags for noise SFX
-SQ1SFXFlag             = $0681   ;Initialization flags for SQ1 SFX
-SQ2SFXFlag             = $0682   ;Initialization flags for SQ2 SFX(never used)
-TriSFXFlag             = $0683   ;Initialization flags for triangle SFX
-MultiSFXFlag           = $0684   ;Initialization Flags for SFX and some music
+NoiseSFXData2          db        ;Contains extra data for screw attack SFX
+SQ1SFXData2            .db       ;Stores additional info for SQ1 SFX
+SQ1SFXPeriodLow        db        ;Period low data for processing multi SFX routines
+SQ2SFXData2            db        ;Stores additional info for SQ2 SFX
+TriSFXData2            db        ;Stores additional info for triangle SFX
 
-PreviousMusic          = $0685   ;Music init flags in vanilla
+NoiseSFXFlag           db        ;Initialization flags for noise SFX
+SQ1SFXFlag             db        ;Initialization flags for SQ1 SFX
+SQ2SFXFlag             db        ;Initialization flags for SQ2 SFX(never used)
+TriSFXFlag             db        ;Initialization flags for triangle SFX
+MultiSFXFlag           db        ;Initialization Flags for SFX and some music
 
-ScrewAttack0686        = $0686
+NoiseContSFX           db        ;Continuation flags for noise SFX
+SQ1ContSFX             db        ;Continuation flags for SQ1 SFX
+SQ2ContSFX             db        ;Continuation flags for SQ2 SFX (never used)
+TriContSFX             db        ;Continuation flags for Triangle SFX
+MultiContSFX           db        ;Continuation flags for Multi SFX
 
-NoiseContSFX           = $0688   ;Continuation flags for noise SFX
-SQ1ContSFX             = $0689   ;Continuation flags for SQ1 SFX
-SQ2ContSFX             = $068A   ;Continuation flags for SQ2 SFX (never used)
-TriContSFX             = $068B   ;Continuation flags for Triangle SFX
-MultiContSFX           = $068C   ;Continuation flags for Multi SFX
+CurrentMusic           db        ;Stores the flag of the current music being played
+PreviousMusic          db
 
-CurrentMusic           = $068D   ;Stores the flag of the current music being played
+.ende
 
 ;----------------------------------------------------------------------------------------------------
 
-; 5 slots of 6 bytes each ($0700-$0723)
-Mem0700                = $0700
-Mem0704                = $0704
-
+.enum $0700 export
 
 ; 4 slots of 8 bytes each ($0728-$0747)
-PipeBugHoleStatus      = $0728   ;bit0-3: spawned enemy type (often $7, pipe bug)
-                                   ;bit7: strong variant
-                                   ;#$FF=no hole
-PipeBugHoleEnemySlot   = $0729   ; enemy slot to spawn pipe bug in
-PipeBugHoleY           = $072A   ; y position of hole
-PipeBugHoleX           = $072B   ; x position of hole
-PipeBugHoleHi          = $072C   ; nametable position of hole
+PipeBugHoles           instanceof PipeBugHole 4 startfrom 0
 
 ; 2 slots of 8 bytes each ($0748-$0757)
-PowerUpType            = $0748   ;Holds the byte describing what power-up is on name table.
-PowerUpYCoord          = $0749   ;Y coordinate of the power-up.
-PowerUpXCoord          = $074A   ;X coordiante of the power-up
-PowerUpNameTable       = $074B   ;#$00 if on name table 0, #$01 if on name table 3.
-PowerUpAnimIndex       = $074F   ;Entry into FramePtrTable for item animation.
+PowerUps               instanceof PowerUp 2 startfrom 0
 
 ; 5 Zebetite slots of 8 bytes each ($0758-$077F)
-ZebetiteStatus         = $0758
-ZebetiteVRAMPtr        = $0759   ;Pointer to top-left tile of Zebetite in the nametable.
-; ZebetiteVRAMPtr+1      = $075A
-ZebetiteQtyHits        = $075B   ;Number of missile hits dealt to Zebetite. Dies at 8 hits.
-ZebetiteHealingDelay   = $075C   ;Heals 1 hit when counts down from #$40 to #$00.
-ZebetiteIsHit          = $075D   ;#$01 if zebetite got hit by a missile this frame, else #$00
-; $075E is unused
-; $075F is unused
+Zebetites              instanceof Zebetite 5 startfrom 0
 
-TileSize               = $0780   ;4 MSBs=Y size of tile to erase. 4 LSBs=X size of tile to erase.
-TileInfo0              = $0781   ;
-TileInfo1              = $0782   ;
-TileInfo2              = $0783   ;Tile patterns to replace blasted tiles.
-TileInfo3              = $0784   ;
-TileInfo4              = $0785   ;
-TileInfo5              = $0786   ;
+TileSize               db        ;4 MSBs=Y size of tile to erase. 4 LSBs=X size of tile to erase.
+TileInfo0              db        ;
+TileInfo1              db        ;
+TileInfo2              db        ;Tile patterns to replace blasted tiles.
+TileInfo3              db        ;
+TileInfo4              db        ;
+TileInfo5              db        ;
 
-PPUStrIndex            = $07A0   ;# of bytes of data in PPUDataString. #$4F bytes max.
+PPUStrIndex            db        ;# of bytes of data in PPUDataString. #$4F bytes max.
 
 ;$07A1 thru $07F0 contain a byte string of data to be written the the PPU. 
 ;The first two bytes in the string are the address of the starting point in the PPU to write -->
@@ -917,7 +845,9 @@ PPUStrIndex            = $07A0   ;# of bytes of data in PPUDataString. #$4F byte
 ;Any following bytes are the actual data bytes to be written to the PPU.
 ;#$00 separates the data chunks.
 
-PPUDataString          = $07A1   ;Thru $07F0. String of data bytes to be written to PPU.
+PPUDataString          db        ;Thru $07F0. String of data bytes to be written to PPU.
+
+.ende
 
 ;----------------------------------------------------------------------------------------------------
 
