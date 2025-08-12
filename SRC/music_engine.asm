@@ -424,47 +424,12 @@ ClearMusicChannels:
 CheckRepeatMusic:
     ;If music is supposed to repeat, reset music flags else branch to exit.
     lda MusicRepeat
-    beq InitializeSoundAddresses
-    jmp RepeatMusic
-
-InitializeSoundAddresses:
-    ;Jumps to all subroutines needed to reset all sound addresses in order to start playing music.
-    jsr ClearMusicAndSFXAddresses
-    jsr ClearSounds
-    jmp ClearSpecialAddresses
-
-;Clears addresses used for repeating music, pausing music and controlling triangle length.
-ClearSpecialAddresses: ;($B40E)
+    beq @noRepeat
+        jmp RepeatMusic
+    @noRepeat:
     lda #$00
-    sta TriCounterCntrl
-    sta MusicRepeat
-    rts
-
-;Clears any SFX or music currently being played.
-ClearMusicAndSFXAddresses: ;($B41D)
-    lda #$00
-    sta SQ1InUse
-    sta SQ2InUse
-    sta TriInUse
-    sta WriteMultiChannelData
-    sta NoiseContSFX
-    sta SQ1ContSFX
-    sta SQ2ContSFX
-    sta TriContSFX
-    sta MultiContSFX
     sta CurrentMusic
-    rts
-
-;Clears all sounds that might be in the sound channel registers.
-ClearSounds: ;($B43E)
-    lda #$10
-    sta SQ1_VOL
-    sta SQ2_VOL
-    sta NOISE_VOL
-    lda #$00
-    sta TRI_LINEAR
-    sta DMC_RAW
-    rts
+    jmp ClearMusicChannels
 
 SelectSFXRoutine:
     ldx ChannelType                 ;

@@ -2803,8 +2803,6 @@ SetSamusJump:
     lda SamusGear
     and #gr_SCREWATTACK
     beq Lx017      ; branch if Samus doesn't have Screw Attack
-    lda #$00
-    sta ScrewAttack0686
     jsr SFX_ScrewAttack
 Lx017:
     jsr SFX_SamusJump
@@ -2968,8 +2966,6 @@ SetSamusRoll:
     sta ObjAnimIndex
     lda RunAccelerationTbl,x
     sta SamusAccelX
-    lda #$01
-    sta ScrewAttack0686
     jmp SFX_SamusBall
 
 Lx030:

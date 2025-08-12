@@ -767,9 +767,8 @@ ProjectileWaveDir      = $0502   ; bullet direction, used to get movement string
 MusicSQ1PeriodLow      db        ;Loaded into SQ1_LO when playing music
 MusicSQ1PeriodHigh     db        ;Loaded into SQ1_HI when playing music
 
-;
-SFXPaused              db        ;0=Game not paused, 1=Game paused
-PauseSFXStatus         db        ;Plays PauseMusic SFX if less than #$12
+Mem0602                db
+Mem0603                db
 
 MusicSQ2PeriodLow      db        ;Loaded into SQ2_LO when playing music
 MusicSQ2PeriodHigh     db        ;Loaded into SQ2_HI when playing music
@@ -781,8 +780,6 @@ WriteMultiChannelData  db        ;1=data needs to be written, 0=no data to write
 MusicTriPeriodLow      db        ;Loaded into TRI_LO when playing music
 MisicTriPeriodHigh     db        ;Loaded into TRI_HI when playing music
 
-SpareMem060A           ds 6
-
 TriPeriodLow           db        ;Stores triangle SFX period low for processing
 TriPeriodHigh          db        ;Stroes triangle SFX period high for processing
 TriChangeLow           db        ;Stores triangle SFX change in period low
@@ -792,11 +789,6 @@ TriPeriodDividedLow    db        ;Low result of DivideTriPeriods division. Used 
 TriPeriodDividedHigh   db        ;High result of DivideTriPeriods division. Used as TriChangeHigh.
 TriPeriodDivisor       db        ;Used in DivideTriPeriods as divisor for TriPeriod values.
 DivideData             db        ;Used in DivideTriPeriods
-
-SpareMem0618           ds 7
-
-;
-HasBeamSFX             db        ;Bit 7 set=has long beam, bit 0 set=has ice beam
 
 ;The following addresses are loaded into $0640 thru $0643 when those
 ;addresses decrement to zero.  These addresses do not decrement.
@@ -844,34 +836,20 @@ SQ2MusicFrameCount     db        ;Decrements every sq2 frame. when 0, load new d
 TriMusicFrameCount     db        ;Decrements every triangle frame. When 0, load new data
 NoiseMusicFrameCount   db        ;Decrements every noise frame. When 0, load new data
 
-SpareMem0644           ds 4
-
 MusicSQ1Sweep          db        ;Value is loaded into SQ1_SWEEP when playing music
 MusicSQ2Sweep          db        ;Value is loaded into SQ2_SWEEP when playing music
 TriSweep               db        ;Loaded into TRI_UNUSED(not used)
 
 ThisSoundChannel       db        ;Least sig. byte of current channel(00,04,08 or 0C)
 
-SpareMem064C           db
-
 CurrentSFXFlags        db        ;Stores flags of SFX currently being processed.
-
-SpareMem064E           ds 4
 
 NoiseInUse             db        ;Noise in use? (Not used)
 SQ1InUse               db        ;1=SQ1 channel being used by SFX, 0=not in use
 SQ2InUse               db        ;2=SQ2 channel being used by SFX, 0=not in use
 TriInUse               db        ;3=Triangle channel being used by SFX, 0=not in use
 
-SpareMem0656           ds 6
-
 ChannelType            db        ;Stores channel type being processed(0,1,2,3 or 4)
-
-;
-CurrentMusicRepeat     db        ;Stores flags of music to repeat
-MusicInitIndex         db        ;index for loading $62B thru $637(base=$BD31).
-
-SpareMem065F           db
 
 NoiseSFXLength         db        ;Stores number of frames to play Noise SFX
 SQ1SFXLength           db        ;Stores number of frames to play SQ1 SFX
@@ -910,20 +888,11 @@ SQ1SFXPeriodLow        db        ;Period low data for processing multi SFX routi
 SQ2SFXData2            db        ;Stores additional info for SQ2 SFX
 TriSFXData2            db        ;Stores additional info for triangle SFX
 
-SpareMem067C           ds 4
-
 NoiseSFXFlag           db        ;Initialization flags for noise SFX
 SQ1SFXFlag             db        ;Initialization flags for SQ1 SFX
 SQ2SFXFlag             db        ;Initialization flags for SQ2 SFX(never used)
 TriSFXFlag             db        ;Initialization flags for triangle SFX
 MultiSFXFlag           db        ;Initialization Flags for SFX and some music
-
-;MusicInitFlag          db        ;Music init flags
-PreviousMusic          db        ;Music init flags in vanilla
-
-ScrewAttack0686        db
-
-SpareMem0687           db
 
 NoiseContSFX           db        ;Continuation flags for noise SFX
 SQ1ContSFX             db        ;Continuation flags for SQ1 SFX
@@ -932,6 +901,7 @@ TriContSFX             db        ;Continuation flags for Triangle SFX
 MultiContSFX           db        ;Continuation flags for Multi SFX
 
 CurrentMusic           db        ;Stores the flag of the current music being played
+PreviousMusic          db
 
 .ende
 
