@@ -4797,25 +4797,30 @@ LDCF5:
     pla
     ldx PageIndex
 LDCFC:
-    ; Branch ahead if not in Tourian
-    lda InArea 
-    cmp #$03
-    bne Lx135
-        ; we are in tourian
-        ; never turn into a drop if enemy is a ??? or a rinka
-        lda EnsExtra.0.type,x
-        cmp #$04
-        beq Lx139
-        cmp #$02
-        beq Lx139
-    Lx135:
     ; Branch if boss just killed
     lda EnPrevStatus,x
     asl
     bmi LDD75
 
-    jsr ReadTableAt968B
+    ; get index to enemy drop chance table
+    lda EnsExtra.0.type,x
+    asl
+    adc EnsExtra.0.type,x
     sta $00
+
+    lda #<EnemyDropChanceTblNormal.b
+    sta $01
+    lda #>EnemyDropChanceTblNormal.b
+    sta $02
+    lda EnPrevStatus,x
+    bpl +
+        ; enemy is tough
+        lda #<EnemyDropChanceTblTough.b
+        sta $01
+        lda #>EnemyDropChanceTblTough.b
+        sta $02
+    +
+
     jsr LoadTableAt977B ; TableAtL977B[EnemyType[x]]*2
     and #$20
     sta EnsExtra.0.type,x
@@ -4826,55 +4831,39 @@ LDCFC:
     
     lda #$60
     sta EnData0D,x
+
+    ; choose pickup type
     jsr RandomNumbers
-    cmp #$10
-    bcc LDD5B
-LDD30:
-    and #$07
-    tay
-    lda ItemDropTbl,y
-    sta EnsExtra.0.animFrame,x
-    cmp #_id_EnFrame80.b
-    bne RTS_X137
-    ;bne Lx138
-        ; check if spawning a missile pickup is allowed
-        ; fail if the quantity of missile pickups spawned in this room has reached the max
-        ; fail if Samus's missile capacity is 0
+    ; check small energy first
+    ldy $00
+    sec
+    sbc ($01),y
+    bcs +
+        lda #_id_EnFrame81.b
+        sta EnsExtra.0.animFrame,x
+        rts
+    +
+    ; big energy
+    sbc ($01),y
+    bcs +
+        lda #_id_EnFrame89.b
+        sta EnsExtra.0.animFrame,x
+        rts
+    +
+    ; missile
+    sbc ($01),y
+    bcs LDD5B
+        ; fail if Samus missile capacity is 0
         lda MaxMissiles
         beq LDD5B
-        ; allow spawning the missile pickup
-    RTS_X137:
+        lda #_id_EnFrame80.b
+        sta EnsExtra.0.animFrame,x
         rts
-    ;Lx138:
-        ; drop type is energy pickup or no pickup
-        ; check if spawning an energy pickup is allowed
-        ; fail if the quantity of energy pickups spawned in this room has reached the max
-        
-        ; exit if it is not big energy (small energy pickup)
-        ;cmp #_id_EnFrame89.b
-        ;bne RTS_X137
-        
-        ; fail if enemy can't drop big energy
-        ;lsr $00
-        ;bcs RTS_X137
 
 LDD5B:
     ; pickup failed to spawn
-    ; if not in tourian, remove enemy
-    ldx PageIndex
-    lda InArea
-    cmp #$03
-    beq Lx140
-    Lx139:
-        jmp RemoveEnemy                  ;($FA18)Free enemy data slot.
-    Lx140:
-    ; we are in tourian
-    ; the pickup must have failed to spawn because the max quantity was hit
-    ; (BUG! this assumption is false when skipping the minibosses in NARPASSWORD)
-    ; therefore, to force the pickup to spawn anyway, reset the quantities
-    lda RandomNumber1
-    ; try to spawn the pickup again
-    jmp LDD30
+    ; remove enemy
+    jmp RemoveEnemy                  ;($FA18)Free enemy data slot.
 
 LDD75:
     ; miniboss was just killed
@@ -5019,21 +5008,6 @@ DrawEnemy_NotBlank:
     lda Temp08_RadiusY
     beq GotoClearObjectCntrl
     jmp DrawMetasprite
-
-;----------------------------------------[ Item drop table ]-----------------------------------------
-
-;The following table determines what, if any, items an enemy will drop when it is killed.
-;This is the EnFrame of the drop.
-
-ItemDropTbl:
-    .byte _id_EnFrame80                       ;Missile.
-    .byte _id_EnFrame81                       ;Energy.
-    .byte _id_EnFrame89                       ;No item / big energy.
-    .byte _id_EnFrame80                       ;Missile.
-    .byte _id_EnFrame81                       ;Energy.
-    .byte _id_EnFrame80                       ;Missile. Was no item / big energy.
-    .byte _id_EnFrame81                       ;Energy.
-    .byte _id_EnFrame89                       ;No item / big energy.
 
 ;------------------------------------[ Object drawing routines ]-------------------------------------
 
