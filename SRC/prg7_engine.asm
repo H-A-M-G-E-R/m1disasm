@@ -4844,6 +4844,7 @@ LDCFC:
         rts
     +
     ; big energy
+    iny
     sbc ($01),y
     bcs +
         lda #_id_EnFrame89.b
@@ -4851,6 +4852,7 @@ LDCFC:
         rts
     +
     ; missile
+    iny
     sbc ($01),y
     bcs LDD5B
         ; fail if Samus missile capacity is 0
