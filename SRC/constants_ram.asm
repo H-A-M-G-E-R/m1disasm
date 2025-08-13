@@ -292,6 +292,7 @@ SamusDoorData          db        ;The upper 4 bits store either 1 or 2. If 1 is 
 DoorDelay              db        ;Number of frames to delay when Samus entering/exiting doors.
 RoomNumber             db        ;Room number currently being loaded. #$FF=no room requested.
 SpritePagePos          db        ;Index into sprite RAM used to load object sprite data.
+TilesetChangePending   db
 
 ; 4 slots of 2 bytes each ($5C-$63)
 DoorCartRAMPtr         dsw 4
@@ -332,11 +333,6 @@ SamusKnockbackIsBomb   db        ;bit 7: 0=samus was hurt, 1=samus was bombed
                                    ;bit 0: 0=diagonal knockback, 1=vertical knockback
 
 SamusKnockbackIsBomb77 db        ;set to SamusKnockbackIsBomb
-
-ItemRoomMusicStatus    db        ;#$00=Item room music not playing.
-                                   ;#$01=Play item room music.
-                                   ;#$80=Stop item room music once door scroll complete.
-                                   ;#$81=Item room music already playing. Don't restart.
 
 ; $7A-$DE cleared in MoreInit (should clear $DF, off-by-one bug?)
 .union
@@ -419,6 +415,8 @@ SkreeProjectiles       instanceof SkreeProjectile 4 startfrom 0
     KraidRidleyPresent     db        ;#$01=Kraid/Ridley present, #$00=Kraid/Ridley not present.
 
     MoveSamusUp_IsUnrollCheck db
+
+    AreaChangePending      db
 .nextu
     CrossMsl0to3SlowDelay  db        ;This address holds an 8 frame delay. when the delay is up,-->
                                     ;The crosshair sprites double their speed.
@@ -884,6 +882,7 @@ SaveSamusMapY          db
 SaveSamusX             db
 SaveSamusY             db
 SaveScrollDir          db        ;0 = vertical, 2 = horizontal
+CurrentRoomMusic       db
 TilesetIndex           db
 
 EndingType             db        ;1=worst ending, 5=best ending

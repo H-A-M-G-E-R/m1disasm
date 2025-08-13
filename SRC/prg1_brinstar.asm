@@ -78,17 +78,10 @@ AreaPointers:
 AreaRoutine: ; L95C3
     jmp AreaRoutineStub ; Just an RTS
 
-; area init data
-    .byte $FF                       ;Not used.
-AreaMusicFlag:
-    .byte music_Brinstar            ;Brinstar music init flag.
 AreaMinibossMusic:
     .byte music_Tourian
 
-;Special room numbers(used to start item room music).
-AreaItemRoomNumbers:
-    .byte $2B, $2C, $28, $0B, $1C, $0A, $1A
-
+; area init data (for loading from password)
 AreaSamusMapPosX:
     .byte $03   ;Samus start x coord on world map.
 AreaSamusMapPosY:
@@ -99,6 +92,10 @@ AreaSamusY:
     .byte $B0   ;Samus start vertical screen position.
 AreaScrollDir:
     .byte $02   ;Starting scroll direction. 0 = vertical, 2 = horizontal
+AreaMusicFlag:
+    .byte music_Brinstar            ;Brinstar music init flag.
+AreaTilesetIndex:
+    .byte $00
 
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl

@@ -40,7 +40,7 @@
   "x": 5760,
   "y": 3459,
   "dir": 1,
-  "type": 0
+  "to_ending": 0
  },
  {
   "obj_type": "item",
@@ -219,6 +219,18 @@
   "x": 6528,
   "y": 5763,
   "dir": 0,
-  "type": 4
+  "to_ending": 0
+ },
+ {
+  "obj_type": "area_change",
+  "x": 5760,
+  "y": 2944,
+  "area": 0
+ },
+ {
+  "obj_type": "area_change",
+  "x": 6528,
+  "y": 6272,
+  "area": 4
  }
 ]

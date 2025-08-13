@@ -1286,7 +1286,7 @@ MoreInit:
     lda StartingFromPassword
     beq +
         ; Copy area start data when Samus loads from a password.
-        ldx #AreaScrollDir-AreaSamusMapPosX+1.b
+        ldx #AreaTilesetIndex-AreaSamusMapPosX+1.b
         -
             lda AreaSamusMapPosX-1,x
             sta SaveSamusMapX-1,x
@@ -1595,8 +1595,6 @@ SamusIntro:
     lda Timer3
     bne LC9F2
         ;Fade in complete.
-        ;Make sure item room music is not playing.
-        sta ItemRoomMusicStatus
         ;Samus facing forward and can't be hurt.
         lda #sa_Begin
         sta ObjAction
@@ -3279,26 +3277,13 @@ SamusDoor:
     jsr LD48C
     jsr Doors_RemoveIfOffScreen
     jsr GotoClearAllMetroidLatches ; if it is defined in the current bank
-    lda ItemRoomMusicStatus
-    beq Lx051
-    pha
     jsr StartMusic       ; start music
-    pla
-    bpl Lx051
+    lda KraidRidleyPresent
+    beq Lx052
+    lda AreaMinibossMusic
+    sta CurrentMusic
     lda #$00
-    sta ItemRoomMusicStatus
-    beq Lx051
-    Lx050:
-        lda #$80
-        sta ItemRoomMusicStatus
-    Lx051:
-        lda KraidRidleyPresent
-        beq Lx052
-        lda AreaMinibossMusic
-        sta CurrentMusic
-        lda #$00
-        sta KraidRidleyPresent
-        beq Lx050     ; branch always
+    sta KraidRidleyPresent
 Lx052:
     lda #$00
     sta SamusDoorData
@@ -3972,11 +3957,10 @@ ElevScrollRoom:
         jmp DrawElevator
 
 ElevatorD8BF:
-    lda ElevatorType-$20,x
-    and #$7F
     ; Leads-To-Ending elevator?
-    cmp #$7F
-    bne @endIf_A
+    lda ElevatorType-$20,x
+    lsr
+    bcc @endIf_A
         ; Samus made it! YAY!
         lda #_id_IncrementRoutine.b
         sta MainRoutine
@@ -3991,66 +3975,12 @@ ElevatorD8BF:
         rts
     @endIf_A:
     
-    ; destination area is now in the low 7 bits of a
-    ; branch if it leads to a different area
-    lda InArea
-    eor ElevatorType-$20,x
-    asl
-    bne @else_C
-        ; same area
-        ; fallthrough to not change tileset if there's no tileset change object
-        lda TilesetIndex
-        sta TilesetIndexAheadOfElevator
-        ; do readahead
-        jsr ElevatorReadahead
-        ; change tileset if it's different
-        lda TilesetIndex
-        cmp TilesetIndexAheadOfElevator
-        beq @endif_C
-
-        jsr ChangeTileset
-        bne @endif_C ; branch always
-    @else_C:
-        ; different area
-        ; load destination area bank
-        lda ElevatorType-$20,x
-        and #$7F
-        jsr IsEngineRunning
-        ; fallthrough to change tileset to #$00 if there's no tileset change object
-        lda #$00
-        sta TilesetIndexAheadOfElevator
-        ; do readahead
-        jsr ElevatorReadahead
-        ; always change tileset
-        lda TilesetIndexAheadOfElevator
-        jsr ChangeTileset
-        ; copy area pointers
-        jsr CopyAreaPointers
-        ; clear all enemy slots
-        jsr DestroyEnemies
-    @endif_C:
-    ;($D92C)Start music.
-    jsr StartMusic
-    ; load elevator slot into PageIndex
-    ldx #$20
-    stx PageIndex
     ; increment elevator routine to ElevatorMove
     inc ObjAction,x
     jmp ElevatorMove
 
 StartMusic:
-    ;Load proper bit flag for area music.
-    lda AreaMusicFlag
-    ldy ItemRoomMusicStatus
-    bmi Lx114
-    beq Lx114
-    ; item room music flag is set
-    ;Set flag to play item room music.
-    lda #$81
-    sta ItemRoomMusicStatus
-    lda #music_ItemRoom
-    Lx114:
-    ;Store music flag info.
+    lda CurrentRoomMusic
     sta CurrentMusic
     rts
 
@@ -4578,11 +4508,6 @@ LDBE3:
     lda #$FF                        ;
     sta PowerUpDelayFlag            ;Initiate delay while power up music plays.
     sta PowerUps.0.type,x           ;Clear out item data from RAM.
-    ldy ItemRoomMusicStatus         ;Is Samus not in an item room?-->
-    beq LDBF1                       ;If not, branch.
-        ldy #$01                        ;Restart item room music after special item music is done.
-    LDBF1:
-    sty ItemRoomMusicStatus         ;
     jmp SelectSamusPal              ;($CB73)Set Samus new palette.
 
 Exit9:
@@ -6478,22 +6403,6 @@ LE733:
 
     sta RoomNumber                  ;Store room number.
 
-    LE758:
-        cmp AreaItemRoomNumbers,y       ;Is it a special room?-->
-        beq LE76A                       ;If so, branch to set flag to play item room music.
-        iny                             ;
-        cpy #$07                        ;
-        bne LE758                       ;Loop until all special room numbers are checked.
-
-    lda ItemRoomMusicStatus         ;Load item room music status.
-    beq LE76C                       ;Branch if not in special room.
-    lda #$80                        ;Stop playing item room music after next music start.
-    bne LE76C                       ;Branch always.
-
-LE76A:
-    lda #$01                        ;Start item room music on next music start.
-LE76C:
-    sta ItemRoomMusicStatus         ;
     clc                             ;Clear carry flag. was able to get room number.
 RTS_E76F:
     rts
@@ -7107,6 +7016,7 @@ SetupRoom:
     jsr ScanForItems                ;($ED98)Set up any special items.
     bcc +
         jsr ItemsStart
+        jsr ChangeAreaAndTilesetIfPending
     +
 
     ; Switch bank to room bank
@@ -7268,11 +7178,12 @@ EnemyStart:
         .word LoadDoor                  ;($EB8C)Room doors.
         .word LoadScrollBlock
         .word LoadElevator              ;($EC04)Elevator.
-        .word ExitSub                   ;($C45C)Rts.
+        .word SpawnObjChangeLocal
         .word LoadStatues               ;($EC2F)Kraid & Ridley statues.
         .word LoadPipeBugHole           ;($EC57)Regenerating enemies(such as Zeb).
 
 EndOfRoom:
+    jsr ChangeTilesetIfPending
     lda #$FF
     sta RoomNumber
     ;Make temp copy of ScrollDir.
@@ -7846,7 +7757,7 @@ ItemsStart:
         .word SpawnZebetite         ;($EECA)Zebetites.
         .word SpawnRinkaSpawner     ;($EEEE)Rinkas.
         .word SpawnDoor             ;($EEF4)Some doors.
-        .word SpawnTilesetChange
+        .word SpawnObjChangeGlobal
         .word SpawnRoomState
 
 ;---------------------------------------[ Squeept handler ]------------------------------------------

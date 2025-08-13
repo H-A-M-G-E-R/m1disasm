@@ -12,7 +12,14 @@
  {
   "tilemap": "FxcbFxcXGxcXFxsXFxcbFxsXFxcbFxcXGxcXFxsXFxcbFxsbGxcbGxsXGxsbFxsbFxsXFxcbFxcXGxcXFxsXFxcXGP//////////////FxcXGxj//////////////xcbFxv//////////////xkXGxsX////Hv////8e//8ZGxcXF////xr/////Gv///xcXFxce//8aFxcXFxr//x4XFxcbGv//Gv////8a//8aFxsXGxr//x7/////Hv//GhcbGxca/////////////xobFxcXHv////////////8eFxcXFxcXF////////xcXFxcX",
   "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-  "objs": []
+  "objs": [
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 4
+   }
+  ]
  },
  {
   "tilemap": "Fxf//////////xcXFxcXFxcb////////////////FxsXGxj/////////////GRcbGxcY/////////////xkbFxcX////FxcXF///////FxcG//////////////////8GBv//////////////////Bgb//////////////////wYXFxsX////////FxcXFxsXGxcXF////////xcbGxcXFxsXGxsY//////8XGxsXGxsXGxcXGP//////GxcXGxcXFxcbF///////FxcXFxcbFxsXFxf/////////GRsXFxcbFxcbF////////xkbFxsb",

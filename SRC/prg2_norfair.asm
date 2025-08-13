@@ -78,16 +78,8 @@ AreaPointers:
 AreaRoutine:
     jmp RTS_Polyp                       ;Area specific routine.(RTS)
 
-L95CC:
-    .byte $FF                       ;Not used.
-AreaMusicFlag:
-    .byte music_Norfair             ;Norfair music init flag.
 AreaMinibossMusic:
     .byte music_Tourian
-
-;Special room numbers(used to start item room music).
-AreaItemRoomNumbers:
-    .byte $10, $05, $27, $04, $0F, $FF, $FF
 
 AreaSamusMapPosX:
     .byte $16   ;Samus start x coord on world map.
@@ -99,6 +91,10 @@ AreaSamusY:
     .byte $6E   ;Samus start vertical screen position.
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
+AreaMusicFlag:
+    .byte music_Norfair             ;Norfair music init flag.
+AreaTilesetIndex:
+    .byte $00
 
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl

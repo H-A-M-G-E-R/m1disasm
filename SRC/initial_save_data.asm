@@ -16,6 +16,7 @@ InitialSaveData:
     .byte $80   ; SaveSamusX
     .byte $B0   ; SaveSamusY
     .byte $02   ; SaveScrollDir = horizontal
+    .byte music_Brinstar ; CurrentRoomMusic
     .byte $00   ; TilesetIndex
     .byte $00   ; EndingType = game not completed
     .byte $00   ; NARPASSWORD

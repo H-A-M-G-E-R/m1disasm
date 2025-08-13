@@ -1505,12 +1505,15 @@ UpdateDoor_LetSamusIn:
     bcs L8CC0
         ; the door leads to a room to the right
         ; play area music
-        jsr StartMusic
+        lda AreaMusicFlag
+        sta CurrentRoomMusic
+        sta CurrentMusic
         bne L8CC3 ; branch always
     L8CC0:
         ; the door leads to a room to the left
         ; play mother brain music
         jsr MotherBrainMusic
+        sta CurrentRoomMusic
 L8CC3:
     ; draw door
     jmp DoorSubRoutine8C71

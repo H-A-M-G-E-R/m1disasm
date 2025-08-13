@@ -86,16 +86,8 @@ GotoUpdateBullet_CollisionWithMotherBrain:
 AreaRoutine:
     jmp AreaRoutine_Tourian                       ;Area specific routine.
 
-L95CC:
-    .byte $FF                       ;Not used.
-AreaMusicFlag:
-    .byte music_Tourian             ;Tourian music init flag.
 AreaMinibossMusic:
     .byte music_Tourian
-
-;Special room numbers(used to start item room music).
-AreaItemRoomNumbers:
-    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
 AreaSamusMapPosX:
     .byte $03   ;Samus start x coord on world map.
@@ -107,6 +99,10 @@ AreaSamusY:
     .byte $6E   ;Samus start vertical screen position.
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
+AreaMusicFlag:
+    .byte music_Tourian             ;Tourian music init flag.
+AreaTilesetIndex:
+    .byte $00
 
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl
@@ -1309,6 +1305,7 @@ RTS_9ED5:
 
 L9ED6:
     lda #music_Escape
+    sta CurrentRoomMusic
     sta CurrentMusic
     lda #$05
     sta MotherBrainStatus

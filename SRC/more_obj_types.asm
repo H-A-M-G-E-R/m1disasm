@@ -9,25 +9,96 @@ LoadScrollBlock:
     lda #$01
     jmp EnemyLoop
 
+; Local object type 5
+SpawnObjChangeLocal:
+    jsr SpawnObjChange
+    jmp EnemyLoop
+
 ; Global object type $A
-SpawnTilesetChange:
-    iny
+SpawnObjChangeGlobal:
+    jsr SpawnObjChange
+    jmp ChooseSpawningRoutine
+
+SpawnObjChange:
     lda ($00),y
+    jsr Adiv16
+    iny
+    jsr ChooseRoutine
+        .word SpawnTilesetChange
+        .word SpawnMusicChange
+        .word SpawnAreaChange
+
+SpawnTilesetChange:
+    lda ($00),y
+    ldx AreaChangePending
+    bne @change
     cmp TilesetIndex
-    beq @exit
-        jsr ChangeTileset
+    beq @dontChange
+    @change:
+        tax
+        inx
+        stx TilesetChangePending
+    @dontChange:
+    lda #$02
+    rts
+
+SpawnMusicChange:
+    lda ($00),y
+    sta CurrentRoomMusic
+    ldx ObjAction
+    cpx #sa_Elevator
+    bne @exit
+        sta CurrentMusic
     @exit:
     lda #$02
-    jmp ChooseSpawningRoutine
+    rts
+
+; global only
+; if there's an area change and a tileset change in the same map coord, order the area change before the tileset change.
+SpawnAreaChange:
+    lda ($00),y
+    cmp InArea
+    beq @dontChange
+        tax
+        inx
+        stx AreaChangePending
+    @dontChange:
+    lda #$02
+    rts
+
+ChangeAreaAndTilesetIfPending:
+    ldx AreaChangePending
+    beq ChangeTilesetIfPending
+        ; switch area bank
+        dex
+        txa
+        jsr SwitchBank
+        ; copy area pointers
+        jsr CopyAreaPointers
+        ; clear enemy RAM, and also AreaChangePending
+        jsr DestroyEnemies
+        ; default to tileset #$00 if there's no tileset change previously
+        lda TilesetChangePending
+        bne ChangeTilesetIfPending
+        jmp ChangeTileset
+
+ChangeTilesetIfPending:
+    ldx TilesetChangePending
+    beq ChangeTileset@RTS
+    dex
+    txa
+    ; fallthrough
 
 ChangeTileset:
     sta TilesetIndex
     ldy #$00
     sty TileAnimIndex
     sty PalAnimIndex
+    sty TilesetChangePending
     iny
     sty TileAnimDelay
     sty PalAnimDelay
+@RTS:
     rts
 
 ; Global object type $B
@@ -86,85 +157,3 @@ SpawnRoomState_MinibossDead:
     @notDead:
     lda #$02
     rts
-
-ElevatorReadahead:
-    ; push map Y
-    lda SamusMapPosY
-    pha
-        ; get room ahead of elevator
-        tay
-        ldx PageIndex
-        lda ElevatorType-$20,x
-        bpl @down
-            dey
-            jmp @endif_B
-        @down:
-            iny
-        @endif_B:
-        sty SamusMapPosY
-        ; check if there's item room music ahead
-        jsr GetRoomNum
-
-        ; check for tileset change
-        jsr ScanForItems
-        bcc +
-            jsr ElevatorReadahead_ItemStart
-        +
-    ; restore map Y
-    pla
-    sta SamusMapPosY
-    lda #$FF
-    sta RoomNumber
-    rts
-
-ElevatorReadahead_ItemLoop:
-    jsr AddToPtr00
-ElevatorReadahead_ItemStart:
-    ldy #$00
-    lda ($00),y
-    and #$0F
-    jsr ChooseRoutine
-        .word ExitSub
-        .word @4 ; enemy
-        .word @4 ; item
-        .word @1 ; mellows
-        .word @2 ; elevator
-        .word @3 ; cannon
-        .word @1 ; mother brain
-        .word @1 ; zebetite
-        .word @1 ; rinka spawner
-        .word @2 ; door
-        .word @tilesetChange
-        .word @roomState
-
-@1:
-    lda #$01
-    bne ElevatorReadahead_ItemLoop
-
-@3:
-    lda #$03
-    bne ElevatorReadahead_ItemLoop
-
-@4:
-    lda #$04
-    bne ElevatorReadahead_ItemLoop
-
-@5:
-    lda #$05
-    bne ElevatorReadahead_ItemLoop
-
-@tilesetChange:
-    iny
-    lda ($00),y
-    sta TilesetIndexAheadOfElevator
-@2:
-    lda #$02
-    bne ElevatorReadahead_ItemLoop
-
-@roomState:
-    lda ($00),y
-    jsr Adiv16
-    jsr ChooseRoutine
-        .word @2 ; vertical scroll
-        .word @5 ; item
-        .word @2 ; miniboss dead
