@@ -1978,7 +1978,7 @@ UpdateEndTimer:
     jsr SilenceMusic
     ; set timer for 120 frames (2 seconds)
     lda #$0C
-    sta Timer3
+    jsr SetTimer3
     ; set palette to all white
     lda #_id_Palette0A+1.b
     jsr WriteAreaPal

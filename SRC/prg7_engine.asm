@@ -755,6 +755,12 @@ UpdateTimer:
         bpl @loop_decTimer
     rts
 
+SetTimer3:
+    sta Timer3
+    lda #$00
+    sta TimerDelay
+    rts
+
 ;-----------------------------------------[ Choose routine ]-----------------------------------------
 
 ;This is an indirect jump routine. A is used as an index into a code
@@ -1190,7 +1196,7 @@ RTS_C4A9:
 
 SetTimer:
     ;Set Timer3. Frames to wait is value stored in A*10.
-    sta Timer3
+    jsr SetTimer3
     ;Save routine to jump to after Timer3 expires.
     stx NextRoutine
     ;Next routine to run is WaitTimer.
@@ -1403,7 +1409,7 @@ SamusInit:
     .elif BUILDTARGET == "NES_PAL"
         lda #$26
     .endif
-    sta Timer3
+    jsr SetTimer3
     jsr IntroMusic                  ;($CBFD)Start the intro music.
     ldy #sa_FadeIn                  ;
     sty ObjAction                   ;Set Samus status as fading onto screen.

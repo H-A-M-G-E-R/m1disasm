@@ -231,7 +231,7 @@ FadeInDelay:
     and #$FE                        ;Switch to name table 0 or 2.
     sta PPUCTRL_ZP                  ;
     lda #$08                        ;Loads Timer3 with #$08. Delays Fade in routine.-->
-    sta Timer3                      ;Delays fade in by 80 frames (1.3 seconds).
+    jsr SetTimer3                      ;Delays fade in by 80 frames (1.3 seconds).
     lsr                             ;
     sta PalDataIndex                ;Loads PalDataIndex with #$04
     inc TitleRoutine                ;Increment to next routine.
@@ -259,7 +259,7 @@ FlashEffect:
     jsr LoadSparkleData             ;($87AB) Loads data for next routine.
     ;Sets Timer 3 for a delay of 240 frames (4 seconds).
     lda #$18
-    sta Timer3
+    jsr SetTimer3
 @RTS:
     rts
 
@@ -276,7 +276,7 @@ METROIDFadeIn:
     bne RTS_8141
     ;Set timer delay for METROID flash effect. Delays flash by 320 frames (5.3 seconds).
     lda #$20
-    sta Timer3
+    jsr SetTimer3
     inc TitleRoutine
 RTS_8141:
     rts
@@ -287,7 +287,7 @@ LoadFlashTimer:
     bne RTS_8141
     ;Stores a value of 80 frames in Timer3 (1.3 seconds).
     lda #$08
-    sta Timer3
+    jsr SetTimer3
     inc TitleRoutine
     rts
 
@@ -314,7 +314,7 @@ METROIDFadeOut:
     bne L817E                       ;
     jsr InitCrossMissiles           ;($8897)Load initial sprite values for crosshair routine.
     lda #$08                        ;
-    sta Timer3                      ;Load Timer3 with a delay of 80 frames(1.3 seconds).
+    jsr SetTimer3                      ;Load Timer3 with a delay of 80 frames(1.3 seconds).
     sta CrossMsl0to3SlowDelay       ;Set counter for slow sprite movement for 8 frames,
     lda #$00                        ;
     sta SecondCrosshairSprites      ;Set SecondCrosshairSprites = #$00
@@ -389,7 +389,7 @@ ChangeIntroNameTable:
     inc TitleRoutine
     ;Set Timer3 for 80 frames(1.33 seconds).
     lda #$08
-    sta Timer3
+    jsr SetTimer3
     ;Index to FadeInPalData.
     lda #$06
     sta FadeDataIndex
@@ -407,7 +407,7 @@ MessageFadeIn:
     lda #$00                        ;
     sta FadeDataIndex               ;Clear FadeDataIndex.
     lda #$30                        ;
-    sta Timer3                      ;Set Timer3 to 480 frames(8 seconds).
+    jsr SetTimer3                      ;Set Timer3 to 480 frames(8 seconds).
     inc TitleRoutine                ;Next routine is MessageFadeOut.
     bne RTS_8262                    ;Branch always.
 L825F:
@@ -438,7 +438,7 @@ DelayIntroReplay:
     inc TitleRoutine
     ;Set Timer3 for a delay of 160 frames(2.6 seconds).
     lda #$10
-    sta Timer3
+    jsr SetTimer3
     rts
 
 PrepIntroRestart:
@@ -1278,7 +1278,7 @@ CheckPassword: ;($8C5E)
     jsr SFX_SetMultiSFXFlag
     ;Set Timer3 time for 120 frames (2 seconds).
     lda #$0C
-    sta Timer3
+    jsr SetTimer3
     ;Run EnterPassword routine.
     lda #_id_EnterPassword.b
     sta TitleRoutine
@@ -1895,7 +1895,7 @@ LoadPasswordScreen:
     lda #$00                        ;
     sta InputRow                    ;Sets character select cursor to-->
     sta InputColumn                 ;upper left character (0).
-    sta Timer3                      ;
+    jsr SetTimer3                      ;
     lda #$00                        ;
     sta PasswordCursor              ;Sets password cursor to password character 0.
     ldy #$00                        ;
@@ -2253,7 +2253,7 @@ GameOver:
     jsr PreparePPUProcess           ;($9449)Clears screen and writes "GAME OVER".
     jsr NMIOn                       ;($C487)Turn on the nonmaskable interrupt.
     lda #$10                        ;Load Timer3 with a delay of 160 frames-->
-    sta Timer3                      ;(2.6 seconds) for displaying "GAME OVER".
+    jsr SetTimer3                      ;(2.6 seconds) for displaying "GAME OVER".
     lda #_id_DisplayPassword.b      ;Loads TitleRoutine with -->
     sta TitleRoutine                ;DisplayPassword.
     jmp ScreenOn                    ;($C447)Turn screen on.
@@ -2865,7 +2865,7 @@ L9AE4:
     .elif BUILDTARGET == "NES_PAL"
         lda #$38
     .endif
-    sta Timer3
+    jsr SetTimer3
     lda #$36                        ;#$36/#$03 = #$12.  Number of sprites-->
     sta SpriteByteCounter           ;used to draw end graphic of Samus.
     lda #$00                        ;
@@ -2932,7 +2932,7 @@ EndSamusFlash:
         L9B52:
         cmp #$10                        ;
         bne L9B69                       ;Once flashing Samus is compete, set Timer3-->
-        sta Timer3                      ;for a 160 frame(2.6 seconds) delay.
+        jsr SetTimer3                      ;for a 160 frame(2.6 seconds) delay.
         ldy #$00                        ;
         lda EndingType                  ;
         cmp #$04                        ;If one of the suitless Samus endings,-->
@@ -2974,7 +2974,7 @@ SamusWave:
     .elif BUILDTARGET == "NES_PAL"
         lda #$08
     .endif
-    sta Timer3
+    jsr SetTimer3
     ;Increment RoomPtr
     inc RoomPtr
     rts
@@ -3042,7 +3042,7 @@ EndFadeOut:
         .elif BUILDTARGET == "NES_PAL"
             lda #$08
         .endif
-        sta Timer3                      ;delay(2.6 seconds) and increment RoomPtr.
+        jsr SetTimer3                      ;delay(2.6 seconds) and increment RoomPtr.
         inc RoomPtr                     ;
     L9BEF:
     lda EndingType                  ;
