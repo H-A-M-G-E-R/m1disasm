@@ -4589,17 +4589,13 @@ CheckOneItem:
     LDB9F:
         tya                             ;Transfer color data to A.
         sta SpriteRAM.1.attrib,x             ;Store power up color for beam weapon.
-        lda PowerUps.0.type,y           ;Reload power up type data.
 
     LDBA5:
-    pha                             ;Temporarily store power up type.
     ldx #$00                        ;Index to object 0(Samus).
     ldy #$40                        ;Index to object 1(power up).
     jsr AreObjectsTouching          ;($DC7F)Determine if Samus is touching power up.
-    pla                             ;Restore power up type byte.
     bcs Exit9                       ;Carry clear=Samus touching power up. Carry set=not touching.
 
-    tay                             ;Store power-up type byte in Y.
     ;Power up obtained!
     ldx ItemIndex                   ;X=index to power up item slot.
     lda PowerUps.0.hi,x             ;
