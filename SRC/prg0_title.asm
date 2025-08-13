@@ -232,7 +232,7 @@ FadeInDelay:
     sta PPUCTRL_ZP                  ;
     lda #$08                        ;Loads Timer3 with #$08. Delays Fade in routine.-->
     jsr SetTimer3                      ;Delays fade in by 80 frames (1.3 seconds).
-    lsr                             ;
+    lda #$04                        ;
     sta PalDataIndex                ;Loads PalDataIndex with #$04
     inc TitleRoutine                ;Increment to next routine.
     rts
