@@ -2216,7 +2216,7 @@ IsScrewAttackActive:
         bit ObjSpeedY
         bpl RTS_CDBE
     LCDBB:
-    cmp ObjAnimIndex
+    clc
 RTS_CDBE:
     rts
 
