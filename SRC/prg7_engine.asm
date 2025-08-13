@@ -4527,21 +4527,31 @@ CheckOneItem:
     LDB9F:
         tya                             ;Transfer color data to A.
         sta SpriteRAM.1.attrib,x             ;Store power up color for beam weapon.
+    .if CFG_BEAM_UNIQUE_ITEMS == 0
         lda #$FF                        ;Indicate power up obtained is a beam weapon.
+    .endif
 
     LDBA5:
+.if CFG_BEAM_UNIQUE_ITEMS == 0
     pha                             ;Temporarily store power up type.
+.endif
     ldx #$00                        ;Index to object 0(Samus).
     ldy #$40                        ;Index to object 1(power up).
     jsr AreObjectsTouching          ;($DC7F)Determine if Samus is touching power up.
+.if CFG_BEAM_UNIQUE_ITEMS == 0
     pla                             ;Restore power up type byte.
+.endif
     bcs Exit9                       ;Carry clear=Samus touching power up. Carry set=not touching.
 
+.if CFG_BEAM_UNIQUE_ITEMS == 0
     tay                             ;Store power-up type byte in Y.
+.endif
     jsr PowerUpMusic                ;($CBF9)Power up obtained! Play power up music.
     ldx ItemIndex                   ;X=index to power up item slot.
+.if CFG_BEAM_UNIQUE_ITEMS == 0
     iny                             ;Is item obtained a beam weapon?-->
     beq LDBC6                       ;If so, branch.
+.endif
         lda PowerUps.0.hi,x             ;
         sta Temp08_ItemHi               ;Temp storage of nametable and power-up type in $08-->
         lda PowerUps.0.type,x           ;and $09 respectively.
@@ -4552,12 +4562,14 @@ CheckOneItem:
     tay                             ;
     cpy #pu_ENERGYTANK                        ;Is power-up item a missile or energy tank?-->
     bcs MissileEnergyTank           ;If so, branch.
-    ;cpy #pu_WAVEBEAM                        ;Is item the wave beam or ice beam?-->
-    ;bcc LDBDA                       ;If not, branch.
-    ;    lda SamusGear                   ;Clear status of wave beam and ice beam power ups.
-    ;    and #~(gr_WAVEBEAM | gr_ICEBEAM).b
-    ;    sta SamusGear                   ;Remove beam weapon data from Samus gear byte.
-    ;LDBDA:
+.if CFG_BEAM_STACK == 0
+    cpy #pu_WAVEBEAM                        ;Is item the wave beam or ice beam?-->
+    bcc LDBDA                       ;If not, branch.
+        lda SamusGear                   ;Clear status of wave beam and ice beam power ups.
+        and #~(gr_WAVEBEAM | gr_ICEBEAM).b
+        sta SamusGear                   ;Remove beam weapon data from Samus gear byte.
+    LDBDA:
+.endif
     jsr MakeBitMask                 ;($DB2F)Create a bit mask for beam weapon just obtained.
     ora SamusGear                   ;
     sta SamusGear                   ;Update Samus gear with new beam weapon.
