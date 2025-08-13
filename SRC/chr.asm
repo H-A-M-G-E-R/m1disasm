@@ -1,6 +1,7 @@
 .include "hardware.asm"
 .include "constants.asm"
 .include "macros.asm"
+.include "config.asm"
 
 .section "CHR Bank 0" bank $10 slot "CHRROMSlot" orga $0000 force
     TitleBG: .incbin "title/title_bg.chr" ; 4

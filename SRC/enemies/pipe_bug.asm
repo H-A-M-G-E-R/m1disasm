@@ -51,6 +51,7 @@ PipeBugApplySpeed:
     bne PipeBugExit
     
     ; get y speed
+    ldy #$07
     jsr CommonJump_EnemyGetDeltaY_UsingAcceleration
     ; push y speed to stack
     pha

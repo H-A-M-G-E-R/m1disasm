@@ -269,7 +269,7 @@ EnFrame01:
 
 EnFrame02:
     .byte $00,$00
-    .byte $FC,$17,$20,$FC
+    .byte $FC,$07+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
 EnFrame03:
@@ -813,26 +813,26 @@ EnFrame60:
 
 EnFrame61:
     .byte $00,$00
-    .byte $F8,$1F,$20,$F8
-    .byte $F8,$1F,$60,$00
-    .byte $00,$1F,$A0,$F8
-    .byte $00,$1F,$E0,$00
+    .byte $F8,$0F+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $F8,$0F+CFG_NUM_SAMUS_TILES,$60,$00
+    .byte $00,$0F+CFG_NUM_SAMUS_TILES,$A0,$F8
+    .byte $00,$0F+CFG_NUM_SAMUS_TILES,$E0,$00
     .byte $80
 
 EnFrame62:
     .byte $00,$00
-    .byte $F0,$21,$20,$00
-    .byte $F0,$22,$20,$08
-    .byte $F8,$23,$20,$08
-    .byte $F0,$22,$60,$F0
-    .byte $F0,$21,$60,$F8
-    .byte $F8,$23,$60,$F0
-    .byte $00,$23,$E0,$F0
-    .byte $08,$22,$E0,$F0
-    .byte $08,$21,$E0,$F8
-    .byte $00,$23,$A0,$08
-    .byte $08,$21,$A0,$00
-    .byte $08,$22,$A0,$08
+    .byte $F0,$11+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $F0,$12+CFG_NUM_SAMUS_TILES,$20,$08
+    .byte $F8,$13+CFG_NUM_SAMUS_TILES,$20,$08
+    .byte $F0,$12+CFG_NUM_SAMUS_TILES,$60,$F0
+    .byte $F0,$11+CFG_NUM_SAMUS_TILES,$60,$F8
+    .byte $F8,$13+CFG_NUM_SAMUS_TILES,$60,$F0
+    .byte $00,$13+CFG_NUM_SAMUS_TILES,$E0,$F0
+    .byte $08,$12+CFG_NUM_SAMUS_TILES,$E0,$F0
+    .byte $08,$11+CFG_NUM_SAMUS_TILES,$E0,$F8
+    .byte $00,$13+CFG_NUM_SAMUS_TILES,$A0,$08
+    .byte $08,$11+CFG_NUM_SAMUS_TILES,$A0,$00
+    .byte $08,$12+CFG_NUM_SAMUS_TILES,$A0,$08
     .byte $80
 
 EnFrame63:
@@ -908,13 +908,13 @@ EnFrame7E:
 EnFrame7F:
 EnFrame80:
     .byte $08,$04
-    .byte $F8,$14,$20,$FC
-    .byte $00,$15,$20,$FC
+    .byte $F8,$04+CFG_NUM_SAMUS_TILES,$20,$FC
+    .byte $00,$05+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
 EnFrame81:
     .byte $04,$04
-    .byte $FC,$28,$20,$FC
+    .byte $FC,$18+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
 EnFrame82:
@@ -926,5 +926,5 @@ EnFrame87:
 EnFrame88:
 EnFrame89:
     .byte $04,$04
-    .byte $FC,$28,$20,$FC
+    .byte $FC,$18+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80

@@ -84,6 +84,8 @@ gr_VARIA               = %00100000
 gr_WAVEBEAM            = %01000000
 gr_ICEBEAM             = %10000000
 
+gr1_SPIDERBALL         = %00000001
+
 ;unique items IIIIII
 ui_BOMBS               = %000000 << 10
 ui_HIGHJUMP            = %000001 << 10

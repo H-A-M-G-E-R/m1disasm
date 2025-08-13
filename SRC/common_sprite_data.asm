@@ -287,6 +287,7 @@ SamusCHRBankTable:
 
 ;Samus run.
 ObjFrame03:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$60,$00
     .byte $F0,$01,$60,$F8
@@ -296,9 +297,21 @@ ObjFrame03:
     .byte $00,$05,$60,$F8
     .byte $08,$06,$60,$F8
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $F0,$00,$60,$00
+    .byte $F0,$01,$60,$F8
+    .byte $F8,$02,$20,$00
+    .byte $F8,$03,$20,$F8
+    .byte $00,$04,$60,$00
+    .byte $00,$05,$60,$F8
+    .byte $08,$06,$60,$F8
+    .byte $80
+.endif
 
 ;Samus run.
 ObjFrame04:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$60,$00
     .byte $F0,$01,$60,$F8
@@ -310,9 +323,23 @@ ObjFrame04:
     .byte $08,$07,$60,$F8
     .byte $08,$08,$60,$F0
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $F0,$07,$60,$00
+    .byte $F0,$08,$60,$F8
+    .byte $F8,$09,$20,$00
+    .byte $F8,$0A,$20,$F8
+    .byte $00,$0B,$60,$00
+    .byte $00,$0C,$60,$F8
+    .byte $08,$0D,$60,$00
+    .byte $08,$0E,$60,$F8
+    .byte $08,$0F,$60,$F0
+    .byte $80
+.endif
 
 ;Samus run.
 ObjFrame05:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$60,$00
     .byte $F0,$01,$60,$F8
@@ -324,9 +351,23 @@ ObjFrame05:
     .byte $08,$07,$60,$00
     .byte $08,$08,$60,$F8
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $F0,$10,$60,$00
+    .byte $F0,$11,$60,$F8
+    .byte $F8,$12,$20,$00
+    .byte $F8,$13,$20,$F8
+    .byte $00,$14,$60,$00
+    .byte $00,$15,$60,$F8
+    .byte $00,$16,$60,$F0
+    .byte $08,$17,$60,$00
+    .byte $08,$18,$60,$F8
+    .byte $80
+.endif
 
 ;Samus facing forward.
 ObjFrame07:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$20,$F8
     .byte $F0,$01,$20,$00
@@ -337,9 +378,22 @@ ObjFrame07:
     .byte $08,$06,$20,$F8
     .byte $08,$07,$60,$00
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $F0,$00,$20,$F8
+    .byte $F0,$01,$20,$00
+    .byte $F8,$02,$20,$F8
+    .byte $F8,$03,$20,$00
+    .byte $00,$04,$20,$F8
+    .byte $00,$05,$20,$00
+    .byte $08,$06,$20,$F8
+    .byte $08,$06,$60,$00
+    .byte $80
+.endif
 
 ;Samus stand.
 ObjFrame08:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$20,$00
     .byte $F0,$01,$20,$F8
@@ -351,9 +405,23 @@ ObjFrame08:
     .byte $08,$07,$60,$F8
     .byte $F8,$08,$60,$04
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $F0,$00,$20,$00
+    .byte $F0,$01,$20,$F8
+    .byte $F8,$02,$20,$00
+    .byte $F8,$03,$20,$F8
+    .byte $00,$04,$20,$00
+    .byte $00,$05,$20,$F8
+    .byte $08,$06,$60,$00
+    .byte $08,$07,$60,$F8
+    .byte $F8,$08,$60,$04
+    .byte $80
+.endif
 
 ;Samus run and fire.
 ObjFrame0C:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$60,$00
     .byte $F0,$01,$60,$F8
@@ -364,9 +432,22 @@ ObjFrame0C:
     .byte $00,$05,$60,$F8
     .byte $08,$06,$60,$F8
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $F0,$00,$60,$00
+    .byte $F0,$01,$60,$F8
+    .byte $F8,$19,$20,$08
+    .byte $F8,$1A,$20,$00
+    .byte $F8,$1B,$20,$F8
+    .byte $00,$04,$60,$00
+    .byte $00,$05,$60,$F8
+    .byte $08,$06,$60,$F8
+    .byte $80
+.endif
 
 ;Samus run and fire.
 ObjFrame0D:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$09,$60,$00
     .byte $F0,$0A,$60,$F8
@@ -379,9 +460,24 @@ ObjFrame0D:
     .byte $08,$07,$60,$F8
     .byte $08,$08,$60,$F0
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $F0,$00,$60,$00
+    .byte $F0,$01,$60,$F8
+    .byte $F8,$19,$20,$08
+    .byte $F8,$1A,$20,$00
+    .byte $F8,$1B,$20,$F8
+    .byte $00,$0B,$60,$00
+    .byte $00,$0C,$60,$F8
+    .byte $08,$0D,$60,$00
+    .byte $08,$0E,$60,$F8
+    .byte $08,$0F,$60,$F0
+    .byte $80
+.endif
 
 ;Samus run and fire.
 ObjFrame0E:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$09,$60,$00
     .byte $F0,$0A,$60,$F8
@@ -394,9 +490,24 @@ ObjFrame0E:
     .byte $08,$07,$60,$00
     .byte $08,$08,$60,$F8
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $F0,$00,$60,$00
+    .byte $F0,$01,$60,$F8
+    .byte $F8,$19,$20,$08
+    .byte $F8,$1A,$20,$00
+    .byte $F8,$1B,$20,$F8
+    .byte $00,$14,$60,$00
+    .byte $00,$15,$60,$F8
+    .byte $00,$16,$60,$F0
+    .byte $08,$17,$60,$00
+    .byte $08,$18,$60,$F8
+    .byte $80
+.endif
 
 ;Samus stand and jump.
 ObjFrame10:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$60,$00
     .byte $F0,$01,$60,$F8
@@ -407,9 +518,22 @@ ObjFrame10:
     .byte $00,$06,$60,$F0
     .byte $08,$07,$60,$00
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $F0,$00,$60,$00
+    .byte $F0,$01,$60,$F8
+    .byte $F8,$02,$20,$00
+    .byte $F8,$03,$20,$F8
+    .byte $00,$0B,$60,$00
+    .byte $00,$1C,$60,$F8
+    .byte $00,$1D,$60,$F0
+    .byte $08,$0D,$60,$00
+    .byte $80
+.endif
 
 ;Samus jump and fire.
 ObjFrame12:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$60,$00
     .byte $F0,$01,$60,$F8
@@ -421,9 +545,23 @@ ObjFrame12:
     .byte $00,$06,$60,$F0
     .byte $08,$07,$60,$00
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $F0,$00,$60,$00
+    .byte $F0,$01,$60,$F8
+    .byte $F8,$19,$20,$08
+    .byte $F8,$1A,$20,$00
+    .byte $F8,$1B,$20,$F8
+    .byte $00,$0B,$60,$00
+    .byte $00,$1C,$60,$F8
+    .byte $00,$1D,$60,$F0
+    .byte $08,$0D,$60,$00
+    .byte $80
+.endif
 
 ;Samus somersault.
 ObjFrame17:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F3,$00,$60,$00
     .byte $F3,$01,$60,$F8
@@ -432,9 +570,20 @@ ObjFrame17:
     .byte $03,$04,$60,$00
     .byte $03,$05,$60,$F8
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $F3,$07,$60,$00
+    .byte $F3,$08,$60,$F8
+    .byte $FB,$09,$60,$00
+    .byte $FB,$0A,$60,$F8
+    .byte $03,$0B,$60,$00
+    .byte $03,$0C,$60,$F8
+    .byte $80
+.endif
 
 ;Samus somersault.
 ObjFrame18:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F8,$06,$60,$02
     .byte $F8,$07,$60,$FA
@@ -443,9 +592,20 @@ ObjFrame18:
     .byte $00,$0A,$60,$FA
     .byte $00,$0B,$60,$F2
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $F8,$0D,$60,$02
+    .byte $F8,$0E,$60,$FA
+    .byte $F8,$0F,$60,$F2
+    .byte $00,$10,$60,$02
+    .byte $00,$11,$60,$FA
+    .byte $00,$12,$60,$F2
+    .byte $80
+.endif
 
 ;Samus somersault.
 ObjFrame19:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $05,$00,$A0,$F8
     .byte $05,$01,$A0,$00
@@ -454,9 +614,20 @@ ObjFrame19:
     .byte $F5,$04,$A0,$F8
     .byte $F5,$05,$A0,$00
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $05,$07,$A0,$F8
+    .byte $05,$08,$A0,$00
+    .byte $FD,$09,$A0,$F8
+    .byte $FD,$0A,$A0,$00
+    .byte $F5,$0B,$A0,$F8
+    .byte $F5,$0C,$A0,$00
+    .byte $80
+.endif
 
 ;Samus somersault.
 ObjFrame1A:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $00,$06,$A0,$F6
     .byte $00,$07,$A0,$FE
@@ -465,9 +636,19 @@ ObjFrame1A:
     .byte $F8,$0A,$A0,$FE
     .byte $F8,$0B,$A0,$06
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $00,$0D,$A0,$F6
+    .byte $00,$0E,$A0,$FE
+    .byte $00,$0F,$A0,$06
+    .byte $F8,$10,$A0,$F6
+    .byte $F8,$11,$A0,$FE
+    .byte $F8,$12,$A0,$06
+    .byte $80
+.endif
 
 ;Samus roll.
-ObjFrame1D
+ObjFrame1D:
     .byte $04,$04
     .byte $FC,$0E,$E0,$00
     .byte $FC,$0F,$E0,$F8
@@ -482,6 +663,7 @@ ObjFrame1E:
 
 ;Samus stand and fire.
 ObjFrame22:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$20,$00
     .byte $F0,$01,$20,$F8
@@ -493,63 +675,77 @@ ObjFrame22:
     .byte $08,$07,$60,$F8
     .byte $F8,$08,$60,$02
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $F0,$00,$20,$00
+    .byte $F0,$01,$20,$F8
+    .byte $F8,$02,$20,$00
+    .byte $F8,$03,$20,$F8
+    .byte $00,$04,$20,$00
+    .byte $00,$05,$20,$F8
+    .byte $08,$06,$60,$00
+    .byte $08,$07,$60,$F8
+    .byte $F8,$08,$60,$02
+    .byte $80
+.endif
 
 ;Elevator.
 ObjFrame23:
     .byte $04,$10
-    .byte $FC,$10,$20,$F0
-    .byte $FC,$11,$20,$F8
-    .byte $FC,$11,$20,$00
-    .byte $FC,$10,$60,$08
+    .byte $FC,$00+CFG_NUM_SAMUS_TILES,$20,$F0
+    .byte $FC,$01+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $FC,$01+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $FC,$00+CFG_NUM_SAMUS_TILES,$60,$08
     .byte $80
 
 ;Missile right.
 ObjFrame25:
     .byte $04,$08
-    .byte $FC,$12,$60,$00
-    .byte $FC,$13,$60,$F8
+    .byte $FC,$02+CFG_NUM_SAMUS_TILES,$60,$00
+    .byte $FC,$03+CFG_NUM_SAMUS_TILES,$60,$F8
     .byte $80
 
 ;Missile left.
 ObjFrame26:
     .byte $04,$08
-    .byte $FC,$12,$20,$F8
-    .byte $FC,$13,$20,$00
+    .byte $FC,$02+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $FC,$03+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $80
 
 ;Missile up.
 ObjFrame27:
     .byte $08,$04
-    .byte $F8,$14,$20,$FC
-    .byte $00,$15,$20,$FC
+    .byte $F8,$04+CFG_NUM_SAMUS_TILES,$20,$FC
+    .byte $00,$05+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
 ;Bullet fire.
 ObjFrame28:
     .byte $02,$02
-    .byte $FC,$16,$20,$FC
+    .byte $FC,$06+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
 ;Bullet hit.
 ObjFrame2A:
     .byte $00,$00
-    .byte $FC,$17,$20,$FC
+    .byte $FC,$07+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
 ;Ice bullet fire.
 ObjFrame_IceBullet:
     .byte $02,$02
-    .byte $FC,$16,$21,$FC
+    .byte $FC,$06+CFG_NUM_SAMUS_TILES,$21,$FC
     .byte $80
 
 ;Ice bullet hit.
 ObjFrame_IceBulletHit:
     .byte $00,$00
-    .byte $FC,$17,$21,$FC
+    .byte $FC,$07+CFG_NUM_SAMUS_TILES,$21,$FC
     .byte $80
 
 ;Samus stand and point up.
 ObjFrame2B:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $E8,$09,$60,$FC
     .byte $F0,$0A,$20,$00
@@ -561,9 +757,23 @@ ObjFrame2B:
     .byte $08,$06,$60,$00
     .byte $08,$07,$60,$F8
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $E8,$09,$60,$FC
+    .byte $F0,$0A,$20,$00
+    .byte $F0,$0B,$20,$F8
+    .byte $F8,$0C,$20,$00
+    .byte $F8,$0D,$20,$F8
+    .byte $00,$04,$20,$00
+    .byte $00,$05,$20,$F8
+    .byte $08,$06,$60,$00
+    .byte $08,$07,$60,$F8
+    .byte $80
+.endif
 
 ;Samus from ball to pointing up.
 ObjFrame30:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $EA,$09,$60,$FC
     .byte $F0,$0A,$20,$00
@@ -575,27 +785,40 @@ ObjFrame30:
     .byte $08,$06,$60,$00
     .byte $08,$07,$60,$F8
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $EA,$09,$60,$FC
+    .byte $F0,$0A,$20,$00
+    .byte $F0,$0B,$20,$F8
+    .byte $F8,$0C,$20,$00
+    .byte $F8,$0D,$20,$F8
+    .byte $00,$04,$20,$00
+    .byte $00,$05,$20,$F8
+    .byte $08,$06,$60,$00
+    .byte $08,$07,$60,$F8
+    .byte $80
+.endif
 
 ;Door closed.
 ObjFrame31:
     .byte $18,$08
-    .byte $E8,$18,$20,$00
-    .byte $F0,$19,$20,$00
-    .byte $F8,$1A,$20,$00
-    .byte $00,$1A,$A0,$00
-    .byte $08,$19,$A0,$00
-    .byte $10,$18,$A0,$00
+    .byte $E8,$08+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $F0,$09+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $F8,$0A+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $00,$0A+CFG_NUM_SAMUS_TILES,$A0,$00
+    .byte $08,$09+CFG_NUM_SAMUS_TILES,$A0,$00
+    .byte $10,$08+CFG_NUM_SAMUS_TILES,$A0,$00
     .byte $80
 
 ;Door open/close.
 ObjFrame33:
     .byte $18,$04
-    .byte $E8,$1B,$20,$00
-    .byte $F0,$1C,$20,$00
-    .byte $F8,$1D,$20,$00
-    .byte $00,$1D,$A0,$00
-    .byte $08,$1C,$A0,$00
-    .byte $10,$1B,$A0,$00
+    .byte $E8,$0B+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $F0,$0C+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $F8,$0D+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $00,$0D+CFG_NUM_SAMUS_TILES,$A0,$00
+    .byte $08,$0C+CFG_NUM_SAMUS_TILES,$A0,$00
+    .byte $10,$0B+CFG_NUM_SAMUS_TILES,$A0,$00
     .byte $80
 
 ;Door opened.
@@ -605,6 +828,7 @@ ObjFrame_DoorOpened:
 
 ;Samus explode.
 ObjFrame35:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $80,$00
     .byte $00,$F0,$08,$20,$F8
     .byte $01,$F0,$09,$20,$00
@@ -613,9 +837,20 @@ ObjFrame35:
     .byte $04,$00,$0C,$20,$F8
     .byte $05,$00,$0D,$20,$00
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $80,$00
+    .byte $00,$F0,$17,$20,$F8
+    .byte $01,$F0,$18,$20,$00
+    .byte $02,$F8,$19,$20,$F8
+    .byte $03,$F8,$1A,$20,$00
+    .byte $04,$00,$1B,$20,$F8
+    .byte $05,$00,$1C,$20,$00
+    .byte $80
+.endif
 
 ;Samus jump and point up.
 ObjFrame38:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $E8,$0B,$60,$FC
     .byte $F0,$0C,$20,$00
@@ -627,9 +862,23 @@ ObjFrame38:
     .byte $00,$06,$60,$F0
     .byte $08,$07,$60,$00
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $E8,$09,$60,$FC
+    .byte $F0,$0A,$20,$00
+    .byte $F0,$0B,$20,$F8
+    .byte $F8,$0C,$20,$00
+    .byte $F8,$0D,$20,$F8
+    .byte $00,$0E,$60,$00
+    .byte $00,$0F,$60,$F8
+    .byte $00,$10,$60,$F0
+    .byte $08,$11,$60,$00
+    .byte $80
+.endif
 
 ;Samus jump and point up.
 ObjFrame39:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $EA,$0B,$60,$FC
     .byte $F0,$0C,$20,$00
@@ -641,18 +890,32 @@ ObjFrame39:
     .byte $00,$06,$60,$F0
     .byte $08,$07,$60,$00
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $EA,$09,$60,$FC
+    .byte $F0,$0A,$20,$00
+    .byte $F0,$0B,$20,$F8
+    .byte $F8,$0C,$20,$00
+    .byte $F8,$0D,$20,$F8
+    .byte $00,$0E,$60,$00
+    .byte $00,$0F,$60,$F8
+    .byte $00,$10,$60,$F0
+    .byte $08,$11,$60,$00
+    .byte $80
+.endif
 
 ;Bomb explode.
 ObjFrame3C:
     .byte $0C,$0C
-    .byte $F8,$1E,$20,$F8
-    .byte $F8,$1E,$60,$00
-    .byte $00,$1E,$A0,$F8
-    .byte $00,$1E,$E0,$00
+    .byte $F8,$0E+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $F8,$0E+CFG_NUM_SAMUS_TILES,$60,$00
+    .byte $00,$0E+CFG_NUM_SAMUS_TILES,$A0,$F8
+    .byte $00,$0E+CFG_NUM_SAMUS_TILES,$E0,$00
     .byte $80
 
 ;Samus run and point up.
 ObjFrame40:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $E8,$0A,$60,$FC
     .byte $F0,$0B,$20,$00
@@ -663,9 +926,22 @@ ObjFrame40:
     .byte $00,$05,$60,$F8
     .byte $08,$06,$60,$F8
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $E8,$09,$60,$FC
+    .byte $F0,$0A,$20,$00
+    .byte $F0,$0B,$20,$F8
+    .byte $F8,$0C,$20,$00
+    .byte $F8,$0D,$20,$F8
+    .byte $00,$12,$60,$00
+    .byte $00,$13,$60,$F8
+    .byte $08,$14,$60,$F8
+    .byte $80
+.endif
 
 ;Samus run and point up.
 ObjFrame41:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $E8,$00,$60,$FC
     .byte $F0,$01,$20,$00
@@ -678,9 +954,24 @@ ObjFrame41:
     .byte $08,$08,$60,$F8
     .byte $08,$09,$60,$F0
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $E8,$09,$60,$FC
+    .byte $F0,$0A,$20,$00
+    .byte $F0,$0B,$20,$F8
+    .byte $F8,$0C,$20,$00
+    .byte $F8,$0D,$20,$F8
+    .byte $00,$0E,$60,$00
+    .byte $00,$15,$60,$F8
+    .byte $08,$11,$60,$00
+    .byte $08,$16,$60,$F8
+    .byte $08,$17,$60,$F0
+    .byte $80
+.endif
 
 ;Samus run and point up.
 ObjFrame42:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $E8,$00,$60,$FC
     .byte $F0,$01,$20,$00
@@ -693,9 +984,24 @@ ObjFrame42:
     .byte $08,$0D,$60,$00
     .byte $08,$0E,$60,$F8
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $E8,$09,$60,$FC
+    .byte $F0,$0A,$20,$00
+    .byte $F0,$0B,$20,$F8
+    .byte $F8,$0C,$20,$00
+    .byte $F8,$0D,$20,$F8
+    .byte $00,$18,$60,$00
+    .byte $00,$19,$60,$F8
+    .byte $00,$1A,$60,$F0
+    .byte $08,$1B,$60,$00
+    .byte $08,$1C,$60,$F8
+    .byte $80
+.endif
 
 ;Samus run and point up.
 ObjFrame46:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $EA,$0A,$60,$FC
     .byte $F0,$0B,$20,$00
@@ -706,9 +1012,22 @@ ObjFrame46:
     .byte $00,$05,$60,$F8
     .byte $08,$06,$60,$F8
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $EA,$09,$60,$FC
+    .byte $F0,$0A,$20,$00
+    .byte $F0,$0B,$20,$F8
+    .byte $F8,$0C,$20,$00
+    .byte $F8,$0D,$20,$F8
+    .byte $00,$12,$60,$00
+    .byte $00,$13,$60,$F8
+    .byte $08,$14,$60,$F8
+    .byte $80
+.endif
 
 ;Samus point up, run and fire.
 ObjFrame47:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $EA,$00,$60,$FC
     .byte $F0,$01,$20,$00
@@ -721,9 +1040,24 @@ ObjFrame47:
     .byte $08,$08,$60,$F8
     .byte $08,$09,$60,$F0
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $EA,$09,$60,$FC
+    .byte $F0,$0A,$20,$00
+    .byte $F0,$0B,$20,$F8
+    .byte $F8,$0C,$20,$00
+    .byte $F8,$0D,$20,$F8
+    .byte $00,$0E,$60,$00
+    .byte $00,$15,$60,$F8
+    .byte $08,$11,$60,$00
+    .byte $08,$16,$60,$F8
+    .byte $08,$17,$60,$F0
+    .byte $80
+.endif
 
 ;Samus point up, run and fire.
 ObjFrame48:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $EA,$00,$60,$FC
     .byte $F0,$01,$20,$00
@@ -736,50 +1070,100 @@ ObjFrame48:
     .byte $08,$0D,$60,$00
     .byte $08,$0E,$60,$F8
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $0F,$04
+    .byte $EA,$09,$60,$FC
+    .byte $F0,$0A,$20,$00
+    .byte $F0,$0B,$20,$F8
+    .byte $F8,$0C,$20,$00
+    .byte $F8,$0D,$20,$F8
+    .byte $00,$18,$60,$00
+    .byte $00,$19,$60,$F8
+    .byte $00,$1A,$60,$F0
+    .byte $08,$1B,$60,$00
+    .byte $08,$1C,$60,$F8
+    .byte $80
+.endif
 
 ;Samus spider ball.
 ObjFrame_SamusSpider0:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $07,$04
     .byte $F8,$00,$20,$F8
     .byte $F8,$01,$20,$00
     .byte $00,$02,$20,$F8
     .byte $00,$03,$20,$00
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $07,$04
+    .byte $F8,$00,$20,$F8
+    .byte $F8,$01,$20,$00
+    .byte $00,$02,$20,$F8
+    .byte $00,$03,$20,$00
+    .byte $80
+.endif
 
 ;Samus spider ball.
 ObjFrame_SamusSpider1:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $07,$04
     .byte $00,$00,$A0,$F8
     .byte $00,$01,$A0,$00
     .byte $F8,$02,$A0,$F8
     .byte $F8,$03,$A0,$00
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $07,$04
+    .byte $00,$00,$A0,$F8
+    .byte $00,$01,$A0,$00
+    .byte $F8,$02,$A0,$F8
+    .byte $F8,$03,$A0,$00
+    .byte $80
+.endif
 
 ;Samus spider ball.
 ObjFrame_SamusSpider2:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $07,$04
     .byte $FF,$00,$E0,$00
     .byte $FF,$01,$E0,$F8
     .byte $F7,$02,$E0,$00
     .byte $F7,$03,$E0,$F8
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $07,$04
+    .byte $FF,$00,$E0,$00
+    .byte $FF,$01,$E0,$F8
+    .byte $F7,$02,$E0,$00
+    .byte $F7,$03,$E0,$F8
+    .byte $80
+.endif
 
 ;Samus spider ball.
 ObjFrame_SamusSpider3:
+.if CFG_NUM_SAMUS_TILES == 16
     .byte $07,$04
     .byte $F7,$00,$60,$00
     .byte $F7,$01,$60,$F8
     .byte $FF,$02,$60,$00
     .byte $FF,$03,$60,$F8
     .byte $80
+.elif CFG_NUM_SAMUS_TILES == 32
+    .byte $07,$04
+    .byte $F7,$00,$60,$00
+    .byte $F7,$01,$60,$F8
+    .byte $FF,$02,$60,$00
+    .byte $FF,$03,$60,$F8
+    .byte $80
+.endif
 
 ;Bomb explode.
 ObjFrame49:
     .byte $0C,$0C
-    .byte $F8,$1F,$20,$F8
-    .byte $F8,$1F,$60,$00
-    .byte $00,$1F,$A0,$F8
-    .byte $00,$1F,$E0,$00
+    .byte $F8,$0F+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $F8,$0F+CFG_NUM_SAMUS_TILES,$60,$00
+    .byte $00,$0F+CFG_NUM_SAMUS_TILES,$A0,$F8
+    .byte $00,$0F+CFG_NUM_SAMUS_TILES,$E0,$00
     .byte $80
 
 ;Bomb explode.
@@ -790,132 +1174,132 @@ ObjFrame4A:
 ;Wave beam.
 ObjFrame4B:
     .byte $04,$04
-    .byte $FC,$20,$20,$FC
+    .byte $FC,$10+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
 ;Wave + ice beam.
 ObjFrame_WaveIceBeam:
     .byte $04,$04
-    .byte $FC,$20,$21,$FC
+    .byte $FC,$10+CFG_NUM_SAMUS_TILES,$21,$FC
     .byte $80
 
 ;Bomb explode.
 ObjFrame4D:
     .byte $10,$10
-    .byte $F0,$21,$20,$00
-    .byte $F0,$22,$20,$08
-    .byte $F8,$23,$20,$08
-    .byte $F0,$22,$60,$F0
-    .byte $F0,$21,$60,$F8
-    .byte $F8,$23,$60,$F0
-    .byte $00,$23,$E0,$F0
-    .byte $08,$22,$E0,$F0
-    .byte $08,$21,$E0,$F8
-    .byte $00,$23,$A0,$08
-    .byte $08,$21,$A0,$00
-    .byte $08,$22,$A0,$08
+    .byte $F0,$11+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $F0,$12+CFG_NUM_SAMUS_TILES,$20,$08
+    .byte $F8,$13+CFG_NUM_SAMUS_TILES,$20,$08
+    .byte $F0,$12+CFG_NUM_SAMUS_TILES,$60,$F0
+    .byte $F0,$11+CFG_NUM_SAMUS_TILES,$60,$F8
+    .byte $F8,$13+CFG_NUM_SAMUS_TILES,$60,$F0
+    .byte $00,$13+CFG_NUM_SAMUS_TILES,$E0,$F0
+    .byte $08,$12+CFG_NUM_SAMUS_TILES,$E0,$F0
+    .byte $08,$11+CFG_NUM_SAMUS_TILES,$E0,$F8
+    .byte $00,$13+CFG_NUM_SAMUS_TILES,$A0,$08
+    .byte $08,$11+CFG_NUM_SAMUS_TILES,$A0,$00
+    .byte $08,$12+CFG_NUM_SAMUS_TILES,$A0,$08
     .byte $80
 
 ;Bomb tick.
 ObjFrame4E:
     .byte $04,$04
-    .byte $FC,$24,$20,$FC
+    .byte $FC,$14+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
 ;Bomb tick.
 ObjFrame4F:
     .byte $04,$04
-    .byte $FC,$25,$20,$FC
+    .byte $FC,$15+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
 ;Bomb item.
 ObjFrame50:
     .byte $03,$03
-    .byte $F8,$40,$20,$F8
-    .byte $F8,$41,$20,$00
-    .byte $00,$42,$20,$F8
-    .byte $00,$43,$20,$00
+    .byte $F8,$30+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $F8,$31+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $00,$32+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $00,$33+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $80
 
 ;High jump item.
 ObjFrame51:
     .byte $03,$03
-    .byte $F8,$44,$20,$F8
-    .byte $F8,$45,$20,$00
-    .byte $00,$46,$20,$F8
-    .byte $00,$47,$20,$00
+    .byte $F8,$34+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $F8,$35+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $00,$36+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $00,$37+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $80
 
 ;Long beam item.
 ObjFrame52:
     .byte $03,$03
-    .byte $F8,$48,$20,$F8
-    .byte $F8,$49,$20,$00
-    .byte $00,$4A,$20,$F8
-    .byte $00,$4B,$20,$00
+    .byte $F8,$38+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $F8,$39+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $00,$3A+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $00,$3B+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $80
 
 ;Screw attack item.
 ObjFrame53:
     .byte $03,$03
-    .byte $F8,$4C,$20,$F8
-    .byte $F8,$4D,$20,$00
-    .byte $00,$4E,$20,$F8
-    .byte $00,$4F,$20,$00
+    .byte $F8,$3C+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $F8,$3D+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $00,$3E+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $00,$3F+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $80
 
 ;Maru Mari item.
 ObjFrame54:
     .byte $03,$03
-    .byte $F8,$50,$20,$F8
-    .byte $F8,$51,$20,$00
-    .byte $00,$52,$20,$F8
-    .byte $00,$53,$20,$00
+    .byte $F8,$40+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $F8,$41+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $00,$42+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $00,$43+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $80
 
 ;Varia item.
 ObjFrame55:
     .byte $03,$03
-    .byte $F8,$54,$20,$F8
-    .byte $F8,$55,$20,$00
-    .byte $00,$56,$20,$F8
-    .byte $00,$57,$20,$00
+    .byte $F8,$44+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $F8,$45+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $00,$46+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $00,$47+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $80
 
 ;Wave beam item.
 ObjFrame56:
     .byte $03,$03
-    .byte $F8,$48,$20,$F8
-    .byte $F8,$58,$20,$00
-    .byte $00,$4A,$20,$F8
-    .byte $00,$4B,$20,$00
+    .byte $F8,$38+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $F8,$48+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $00,$3A+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $00,$3B+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $80
 
 ;Ice beam item.
 ObjFrame57:
     .byte $03,$03
-    .byte $F8,$48,$20,$F8
-    .byte $F8,$59,$20,$00
-    .byte $00,$4A,$20,$F8
-    .byte $00,$4B,$20,$00
+    .byte $F8,$38+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $F8,$49+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $00,$3A+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $00,$3B+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $80
 
 ;Energy tank item.
 ObjFrame58:
     .byte $03,$03
-    .byte $F8,$5A,$20,$F8
-    .byte $F8,$5B,$20,$00
-    .byte $00,$5C,$20,$F8
-    .byte $00,$5D,$20,$00
+    .byte $F8,$4A+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $F8,$4B+CFG_NUM_SAMUS_TILES,$20,$00
+    .byte $00,$4C+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $00,$4D+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $80
 
 ;Missile item.
 ObjFrame59:
     .byte $03,$03
-    .byte $F8,$5E,$20,$F8
-    .byte $F8,$5E,$60,$00
-    .byte $00,$5F,$20,$F8
-    .byte $00,$5F,$60,$00
+    .byte $F8,$4E+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $F8,$4E+CFG_NUM_SAMUS_TILES,$60,$00
+    .byte $00,$4F+CFG_NUM_SAMUS_TILES,$20,$F8
+    .byte $00,$4F+CFG_NUM_SAMUS_TILES,$60,$00
     .byte $80
 
 ;Skree burrow.
@@ -966,28 +1350,28 @@ ObjFrame66:
 ;Missile explode.
 ObjFrame67:
     .byte $04,$08
-    .byte $FC,$26,$00,$F8
-    .byte $FC,$26,$40,$00
+    .byte $FC,$16+CFG_NUM_SAMUS_TILES,$00,$F8
+    .byte $FC,$16+CFG_NUM_SAMUS_TILES,$40,$00
     .byte $80
 
 ;Missile explode.
 ObjFrame68:
     .byte $04,$0C
-    .byte $FC,$26,$00,$F0
-    .byte $F4,$27,$00,$F8
-    .byte $F4,$27,$40,$00
-    .byte $FC,$26,$40,$08
-    .byte $04,$27,$C0,$F8
-    .byte $04,$27,$C0,$00
+    .byte $FC,$16+CFG_NUM_SAMUS_TILES,$00,$F0
+    .byte $F4,$17+CFG_NUM_SAMUS_TILES,$00,$F8
+    .byte $F4,$17+CFG_NUM_SAMUS_TILES,$40,$00
+    .byte $FC,$16+CFG_NUM_SAMUS_TILES,$40,$08
+    .byte $04,$17+CFG_NUM_SAMUS_TILES,$C0,$F8
+    .byte $04,$17+CFG_NUM_SAMUS_TILES,$C0,$00
     .byte $80
 
 ;Missile explode.
 ObjFrame69:
     .byte $04,$10
-    .byte $FC,$26,$00,$E8
-    .byte $EC,$27,$00,$F0
-    .byte $EC,$27,$40,$08
-    .byte $FC,$26,$40,$10
-    .byte $0C,$27,$C0,$F0
-    .byte $0C,$27,$C0,$08
+    .byte $FC,$16+CFG_NUM_SAMUS_TILES,$00,$E8
+    .byte $EC,$17+CFG_NUM_SAMUS_TILES,$00,$F0
+    .byte $EC,$17+CFG_NUM_SAMUS_TILES,$40,$08
+    .byte $FC,$16+CFG_NUM_SAMUS_TILES,$40,$10
+    .byte $0C,$17+CFG_NUM_SAMUS_TILES,$C0,$F0
+    .byte $0C,$17+CFG_NUM_SAMUS_TILES,$C0,$08
     .byte $80

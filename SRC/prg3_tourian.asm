@@ -17,6 +17,7 @@
 .include "hardware.asm"
 .include "constants.asm"
 .include "macros.asm"
+.include "config.asm"
 
 .redef BANK = 3
 .section "ROM Bank $003" bank 3 slot "ROMSwitchSlot" orga $8000 force
@@ -210,6 +211,41 @@ EnemyHitSFXTbl:
     .byte $01, sfxSQ1_EnemyHit
     .byte $01, sfxSQ1_EnemyHit
     .byte $01, sfxSQ1_EnemyHit
+
+EnemyDropChanceTblNormal:
+    .byte 0, 128, 128
+    .byte 0, 128, 128
+    .byte 0, 0, 0
+    .byte 90, 60, 90
+    .byte 0, 0, 0
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+EnemyDropChanceTblTough:
+    .byte 0, 128, 128
+    .byte 0, 128, 128
+    .byte 0, 0, 0
+    .byte 90, 60, 90
+    .byte 0, 0, 0
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
 
 EnemyRestingAnimIndex:
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
@@ -622,12 +658,12 @@ AreaRoutine_Tourian:
 
 ;-------------------------------------------------------------------------------
 UpdateAllCannons:
-    ldx #$78
+    ldx #_sizeof_Cannons - _sizeof_Cannons.0.b
     @loop:
         jsr @updateIfPossible
         lda CannonIndex
         sec
-        sbc #$08
+        sbc #_sizeof_Cannons.0
         tax
         bne @loop
 
@@ -854,7 +890,7 @@ UpdateRoomSpriteInfo_Tourian:
         ; go to next cannon
         tya
         clc
-        adc #$08
+        adc #_sizeof_Cannons.0
         tay
         bpl @loop_A
     
@@ -949,7 +985,7 @@ SpawnCannonRoutine:
         beq @spawnCannon
         txa
         clc
-        adc #$08
+        adc #_sizeof_Cannons.0
         tax
         bpl @loop
     ; cannon failed to spawn, because all 16 slots are occupied
@@ -1309,18 +1345,18 @@ MotherBrain_9F02_08:
         ; draw the TIME BOMB SET GET OUT FAST! message
         tay
         lda L9F41,y
-        sta TileBlastAnimFrame
+        sta TileBlasts.0.animFrame
         lda L9F39,y
         clc
         adc #$42
-        sta TileBlastWRAMPtr
+        sta TileBlasts.0.wramPtr
         php
         lda MotherBrainHi
         asl
         asl
         plp
         adc #$61
-        sta TileBlastWRAMPtr+1
+        sta TileBlasts.0.wramPtr+1
         lda #$00
         sta PageIndex
         lda PPUStrIndex
@@ -1398,14 +1434,14 @@ MotherBrain_SpawnDoor:
     sta ObjAnimFrame,x
     ; create door tiles
     lda #$10
-    sta TileBlastAnimFrame
+    sta TileBlasts.0.animFrame
     lda #$40
-    sta TileBlastWRAMPtr
+    sta TileBlasts.0.wramPtr
     lda MotherBrainHi
     asl
     asl
     ora #$61
-    sta TileBlastWRAMPtr+1
+    sta TileBlasts.0.wramPtr+1
     lda #$00
     sta PageIndex
     jmp CommonJump_DrawTileBlast
@@ -1468,11 +1504,14 @@ MotherBrain_9E22_HandleBeingHit:
         
         ; clear all tile blasts
         ldx #$00
+        clc
         @loop:
             lda #$00
-            sta TileBlastRoutine,x
-            jsr Xplus16
-            cmp #$D0
+            sta TileBlasts.0.routine,x
+            txa
+            adc #_sizeof_TileBlasts.0
+            tax
+            cmp #_sizeof_TileBlasts
             bne @loop
         ; set mother brain status to dying
         iny
@@ -1589,7 +1628,7 @@ MotherBrain_Disintegrate:
 @disintegrate:
     ; add ($6144 + MotherBrainHi*$0400) to byte
     adc #$44
-    sta TileBlastWRAMPtr
+    sta TileBlasts.0.wramPtr
     php
     lda MotherBrainHi
     asl
@@ -1597,10 +1636,10 @@ MotherBrain_Disintegrate:
     ora #$61
     plp
     adc #$00
-    sta TileBlastWRAMPtr+1
+    sta TileBlasts.0.wramPtr+1
     ; clear 2x2 tile region at that location
     lda #$00
-    sta TileBlastAnimFrame
+    sta TileBlasts.0.animFrame
     sta PageIndex
     jmp CommonJump_DrawTileBlast
 
@@ -1665,12 +1704,15 @@ UpdateBullet_CollisionWithZebetiteAndMotherBrainGlass:
         ; tile is #$98, mother brain glass must be destroyed
         ; find open TileBlast slot
         ldx #$00
+        clc
         @loop_Slot:
-            lda TileBlastRoutine,x
+            lda TileBlasts.0.routine,x
             beq @slotFound
             ; slot occupied, try next slot
-            jsr Xplus16
-            cmp #$D0
+            txa
+            adc #_sizeof_TileBlasts.0
+            tax
+            cmp #_sizeof_TileBlasts
             bne @loop_Slot
         ; no slots found, exit
         beq @exit ; branch always
@@ -1678,12 +1720,12 @@ UpdateBullet_CollisionWithZebetiteAndMotherBrainGlass:
         @slotFound:
         ; set pointer
         lda #$8C
-        sta TileBlastWRAMPtr,x
+        sta TileBlasts.0.wramPtr,x
         lda Temp04_CartRAMPtr+1.b
-        sta TileBlastWRAMPtr+1,x
+        sta TileBlasts.0.wramPtr+1,x
         ; set to clear 2x3 tile region
         lda #$01
-        sta TileBlastAnimFrame,x
+        sta TileBlasts.0.animFrame,x
         ; push current samus projectile slot
         lda PageIndex
         pha
@@ -1921,7 +1963,7 @@ UpdateEndTimer:
     jsr SilenceMusic
     ; set timer for 120 frames (2 seconds)
     lda #$0C
-    sta Timer3
+    jsr SetTimer3
     ; set palette to all white
     lda #_id_Palette0A+1.b
     jsr WriteAreaPal
@@ -1965,13 +2007,13 @@ DrawEndTimerEnemy:
     ror
     and #$0F
     clc
-    adc #$30
+    adc #$20+CFG_NUM_SAMUS_TILES.b
     sta SpriteRAM+($00<<2)+$01,x
     ; set tile of tens digit
     lda EndTimer+1
     and #$0F
     clc
-    adc #$30
+    adc #$20+CFG_NUM_SAMUS_TILES.b
     sta SpriteRAM+($01<<2)+$01,x
     ; set tile of ones digit
     lda EndTimer
@@ -1982,7 +2024,7 @@ DrawEndTimerEnemy:
     ror
     and #$0F
     clc
-    adc #$30
+    adc #$20+CFG_NUM_SAMUS_TILES.b
     sta SpriteRAM+($02<<2)+$01,x
 RTS_A28A:
     rts
@@ -2027,12 +2069,12 @@ UpdateZebetite:
 LA2BA:
     ; set anim frame
     lda ZebetiteAnimFrameTable,y
-    sta TileBlastAnimFrame+$10
+    sta TileBlasts.1.animFrame
     ; set vram pointer
     lda Zebetites.0.vramPtr,x
-    sta TileBlastWRAMPtr+$10
+    sta TileBlasts.1.wramPtr
     lda Zebetites.0.vramPtr+1,x
-    sta TileBlastWRAMPtr+1+$10
+    sta TileBlasts.1.wramPtr+1
     ; if a ppu string is in the buffer, dont update gfx
     lda PPUStrIndex
     bne LA2DA
@@ -2043,7 +2085,7 @@ LA2BA:
         jsr CommonJump_DrawTileBlast
         pla
         tax
-        ; (when is the carry flag set/unset here?)
+        ; branch if gfx update is successful
         bcc LA2EB
     LA2DA:
     lda Zebetites.0.status,x

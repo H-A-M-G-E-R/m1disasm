@@ -501,6 +501,7 @@ CommonJump_EnemyGetDeltaY:
     ; jump if enemy uses acceleration to move itself
     jsr LoadTableAt977B
     bpl L824C
+        ldy #$07
         jmp EnemyGetDeltaY_UsingAcceleration
     L824C:
 
@@ -790,10 +791,11 @@ L833C:
 
 ;-------------------------------------------------------------------------------
 ; apply acceleration to speed and return delta y for enemy
+; Y = absolute max speed
 EnemyGetDeltaY_UsingAcceleration:
 CommonJump_EnemyGetDeltaY_UsingAcceleration:
-    ; default max speed at 7 px/f
-    ldy #$07
+    ; $01 = absolute max speed
+    sty $01
     ; branch if enemy is accelerating to the left
     lda EnsExtra.0.accelY,x
     bmi @else_A
@@ -814,7 +816,11 @@ CommonJump_EnemyGetDeltaY_UsingAcceleration:
             ; negate speed in a to get absolute speed
             jsr TwosComplement
             ; negate max speed in y
-            ldy #-$07
+            pha
+            tya
+            jsr TwosComplement
+            tay
+            pla
             bne @endIf_B ; branch always
 
     @else_A:
@@ -835,7 +841,7 @@ CommonJump_EnemyGetDeltaY_UsingAcceleration:
     @endIf_B:
 @endIf_A:
     ; branch if absolute speed is below absolute max
-    cmp #$07
+    cmp $01
     bcc @endIf_C
         ; speed is at or above max
         ; cap speed at max
@@ -866,7 +872,7 @@ CommonJump_EnemyGetDeltaX_UsingAcceleration:
     sta $00
     sta $02
     ; store max speed pixels to temp
-    lda #$0E
+    lda #$07
     sta $01
     sta $03
 

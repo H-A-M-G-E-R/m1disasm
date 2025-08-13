@@ -17,6 +17,7 @@
 .include "hardware.asm"
 .include "constants.asm"
 .include "macros.asm"
+.include "config.asm"
 
 .def BANK = 0
 .section "ROM Bank $000" bank 0 slot "ROMSwitchSlot" orga $8000 force
@@ -233,8 +234,8 @@ FadeInDelay:
     and #$FE                        ;Switch to name table 0 or 2.
     sta PPUCTRL_ZP                  ;
     lda #$08                        ;Loads Timer3 with #$08. Delays Fade in routine.-->
-    sta Timer3                      ;Delays fade in by 80 frames (1.3 seconds).
-    lsr                             ;
+    jsr SetTimer3                      ;Delays fade in by 80 frames (1.3 seconds).
+    lda #$04                        ;
     sta PalDataIndex                ;Loads PalDataIndex with #$04
     inc TitleRoutine                ;Increment to next routine.
     rts
@@ -261,7 +262,7 @@ FlashEffect:
     jsr LoadSparkleData             ;($87AB) Loads data for next routine.
     ;Sets Timer 3 for a delay of 240 frames (4 seconds).
     lda #$18
-    sta Timer3
+    jsr SetTimer3
 @RTS:
     rts
 
@@ -278,7 +279,7 @@ METROIDFadeIn:
     bne RTS_8141
     ;Set timer delay for METROID flash effect. Delays flash by 320 frames (5.3 seconds).
     lda #$20
-    sta Timer3
+    jsr SetTimer3
     inc TitleRoutine
 RTS_8141:
     rts
@@ -289,7 +290,7 @@ LoadFlashTimer:
     bne RTS_8141
     ;Stores a value of 80 frames in Timer3 (1.3 seconds).
     lda #$08
-    sta Timer3
+    jsr SetTimer3
     inc TitleRoutine
     rts
 
@@ -316,7 +317,7 @@ METROIDFadeOut:
     bne L817E                       ;
     jsr InitCrossMissiles           ;($8897)Load initial sprite values for crosshair routine.
     lda #$08                        ;
-    sta Timer3                      ;Load Timer3 with a delay of 80 frames(1.3 seconds).
+    jsr SetTimer3                      ;Load Timer3 with a delay of 80 frames(1.3 seconds).
     sta CrossMsl0to3SlowDelay       ;Set counter for slow sprite movement for 8 frames,
     lda #$00                        ;
     sta SecondCrosshairSprites      ;Set SecondCrosshairSprites = #$00
@@ -391,7 +392,7 @@ ChangeIntroNameTable:
     inc TitleRoutine
     ;Set Timer3 for 80 frames(1.33 seconds).
     lda #$08
-    sta Timer3
+    jsr SetTimer3
     ;Index to FadeInPalData.
     lda #$06
     sta FadeDataIndex
@@ -409,7 +410,7 @@ MessageFadeIn:
     lda #$00                        ;
     sta FadeDataIndex               ;Clear FadeDataIndex.
     lda #$30                        ;
-    sta Timer3                      ;Set Timer3 to 480 frames(8 seconds).
+    jsr SetTimer3                      ;Set Timer3 to 480 frames(8 seconds).
     inc TitleRoutine                ;Next routine is MessageFadeOut.
     bne RTS_8262                    ;Branch always.
 L825F:
@@ -440,7 +441,7 @@ DelayIntroReplay:
     inc TitleRoutine
     ;Set Timer3 for a delay of 160 frames(2.6 seconds).
     lda #$10
-    sta Timer3
+    jsr SetTimer3
     rts
 
 PrepIntroRestart:
@@ -1272,6 +1273,7 @@ CheckPassword: ;($8C5E)
     jsr ValidatePassword            ;($8DDE)Verify password is correct.
     ;Branch if incorrect password.
     bcs L8C69
+        jsr LoadPasswordData
         jmp InitializeGame              ;($92D4)Preliminary housekeeping before game starts.
     L8C69:
     ;Set IncorrectPassword SFX flag.
@@ -1279,7 +1281,7 @@ CheckPassword: ;($8C5E)
     jsr SFX_SetMultiSFXFlag
     ;Set Timer3 time for 120 frames (2 seconds).
     lda #$0C
-    sta Timer3
+    jsr SetTimer3
     ;Run EnterPassword routine.
     lda #_id_EnterPassword.b
     sta TitleRoutine
@@ -1373,9 +1375,18 @@ CalculatePassword:
     jmp LoadPasswordChar            ;($8E6C)Calculate password characters.
 
 LoadPasswordData:
-    ;If invincible Samus active, skip further password processing.
     lda NARPASSWORD
+    pha
+    jsr InitializeStats
+    pla
+    sta NARPASSWORD
+
+    ;If invincible Samus active, skip further password processing.
     bne RTS_8D3C
+    
+    ;Set flag to start from password.
+    lda #$01
+    sta StartingFromPassword
     
     jsr LoadUniqueItems             ;($8BD4)Load unique items from password.
     jsr LoadTanksAndMissiles        ;($8D3D)Calculate number of missiles from password.
@@ -1392,7 +1403,12 @@ LoadPasswordData:
     ;Extract first 5 bits from PasswordByte08 and use it to determine starting area.
     lda PasswordByte+$08
     and #$0F ; so existing passwords work correctly
-    sta InArea
+    cmp #$05
+    bcc +
+        ;so certain passwords like ENGAGE RIDLEY MOTHER FUCKER won't crash the game
+        lda #$00
+    +
+    sta SaveArea
     
     ;Load Samus' age.
     ldy #$03
@@ -1470,8 +1486,10 @@ IncrementToNextItem:
     jsr Amul16                      ;
     clc                             ;
     adc #$10                        ;
-    sta MaxHealth+1                 ;Store the number of energy tanks found in MaxHealth.
+    sta Health+1                    ;
+    sta MaxHealth+1                 ;Store the number of energy tanks found in Health and MaxHealth.
     lda #$00                        ;
+    sta Health                      ;
     sta MaxHealth                   ;
     lda #$00                        ;
     ldy $02                         ;
@@ -1790,7 +1808,9 @@ ChooseStartContinue:
         ldy StartContinue
         bne @endIf_B
             ;Zero out all stats.
-            jmp InitializeStats
+            jsr InitializeStats
+            ;Start game.
+            jmp InitializeGame
         @endIf_B:
         ;Next routine is LoadPasswordScreen.
         ldy #_id_LoadPasswordScreen.b
@@ -1833,7 +1853,7 @@ LoadPasswordScreen:
     lda #$00                        ;
     sta InputRow                    ;Sets character select cursor to-->
     sta InputColumn                 ;upper left character (0).
-    sta Timer3                      ;
+    jsr SetTimer3                      ;
     lda #$00                        ;
     sta PasswordCursor              ;Sets password cursor to password character 0.
     ldy #$00                        ;
@@ -2116,82 +2136,32 @@ CursorPosXTbl:
     .byte $48, $50, $58, $60, $68, $70, $80, $88, $90, $98, $A0, $A8
 
 InitializeGame:
-    jsr ClearRAM_33_DF              ;($C1D4)Clear RAM.
     jsr ClearSamusStats             ;($C578)Reset Samus stats for a new game.
-    jsr LoadPasswordData            ;($8D12)Load data from password.
-    ;Clear object data.
-    ldy #$00
-    sty SpritePagePos
-    sty PageIndex
-    sty ObjectCntrl
-    sty ObjHi
-    jsr SilenceMusic                ;($CB8E)Turn off music.
-    lda #_id_ObjFrame5A.b           ;
-    sta ObjAnimFrame                ;Set animframe index. changed by initializing routines.
-    ldx #$01                        ;x is the index into the position tables below.
-    lda InArea                      ;Load starting area.
-    bne L92F9                       ;If in area other than Brinstar, get second item in tables.
-        dex                             ;Starting in Brinstar. Get first item in each table.
-    L92F9:
-    
-    ;Set Samus restart position on screen.
-    lda RestartYPosTbl,x
-    sta ObjY
-    lda RestartXPosTbl,x
-    sta ObjX
-    
-    ;SamusStat0B's low and high bytes keep track of how many times Samus has-->
-    ;died or beaten the game as they are incremented every time this routine-->
-    ;is run, but they are not accessed anywhere else.
-    inc SamusStat0B
-    bne L930D
-        inc SamusStat0B+1
-    L930D:
     
     lda #_id_MoreInit.b
     sta MainRoutine                 ;Initialize starting area.
     jsr ScreenNmiOff                ;($C45D)Turn off screen.
     jsr NMIOn                       ;($C487)Turn on the non-maskable interrupt.
-    ldy InArea                      ;Load area Samus is to start in.
+    ldy SaveArea                    ;Load area Samus is to start in.
+    sty InArea
     lda BankTable,y                 ;Change to proper memory page.
     sta SwitchPending               ;
 RTS_9324:
     rts
 
-;The following two tables are used to find Samus y and x positions on the screen after the game
-;restarts.  The third entry in each table are not used.
-
-RestartYPosTbl:
-    .byte $64                       ;Brinstar
-    .byte $8C                       ;All other areas.
-    .byte $5C                       ;Not used.
-
-RestartXPosTbl:
-    .byte $78                       ;Brinstar
-    .byte $78                       ;All other areas.
-    .byte $5C                       ;Not used.
-
 InitializeStats: ;($932B)
-    ;Set all of Samus' stats to 0 when starting new game.
-    lda #$10
-    sta MaxHealth+1
-    lda #$00
-    sta MaxHealth
-    sta SamusGear
-    sta MissileCount
-    sta MaxMissiles
-    sta KraidStatueStatus
-    sta RidleyStatueStatus
-    sta SamusAge
-    sta SamusAge+1
-    sta SamusAge+2
-    sta SamusStat0A
-    sta AtEnding
-    sta JustInBailey
-    ;Prepare to switch to Brinstar memory page.
-    lda #$01+1
-    sta SwitchPending
+    ;Copy initial save data to RAM when starting new game.
+    ldx #InitialSaveDataEnd-InitialSaveData.b
+    @loop:
+        lda InitialSaveData-1,x
+        sta Health-1,x
+        dex
+        bne @loop
+    ;Clear flag to start from password.
+    stx StartingFromPassword
     rts
+
+.include "initial_save_data.asm"
 
 DisplayPassword:
     lda Timer3                      ;Wait for "GAME OVER" to be displayed-->
@@ -2240,7 +2210,7 @@ GameOver:
     jsr PreparePPUProcess           ;($9449)Clears screen and writes "GAME OVER".
     jsr NMIOn                       ;($C487)Turn on the nonmaskable interrupt.
     lda #$10                        ;Load Timer3 with a delay of 160 frames-->
-    sta Timer3                      ;(2.6 seconds) for displaying "GAME OVER".
+    jsr SetTimer3                      ;(2.6 seconds) for displaying "GAME OVER".
     lda #_id_DisplayPassword.b      ;Loads TitleRoutine with -->
     sta TitleRoutine                ;DisplayPassword.
     jmp ScreenOn                    ;($C447)Turn screen on.
@@ -2748,6 +2718,7 @@ Restart:
     L9AA1:
     sta PasswordByte+$08              ;
     
+    jsr LoadPasswordData
     jmp InitializeGame              ;($92D4)Clear RAM to restart game at beginning.
 
 EndGame:
@@ -2806,7 +2777,7 @@ L9AE4:
     .elif BUILDTARGET == "NES_PAL"
         lda #$38
     .endif
-    sta Timer3
+    jsr SetTimer3
     lda #$36                        ;#$36/#$03 = #$12.  Number of sprites-->
     sta SpriteByteCounter           ;used to draw end graphic of Samus.
     lda #$00                        ;
@@ -2873,7 +2844,7 @@ EndSamusFlash:
         L9B52:
         cmp #$10                        ;
         bne L9B69                       ;Once flashing Samus is compete, set Timer3-->
-        sta Timer3                      ;for a 160 frame(2.6 seconds) delay.
+        jsr SetTimer3                      ;for a 160 frame(2.6 seconds) delay.
         ldy #$00                        ;
         lda EndingType                  ;
         cmp #$04                        ;If one of the suitless Samus endings,-->
@@ -2915,7 +2886,7 @@ SamusWave:
     .elif BUILDTARGET == "NES_PAL"
         lda #$08
     .endif
-    sta Timer3
+    jsr SetTimer3
     ;Increment RoomPtr
     inc RoomPtr
     rts
@@ -2983,7 +2954,7 @@ EndFadeOut:
         .elif BUILDTARGET == "NES_PAL"
             lda #$08
         .endif
-        sta Timer3                      ;delay(2.6 seconds) and increment RoomPtr.
+        jsr SetTimer3                      ;delay(2.6 seconds) and increment RoomPtr.
         inc RoomPtr                     ;
     L9BEF:
     lda EndingType                  ;
@@ -4064,7 +4035,7 @@ GoBankInit:
     lda CurrentMainBank
     jsr ChooseRoutine
         .word InitBank0                 ;($C531)Initialize bank 0.
-        .word InitBank1                 ;($C552)Initialize bank 1.
+        .word InitGenericAreaBank       ;($C552)Initialize bank 1.
         .word InitGenericAreaBank
         .word InitBank3                 ;($C590)Initialize bank 3.
         .word InitGenericAreaBank
@@ -4092,27 +4063,6 @@ InitBank0:
 
     jsr InitTitleGFX                ;($C5D7)Load title GFX.
     jmp NMIOn                       ;($C487)Turn on VBlank interrupts.
-
-;Brinstar memory page.
-InitBank1:
-    ;Is game engine running? if so, branch.-->
-    lda MainRoutine
-    cmp #_id_GameEngine.b
-    beq LC56D
-        ;Else do some housekeeping first.
-        lda #_id_AreaInit.b
-        ;Run InitArea routine next.
-        sta MainRoutine
-        ;Start in Brinstar.
-        sta InArea
-        ;Make sure game is not paused.
-        sta GamePaused
-        ;($C1D4)Clear game engine memory addresses.
-        jsr ClearRAM_33_DF
-        ;($C578)Clear Samus' stats memory addresses.
-        jsr ClearSamusStats
-    LC56D:
-    jmp InitGenericAreaBank
 
 ClearSamusStats:
     ;Clears Samus stats(Health, full tanks, game timer, etc.).
@@ -4383,12 +4333,12 @@ LE11C:
     lda EndTimer                  ;
     jsr Adiv16                      ;($C2BF)Lower timer digit.
     jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    lda #$2E                        ;"TI" sprite(left half of "TIME").
+    lda #$1E+CFG_NUM_SAMUS_TILES.b  ;"TI" sprite(left half of "TIME").
     sta SpriteRAM.0.tileID,x             ;
     inc SpriteRAM.0.attrib,x             ;Change color of sprite.
     cpx #$FC                        ;If at last sprite, branch to skip.
     bcs LE14A                           ;
-    lda #$2F                        ;"ME" sprite(right half of "TIME").
+    lda #$1F+CFG_NUM_SAMUS_TILES.b  ;"ME" sprite(right half of "TIME").
     sta SpriteRAM.1.tileID,x             ;
     inc SpriteRAM.1.attrib,x             ;Change color of sprite.
 
@@ -4403,7 +4353,7 @@ LE14A:
     jsr Adiv16
     sta $03                         ;Temp store tank count.
     ldy #$00                        ;Tank index.
-    lda #$2D                        ;"Full energy tank" tile.
+    lda #$1D+CFG_NUM_SAMUS_TILES.b  ;"Full energy tank" tile.
     sta $00                         ;
     lda Health+1                    ;
     jsr Adiv16                      ;($C2BF)/16. A contains # of full energy tanks.
@@ -4433,7 +4383,7 @@ RTS_E172:
 
 SPRWriteDigit:
     clc
-    adc #$30                        ;#$A0 is index into pattern table for numbers.
+    adc #$20+CFG_NUM_SAMUS_TILES.b  ;#$A0 is index into pattern table for numbers.
     sta SpriteRAM.0.tileID,x             ;Store proper nametable pattern in sprite RAM.
     jmp Xplus4                      ;Find next sprite pattern table byte.
 
@@ -4512,16 +4462,16 @@ DivideByRepeatedSubtraction: ;($E1AD)
 ;Sprite data for Samus' data display
 
 DataDisplayTbl:
-    .byte $21,$30,$01,$28           ;Upper health digit.
-    .byte $21,$30,$01,$30           ;Middle health digit.
-    .byte $21,$30,$01,$38           ;Lower health digit.
+    .byte $21,$20+CFG_NUM_SAMUS_TILES,$01,$28           ;Upper health digit.
+    .byte $21,$20+CFG_NUM_SAMUS_TILES,$01,$30           ;Middle health digit.
+    .byte $21,$20+CFG_NUM_SAMUS_TILES,$01,$38           ;Lower health digit.
     .byte $2B,$FF,$01,$28           ;Upper baseball digit.
     .byte $2B,$FF,$01,$30           ;Middle baseball digit.
     .byte $2B,$FF,$01,$38           ;Lower baseball digit.
-    .byte $2B,$12,$01,$18           ;Left half of baseball.
-    .byte $2B,$13,$01,$20           ;Right half of baseball.
-    .byte $21,$29,$00,$18           ;Left half of heart.
-    .byte $21,$2A,$00,$20           ;Left half of heart.
+    .byte $2B,$02+CFG_NUM_SAMUS_TILES,$01,$18           ;Left half of baseball.
+    .byte $2B,$03+CFG_NUM_SAMUS_TILES,$01,$20           ;Right half of baseball.
+    .byte $21,$19+CFG_NUM_SAMUS_TILES,$00,$18           ;Left half of heart.
+    .byte $21,$1A+CFG_NUM_SAMUS_TILES,$00,$20           ;Left half of heart.
 
 ;-------------------------------------[ Compressed nametables ]-------------------------------------
 
