@@ -1270,6 +1270,7 @@ CheckPassword: ;($8C5E)
     jsr ValidatePassword            ;($8DDE)Verify password is correct.
     ;Branch if incorrect password.
     bcs L8C69
+        jsr LoadPasswordData
         jmp InitializeGame              ;($92D4)Preliminary housekeeping before game starts.
     L8C69:
     ;Set IncorrectPassword SFX flag.
@@ -1385,9 +1386,18 @@ CalculatePassword:
     jmp LoadPasswordChar            ;($8E6C)Calculate password characters.
 
 LoadPasswordData:
-    ;If invincible Samus active, skip further password processing.
     lda NARPASSWORD
+    pha
+    jsr InitializeStats
+    pla
+    sta NARPASSWORD
+
+    ;If invincible Samus active, skip further password processing.
     bne RTS_8D3C
+    
+    ;Set flag to start from password.
+    lda #$01
+    sta StartingFromPassword
     
     jsr LoadUniqueItems             ;($8BD4)Load unique items from password.
     jsr LoadTanksAndMissiles        ;($8D3D)Calculate number of missiles from password.
@@ -1404,7 +1414,12 @@ LoadPasswordData:
     ;Extract first 5 bits from PasswordByte08 and use it to determine starting area.
     lda PasswordByte+$08
     and #$0F ; so existing passwords work correctly
-    sta InArea
+    cmp #$05
+    bcc +
+        ;so certain passwords like ENGAGE RIDLEY MOTHER FUCKER won't crash the game
+        lda #$00
+    +
+    sta SaveArea
     
     ;Load Samus' age.
     ldy #$03
@@ -1481,8 +1496,10 @@ IncrementToNextItem:
     lda $00                         ;
     jsr Amul16                      ;
     ora #$09                        ;
-    sta MaxHealth+1                 ;Store the number of energy tanks found in MaxHealth.
+    sta Health+1                    ;
+    sta MaxHealth+1                 ;Store the number of energy tanks found in Health and MaxHealth.
     lda #$99                        ;
+    sta Health                      ;
     sta MaxHealth                   ;
     lda #$00                        ;
     ldy $02                         ;
@@ -1833,7 +1850,9 @@ ChooseStartContinue:
         ldy StartContinue
         bne @endIf_B
             ;Zero out all stats.
-            jmp InitializeStats
+            jsr InitializeStats
+            ;Start game.
+            jmp InitializeGame
         @endIf_B:
         ;Next routine is LoadPasswordScreen.
         ldy #_id_LoadPasswordScreen.b
@@ -2159,84 +2178,33 @@ CursorPosXTbl:
     .byte $48, $50, $58, $60, $68, $70, $80, $88, $90, $98, $A0, $A8
 
 InitializeGame:
-    jsr ClearRAM_33_DF              ;($C1D4)Clear RAM.
     jsr ClearSamusStats             ;($C578)Reset Samus stats for a new game.
-    jsr LoadPasswordData            ;($8D12)Load data from password.
-    ;Clear object data.
-    ldy #$00
-    sty SpritePagePos
-    sty PageIndex
-    sty ObjectCntrl
-    sty ObjHi
-    jsr SilenceMusic                ;($CB8E)Turn off music.
-    lda #_id_ObjFrame5A.b           ;
-    sta ObjAnimFrame                ;Set animframe index. changed by initializing routines.
-    ldx #$01                        ;x is the index into the position tables below.
-    lda InArea                      ;Load starting area.
-    bne L92F9                       ;If in area other than Brinstar, get second item in tables.
-        dex                             ;Starting in Brinstar. Get first item in each table.
-    L92F9:
-    
-    ;Set Samus restart position on screen.
-    lda RestartYPosTbl,x
-    sta ObjY
-    lda RestartXPosTbl,x
-    sta ObjX
-    
-    ;SamusStat0B's low and high bytes keep track of how many times Samus has-->
-    ;died or beaten the game as they are incremented every time this routine-->
-    ;is run, but they are not accessed anywhere else.
-    inc SamusStat0B
-    bne L930D
-        inc SamusStat0B+1
-    L930D:
     
     lda #_id_MoreInit.b
     sta MainRoutine                 ;Initialize starting area.
     jsr ScreenNmiOff                ;($C45D)Turn off screen.
     jsr LoadSamusGFX                ;($C5DC)Load Samus GFX into pattern table.
     jsr NMIOn                       ;($C487)Turn on the non-maskable interrupt.
-    ldy InArea                      ;Load area Samus is to start in.
+    ldy SaveArea                    ;Load area Samus is to start in.
+    sty InArea
     lda BankTable,y                 ;Change to proper memory page.
     sta SwitchPending               ;
 RTS_9324:
     rts
 
-;The following two tables are used to find Samus y and x positions on the screen after the game
-;restarts.  The third entry in each table are not used.
-
-RestartYPosTbl:
-    .byte $64                       ;Brinstar
-    .byte $8C                       ;All other areas.
-    .byte $5C                       ;Not used.
-
-RestartXPosTbl:
-    .byte $78                       ;Brinstar
-    .byte $78                       ;All other areas.
-    .byte $5C                       ;Not used.
-
 InitializeStats: ;($932B)
-    ;Set all of Samus' stats to 0 when starting new game.
-    lda #$09
-    sta MaxHealth+1
-    lda #$99
-    sta MaxHealth
-    lda #$00
-    sta SamusGear
-    sta MissileCount
-    sta MaxMissiles
-    sta KraidStatueStatus
-    sta RidleyStatueStatus
-    sta SamusAge
-    sta SamusAge+1
-    sta SamusAge+2
-    sta SamusStat0A
-    sta AtEnding
-    sta JustInBailey
-    ;Prepare to switch to Brinstar memory page.
-    lda #$01+1
-    sta SwitchPending
+    ;Copy initial save data to RAM when starting new game.
+    ldx #InitialSaveDataEnd-InitialSaveData.b
+    @loop:
+        lda InitialSaveData-1,x
+        sta Health-1,x
+        dex
+        bne @loop
+    ;Clear flag to start from password.
+    stx StartingFromPassword
     rts
+
+.include "initial_save_data.asm"
 
 DisplayPassword:
     lda Timer3                      ;Wait for "GAME OVER" to be displayed-->
@@ -2838,6 +2806,7 @@ Restart:
     L9AA1:
     sta PasswordByte+$08              ;
     
+    jsr LoadPasswordData
     jmp InitializeGame              ;($92D4)Clear RAM to restart game at beginning.
 
 EndGame:
@@ -4154,7 +4123,7 @@ GoBankInit:
     lda CurrentMainBank
     jsr ChooseRoutine
         .word InitBank0                 ;($C531)Initialize bank 0.
-        .word InitBank1                 ;($C552)Initialize bank 1.
+        .word InitGenericAreaBank       ;($C552)Initialize bank 1.
         .word InitGenericAreaBank
         .word InitBank3                 ;($C590)Initialize bank 3.
         .word InitGenericAreaBank
@@ -4182,28 +4151,6 @@ InitBank0:
 
     jsr InitTitleGFX                ;($C5D7)Load title GFX.
     jmp NMIOn                       ;($C487)Turn on VBlank interrupts.
-
-;Brinstar memory page.
-InitBank1:
-    ;Is game engine running? if so, branch.-->
-    lda MainRoutine
-    cmp #_id_GameEngine.b
-    beq LC56D
-        ;Else do some housekeeping first.
-        lda #_id_AreaInit.b
-        ;Run InitArea routine next.
-        sta MainRoutine
-        ;Start in Brinstar.
-        sta InArea
-        ;Make sure game is not paused.
-        sta GamePaused
-        ;($C1D4)Clear game engine memory addresses.
-        jsr ClearRAM_33_DF
-        ;($C578)Clear Samus' stats memory addresses.
-        jsr ClearSamusStats
-        jsr LoadSamusGFX
-    LC56D:
-    jmp InitGenericAreaBank
 
 ClearSamusStats:
     ;Clears Samus stats(Health, full tanks, game timer, etc.).

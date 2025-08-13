@@ -214,6 +214,10 @@ NextRoutine            db        ;Stores next routine to jump to after WaitTimer
 CurrentBank            db        ;0 thru 7. current memory page in lower memory block.
 SwitchPending          db        ;Switch memory page. Page # = SwitchPending - 1.
 CurrentMainBank        db
+
+InArea                 db        ;#$00=Brinstar, #$01=Norfair, #$02=Kraid hideout,-->
+                                   ;#$03=Tourian, #$04=Ridley hideout.
+
 AttrTableHorizontalUpdatePending db
 AttrTableVerticalUpdatePending db
 
@@ -326,8 +330,6 @@ SamusKnockbackDir      db        ;#$00=Push Samus left when hit, #$01=Push right
                                     ; i think there may something more to this variable, but im not sure what
 SamusKnockbackIsBomb   db        ;bit 7: 0=samus was hurt, 1=samus was bombed
                                    ;bit 0: 0=diagonal knockback, 1=vertical knockback
-InArea                 db        ;#$00=Brinstar, #$01=Norfair, #$02=Kraid hideout,-->
-                                   ;#$03=Tourian, #$04=Ridley hideout.
 
 SamusKnockbackIsBomb77 db        ;set to SamusKnockbackIsBomb
 
@@ -414,6 +416,8 @@ SkreeProjectiles       instanceof SkreeProjectile 4 startfrom 0
     ; 4 slots of 8 bytes each ($B0-$CF)
     Mellows                instanceof Mellow 4 startfrom 0
 
+    KraidRidleyPresent     db        ;#$01=Kraid/Ridley present, #$00=Kraid/Ridley not present.
+
     MoveSamusUp_IsUnrollCheck db
 .nextu
     CrossMsl0to3SlowDelay  db        ;This address holds an 8 frame delay. when the delay is up,-->
@@ -468,11 +472,8 @@ PPUCTRL_ZP             db        ;Data byte to be loaded into PPU control regist
 
 ;--------------------------------------------[ Onepage ]--------------------------------------------
 
-.enum $0106 export
+.enum $0100 export
 
-Health                 dw        ;Lower health digit in upper 4 bits.
-; Health+1               = $0107   ;Upper health digit in lower 4 bits-->
-                                   ;# of full tanks in upper 4 bits.
 MiniBossKillDelayFlag  db        ;Initiate power up music and delay after Kraid/Ridley killed.
 PowerUpDelayFlag       db        ;Initiate power up music and delay after item pickup.
 
@@ -860,32 +861,11 @@ RoomRAMA               = $6000   ;Thru $63FF. Used to load room before it is put
 RoomRAMB               = $6400   ;Thru $67FF. Used to load room before it is put into the PPU.
 
 
-; ??? slots of ??? bytes each
-UnusedIntro6833        = $6833   ;Unused. Would have contained a BCD version of the number in -->
-; UnusedIntro6833+1      = $6834   ;UnusedIntro684C. (high, low)
+.enum $6800 export
 
-; ??? slots of ???(at least 2) bytes each
-UnusedIntro6839        = $6839   ;Unused.
-
-; ??? slots of ??? bytes each
-UnusedIntro683C        = $683C   ;Unused. Would have contained a BCD version of the number in -->
-; UnusedIntro683C+1      = $683D   ;UnusedIntro684A. (high, low)
-
-; ??? slots of 16 bytes each
-UnusedIntro6842        = $6842   ;Unused.
-UnusedIntro684A        = $684A   ;Unused. Would have contained a 16bit hex number to be converted -->
-; UnusedIntro684A+1      = $684B   ;to decimal by UnusedIntroRoutine8.
-UnusedIntro684C        = $684C   ;Unused. Would have contained a 16bit hex number to be converted -->
-; UnusedIntro684C+1      = $684C   ;to decimal by UnusedIntroRoutine8.
-
-.enum $6872 export
-
-EndingType             db        ;1=worst ending, 5=best ending
-
-SpareMem6873           ds 2
-
-SamusDataIndex         db        ;Index for Samus saved game stats(not used). #$00, #$10, #$20.
-
+Health                 dw        ;Lower health digit in upper 4 bits.
+; Health+1               = $0107   ;Upper health digit in lower 4 bits-->
+                                   ;# of full tanks in upper 4 bits.
 MaxHealth              dw
 ;MaxHealth+1             = $6877
 SamusGear              db        ;Stores power-up items Samus has.
@@ -896,16 +876,20 @@ RidleyStatueStatus     db        ;bit 7 set, statues are up.
 SamusAge               ds 3      ;Low byte of Samus' age.
 ; SamusAge+1             = $687E   ;Mid byte of Samus' age.
 ; SamusAge+2             = $687F   ;High byte of Samus' age.
-SamusStat0A            db        ;Unused memory address for storing Samus info.
-SamusStat0B            dw        ;SamusStat0B keeps track of how many times Samus has-->
-; SamusStat0B+1          = $6882   ;died, but this info is never accessed anywhere in the game.
+SamusGear1             db        ;Stored in password, unused in vanilla
 
-AtEnding               db        ;1=End scenes playing, 0=Not at ending.
+SaveArea               db
+SaveSamusMapX          db
+SaveSamusMapY          db
+SaveSamusX             db
+SaveSamusY             db
+SaveScrollDir          db        ;0 = vertical, 2 = horizontal
+TilesetIndex           db
 
-EraseGame              db        ;MSB set=erase selected saved game(not used in password carts).
+EndingType             db        ;1=worst ending, 5=best ending
 
-DataSlot               db        ;#$00 thru #$02. Stored Samus data to load.
-                                   ;Unused leftover from the original FDS version of the game.
+NARPASSWORD            db        ;0 = invinsible Samus not active, 1 = invinsible Samus active.
+JustInBailey           db        ;0 = Samus has suit, 1 = Samus is without suit.
 
 NumberOfUniqueItems    db        ;Counts number of power-ups and red doors-->
                                    ;opened.  Does not count different beams-->
@@ -913,8 +897,6 @@ NumberOfUniqueItems    db        ;Counts number of power-ups and red doors-->
 
 UniqueItemHistory      ds $100   ;Thru $68FC. History of Unique items collected.-->
 ;EndItemHistory         = $68FC   ;Two bytes per item.
-
-KraidRidleyPresent     db        ;#$01=Kraid/Ridley present, #$00=Kraid/Ridley not present.
 
 ; 18 bytes ($6988-$6999)
 PasswordByte           ds $12
@@ -943,12 +925,6 @@ PasswordByte           ds $12
 ;Upper two bits of PasswordChar bytes will always be %00.
 PasswordChar           ds $18
 
-NARPASSWORD            db        ;0 = invinsible Samus not active, 1 = invinsible Samus active.
-JustInBailey           db        ;0 = Samus has suit, 1 = Samus is without suit.
-ItemHistory            ds $100   ;Thru $6A73. Unique item history saved game data (not used).
-
-SpareMem6A74           ds $40
-
 ;---------------------------------------[ More enemy RAM ]-------------------------------------------
 
 ; 16 slots of 16 bytes each ($6AF4-$6BF3)
@@ -956,8 +932,6 @@ EnsExtra               instanceof EnExtra $10 startfrom 0
 
 ; 16 slots of 8 bytes each ($6BF4-$6C73)
 Cannons                instanceof Cannon $10 startfrom 0
-
-SpareRAM6C74           ds $18C
 
 ;-------------------------------------[ Intro sprite defines ]---------------------------------------
 
@@ -996,7 +970,7 @@ DecompressedRoomBuffer = $7000   ;$7000-$7130+
 
 .enum $7300
 
-TilesetIndex           db
+StartingFromPassword   db
 
 TileAnimDelay          db
 TileAnimIndex          db
@@ -1030,23 +1004,4 @@ MetroidLatch0440       db
 MetroidLatch0450       db
 
 .ende
-
-; 3 slots of 16 bytes each ($77FE-$782D)
-;Samus saved game data (not used).
-SamusData00            = $77FE
-SamusData01            = $77FF
-SamusData02            = $7800
-SamusData03            = $7801
-SamusData04            = $7802
-SamusData05            = $7803
-SamusData06            = $7804
-SamusData07            = $7805
-SamusData08            = $7806
-SamusData09            = $7807
-SamusData0A            = $7808
-SamusData0B            = $7809
-SamusData0C            = $780A
-SamusData0D            = $780B
-SamusData0E            = $780C
-SamusData0F            = $780D
 

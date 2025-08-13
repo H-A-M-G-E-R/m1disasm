@@ -581,22 +581,6 @@ EraseAllSprites: ;($C1A3)
 Exit101:
     rts                             ;Return used by subroutines above and below.
 
-;-------------------------------------[Clear RAM $33 thru $DF]---------------------------------------
-
-;The routine below clears RAM associated with rooms and enemies.
-
-ClearRAM_33_DF:
-    ldx #RoomPtr.b
-    lda #$00
-    @loop:
-        ;Clear RAM addresses $33 through $DF.
-        sta $00,x
-        inx
-        ;Loop until all desired addresses are cleared.
-        cpx #SoundE0.b
-        bcc @loop
-    rts
-
 ;----------------------------------[ Write PPU string to palette ]-----------------------------------
 
 PreparePPUProcess_:
@@ -1289,34 +1273,32 @@ RTS_C50F:
 ;-------------------------------------------[ AreaInit ]---------------------------------------------
 
 AreaInit:
-    lda #$00                        ;
-    sta ScrollX                     ;Clear ScrollX.
-    sta ScrollY                     ;Clear ScrollY.
-    lda PPUCTRL_ZP                  ;
-    and #$FC                        ;Sets nametable address = $2000.
-    sta PPUCTRL_ZP                  ;
-    inc MainRoutine                 ;Increment MainRoutine to MoreInit.
-    jsr EraseAllSprites             ;($C1A3)Clear all sprite info.
-    lda #$00                        ;Prepare to load Brinstar memory page.
-    jsr IsEngineRunning             ;($CA18)Check to see if ok to switch lower memory page.
 
 ;------------------------------------------[ MoreInit ]---------------------------------------------
 
 MoreInit:
-    ; tileset #$00
-    lda #$00
+    lda StartingFromPassword
+    beq +
+        ; Copy area start data when Samus loads from a password.
+        ldx #AreaScrollDir-AreaSamusMapPosX+1.b
+        -
+            lda AreaSamusMapPosX-1,x
+            sta SaveSamusMapX-1,x
+            dex
+            bne -
+    +
+    lda TilesetIndex
     jsr ChangeTileset
     ldx #$00
-    stx AtEnding                    ;Not playing ending scenes.
     stx DoorEntryStatus                  ;Samus not in door.
     stx SamusDoorData               ;Samus is not inside a door.
     stx UpdatingProjectile          ;No projectiles need to be updated.
     txa                             ;A=0.
 
     LC830:
-        cpx #SoundE0-OnFrozenEnemy.b ;Check to see if more RAM to clear in $7A thru $DF.
+        cpx #SoundE0-RoomPtr.b ;Check to see if more RAM to clear in RoomPtr thru SoundE0-1.
         bcs LC836                           ;
-            sta OnFrozenEnemy.b,x           ;Clear RAM $7A thru $DE.
+            sta RoomPtr,x                   ;Clear RAM RoomPtr thru SoundE0-1.
         LC836:                   ;
         sta ObjAction,x                 ;
         sta TileBlasts.0.routine,x      ;Clear RAM pages 3,5,7.
@@ -1334,9 +1316,9 @@ MoreInit:
     inx                             ;X=2.
     inx                             ;
     stx ScrollDir                   ;Set initial scroll direction as left.
-    lda AreaSamusMapPosX            ;Get Samus start x pos on map.
+    lda SaveSamusMapX               ;Get Samus start x pos on map.
     sta SamusMapPosX                ;
-    lda AreaSamusMapPosY            ;Get Samus start y pos on map.
+    lda SaveSamusMapY               ;Get Samus start y pos on map.
     sta SamusMapPosY                ;
 
     jsr CopyAreaPointers    ; copy pointers from ROM to RAM
@@ -1439,27 +1421,22 @@ SamusInit:
     stx RinkaSpawners.0.status
     stx RinkaSpawners.1.status
     ldy #$27
-    lda AreaScrollDir
+    lda SaveScrollDir
     sta ScrollDir
     bne Lx002
         ldy #$2F                        ;If scrolling vertically, set PPU for horizontal mirroring.
     Lx002:
     sty MirrorCntrl
     ;Samus' initial vertical position
-    lda AreaSamusY
+    lda SaveSamusY
     sta ObjY
     ;Samus' initial horizontal position
-    lda AreaSamusX
+    lda SaveSamusX
     sta ObjX
     ;Set Samus' name table position to current name table active in PPU.
     lda PPUCTRL_ZP
     and #$01
     sta ObjHi
-    ;Starting health is full...
-    lda MaxHealth+1
-    sta Health+1
-    lda MaxHealth
-    sta Health
     jsr GameEngine
     jmp ScreenOn
 
@@ -1478,6 +1455,7 @@ GameEngine:
         sta Health+1                    ;NARPASSWORD has been entered at the -->
         lda #$FF                        ;password screen. Gives you new health,-->
         sta SamusGear                   ;missiles and every power-up every frame.
+        sta SamusGear1                  ;
         lda #$05                        ;
         sta MissileCount                ;
     LC945:
@@ -2862,18 +2840,18 @@ SamusRoll:
         lda #$00
         sta MoveSamusUp_IsUnrollCheck
     Lx032:
-        ;lda Joy1Change
-        ;and #BUTTON_DOWN
-        ;beq +
-        ;    lda SamusGear
-        ;    and #gr_MARUMARI
-        ;    beq +      ; branch if Samus doesn't have spider ball
-        ;    lda #sa_SpiderFall
-        ;    sta ObjAction
-        ;    lda #ObjAnim_SamusSpider - ObjectAnimIndexTbl.b
-        ;    jsr SetSamusAnim
-        ;    jsr SFX_SamusBall
-        ;+
+        lda Joy1Change
+        and #BUTTON_DOWN
+        beq +
+            lda SamusGear1
+            and #gr1_SPIDERBALL
+            beq +      ; branch if Samus doesn't have spider ball
+            lda #sa_SpiderFall
+            sta ObjAction
+            lda #ObjAnim_SamusSpider - ObjectAnimIndexTbl.b
+            jsr SetSamusAnim
+            jsr SFX_SamusBall
+        +
         lda Joy1Status
         jsr BitScan                     ;($E1E1)
         cmp #BUTTONBIT_DOWN
@@ -3995,7 +3973,6 @@ ElevatorD8BF:
         ; Samus made it! YAY!
         lda #_id_IncrementRoutine.b
         sta MainRoutine
-        inc AtEnding
         ldy #$00
         sty RoomPtr
         ; switch to bank 0
