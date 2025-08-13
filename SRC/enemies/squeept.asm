@@ -44,6 +44,7 @@ L9A88:
     
     ; make squeept move in their jump trajectory
     ; apply gravity to y speed and get delta y
+    ldy #$0E
     jsr CommonJump_EnemyGetDeltaY_UsingAcceleration
     
     ldx PageIndex
