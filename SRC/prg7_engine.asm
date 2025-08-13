@@ -3686,6 +3686,7 @@ UpdateBullet_ExplodeIfHitSprite:
 BulletExplode:
     ; explode the projectile
     ldy ObjAction,x
+    beq Exit5
     cpy #wa_BulletExplode
     beq Exit5
     lda BulletExplodeAnimTbl-1,y
