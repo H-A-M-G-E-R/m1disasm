@@ -10686,7 +10686,7 @@ UpdateTileBlast:
         .word UpdateTileBlast_Init
         .word UpdateTileBlast_Animating ; spawning
         .word UpdateTileBlast_WaitToRespawn
-        .word UpdateTileBlast_Animating ; respawning
+        .word UpdateTileBlast_Respawning ; respawning
         .word UpdateTileBlast_Respawned
 
 UpdateTileBlast_Init:
@@ -10704,8 +10704,9 @@ UpdateTileBlast_Init:
     sta $01
 
 UpdateTileBlast_Animating:
-    ; anim every 2 frames
-    lda #$02
+    ; anim every TileBlastBlastAnimDelayTbl[TileBlastType] frames
+    ldy TileBlasts.0.type,x
+    lda TileBlastBlastAnimDelayTbl,y
     jmp UpdateTileBlastAnim
 
 UpdateTileBlast_WaitToRespawn:
@@ -10885,6 +10886,12 @@ GetPosAtNameTableAddr:
 
     sta $03
     rts
+
+UpdateTileBlast_Respawning:
+    ; anim every TileBlastRespawnAnimDelayTbl[TileBlastType] frames
+    ldy TileBlasts.0.type,x
+    lda TileBlastRespawnAnimDelayTbl,y
+    ; fallthrough
 
 UpdateTileBlastAnim:
     ldx PageIndex
