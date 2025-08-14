@@ -7591,7 +7591,7 @@ DeleteOffscreenRoomSprites:
     ; power-ups
     ldx #$00
     jsr PowerUp_RemoveIfOffScreen
-    ldx #$08
+    ldx #_sizeof_PowerUps.0
     jsr PowerUp_RemoveIfOffScreen
     ; tourian stuff
     jmp GotoDeleteOffscreenRoomSprites_Tourian
