@@ -3657,7 +3657,11 @@ UpdateBullet_DeleteIfOffScreen:
     bcs Exit5
 Lx078:
     lda #$00
-    beq Lx077   ; branch always
+    sta ObjAction,x
+    ; double return, abort updating projectile (bugfix)
+    pla
+    pla
+    rts
 
 GotoProjectileHitDoorOrStatue:
     jmp ProjectileHitDoorOrStatue
