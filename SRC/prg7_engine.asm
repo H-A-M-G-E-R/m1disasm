@@ -583,7 +583,7 @@ Exit101:
 
 ;----------------------------------[ Write PPU string to palette ]-----------------------------------
 
-PreparePPUProcess_:
+PreparePPUProcess:
     stx $00                         ;Lower byte of pointer to PPU string.
     sty $01                         ;Upper byte of pointer to PPU string.
     jmp ProcessPPUString            ;($C30C)Write data string to PPU.
@@ -3274,7 +3274,8 @@ SamusDoor:
         sta DoorEntryStatus
         bne Lx055
     Lx049:
-    jsr LD48C
+    ; Why not use DeleteOffscreenRoomSprites?
+    jsr Door_DeleteOffscreenEnemies
     jsr Doors_RemoveIfOffScreen
     jsr GotoClearAllMetroidLatches ; if it is defined in the current bank
     jsr StartMusic       ; start music
@@ -3402,40 +3403,42 @@ Lx063:
 RTS_X064:
     rts
 
-LD48C:
-    ldx #$60
+Door_DeleteOffscreenEnemies:
+    ldx #$60 ; BUG: should be #$50
     sec
-    Lx065:
-        jsr LD4B4
+    @loop_enemies:
+        jsr @deleteEnemy
         txa
-        sbc #$20
+        sbc #$20 ; BUG: should be #$10
         tax
-        bpl Lx065
+        bpl @loop_enemies
     jsr GetNameTableAtScrollDir     ;($EB85)
     tay
-    ldx #$18
-    Lx066:
-        jsr LD4A8
+    ldx #_sizeof_PipeBugHoles - _sizeof_PipeBugHoles.0.b
+    @loop_pipeBugHoles:
+        jsr @deletePipeBugHole
         txa
         sec
-        sbc #$08
+        sbc #_sizeof_PipeBugHoles.0
         tax
-        bne Lx066
-LD4A8:
+        bne @loop_pipeBugHoles
+@deletePipeBugHole:
+    ; delete if offscreen
     tya
     cmp PipeBugHoles.0.hi,x
-    bne RTS_X067
+    bne @@RTS
         lda #$FF
         sta PipeBugHoles.0.status,x
-    RTS_X067:
+    @@RTS:
     rts
 
-LD4B4:
+@deleteEnemy:
+    ; delete if offscreen
     lda EnData05,x
     and #$02
-    bne RTS_D4BE
+    bne @@RTS
         sta EnsExtra.0.status,x
-    RTS_D4BE:
+    @@RTS:
     rts
 
 ; UpdateProjectiles
@@ -7011,7 +7014,7 @@ SetupRoom:
     lda RoomNumber                  ;Room number.
     cmp #$FF                        ;
     beq RTS_EA2A                           ;Branch to exit if room is undefined.
-    jsr UpdateRoomSpriteInfo        ;($EC9B)Update which sprite belongs on which name table.
+    jsr DeleteOffscreenRoomSprites  ;($EC9B)Update which sprite belongs on which name table.
 
     jsr ScanForItems                ;($ED98)Set up any special items.
     bcc +
@@ -7520,7 +7523,7 @@ OnNameTable0:
     rts
 
 ; Despawn offscreen room sprites to make room for new room sprites.
-UpdateRoomSpriteInfo:
+DeleteOffscreenRoomSprites:
     ; If the enemy is in the opposite nametable and is offscreen, delete it.
     ldx #$50
     jsr GetNameTableAtScrollDir     ;($EB85)
@@ -7618,7 +7621,7 @@ UpdateRoomSpriteInfo:
     ldx #$08
     jsr PowerUp_RemoveIfOffScreen
     ; tourian stuff
-    jmp GotoUpdateRoomSpriteInfo_Tourian
+    jmp GotoDeleteOffscreenRoomSprites_Tourian
 
 EraseScrollBlockOnNameTableAtScrollDir:
     jsr GetNameTableAtScrollDir     ;($EB85)

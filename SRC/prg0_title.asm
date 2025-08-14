@@ -1827,7 +1827,7 @@ StartContinueScreen1B:
     jsr ClearAll                    ;($909F)Turn off screen, erase sprites and nametables.
     ldx #<L9984.b                     ;Low address for PPU write.
     ldy #>L9984.b                     ;High address for PPU write.
-    jsr PreparePPUProcess           ;($9449)Clears screen and writes "START CONTINUE".
+    jsr PreparePPUProcess_          ;($9449)Clears screen and writes "START CONTINUE".
     ldy #$00                        ;
     sty StartContinue               ;Set selection sprite at START.
     lda #$0D                        ;
@@ -1888,7 +1888,7 @@ LoadPasswordScreen:
     jsr ClearAll                    ;($909F)Turn off screen, erase sprites and nametables.
     ldx #<L99E3.b                     ;Loads PPU with info to display-->
     ldy #>L99E3.b                     ;PASS WORD PLEASE.
-    jsr PreparePPUProcess           ;($9449)Load "PASSWORD PLEASE" on screen.
+    jsr PreparePPUProcess_          ;($9449)Load "PASSWORD PLEASE" on screen.
     jsr DisplayInputCharacters      ;($940B)Write password character to screen.
     lda #$13                        ;
     jsr WriteTitlePal               ;Change palette.
@@ -2212,7 +2212,7 @@ DisplayPassword:
     jsr ClearAll                    ;($909F)Turn off screen, erase sprites and nametables.
     ldx #<L937F.b                     ;Low byte of start of PPU data.
     ldy #>L937F.b                     ;High byte of start of PPU data.
-    jsr PreparePPUProcess           ;($9449)Clears screen and writes "PASS WORD".
+    jsr PreparePPUProcess_          ;($9449)Clears screen and writes "PASS WORD".
     jsr CalculatePassword           ;($8C7A)Calculates the password.
     jsr NMIOn                       ;($C487)Turn on the nonmaskable interrupt.
     jsr PasswordToScreen            ;($93C6)Displays password on screen.
@@ -2250,7 +2250,7 @@ GameOver:
     jsr ClearAll                    ;($909F)Turn off screen, erase sprites and nametables.
     ldx #<L93B9.b                     ;Low byte of start of PPU data.
     ldy #>L93B9.b                     ;High byte of start of PPU data.
-    jsr PreparePPUProcess           ;($9449)Clears screen and writes "GAME OVER".
+    jsr PreparePPUProcess_          ;($9449)Clears screen and writes "GAME OVER".
     jsr NMIOn                       ;($C487)Turn on the nonmaskable interrupt.
     lda #$10                        ;Load Timer3 with a delay of 160 frames-->
     jsr SetTimer3                      ;(2.6 seconds) for displaying "GAME OVER".
@@ -2348,7 +2348,7 @@ PasswordRowsTbl:
     .byte $22, $E4                  ;
 
 
-PreparePPUProcess:
+PreparePPUProcess_:
     stx $00                         ;Lower byte of pointer to PPU string
     sty $01                         ;Upper byte of pointer to PPU string
     jmp ProcessPPUString            ;($C30C)
@@ -2710,7 +2710,7 @@ NMIScreenWrite:
         ldx EndMessageStringTbl0-2,y
         lda EndMessageStringTbl0-1,y
         tay
-        jsr PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+        jsr PreparePPUProcess           ;($C20E)Prepare to write to PPU.
     L9A24:
     ;If not time to erase end message, branch
     lda HideShowEndMsg              ;
@@ -2724,7 +2724,7 @@ NMIScreenWrite:
         ldx EndMessageStringTbl1-2,y
         lda EndMessageStringTbl1-1,y
         tay
-        jmp PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+        jmp PreparePPUProcess           ;($C20E)Prepare to write to PPU.
 Exit100:
     rts                             ;Exit from above and below routines.
 
@@ -2855,7 +2855,7 @@ L9AE4:
     sta SpritePointerIndex          ;
     ldx #<LA052.b                     ;Loads the screen where Samus stands on-->
     ldy #>LA052.b                     ;the surface of the planet in end of game.
-    jsr PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+    jsr PreparePPUProcess           ;($C20E)Prepare to write to PPU.
     jsr NMIOn                       ;($C487)Turn on non-maskable interrupt.
     lda #music_EndMusic             ;Initiate end game music.
     sta CurrentMusic                ;
@@ -3159,7 +3159,7 @@ LoadCredits:
     ldx CreditsPointerTbl,y         ;Base is $A291. Lower byte of pointer to PPU string.
     lda CreditsPointerTbl+1,y       ;Upper byte of pointer to PPU string.
     tay
-    jmp PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+    jmp PreparePPUProcess           ;($C20E)Prepare to write to PPU.
 @RTS:
     rts
 

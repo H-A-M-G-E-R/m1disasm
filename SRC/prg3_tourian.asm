@@ -68,8 +68,8 @@ GotoClearCurrentMetroidLatchAndMetroidOnSamus:
     jmp ClearCurrentMetroidLatchAndMetroidOnSamus
 GotoClearAllMetroidLatches:
     jmp ClearAllMetroidLatches
-GotoUpdateRoomSpriteInfo_Tourian:
-    jmp UpdateRoomSpriteInfo_Tourian
+GotoDeleteOffscreenRoomSprites_Tourian:
+    jmp DeleteOffscreenRoomSprites_Tourian
 GotoSpawnCannonRoutine:
     jmp SpawnCannonRoutine
 GotoSpawnMotherBrainRoutine:
@@ -898,7 +898,7 @@ UpdateCannon_CheckIfOnScreen:
 
 ;-------------------------------------------------------------------------------
 
-UpdateRoomSpriteInfo_Tourian:
+DeleteOffscreenRoomSprites_Tourian:
     ; save opposite nametable in $02
     sty $02
     
@@ -946,9 +946,9 @@ UpdateRoomSpriteInfo_Tourian:
     
     ; for all rinka spawners
     ldx #$00
-    jsr UpdateRoomSpriteInfo_Tourian_RinkaSpawner
+    jsr @rinkaSpawner
     ldx #$03
-    jsr UpdateRoomSpriteInfo_Tourian_RinkaSpawner
+    jsr @rinkaSpawner
 
     ; for mother brain
     ; branch if mother brain doesnt exist
@@ -987,7 +987,7 @@ UpdateRoomSpriteInfo_Tourian:
     @endIf_D:
     rts
 
-UpdateRoomSpriteInfo_Tourian_RinkaSpawner:
+@rinkaSpawner:
     ; exit if rinka spawner doesn't exist
     lda RinkaSpawners.0.status,x
     bmi @RTS
