@@ -2786,10 +2786,9 @@ Restart:
         sta PasswordByte+(((ItemData_HighJump-ItemData)/2)/8)
     L9A83:
     
-    ;If Samus does not have Maru Mari, branch.
+    ;If Samus does not have screw attack, branch.-->
     lda SamusGear
-    ;A programmer error?  Should check for screw attack data.
-    and #gr_MARUMARI
+    and #gr_SCREWATTACK
     beq L9A92
         ;Else load screw attack data into PasswordByte03.
         lda PasswordByte+(((ItemData_ScrewAttack-ItemData)/2)/8)
@@ -2799,6 +2798,8 @@ Restart:
     
     lda SamusGear                   ;
     sta PasswordByte+$09              ;Store Samus gear data in PasswordByte09.
+    lda SamusGear1                  ;
+    sta PasswordByte+$0E            ;Store Samus extra gear data in PasswordByte0E.
     lda #$00                        ;
     ldy JustInBailey                ;
     beq L9AA1                       ;If Samus is wearing suit, branch.  Else-->
