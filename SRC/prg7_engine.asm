@@ -3470,6 +3470,8 @@ DoOneProjectile:
 
 UpdateBullet:
     jsr UpdateBullet_DeleteIfOffScreen
+    lda ObjAction,x
+    beq Lx069
     jsr UpdateBullet_ExplodeIfHitSprite
     jsr UpdateBullet_CollisionWithBG
 CheckBulletStat:
@@ -3503,6 +3505,8 @@ LD522:
 
 UpdateWaveBullet:
     jsr UpdateBullet_DeleteIfOffScreen
+    lda ObjAction,x
+    beq Lx069
     jsr UpdateBullet_ExplodeIfHitSprite
     ; get movement string depending on wave bullet direction
     lda ProjectileWaveDir,x
