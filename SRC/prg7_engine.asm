@@ -3470,8 +3470,6 @@ DoOneProjectile:
 
 UpdateBullet:
     jsr UpdateBullet_DeleteIfOffScreen
-    lda ObjAction,x
-    beq Lx069
     jsr UpdateBullet_ExplodeIfHitSprite
     jsr UpdateBullet_CollisionWithBG
 CheckBulletStat:
@@ -3505,8 +3503,6 @@ LD522:
 
 UpdateWaveBullet:
     jsr UpdateBullet_DeleteIfOffScreen
-    lda ObjAction,x
-    beq Lx069
     jsr UpdateBullet_ExplodeIfHitSprite
     ; get movement string depending on wave bullet direction
     lda ProjectileWaveDir,x
@@ -3658,7 +3654,11 @@ UpdateBullet_DeleteIfOffScreen:
     bcs Exit5
 Lx078:
     lda #$00
-    beq Lx077   ; branch always
+    sta ObjAction,x
+    ; double return, abort updating projectile (bugfix)
+    pla
+    pla
+    rts
 
 GotoProjectileHitDoorOrStatue:
     jmp ProjectileHitDoorOrStatue
