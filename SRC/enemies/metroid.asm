@@ -236,7 +236,7 @@ L98A9:
     ; add offset to Samus position
     jsr CommonJump_ApplySpeedToPosition
     ; set as metroid position
-    jsr LoadPositionFromTemp
+    jsr LoadEnemyPositionFromTemp_
     jmp L9967
 
 L9964:
@@ -282,7 +282,7 @@ L999E:
     lda ObjectCntrl
     bmi L99AB
         lda EnsExtra.0.type,x
-        ora #$03 ~ $02
+        eor #$03 ~ $02
         sta ObjectCntrl
     L99AB:
     jmp CommonEnemyJump_00_01_02
@@ -330,7 +330,7 @@ StoreSamusPositionToTemp:
     sta Temp0B_PositionHi
     rts
 
-LoadPositionFromTemp:
+LoadEnemyPositionFromTemp_:
     ; save function result as enemy position
     lda Temp09_PositionX
     sta EnX,x
@@ -354,13 +354,10 @@ GetMetroidAccel:
     rts
 
 GetMetroidRepelSpeed:
-    ; use bit 6 of accel as an index for MetroidRepelSpeed table
-    asl
+    ; use bit 7 of accel as an index for MetroidRepelSpeed table
     rol
     and #$01
     tay
     lda MetroidRepelSpeed,y
     rts
-
-    .byte $F8, $08, $30, $D0, $60, $A0, $02, $04, $00, $00, $00, $00, $00, $00
 

@@ -139,6 +139,12 @@
     "tough": 0,
     "miniboss": 0,
     "type": 3
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 8
    }
   ]
  },
@@ -179,6 +185,12 @@
     "tough": 0,
     "miniboss": 0,
     "type": 5
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 8
    }
   ]
  },
@@ -374,6 +386,18 @@
     "y": 104,
     "dir": 1,
     "type": 1
+   },
+   {
+    "obj_type": "tileset_change",
+    "x": 128,
+    "y": 128,
+    "new_tileset": 1
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 3
    }
   ]
  },
@@ -680,6 +704,12 @@
     "tough": 0,
     "miniboss": 0,
     "type": 5
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 8
    }
   ]
  },
@@ -951,6 +981,12 @@
     "y": 104,
     "dir": 1,
     "type": 1
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 3
    }
   ]
  },
@@ -1394,6 +1430,12 @@
     "tough": 0,
     "miniboss": 0,
     "type": 6
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 8
    }
   ]
  },
@@ -1425,6 +1467,12 @@
     "tough": 0,
     "miniboss": 0,
     "type": 5
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 3
    }
   ]
  },
@@ -1509,13 +1557,33 @@
     "obj_type": "statues",
     "x": 128,
     "y": 128
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 3
    }
   ]
  },
  {
   "tilemap": "ICAgICAgICAgICAgICAgICAaIB8gGiAgGiAfIBogICAg//////////////////8gIP//////////////////Fxf//////////////////xcX//////////////////8HF///////////////////Bxf//////////////////wcgICAgICAgBAUgICAgICAgIBogHyAaIAQFIBogHyAaICD///////8EBf///////yAg////////BAX///////8gF////////wQF////////Fxf///////8EBf///////xcg////////BAX///////8g",
   "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAgIAAAAAAAAAAAAAAAAAAAICAAAAAAAAAAAAAAAAAAACAgAAAAAAAAAAAAAAAAAAAgIAAAAAAAAAAAAAAAAAAAICAAAAAAAAAAAAAAAAAAACAgAAAAAAAAAAAAAAAAAAAgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-  "objs": []
+  "objs": [
+   {
+    "obj_type": "door",
+    "x": 240,
+    "y": 104,
+    "dir": 0,
+    "type": 1
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 3
+   }
+  ]
  },
  {
   "tilemap": "HAgICAgKCBwcCAgICAoIHAgKCQooKAgICAoJCigoCDUI/////////wj//////wgc//////////////////80CP//////////////////CAj///////////////////8H////////////////////B////////////////////wf//////////////wgLCwsL//////////////8ICBw2Nv//////////////////HAj//////////////////wg0//////////////////80NAgLCwsLCAsLCAsLCwsICwsICBwcCAgcCAgIHBwICBwI",
@@ -1540,6 +1608,12 @@
     "y": 104,
     "dir": 1,
     "type": 1
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 8
    }
   ]
  }

@@ -80,8 +80,8 @@ SwooperExit_Resting:
 
 
 L9923:
-    ; set gravity to negative #$80 (gravity pulls towards ceiling)
-    lda #$80
+    ; set gravity to negative #$20 (gravity pulls towards ceiling)
+    lda #-$20
     sta EnsExtra.0.accelY,x
     ; branch if y speed is negative (swooper is moving upwards)
     lda EnSpeedY,x

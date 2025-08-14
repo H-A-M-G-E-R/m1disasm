@@ -17,6 +17,7 @@
 .include "hardware.asm"
 .include "constants.asm"
 .include "macros.asm"
+.include "config.asm"
 
 .redef BANK = 2
 .section "ROM Bank $002" bank 2 slot "ROMSwitchSlot" orga $8000 force
@@ -59,12 +60,7 @@ PalPntrTbl:
 
 AreaPointers:
     .word SpecItmsTbl               ;($A2D9)Beginning of special items table.
-    .word $0000                     ;($A21B)Was beginning of room pointer table.
-    .word $0000                     ;($A277)Was beginning of structure pointer table.
-    .word $0000                     ;($AEEC)Was beginning of macro definitions.
     .word EnFramePtrTable1          ;($9C64)Address table into enemy animation data.
-    .word $0000                     ;
-    .word $0000                     ;($9F0E)Was pointers to enemy frame placement data.
     .word EnAnimTbl                 ;($9BDA)Index to values in addr tables for enemy animations.
 
 ; Tourian-specific jump table (dummied out in other banks)
@@ -82,16 +78,8 @@ AreaPointers:
 AreaRoutine:
     jmp RTS_Polyp                       ;Area specific routine.(RTS)
 
-L95CC:
-    .byte $FF                       ;Not used.
-AreaMusicFlag:
-    .byte music_Norfair             ;Norfair music init flag.
 AreaMinibossMusic:
     .byte music_Tourian
-
-;Special room numbers(used to start item room music).
-AreaItemRoomNumbers:
-    .byte $10, $05, $27, $04, $0F, $FF, $FF
 
 AreaSamusMapPosX:
     .byte $16   ;Samus start x coord on world map.
@@ -103,11 +91,11 @@ AreaSamusY:
     .byte $6E   ;Samus start vertical screen position.
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
-
-AreaPalToggle:
-    .byte _id_Palette00+1
-
+AreaMusicFlag:
+    .byte music_Norfair             ;Norfair music init flag.
+AreaTilesetIndex:
     .byte $00
+
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl
 AreaExplosionAnimIndex:
@@ -121,9 +109,9 @@ AreaFireballSplatterAnimIndex:
 AreaMellowAnimIndex:
     .byte EnAnim_Mella - EnAnimTbl
 
-AreaTileAnim:
-    .byte $FF, NorfairBG/$400
-    .byte $00
+AreaTilesets:
+    .word TileAnim0, PalAnim0
+    .word TileAnim1, PalAnim1
 
 ; Enemy AI jump table
 ChooseEnemyAIRoutine:
@@ -132,19 +120,19 @@ ChooseEnemyAIRoutine:
         .word SwooperAIRoutine00 ; 00 - swooper has not seen samus
         .word SwooperAIRoutine01 ; 01 - swooper targetting samus
         .word RipperAIRoutine ; 02 - ripper II
-        .word InvalidEnemy ; 03 - disappears
-        .word InvalidEnemy ; 04 - same as 3
-        .word InvalidEnemy ; 05 - same as 3
+        .word RemoveEnemy_ ; 03 - disappears
+        .word RemoveEnemy_ ; 04 - same as 3
+        .word RemoveEnemy_ ; 05 - same as 3
         .word CrawlerAIRoutine ; 06 - crawler
         .word PipeBugAIRoutine ; 07 - gamet
-        .word InvalidEnemy ; 08 - same as 3
-        .word InvalidEnemy ; 09 - same as 3
-        .word InvalidEnemy ; 0A - same as 3
+        .word RemoveEnemy_ ; 08 - same as 3
+        .word RemoveEnemy_ ; 09 - same as 3
+        .word RemoveEnemy_ ; 0A - same as 3
         .word SqueeptAIRoutine ; 0B - lava jumper
         .word MultiviolaAIRoutine ; 0C - bouncy orb
         .word SeahorseAIRoutine ; 0D - seahorse
         .word PolypAIRoutine ; 0E - rock launcher thing
-        .word InvalidEnemy ; 0F - same as 3
+        .word RemoveEnemy_ ; 0F - same as 3
 
 EnemyDeathAnimIndex:
     .byte EnAnim_GerutaExplode - EnAnimTbl, EnAnim_GerutaExplode - EnAnimTbl
@@ -192,6 +180,59 @@ MellowDamage:
 
 EnemyPrimaryPaletteTbl:
     .byte $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02
+
+EnemyHitSFXTbl:
+    .byte $03, sfxTri_BigEnemyHit
+    .byte $03, sfxTri_BigEnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $03, sfxTri_BigEnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+
+EnemyDropChanceTblNormal:
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+EnemyDropChanceTblTough:
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
 
 EnemyRestingAnimIndex:
     .byte EnAnim_GerutaIdle - EnAnimTbl, EnAnim_GerutaIdle - EnAnimTbl
@@ -250,7 +291,7 @@ L967B:
 L968B:
     .byte $89, $89, $00, $42, $00, $00, $04, $80, $80, $81, $00, $00, $05, $89, $00, $00
 
-EnemyData0DTbl:
+EnemyForceSpeedTowardsSamusDelayTbl:
     .byte $01, $01, $01, $01, $01, $01, $01, $01, $28, $10, $00, $00, $00, $01, $00, $00
 
 EnemyDistanceToSamusThreshold:
@@ -275,21 +316,21 @@ EnemyInitDelayTbl:
     .byte $10, $01, $01, $01, $10, $10, $01, $08, $09, $10, $01, $10, $01, $20, $00, $00
 
 EnemyMovementChoiceOffset:
-    .byte EnemyMovementChoice07 - EnemyMovementChoices ; enemy can't use movement strings
-    .byte EnemyMovementChoice08 - EnemyMovementChoices ; enemy can't use movement strings
-    .byte EnemyMovementChoice00 - EnemyMovementChoices
+    .byte EnemyMovementChoice_GerutaIdle - EnemyMovementChoices
+    .byte EnemyMovementChoice_GerutaAttacking - EnemyMovementChoices
+    .byte EnemyMovementChoice_RipperII - EnemyMovementChoices
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
-    .byte EnemyMovementChoice01 - EnemyMovementChoices ; enemy moves manually
-    .byte EnemyMovementChoice01 - EnemyMovementChoices ; enemy can't use movement strings
+    .byte EnemyMovementChoice_Gamet - EnemyMovementChoices ; enemy moves manually
+    .byte EnemyMovementChoice_Gamet - EnemyMovementChoices
     .byte $00 ; unused enemy
     .byte EnemyMovementChoice02 - EnemyMovementChoices ; unused enemy
     .byte EnemyMovementChoice03 - EnemyMovementChoices ; unused enemy
-    .byte EnemyMovementChoice04 - EnemyMovementChoices ; enemy can't use movement strings
-    .byte EnemyMovementChoice05 - EnemyMovementChoices ; enemy can't use movement strings
-    .byte EnemyMovementChoice06 - EnemyMovementChoices
-    .byte EnemyMovementChoice07 - EnemyMovementChoices ; enemy doesn't move
+    .byte EnemyMovementChoice_Squeept - EnemyMovementChoices
+    .byte EnemyMovementChoice_Multiviola - EnemyMovementChoices
+    .byte EnemyMovementChoice_Dragon - EnemyMovementChoices
+    .byte EnemyMovementChoice_GerutaIdle - EnemyMovementChoices ; enemy doesn't move
     .byte $00 ; unused enemy
 
 EnemyMovementPtrs:
@@ -314,13 +355,89 @@ EnemyMovementPtrs:
     .byte $00, $00, $00, $00, $00, $00, $00, $00
 
 EnAccelYTable:
-    .byte $80, $80, $00, $00, $00, $00, $00, $00, $00, $00, $E0, $16, $15, $7F, $7F, $7F, $00, $00, $00, $00
+    .byte -$20 ; $00
+    .byte -$20 ; $01
+    .byte  $00 ; $02
+    .byte  $00 ; $03
+    .byte  $00 ; $04
+    .byte  $00 ; $05
+    .byte  $00 ; $06
+    .byte  $00 ; $07
+    .byte  $00 ; $08
+    .byte  $00 ; $09
+    .byte -$08 ; $0A
+    .byte  $06 ; $0B
+    .byte  $05 ; $0C
+    .byte  $20 ; $0D
+    .byte  $20 ; $0E
+    .byte  $20 ; $0F
+    .byte  $00 ; $10
+    .byte  $00 ; $11
+    .byte  $00 ; $12
+    .byte  $00 ; $13
 EnAccelXTable:
-    .byte $00, $00, $00, $00, $00, $00, $38, $38, $C8, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+    .byte  $00 ; $00
+    .byte  $00 ; $01
+    .byte  $00 ; $02
+    .byte  $00 ; $03
+    .byte  $00 ; $04
+    .byte  $00 ; $05
+    .byte  $0E ; $06
+    .byte  $0E ; $07
+    .byte -$0E ; $08
+    .byte  $00 ; $09
+    .byte  $00 ; $0A
+    .byte  $00 ; $0B
+    .byte  $00 ; $0C
+    .byte  $00 ; $0D
+    .byte  $00 ; $0E
+    .byte  $00 ; $0F
+    .byte  $00 ; $10
+    .byte  $00 ; $11
+    .byte  $00 ; $12
+    .byte  $00 ; $13
 EnSpeedYTable:
-    .byte $0C, $0C, $02, $01, $00, $00, $01, $01, $01, $FC, $06, $FE, $FE, $F8, $F9, $FB, $FD, $00, $00, $00
+    .word  $05F0 ; $00
+    .word  $05F0 ; $01
+    .word  $0100 ; $02
+    .word  $0080 ; $03
+    .word  $0000 ; $04
+    .word  $0000 ; $05
+    .word  $0080 ; $06
+    .word  $0080 ; $07
+    .word  $0080 ; $08
+    .word -$0200 ; $09
+    .word  $02FC ; $0A
+    .word -$00FD ; $0B
+    .word -$00FD ; $0C
+    .word -$03F0 ; $0D
+    .word -$0370 ; $0E
+    .word -$0270 ; $0F
+    .word -$0180 ; $10
+    .word  $0000 ; $11
+    .word  $0000 ; $12
+    .word  $0000 ; $13
 EnSpeedXTable:
-    .byte $00, $02, $01, $01, $00, $00, $FA, $FC, $06, $00, $01, $01, $01, $00, $01, $01, $03, $00, $00, $00
+    .word  $0000 ; $00
+    .word  $0100 ; $01
+    .word  $0080 ; $02
+    .word  $0080 ; $03
+    .word  $0000 ; $04
+    .word  $0000 ; $05
+    .word -$02F9 ; $06
+    .word -$01F9 ; $07
+    .word  $02F9 ; $08
+    .word  $0000 ; $09
+    .word  $0080 ; $0A
+    .word  $0080 ; $0B
+    .word  $0080 ; $0C
+    .word  $0000 ; $0D
+    .word  $0080 ; $0E
+    .word  $0080 ; $0F
+    .word  $0180 ; $10
+    .word  $0000 ; $11
+    .word  $0000 ; $12
+    .word  $0000 ; $13
 
 L977B:
     .byte $4C, $4C, $01, $00, $00, $00, $00, $40, $00, $64, $44, $44, $40, $00, $00, $00
@@ -367,6 +484,18 @@ TileBlastBlastAnimIndexTable:
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$90
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$94
 
+TileBlastBlastAnimDelayTbl:
+    .byte $02 ; tile #$70
+    .byte $02 ; tile #$74
+    .byte $02 ; tiles #$78 and #$76
+    .byte $02 ; tile #$7C
+    .byte $02 ; tile #$80
+    .byte $02 ; tile #$84
+    .byte $02 ; tile #$88
+    .byte $02 ; tile #$8C
+    .byte $02 ; tile #$90
+    .byte $02 ; tile #$94
+
 TileBlastRespawnDelayTbl:
     .byte $50 ; tile #$70
     .byte $50 ; tile #$74
@@ -390,6 +519,18 @@ TileBlastRespawnAnimIndexTable:
     .byte TileBlastAnim4 - TileBlastAnim ; tile #$8C
     .byte TileBlastAnim9 - TileBlastAnim ; tile #$90
     .byte TileBlastAnim5 - TileBlastAnim ; tile #$94
+
+TileBlastRespawnAnimDelayTbl:
+    .byte $02 ; tile #$70
+    .byte $02 ; tile #$74
+    .byte $02 ; tiles #$78 and #$76
+    .byte $02 ; tile #$7C
+    .byte $02 ; tile #$80
+    .byte $02 ; tile #$84
+    .byte $02 ; tile #$88
+    .byte $02 ; tile #$8C
+    .byte $02 ; tile #$90
+    .byte $02 ; tile #$94
 
 TileBlastAnim:
 TileBlastAnim0:  .byte $06,$07,$00,$FE ; blasting tile or respawning tile #$7C
@@ -423,23 +564,23 @@ TileBlastFramePtrTable:
     .word TileBlastFrame10
 
 EnemyMovementChoices:
-EnemyMovementChoice00:
+EnemyMovementChoice_RipperII:
     EnemyMovementChoiceEntry $02
-EnemyMovementChoice01: ; enemy moves manually
+EnemyMovementChoice_Gamet: ; enemy moves manually
     EnemyMovementChoiceEntry $09
 EnemyMovementChoice02: ; unused enemy
     EnemyMovementChoiceEntry $0D
 EnemyMovementChoice03: ; unused enemy
     EnemyMovementChoiceEntry $0E, $0F
-EnemyMovementChoice04: ; enemy can't use movement strings
+EnemyMovementChoice_Squeept: ; enemy moves manually
     EnemyMovementChoiceEntry $00, $01, $02, $03
-EnemyMovementChoice05: ; enemy can't use movement strings
+EnemyMovementChoice_Multiviola:
     EnemyMovementChoiceEntry $10
-EnemyMovementChoice06:
+EnemyMovementChoice_Dragon:
     EnemyMovementChoiceEntry $11
-EnemyMovementChoice07: ; enemy doesn't move
+EnemyMovementChoice_GerutaIdle: ; enemy doesn't move
     EnemyMovementChoiceEntry $00
-EnemyMovementChoice08: ; enemy can't use movement strings
+EnemyMovementChoice_GerutaAttacking:
     EnemyMovementChoiceEntry $01
 
 
@@ -451,11 +592,11 @@ EnemyMovement01_L:
 
 ; ripper II
 EnemyMovement02_R:
-    SignMagSpeed $01,  3,  0
+    SignMagSpeed $02,  3,  0
     EnemyMovementInstr_Restart
 
 EnemyMovement02_L:
-    SignMagSpeed $01, -3,  0
+    SignMagSpeed $02, -3,  0
     EnemyMovementInstr_Restart
 
 EnemyMovement03_R:
@@ -491,11 +632,11 @@ EnemyMovement10_L:
 ; seahorse
 EnemyMovement11_R:
 EnemyMovement11_L:
-    SignMagSpeed $14,  0, -1
-    SignMagSpeed $0A,  0,  0
+    SignMagSpeed $28,  0, -1
+    SignMagSpeed $14,  0,  0
     EnemyMovementInstr_ClearEnJumpDsplcmnt
-    SignMagSpeed $30,  0,  0
-    SignMagSpeed $14,  0,  1
+    SignMagSpeed $60,  0,  0
+    SignMagSpeed $28,  0,  1
     EnemyMovementInstr_StopMovementSeahorse
 
 EnemyFireballMovement0:
@@ -539,7 +680,7 @@ EnemyFireballMovement3:
     .byte $FF
 
 ;-------------------------------------------------------------------------------
-InvalidEnemy:
+RemoveEnemy_:
     lda #$00
     sta EnsExtra.0.status,x
     rts
@@ -575,40 +716,12 @@ CommonEnemyJump_00_01_02:
 .include "enemies/swooper.asm"
 
 ;-------------------------------------------------------------------------------
-; is this unused?
-L9963:
-    jsr CommonJump_EnemyFlipAfterDisplacement
-    lda #$06
-    sta $00
-    jmp CommonEnemyJump_00_01_02
-
-    jsr CommonJump_EnemyFlipAfterDisplacement
-    lda #$06
-    sta $00
-    jmp CommonEnemyJump_00_01_02
-
-    jsr CommonJump_EnemyFlipAfterDisplacement
-    lda #$06
-    sta $00
-    lda EnemyMovementPtr
-    cmp #$02
-    bne L9993
-    cmp EnsExtra.0.status,x
-    bne L9993
-    jsr CommonJump_CrawlerAIRoutine_ShouldCrawlerMove
-    and #$03
-    bne L9993
-        jmp L984D
-    L9993:
-    jmp CommonEnemyJump_00_01_02
-
-;-------------------------------------------------------------------------------
 ; Crawler Routine
 .include "enemies/crawler.asm"
 
 ;-------------------------------------------------------------------------------
 
-StorePositionToTemp:
+StoreEnemyPositionToTemp_:
     lda EnY,x
     sta Temp08_PositionY
     lda EnX,x
@@ -617,7 +730,7 @@ StorePositionToTemp:
     sta Temp0B_PositionHi
     rts
 
-LoadPositionFromTemp:
+LoadEnemyPositionFromTemp_:
     lda Temp0B_PositionHi
     and #$01
     sta EnsExtra.0.hi,x
@@ -711,6 +824,19 @@ TileBlastFrame0E:
 TileBlastFrame0F:
 TileBlastFrame10:
     ;nothing
+
+TileAnim0:
+TileAnim1:
+    .byte $FF, NorfairBG/$400
+    .byte $00
+
+PalAnim0:
+    .byte _id_Palette00+1
+    .byte $00
+
+PalAnim1:
+    .byte _id_Palette05+1
+    .byte $00
 
 .include "data/norfair/enemy_sprite_data.asm"
 

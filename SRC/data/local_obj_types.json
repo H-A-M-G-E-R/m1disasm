@@ -52,6 +52,29 @@
             }
         ]
     },
+    "scroll_block": {
+        "type": 3,
+        "props": [
+            {
+                "right": {
+                    "len": 1,
+                    "shifts": 7
+                },
+                "left": {
+                    "len": 1,
+                    "shifts": 6
+                },
+                "down": {
+                    "len": 1,
+                    "shifts": 5
+                },
+                "up": {
+                    "len": 1,
+                    "shifts": 4
+                }
+            }
+        ]
+    },
     "elevator": {
         "type": 4,
         "props": [
@@ -61,8 +84,32 @@
                     "len": 1,
                     "shifts": 7
                 },
-                "type":  {
-                    "len": 6,
+                "to_ending":  {
+                    "len": 1,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "tileset_change": {
+        "type": 5,
+        "props": [
+            {},
+            {
+                "new_tileset": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "music_change": {
+        "type": 21,
+        "props": [
+            {},
+            {
+                "music":  {
+                    "len": 8,
                     "shifts": 0
                 }
             }

@@ -4,7 +4,7 @@
   "x": 896,
   "y": 643,
   "dir": 0,
-  "type": 3
+  "to_ending": 0
  },
  {
   "obj_type": "item",
@@ -37,9 +37,16 @@
   "type": 0
  },
  {
-  "obj_type": "pal_change",
-  "x": 3200,
-  "y": 1920
+  "obj_type": "tileset_change",
+  "x": 2944,
+  "y": 1920,
+  "new_tileset": 0
+ },
+ {
+  "obj_type": "tileset_change",
+  "x": 3456,
+  "y": 1920,
+  "new_tileset": 1
  },
  {
   "obj_type": "item",
@@ -69,7 +76,7 @@
   "x": 5760,
   "y": 2947,
   "dir": 0,
-  "type": 1
+  "to_ending": 0
  },
  {
   "obj_type": "item",
@@ -88,6 +95,24 @@
   "x": 1920,
   "y": 4739,
   "dir": 0,
-  "type": 2
+  "to_ending": 0
+ },
+ {
+  "obj_type": "area_change",
+  "x": 5760,
+  "y": 3456,
+  "area": 1
+ },
+ {
+  "obj_type": "area_change",
+  "x": 1920,
+  "y": 5248,
+  "area": 2
+ },
+ {
+  "obj_type": "area_change",
+  "x": 896,
+  "y": 1152,
+  "area": 3
  }
 ]

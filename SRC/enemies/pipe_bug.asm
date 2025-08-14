@@ -22,9 +22,9 @@ PipeBugAIRoutine:
     cmp #$40
     bcs PipeBugApplySpeed
 
-    ; set EnsExtra.0.accelY to #$7F
+    ; set EnsExtra.0.accelY to #$20
     ; eventually, this gravity will make y speed positive
-    lda #$7F
+    lda #$20
     sta EnsExtra.0.accelY,x
     bne PipeBugApplySpeed ; branch always
 
@@ -45,17 +45,13 @@ PipeBugCheckIfGoForwards:
         lda PipeBugSpeedXTable,y
         sta EnSpeedX,x
 PipeBugApplySpeed:
-    ; exit if bit 7 of EnData05 is set
-    lda EnData05,x
-    asl
-    bmi PipeBugExit
-    
     ; exit if pipe bug is not active
     lda EnsExtra.0.status,x
     cmp #enemyStatus_Active
     bne PipeBugExit
     
     ; get y speed
+    ldy #$07
     jsr CommonJump_EnemyGetDeltaY_UsingAcceleration
     ; push y speed to stack
     pha
@@ -68,11 +64,11 @@ PipeBugApplySpeed:
     sta Temp04_SpeedY
 
     ; apply speed
-    jsr StorePositionToTemp
+    jsr StoreEnemyPositionToTemp_
     jsr CommonJump_ApplySpeedToPosition
     ; remove bug if it is out of bounds
     bcc PipeBugDelete
-    jsr LoadPositionFromTemp
+    jsr LoadEnemyPositionFromTemp_
     ; fallthrough
 
 ;Exit 1
@@ -90,8 +86,8 @@ PipeBugDelete:
 
 PipeBugSpeedXTable:
 .if BANK == 1 ; Brinstar
-    .byte $04, -$04
+    .byte $02, -$02
 .else ; Norfair, Kraid, Ridley
-    .byte $08, -$08
+    .byte $04, -$04
 .endif
 

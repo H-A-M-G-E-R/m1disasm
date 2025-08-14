@@ -8,8 +8,8 @@ RioAIRoutine:
     cmp #enemyStatus_Explode
     beq RioExit_Explode
 
-    ; set gravity to negative #$80 (gravity pulls towards ceiling)
-    lda #$80
+    ; set gravity to negative #$20 (gravity pulls towards ceiling)
+    lda #-$20
     sta EnsExtra.0.accelY,x
     ; branch if y speed is negative
     lda EnSpeedY,x

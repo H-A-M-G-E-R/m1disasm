@@ -1,7 +1,11 @@
 ; Zoomer Routine (Crawler)
 CrawlerAIRoutine:
     ; move only 6 frames out of 8 (0.75px per frame)
-    jsr CommonJump_CrawlerAIRoutine_ShouldCrawlerMove
+    txa
+    lsr
+    lsr
+    lsr
+    adc FrameCount
     and #$03
     beq Crawler03
 
@@ -21,25 +25,9 @@ CrawlerAIRoutine:
     cmp #enemyStatus_Explode
     beq Crawler03
 
+    ; move crawler in its direction
     lda EnData0A,x
     and #$03
-    cmp #$01
-    bne Crawler01
-    ; crawler is on wall moving down
-    ; flip direction if it's near the bottom
-    ldy EnY,x
-    .if BANK == 1 || BANK == 4
-        cpy #$E4
-    .elif BANK == 2 || BANK == 5
-        cpy #$EB
-    .endif
-    bne Crawler01
-    jsr CrawlerFlipDirection
-    lda #$03
-    sta EnData0A,x
-    bne Crawler02
-Crawler01:
-    ; move crawler in its direction
     jsr JumpByRTSToMovementRoutine
     jsr CrawlerInsideCornerCheck
 Crawler02:
@@ -128,6 +116,12 @@ CrawlerInsideCornerCheck:
         lda EnData05,x
         eor #$01
         sta EnData05,x
+        lda EnData0A,x
+        lsr
+        bcc RTS_Crawler06
+        lda EnData0A,x
+        eor #$02
+        sta EnData0A,x
     RTS_Crawler06:
         rts
 

@@ -16,6 +16,12 @@
     "y": 104,
     "dir": 1,
     "type": 1
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 5
    }
   ]
  },
@@ -27,7 +33,14 @@
  {
   "tilemap": "DwwMCwsLCwsLCwsLDwwMCwsPCwz//////////wsPCwwMDwwL//////////8MDwwLDwsPDP//////////DwsPDAsP////////////////Cw8MC////////////////wwLD///////////////////DAv//////////////////wsM/////w3/////Df////8PC/////8OEBAQEA7/////Dwz/////CwsLCwsL/////wsP////////EhMR//////8MC////////xP/////////CwwP////////////////DA8LCwv///////////8LCwsL",
   "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwEDAwMDAQMDAwMDAwMDAwMBAAAAAAEDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
-  "objs": []
+  "objs": [
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 5
+   }
+  ]
  },
  {
   "tilemap": "Cw////////////////8LDwwL////////////////DAsPDP///////////wsLCwsMCwv/////CwsLC/////8LCwwP////////////////DA8G//////////////////8GBv//////////////////Bgb//////////////////wYPDAwLDwwMCw///////wwLCw8LDAsPCwwL//////8LDAwPDAsMDwwLDP//////DAsPCw8MDwsPDA///////w8MDwwMCw8MDAsPDP////8MCwsPCwwLDwsMCw//////CwwMDwwLDA8MCwwP/////wwL",
@@ -59,6 +72,12 @@
     "y": 104,
     "dir": 0,
     "type": 0
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 3
    }
   ]
  },
@@ -72,6 +91,12 @@
     "y": 104,
     "dir": 1,
     "type": 1
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 3
    }
   ]
  },
@@ -122,6 +147,12 @@
     "tough": 1,
     "miniboss": 0,
     "type": 2
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 5
    }
   ]
  },
@@ -186,6 +217,12 @@
     "tough": 1,
     "miniboss": 0,
     "type": 6
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 5
    }
   ]
  },
@@ -217,6 +254,12 @@
     "tough": 0,
     "miniboss": 0,
     "type": 2
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 5
    }
   ]
  },
@@ -310,6 +353,12 @@
     "tough": 0,
     "miniboss": 0,
     "type": 2
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 5
    }
   ]
  },
@@ -390,6 +439,12 @@
     "tough": 0,
     "miniboss": 0,
     "type": 6
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 3
    }
   ]
  },
@@ -1219,6 +1274,12 @@
     "tough": 0,
     "miniboss": 0,
     "type": 13
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 3
    }
   ]
  },

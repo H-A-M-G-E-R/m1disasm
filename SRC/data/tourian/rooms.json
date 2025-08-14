@@ -245,7 +245,14 @@
  {
   "tilemap": "CgoKCgoKCgoKCgoKCgoKCgoNFxcXFxcNDRcXFxcXDQoKGAoQCgoQGBgKEAoKEBgKCg0XFxcXFw0NFxcXFxcNCgoN////////////////DQoKGP///////////////xgKChj///////////////8YCgoY////////////////GAoKGP////8UHBwU/////xgKCg3/////CgoKCv////8NCgoY////////////////GAoKGP///////////xka/xgKChj/GRr///////////8YCgoY////////////////GAoKDf///////////////w0K",
   "attrs": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwEBAwMDAwMDAQEDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw==",
-  "objs": []
+  "objs": [
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 2
+   }
+  ]
  },
  {
   "tilemap": "Cg3///////////////8NCgoYGRr/////////////GAoKGP///////xkbGv///xgKChj///////////////8YCgoY/////////////xkaGAoKDf///xka//////////8IChj/////////////////CAoY/////////////////wgKGP8ZGv///////xkbGg0KChj///////////////8YCgoN////////////////GAoKCgoKCgoKCgoKCgoKCgoKCg0XFxcXFw0NFxcXFxcNCgoYChAKChAYGAoQCgoQGAoKDRcXFxcXDQ0XFxcXFw0K",

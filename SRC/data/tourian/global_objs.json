@@ -4,14 +4,14 @@
   "x": 384,
   "y": 899,
   "dir": 1,
-  "type": 127
+  "to_ending": 1
  },
  {
   "obj_type": "elevator",
   "x": 896,
   "y": 1155,
   "dir": 1,
-  "type": 0
+  "to_ending": 0
  },
  {
   "obj_type": "door",
@@ -213,5 +213,11 @@
   "y": 2920,
   "dir": 1,
   "type": 3
+ },
+ {
+  "obj_type": "area_change",
+  "x": 896,
+  "y": 640,
+  "area": 0
  }
 ]

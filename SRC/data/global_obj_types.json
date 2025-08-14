@@ -75,8 +75,8 @@
                     "len": 1,
                     "shifts": 7
                 },
-                "type":  {
-                    "len": 6,
+                "to_ending":  {
+                    "len": 1,
                     "shifts": 0
                 }
             }
@@ -149,10 +149,94 @@
             }
         ]
     },
-    "pal_change": {
+    "tileset_change": {
         "type": 10,
         "props": [
-            {}
+            {},
+            {
+                "new_tileset": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "music_change": {
+        "type": 26,
+        "props": [
+            {},
+            {
+                "music":  {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "area_change": {
+        "type": 42,
+        "props": [
+            {},
+            {
+                "area":  {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "room_state_vert_scroll": {
+        "type": 11,
+        "props": [
+            {},
+            {
+                "new_room": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "room_state_item": {
+        "type": 27,
+        "props": [
+            {},
+            {
+                "item_type": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            },
+            {
+                "item_x": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            },
+            {
+                "item_y": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            },
+            {
+                "new_room": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "room_state_miniboss_dead": {
+        "type": 43,
+        "props": [
+            {},
+            {
+                "new_room": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
         ]
     }
 }

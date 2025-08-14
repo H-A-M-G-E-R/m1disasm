@@ -44,6 +44,7 @@ L9A88:
     
     ; make squeept move in their jump trajectory
     ; apply gravity to y speed and get delta y
+    ldy #$0E
     jsr CommonJump_EnemyGetDeltaY_UsingAcceleration
     
     ldx PageIndex
@@ -65,7 +66,7 @@ L9A88:
     sta EnsExtra.0.resetAnimIndex,x
     
     ; apply speed
-    jsr StorePositionToTemp
+    jsr StoreEnemyPositionToTemp_
     jsr CommonJump_ApplySpeedToPosition
     
     ; load lava y position
@@ -86,7 +87,7 @@ L9A88:
         ora #$20
         sta EnData05,x
     L9AC7:
-    jsr LoadPositionFromTemp
+    jsr LoadEnemyPositionFromTemp_
 
 SqueeptExit_Resting:
     ; squeept is resting (jumping and falling)

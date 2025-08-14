@@ -17,6 +17,7 @@
 .include "hardware.asm"
 .include "constants.asm"
 .include "macros.asm"
+.include "config.asm"
 
 .redef BANK = 4
 .section "ROM Bank $004" bank 4 slot "ROMSwitchSlot" orga $8000 force
@@ -59,12 +60,7 @@ PalPntrTbl:
 
 AreaPointers:
     .word SpecItmsTbl               ;($A26D)Beginning of special items table.
-    .word $0000                     ;($A1D5)Was beginning of room pointer table.
-    .word $0000                     ;($A21F)Was beginning of structure pointer table.
-    .word $0000                     ;($AC32)Was beginning of macro definitions.
     .word EnFramePtrTable1          ;($9CF7)Address table into enemy animation data.
-    .word $0000                     ;
-    .word $0000                     ;($9F0E)Was pointers to enemy frame placement data.
     .word EnAnimTbl                 ;($9C86)Index to values in addr tables for enemy animations.
 
 ; Tourian-specific jump table (dummied out in other banks)
@@ -82,16 +78,8 @@ AreaPointers:
 AreaRoutine:
     jmp AreaRoutineStub ; Just an RTS
 
-L95CC:
-    .byte $1D                       ;Kraid's room.
-AreaMusicFlag:
-    .byte music_KraidArea           ;Kraid's hideout music init flag.
 AreaMinibossMusic:
     .byte music_Tourian
-
-;Special room numbers(used to start item room music).
-AreaItemRoomNumbers:
-    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
 AreaSamusMapPosX:
     .byte $07   ;Samus start x coord on world map.
@@ -103,11 +91,11 @@ AreaSamusY:
     .byte $6E   ;Samus start vertical screen position.
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
-
-AreaPalToggle:
-    .byte _id_Palette05+1
-
+AreaMusicFlag:
+    .byte music_KraidArea           ;Kraid's hideout music init flag.
+AreaTilesetIndex:
     .byte $00
+
 AreaFireballKilledAnimIndex:
     .byte EnAnim_FireballKilled - EnAnimTbl
 AreaExplosionAnimIndex:
@@ -121,9 +109,9 @@ AreaFireballSplatterAnimIndex:
 AreaMellowAnimIndex:
     .byte EnAnim_64 - EnAnimTbl
 
-AreaTileAnim:
-    .byte $FF, KraidBG/$400
-    .byte $00
+AreaTilesets:
+    .word TileAnim0, PalAnim0
+    .word TileAnim1, PalAnim1
 
 ChooseEnemyAIRoutine:
     lda EnsExtra.0.type,x
@@ -192,6 +180,59 @@ MellowDamage:
 EnemyPrimaryPaletteTbl:
     .byte $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02
 
+EnemyHitSFXTbl:
+    .byte $03, sfxTri_BigEnemyHit
+    .byte $03, sfxTri_BigEnemyHit
+    .byte $03, sfxTri_BigEnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $03, sfxTri_BigEnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+    .byte $01, sfxSQ1_EnemyHit
+
+EnemyDropChanceTblNormal:
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+EnemyDropChanceTblTough:
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+    .byte 90, 60, 90
+
 EnemyRestingAnimIndex:
     .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
     .byte EnAnim_0B - EnAnimTbl, EnAnim_0B - EnAnimTbl
@@ -249,7 +290,7 @@ L967B:
 L968B:
     .byte $89, $89, $09, $00, $86, $04, $89, $80, $83, $00, $00, $00, $82, $00, $00, $00
 
-EnemyData0DTbl:
+EnemyForceSpeedTowardsSamusDelayTbl:
     .byte $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $40, $00, $00, $00
 
 EnemyDistanceToSamusThreshold:
@@ -274,17 +315,17 @@ EnemyInitDelayTbl:
     .byte $08, $08, $01, $01, $01, $01, $10, $08, $10, $00, $00, $01, $01, $00, $00, $00
 
 EnemyMovementChoiceOffset:
-    .byte EnemyMovementChoice00 - EnemyMovementChoices ; enemy can't use movement strings
-    .byte EnemyMovementChoice01 - EnemyMovementChoices ; enemy can't use movement strings
+    .byte EnemyMovementChoice_SidehopperFloor - EnemyMovementChoices
+    .byte EnemyMovementChoice_SidehopperCeiling - EnemyMovementChoices
     .byte $00 ; unused enemy
-    .byte EnemyMovementChoice02 - EnemyMovementChoices
-    .byte EnemyMovementChoice03 - EnemyMovementChoices
-    .byte EnemyMovementChoice05 - EnemyMovementChoices ; enemy moves manually
+    .byte EnemyMovementChoice_Ripper - EnemyMovementChoices
+    .byte EnemyMovementChoice_Skree - EnemyMovementChoices
+    .byte EnemyMovementChoice_Zeela - EnemyMovementChoices ; enemy moves manually
     .byte $00 ; unused enemy
-    .byte EnemyMovementChoice04 - EnemyMovementChoices ; enemy can't use movement strings
-    .byte EnemyMovementChoice06 - EnemyMovementChoices
-    .byte EnemyMovementChoice07 - EnemyMovementChoices
-    .byte EnemyMovementChoice08 - EnemyMovementChoices
+    .byte EnemyMovementChoice_Geega - EnemyMovementChoices
+    .byte EnemyMovementChoice_Kraid - EnemyMovementChoices
+    .byte EnemyMovementChoice_KraidLint - EnemyMovementChoices
+    .byte EnemyMovementChoice_KraidNail - EnemyMovementChoices
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
     .byte $00 ; unused enemy
@@ -313,13 +354,89 @@ EnemyMovementPtrs:
     .byte $00, $00, $00, $00, $00, $00, $00, $00
 
 EnAccelYTable:
-    .byte $7F, $70, $70, $90, $90, $00, $00, $7F, $80, $00, $54, $70, $00, $00, $00, $00, $00, $00, $00, $00
+    .byte  $20 ; $00
+    .byte  $1C ; $01
+    .byte  $1C ; $02
+    .byte -$1C ; $03
+    .byte -$1C ; $04
+    .byte  $00 ; $05
+    .byte  $00 ; $06
+    .byte  $20 ; $07
+    .byte -$20 ; $08
+    .byte  $00 ; $09
+    .byte  $15 ; $0A
+    .byte  $1C ; $0B
+    .byte  $00 ; $0C
+    .byte  $00 ; $0D
+    .byte  $00 ; $0E
+    .byte  $00 ; $0F
+    .byte  $00 ; $10
+    .byte  $00 ; $11
+    .byte  $00 ; $12
+    .byte  $00 ; $13
 EnAccelXTable:
-    .byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+    .byte  $00 ; $00
+    .byte  $00 ; $01
+    .byte  $00 ; $02
+    .byte  $00 ; $03
+    .byte  $00 ; $04
+    .byte  $00 ; $05
+    .byte  $00 ; $06
+    .byte  $00 ; $07
+    .byte  $00 ; $08
+    .byte  $00 ; $09
+    .byte  $00 ; $0A
+    .byte  $00 ; $0B
+    .byte  $00 ; $0C
+    .byte  $00 ; $0D
+    .byte  $00 ; $0E
+    .byte  $00 ; $0F
+    .byte  $00 ; $10
+    .byte  $00 ; $11
+    .byte  $00 ; $12
+    .byte  $00 ; $13
 EnSpeedYTable:
-    .byte $F6, $F6, $FC, $0A, $04, $00, $00, $00, $0C, $FC, $FC, $00, $00, $00, $00, $00, $00, $00, $00, $00
+    .word -$04F0 ; $00
+    .word -$04F2 ; $01
+    .word -$01F2 ; $02
+    .word  $04F2 ; $03
+    .word  $01F2 ; $04
+    .word  $0000 ; $05
+    .word  $0000 ; $06
+    .word  $0010 ; $07
+    .word  $05F0 ; $08
+    .word -$0200 ; $09
+    .word -$01F6 ; $0A
+    .word  $000E ; $0B
+    .word  $0000 ; $0C
+    .word  $0000 ; $0D
+    .word  $0000 ; $0E
+    .word  $0000 ; $0F
+    .word  $0000 ; $10
+    .word  $0000 ; $11
+    .word  $0000 ; $12
+    .word  $0000 ; $13
 EnSpeedXTable:
-    .byte $00, $02, $02, $02, $02, $00, $00, $00, $02, $00, $02, $02, $00, $00, $00, $00, $00, $00, $00, $00
+    .word  $0000 ; $00
+    .word  $0100 ; $01
+    .word  $0100 ; $02
+    .word  $0100 ; $03
+    .word  $0100 ; $04
+    .word  $0000 ; $05
+    .word  $0000 ; $06
+    .word  $0000 ; $07
+    .word  $0100 ; $08
+    .word  $0000 ; $09
+    .word  $0100 ; $0A
+    .word  $0100 ; $0B
+    .word  $0000 ; $0C
+    .word  $0000 ; $0D
+    .word  $0000 ; $0E
+    .word  $0000 ; $0F
+    .word  $0000 ; $10
+    .word  $0000 ; $11
+    .word  $0000 ; $12
+    .word  $0000 ; $13
 
 L977B:
     .byte $64, $6C, $21, $01, $04, $00, $4C, $40, $04, $00, $00, $40, $40, $00, $00, $00
@@ -366,6 +483,18 @@ TileBlastBlastAnimIndexTable:
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$90
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$94
 
+TileBlastBlastAnimDelayTbl:
+    .byte $02 ; tile #$70
+    .byte $02 ; tile #$74
+    .byte $02 ; tile #$78
+    .byte $02 ; tile #$7C
+    .byte $02 ; tile #$80
+    .byte $02 ; tile #$84
+    .byte $02 ; tile #$88
+    .byte $02 ; tile #$8C
+    .byte $02 ; tile #$90
+    .byte $02 ; tile #$94
+
 TileBlastRespawnDelayTbl:
     .byte $50 ; tile #$70
     .byte $50 ; tile #$74
@@ -389,6 +518,18 @@ TileBlastRespawnAnimIndexTable:
     .byte TileBlastAnim4 - TileBlastAnim ; tile #$8C
     .byte TileBlastAnim9 - TileBlastAnim ; tile #$90
     .byte TileBlastAnim5 - TileBlastAnim ; tile #$94
+
+TileBlastRespawnAnimDelayTbl:
+    .byte $02 ; tile #$70
+    .byte $02 ; tile #$74
+    .byte $02 ; tile #$78
+    .byte $02 ; tile #$7C
+    .byte $02 ; tile #$80
+    .byte $02 ; tile #$84
+    .byte $02 ; tile #$88
+    .byte $02 ; tile #$8C
+    .byte $02 ; tile #$90
+    .byte $02 ; tile #$94
 
 TileBlastAnim:
 TileBlastAnim0:  .byte $06,$07,$00,$FE ; blasting tile or respawning tile #$7C
@@ -422,32 +563,32 @@ TileBlastFramePtrTable:
     .word TileBlastFrame10
 
 EnemyMovementChoices:
-EnemyMovementChoice00: ; enemy can't use movement strings
+EnemyMovementChoice_SidehopperFloor:
     EnemyMovementChoiceEntry $01, $02
-EnemyMovementChoice01: ; enemy can't use movement strings
+EnemyMovementChoice_SidehopperCeiling:
     EnemyMovementChoiceEntry $03, $04
-EnemyMovementChoice02:
+EnemyMovementChoice_Ripper:
     EnemyMovementChoiceEntry $06
-EnemyMovementChoice03:
+EnemyMovementChoice_Skree:
     EnemyMovementChoiceEntry $07
-EnemyMovementChoice04: ; enemy can't use movement strings
+EnemyMovementChoice_Geega:
     EnemyMovementChoiceEntry $09
-EnemyMovementChoice05: ; enemy moves manually
+EnemyMovementChoice_Zeela: ; enemy moves manually
     EnemyMovementChoiceEntry $00
-EnemyMovementChoice06:
+EnemyMovementChoice_Kraid:
     EnemyMovementChoiceEntry $0C, $0D
-EnemyMovementChoice07:
+EnemyMovementChoice_KraidLint:
     EnemyMovementChoiceEntry $0E
-EnemyMovementChoice08:
+EnemyMovementChoice_KraidNail:
     EnemyMovementChoiceEntry $0F, $10, $11, $0F
 
 ; unused (???)
 EnemyMovement00_R:
-    SignMagSpeed $20,  2,  2
+    SignMagSpeed $40,  2,  2
     EnemyMovementInstr_FE
 
 EnemyMovement00_L:
-    SignMagSpeed $20, -2,  2
+    SignMagSpeed $40, -2,  2
     EnemyMovementInstr_FE
 
 EnemyMovement01_R:
@@ -464,38 +605,38 @@ EnemyMovement05_L:
 
 ; ripper
 EnemyMovement06_R:
-    SignMagSpeed $01,  1,  0
+    SignMagSpeed $02,  1,  0
     EnemyMovementInstr_Restart
 
 EnemyMovement06_L:
-    SignMagSpeed $01, -1,  0
+    SignMagSpeed $02, -1,  0
     EnemyMovementInstr_Restart
 
 ; skree
 EnemyMovement07_R:
-    SignMagSpeed $04,  2,  2
-    SignMagSpeed $01,  2,  4
-    SignMagSpeed $01,  2,  2
-    SignMagSpeed $01,  2,  4
-    SignMagSpeed $01,  2,  6
-    SignMagSpeed $01,  2,  4
-    SignMagSpeed $04,  2,  6
+    SignMagSpeed $08,  2,  2
+    SignMagSpeed $02,  2,  4
+    SignMagSpeed $02,  2,  2
+    SignMagSpeed $02,  2,  4
+    SignMagSpeed $02,  2,  6
+    SignMagSpeed $02,  2,  4
+    SignMagSpeed $08,  2,  6
     EnemyMovementInstr_RepeatPreviousUntilFailure
-    SignMagSpeed $01,  0,  0
-    SignMagSpeed $64,  0,  0
+    SignMagSpeed $02,  0,  0
+    SignMagSpeed $C8,  0,  0
     EnemyMovementInstr_StopMovement
 
 EnemyMovement07_L:
-    SignMagSpeed $04, -2,  2
-    SignMagSpeed $01, -2,  4
-    SignMagSpeed $01, -2,  2
-    SignMagSpeed $01, -2,  4
-    SignMagSpeed $01, -2,  6
-    SignMagSpeed $01, -2,  4
-    SignMagSpeed $04, -2,  6
+    SignMagSpeed $08, -2,  2
+    SignMagSpeed $02, -2,  4
+    SignMagSpeed $02, -2,  2
+    SignMagSpeed $02, -2,  4
+    SignMagSpeed $02, -2,  6
+    SignMagSpeed $02, -2,  4
+    SignMagSpeed $08, -2,  6
     EnemyMovementInstr_RepeatPreviousUntilFailure
-    SignMagSpeed $01,  0,  0
-    SignMagSpeed $64,  0,  0
+    SignMagSpeed $02,  0,  0
+    SignMagSpeed $C8,  0,  0
     EnemyMovementInstr_StopMovement
 
 EnemyMovement08_R:
@@ -510,121 +651,121 @@ EnemyMovement0B_L:
 
 ; kraid
 EnemyMovement0C_R:
-    SignMagSpeed $14,  1,  1
-    SignMagSpeed $0A,  0,  0
-    SignMagSpeed $14, -1,  1
+    SignMagSpeed $28,  1,  1
+    SignMagSpeed $14,  0,  0
+    SignMagSpeed $28, -1,  1
     EnemyMovementInstr_FE
 
 EnemyMovement0C_L:
-    SignMagSpeed $14, -1,  1
-    SignMagSpeed $0A,  0,  0
-    SignMagSpeed $14,  1,  1
+    SignMagSpeed $28, -1,  1
+    SignMagSpeed $14,  0,  0
+    SignMagSpeed $28,  1,  1
     EnemyMovementInstr_FE
 
 EnemyMovement0D_R:
-    SignMagSpeed $32,  1,  1
-    SignMagSpeed $0A,  0,  0
-    SignMagSpeed $32, -1,  1
+    SignMagSpeed $64,  1,  1
+    SignMagSpeed $14,  0,  0
+    SignMagSpeed $64, -1,  1
     EnemyMovementInstr_FE
 
 EnemyMovement0D_L:
-    SignMagSpeed $32, -1,  1
-    SignMagSpeed $0A,  0,  0
-    SignMagSpeed $32,  1,  1
+    SignMagSpeed $64, -1,  1
+    SignMagSpeed $14,  0,  0
+    SignMagSpeed $64,  1,  1
     EnemyMovementInstr_FE
 
 ; kraid lint
 EnemyMovement0E_R:
-    SignMagSpeed $50,  4,  0
+    SignMagSpeed $A0,  4,  0
     EnemyMovementInstr_Restart
 
 EnemyMovement0E_L:
-    SignMagSpeed $50, -4,  0
+    SignMagSpeed $A0, -4,  0
     EnemyMovementInstr_Restart
 
 ; kraid nail
 EnemyMovement0F_R:
-    SignMagSpeed $02,  3, -7
-    SignMagSpeed $04,  3, -6
-    SignMagSpeed $04,  3, -5
-    SignMagSpeed $05,  3, -3
-    SignMagSpeed $03,  3, -1
-    SignMagSpeed $04,  3,  0
-    SignMagSpeed $05,  3,  1
-    SignMagSpeed $03,  3,  3
-    SignMagSpeed $05,  3,  5
-    SignMagSpeed $04,  3,  6
-    SignMagSpeed $50,  3,  7
+    SignMagSpeed $04,  3, -7
+    SignMagSpeed $08,  3, -6
+    SignMagSpeed $08,  3, -5
+    SignMagSpeed $0A,  3, -3
+    SignMagSpeed $06,  3, -1
+    SignMagSpeed $08,  3,  0
+    SignMagSpeed $0A,  3,  1
+    SignMagSpeed $06,  3,  3
+    SignMagSpeed $0A,  3,  5
+    SignMagSpeed $08,  3,  6
+    SignMagSpeed $A0,  3,  7
     EnemyMovementInstr_Restart
 
 EnemyMovement0F_L:
-    SignMagSpeed $02, -3, -7
-    SignMagSpeed $04, -3, -6
-    SignMagSpeed $04, -3, -5
-    SignMagSpeed $05, -3, -3
-    SignMagSpeed $03, -3, -1
-    SignMagSpeed $04, -3,  0
-    SignMagSpeed $05, -3,  1
-    SignMagSpeed $03, -3,  3
-    SignMagSpeed $05, -3,  5
-    SignMagSpeed $04, -3,  6
-    SignMagSpeed $50, -3,  7
+    SignMagSpeed $04, -3, -7
+    SignMagSpeed $08, -3, -6
+    SignMagSpeed $08, -3, -5
+    SignMagSpeed $0A, -3, -3
+    SignMagSpeed $06, -3, -1
+    SignMagSpeed $08, -3,  0
+    SignMagSpeed $0A, -3,  1
+    SignMagSpeed $06, -3,  3
+    SignMagSpeed $0A, -3,  5
+    SignMagSpeed $08, -3,  6
+    SignMagSpeed $A0, -3,  7
     EnemyMovementInstr_Restart
 
 EnemyMovement10_R:
-    SignMagSpeed $02,  4, -7
-    SignMagSpeed $04,  4, -6
-    SignMagSpeed $04,  4, -5
-    SignMagSpeed $05,  4, -3
-    SignMagSpeed $03,  4, -1
-    SignMagSpeed $04,  4,  0
-    SignMagSpeed $05,  4,  1
-    SignMagSpeed $03,  4,  3
-    SignMagSpeed $05,  4,  5
-    SignMagSpeed $04,  4,  6
-    SignMagSpeed $50,  4,  7
+    SignMagSpeed $04,  4, -7
+    SignMagSpeed $08,  4, -6
+    SignMagSpeed $08,  4, -5
+    SignMagSpeed $0A,  4, -3
+    SignMagSpeed $06,  4, -1
+    SignMagSpeed $08,  4,  0
+    SignMagSpeed $0A,  4,  1
+    SignMagSpeed $06,  4,  3
+    SignMagSpeed $0A,  4,  5
+    SignMagSpeed $08,  4,  6
+    SignMagSpeed $A0,  4,  7
     EnemyMovementInstr_Restart
 
 EnemyMovement10_L:
-    SignMagSpeed $02, -4, -7
-    SignMagSpeed $04, -4, -6
-    SignMagSpeed $04, -4, -5
-    SignMagSpeed $05, -4, -3
-    SignMagSpeed $03, -4, -1
-    SignMagSpeed $04, -4,  0
-    SignMagSpeed $05, -4,  1
-    SignMagSpeed $03, -4,  3
-    SignMagSpeed $05, -4,  5
-    SignMagSpeed $04, -4,  6
-    SignMagSpeed $50, -4,  7
+    SignMagSpeed $04, -4, -7
+    SignMagSpeed $08, -4, -6
+    SignMagSpeed $08, -4, -5
+    SignMagSpeed $0A, -4, -3
+    SignMagSpeed $06, -4, -1
+    SignMagSpeed $08, -4,  0
+    SignMagSpeed $0A, -4,  1
+    SignMagSpeed $06, -4,  3
+    SignMagSpeed $0A, -4,  5
+    SignMagSpeed $08, -4,  6
+    SignMagSpeed $A0, -4,  7
     EnemyMovementInstr_Restart
 
 EnemyMovement11_R:
-    SignMagSpeed $02,  2, -7
-    SignMagSpeed $04,  2, -6
-    SignMagSpeed $04,  2, -5
-    SignMagSpeed $05,  2, -3
-    SignMagSpeed $03,  2, -1
-    SignMagSpeed $04,  2,  0
-    SignMagSpeed $05,  2,  1
-    SignMagSpeed $03,  2,  3
-    SignMagSpeed $05,  2,  5
-    SignMagSpeed $04,  2,  6
-    SignMagSpeed $50,  2,  7
+    SignMagSpeed $04,  2, -7
+    SignMagSpeed $08,  2, -6
+    SignMagSpeed $08,  2, -5
+    SignMagSpeed $0A,  2, -3
+    SignMagSpeed $06,  2, -1
+    SignMagSpeed $08,  2,  0
+    SignMagSpeed $0A,  2,  1
+    SignMagSpeed $06,  2,  3
+    SignMagSpeed $0A,  2,  5
+    SignMagSpeed $08,  2,  6
+    SignMagSpeed $A0,  2,  7
     EnemyMovementInstr_Restart
 
 EnemyMovement11_L:
-    SignMagSpeed $02, -2, -7
-    SignMagSpeed $04, -2, -6
-    SignMagSpeed $04, -2, -5
-    SignMagSpeed $05, -2, -3
-    SignMagSpeed $03, -2, -1
-    SignMagSpeed $04, -2,  0
-    SignMagSpeed $05, -2,  1
-    SignMagSpeed $03, -2,  3
-    SignMagSpeed $05, -2,  5
-    SignMagSpeed $04, -2,  6
-    SignMagSpeed $50, -2,  7
+    SignMagSpeed $04, -2, -7
+    SignMagSpeed $08, -2, -6
+    SignMagSpeed $08, -2, -5
+    SignMagSpeed $0A, -2, -3
+    SignMagSpeed $06, -2, -1
+    SignMagSpeed $08, -2,  0
+    SignMagSpeed $0A, -2,  1
+    SignMagSpeed $06, -2,  3
+    SignMagSpeed $0A, -2,  5
+    SignMagSpeed $08, -2,  6
+    SignMagSpeed $A0, -2,  7
     EnemyMovementInstr_Restart
 
 EnemyFireballMovement0:
@@ -782,6 +923,16 @@ TileBlastFrame0E:
 TileBlastFrame0F:
 TileBlastFrame10:
     ;nothing
+
+TileAnim0:
+TileAnim1:
+    .byte $FF, KraidBG/$400
+    .byte $00
+
+PalAnim0:
+PalAnim1:
+    .byte _id_Palette00+1
+    .byte $00
 
 .include "data/kraid/enemy_sprite_data.asm"
 
