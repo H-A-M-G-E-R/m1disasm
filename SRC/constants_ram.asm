@@ -30,7 +30,6 @@
     attackState      db
     attackTimer      db
     isHit            db
-    unused           db
 .endst
 
 .struct TileBlast
@@ -52,7 +51,6 @@
     y                db   ; y position of hole
     x                db   ; x position of hole
     hi               db   ; nametable position of hole
-    unused           ds 3
 .endst
 
 .struct PowerUp
@@ -60,8 +58,6 @@
     y                db   ;Y coordinate of the power-up.
     x                db   ;X coordiante of the power-up
     hi               db   ;#$00 if on name table 0, #$01 if on name table 3.
-    unused           ds 3
-    data07           db   ;stored to A before ObjDrawFrame immediately overwrites it
 .endst
 
 .struct Zebetite
@@ -301,8 +297,6 @@ DoorCartRAMPtr         dsw 4
 SamusInLava            db        ;#$01=Samus in lava, #$00=She is not.
 ObjectCounter          db        ;Counts such things as object explosion time.
 EnemyMovePixelQty      db        ;Quantity of times to call the current EnemyMoveOnePixel routine
-ObjectPal              db        ;Attrib. table info for room object(#$00 thru #$03).
-RoomPal                db
 TempX                  db
 TempY                  db
 ObjectCntrl            db        ;Controls object properties such as mirroring and color-->
@@ -333,6 +327,18 @@ SamusKnockbackIsBomb   db        ;bit 7: 0=samus was hurt, 1=samus was bombed
                                    ;bit 0: 0=diagonal knockback, 1=vertical knockback
 
 SamusKnockbackIsBomb77 db        ;set to SamusKnockbackIsBomb
+
+MiniBossKillDelayFlag  db        ;Initiate power up music and delay after Kraid/Ridley killed.
+PowerUpDelayFlag       db        ;Initiate power up music and delay after item pickup.
+
+EndTimer               dw        ;Lower byte of end game escape timer.
+; EndTimer+1             = $010B   ;Upper byte of end game escape timer.
+
+EndTimerEnemyHi        db
+EndTimerEnemyIsEnabled db        ;the end timer in the "TIME BOMB SET" message. #$00=no, #$01=yes
+
+MissileToggle          db        ;0=fire bullets, 1=fire missiles.
+SamusHurt010F          db        ;never read. takes on different values depending on how samus was hit.
 
 ; $7A-$DE cleared in MoreInit (should clear $DF, off-by-one bug?)
 .union
@@ -470,23 +476,7 @@ PPUCTRL_ZP             db        ;Data byte to be loaded into PPU control regist
 
 ;--------------------------------------------[ Onepage ]--------------------------------------------
 
-.enum $0100 export
-
-MiniBossKillDelayFlag  db        ;Initiate power up music and delay after Kraid/Ridley killed.
-PowerUpDelayFlag       db        ;Initiate power up music and delay after item pickup.
-
-EndTimer               dw        ;Lower byte of end game escape timer.
-; EndTimer+1             = $010B   ;Upper byte of end game escape timer.
-
-EndTimerEnemyHi        db
-EndTimerEnemyIsEnabled db        ;the end timer in the "TIME BOMB SET" message. #$00=no, #$01=yes
-
-MissileToggle          db        ;0=fire bullets, 1=fire missiles.
-SamusHurt010F          db        ;never read. takes on different values depending on how samus was hit.
-
-.ende
-
-PalRam                 = $0110   ;$0110 thru $012F
+PalRam                 = $0100   ;$0100 thru $011F
 
 ;-----------------------------------------[ Sprite RAM ]---------------------------------------------
 

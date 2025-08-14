@@ -2178,8 +2178,6 @@ CursorPosXTbl:
     .byte $48, $50, $58, $60, $68, $70, $80, $88, $90, $98, $A0, $A8
 
 InitializeGame:
-    jsr ClearSamusStats             ;($C578)Reset Samus stats for a new game.
-    
     lda #_id_MoreInit.b
     sta MainRoutine                 ;Initialize starting area.
     jsr ScreenNmiOff                ;($C45D)Turn off screen.
@@ -4152,18 +4150,6 @@ InitBank0:
 
     jsr InitTitleGFX                ;($C5D7)Load title GFX.
     jmp NMIOn                       ;($C487)Turn on VBlank interrupts.
-
-ClearSamusStats:
-    ;Clears Samus stats(Health, full tanks, game timer, etc.).
-    ldy #$0F
-    lda #$00
-    @loop:
-        ;Load $100 thru $10F with #$00.
-        sta $0100,y
-        dey
-        ;Loop 16 times.
-        bpl @loop
-    rts
 
 ;Table used by above subroutine and loads the initial data used to describe
 ;metroid's behavior in the Tourian section of the game.

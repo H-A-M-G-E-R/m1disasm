@@ -3274,9 +3274,16 @@ SamusDoor:
         sta DoorEntryStatus
         bne Lx055
     Lx049:
-    ; Why not use DeleteOffscreenRoomSprites?
-    jsr Door_DeleteOffscreenEnemies
-    jsr Doors_RemoveIfOffScreen
+    ; preserve scroll blocks
+    lda ScrollBlockOnNameTable3
+    pha
+    lda ScrollBlockOnNameTable0
+    pha
+    jsr DeleteOffscreenRoomSprites
+    pla
+    sta ScrollBlockOnNameTable0
+    pla
+    sta ScrollBlockOnNameTable3
     jsr GotoClearAllMetroidLatches ; if it is defined in the current bank
     jsr StartMusic       ; start music
     lda KraidRidleyPresent
@@ -3401,44 +3408,6 @@ Lx063:
     lda #$01
     jmp AnimDrawObject
 RTS_X064:
-    rts
-
-Door_DeleteOffscreenEnemies:
-    ldx #$60 ; BUG: should be #$50
-    sec
-    @loop_enemies:
-        jsr @deleteEnemy
-        txa
-        sbc #$20 ; BUG: should be #$10
-        tax
-        bpl @loop_enemies
-    jsr GetNameTableAtScrollDir     ;($EB85)
-    tay
-    ldx #_sizeof_PipeBugHoles - _sizeof_PipeBugHoles.0.b
-    @loop_pipeBugHoles:
-        jsr @deletePipeBugHole
-        txa
-        sec
-        sbc #_sizeof_PipeBugHoles.0
-        tax
-        bne @loop_pipeBugHoles
-@deletePipeBugHole:
-    ; delete if offscreen
-    tya
-    cmp PipeBugHoles.0.hi,x
-    bne @@RTS
-        lda #$FF
-        sta PipeBugHoles.0.status,x
-    @@RTS:
-    rts
-
-@deleteEnemy:
-    ; delete if offscreen
-    lda EnData05,x
-    and #$02
-    bne @@RTS
-        sta EnsExtra.0.status,x
-    @@RTS:
     rts
 
 ; UpdateProjectiles
