@@ -5,4 +5,4 @@ CFG_NUM_SAMUS_TILES = 16
 CFG_BEAM_UNIQUE_ITEMS = 0
 
 ; 0 = don't stack, 1 = stack
-CFG_BEAM_STACK = 0
+CFG_BEAM_STACK = 1
