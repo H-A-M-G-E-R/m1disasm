@@ -2830,7 +2830,7 @@ SamusRoll:
         jsr LoadObjectPositionFromTemp
         jsr SetSamusStand
         ; set unroll anim
-        lda #ObjAnim_Unroll - ObjectAnimIndexTbl.b
+        lda #ObjAnim_SamusUnroll - ObjectAnimIndexTbl.b
         sta ObjAnimIndex
         jsr StopVertMovement
         ; unroll anim for 4 frames
