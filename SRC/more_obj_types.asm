@@ -69,14 +69,17 @@ SpawnAreaChange:
 ChangeAreaAndTilesetIfPending:
     ldx AreaChangePending
     beq ChangeTilesetIfPending
-        ; switch area bank
         dex
         txa
+        pha
+        ; clear enemy RAM, and also AreaChangePending
+        ; must be done before switching bank to properly clear metroid latch
+        jsr DestroyEnemies
+        pla
+        ; switch area bank
         jsr SwitchBank
         ; copy area pointers
         jsr CopyAreaPointers
-        ; clear enemy RAM, and also AreaChangePending
-        jsr DestroyEnemies
         ; default to tileset #$00 if there's no tileset change previously
         lda TilesetChangePending
         bne ChangeTilesetIfPending

@@ -98,6 +98,25 @@
                         
 .endst
 
+.struct EnExtra2
+    data00           db
+    data01           db
+    data02           db
+    data03           db
+    data04           db
+    data05           db
+    data06           db
+    data07           db
+    data08           db
+    data09           db
+    data0A           db
+    data0B           db
+    data0C           db
+    data0D           db
+    data0E           db
+    data0F           db
+.endst
+
 .struct Cannon
     status           db
     y                db
@@ -937,23 +956,32 @@ PasswordByte           ds $12
 ;Upper two bits of PasswordChar bytes will always be %00.
 PasswordChar           ds $18
 
+.ende
+
+.enum $7D80 export
+.union
 ;---------------------------------------[ More enemy RAM ]-------------------------------------------
 
-; 16 slots of 16 bytes each ($6AF4-$6BF3)
-EnsExtra               instanceof EnExtra $10 startfrom 0
+    ; 16 slots of 8 bytes each ($7D80-$7DFF)
+    Cannons                instanceof Cannon $10 startfrom 0
 
-; 16 slots of 8 bytes each ($6BF4-$6C73)
-Cannons                instanceof Cannon $10 startfrom 0
+    ; 16 slots of 16 bytes each ($7E00-$7EFF) (page-aligned to maximize performance)
+    EnsExtra               instanceof EnExtra $10 startfrom 0
 
+    ; 16 slots of 16 bytes each ($7F00-$7FFF)
+    EnsExtra2              instanceof EnExtra2 $10 startfrom 0
+
+.nextu
 ;-------------------------------------[ Intro sprite defines ]---------------------------------------
 
-; 40 slots of 4 bytes each ($6E00-$6E9F)
-IntroStarSprite        instanceof OAMSprite $28 startfrom 0        ;RAM used for storing intro star sprite data.
+    ; 40 slots of 4 bytes each ($6E00-$6E9F)
+    IntroStarSprite        instanceof OAMSprite $28 startfrom 0        ;RAM used for storing intro star sprite data.
 
-; 8 slots of 16 bytes each ($6EA0-$6F1F)
-;Intro sprite 0 and sparkle sprite.
-IntroSprs              instanceof IntroSpr 8 startfrom 0
+    ; 8 slots of 16 bytes each ($6EA0-$6F1F)
+    ;Intro sprite 0 and sparkle sprite.
+    IntroSprs              instanceof IntroSpr 8 startfrom 0
 
+.endu
 .ende
 
 ;----------------------------------------------------------------------------------------------------

@@ -1386,9 +1386,15 @@ DestroyEnemies: ;($C8BB)
             ; clear $97-$DF
             sta CannonIndex,x
         @endIf_A:
-        ; clear both enemy RAM pages
+        ; clear cannon RAM
+        cpx #_sizeof_Cannons
+        bcs @endIf_B
+            sta Cannons.0.status,x
+        @endIf_B:
+        ; clear all enemy RAM pages
         sta EnY,x
         sta EnsExtra.0.status,x
+        sta EnsExtra2.0.data00,x
         inx
         bne @loop
     ;Force Samus to have no Metroid stuck to her.
@@ -3369,9 +3375,9 @@ SamusDead2:
 SamusElevator:
     lda ElevatorStatus
     cmp #$03
-    bcc LD47E
+    bcc Lx063
     cmp #$06
-    bcs LD47E
+    bcs Lx063
     lda ElevatorType
     bmi Lx059
         lda ObjY
