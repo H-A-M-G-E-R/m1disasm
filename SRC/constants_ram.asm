@@ -958,32 +958,6 @@ PasswordChar           ds $18
 
 .ende
 
-.enum $7D80 export
-.union
-;---------------------------------------[ More enemy RAM ]-------------------------------------------
-
-    ; 16 slots of 8 bytes each ($7D80-$7DFF)
-    Cannons                instanceof Cannon $10 startfrom 0
-
-    ; 16 slots of 16 bytes each ($7E00-$7EFF) (page-aligned to maximize performance)
-    EnsExtra               instanceof EnExtra $10 startfrom 0
-
-    ; 16 slots of 16 bytes each ($7F00-$7FFF)
-    EnsExtra2              instanceof EnExtra2 $10 startfrom 0
-
-.nextu
-;-------------------------------------[ Intro sprite defines ]---------------------------------------
-
-    ; 40 slots of 4 bytes each ($6E00-$6E9F)
-    IntroStarSprite        instanceof OAMSprite $28 startfrom 0        ;RAM used for storing intro star sprite data.
-
-    ; 8 slots of 16 bytes each ($6EA0-$6F1F)
-    ;Intro sprite 0 and sparkle sprite.
-    IntroSprs              instanceof IntroSpr 8 startfrom 0
-
-.endu
-.ende
-
 ;----------------------------------------------------------------------------------------------------
 
 ;WorldMapRAM            = $7000   ;Not used in this mod. Vanilla: Thru $73FF. The map is 1Kb in size (1024 bytes).
@@ -998,8 +972,6 @@ TileAnimIndex          db
 
 PalAnimDelay           db
 PalAnimIndex           db
-
-TilesetIndexAheadOfElevator db   ;for readahead
 
 SpiderOrientation      db        ;0=on floor, 1=on right wall, 2=on ceiling, 3=on left wall
 
@@ -1024,5 +996,31 @@ MetroidLatch0430       db
 MetroidLatch0440       db
 MetroidLatch0450       db
 
+.ende
+
+.enum $7D80 export
+.union
+;---------------------------------------[ More enemy RAM ]-------------------------------------------
+
+    ; 16 slots of 8 bytes each ($7D80-$7DFF)
+    Cannons                instanceof Cannon $10 startfrom 0
+
+    ; 16 slots of 16 bytes each ($7E00-$7EFF) (page-aligned to maximize performance)
+    EnsExtra               instanceof EnExtra $10 startfrom 0
+
+    ; 16 slots of 16 bytes each ($7F00-$7FFF)
+    EnsExtra2              instanceof EnExtra2 $10 startfrom 0
+
+.nextu
+;-------------------------------------[ Intro sprite defines ]---------------------------------------
+
+    ; 40 slots of 4 bytes each ($6E00-$6E9F)
+    IntroStarSprite        instanceof OAMSprite $28 startfrom 0        ;RAM used for storing intro star sprite data.
+
+    ; 8 slots of 16 bytes each ($6EA0-$6F1F)
+    ;Intro sprite 0 and sparkle sprite.
+    IntroSprs              instanceof IntroSpr 8 startfrom 0
+
+.endu
 .ende
 

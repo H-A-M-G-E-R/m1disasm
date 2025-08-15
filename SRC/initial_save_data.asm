@@ -11,10 +11,10 @@ InitialSaveData:
     .byte $00   ; SamusAge+2
     .byte $00   ; SamusGear1
     .byte $00   ; SaveArea = Brinstar
-    .byte $16   ; SaveSamusMapX
-    .byte $0B   ; SaveSamusMapY
+    .byte $03   ; SaveSamusMapX
+    .byte $0E   ; SaveSamusMapY
     .byte $80   ; SaveSamusX
-    .byte $6E   ; SaveSamusY
+    .byte $B0   ; SaveSamusY
     .byte $02   ; SaveScrollDir = horizontal
     .byte music_Brinstar ; CurrentRoomMusic
     .byte $00   ; TilesetIndex
