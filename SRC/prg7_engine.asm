@@ -1423,7 +1423,7 @@ SamusInit:
     stx PipeBugHoles.2.status
     stx PipeBugHoles.3.status
     stx EndTimer                    ;Set end timer bytes to #$FF as-->
-    stx EndTimer+1.w                  ;escape timer not currently active.
+    stx EndTimer+1                  ;escape timer not currently active.
     stx RinkaSpawners.0.status
     stx RinkaSpawners.1.status
     ldy #$27
@@ -7396,7 +7396,7 @@ SpawnElevatorRoutine:
     bne @alreadyPresent      ; branch if elevator already present
     sta ElevatorType
     ldy #$83
-    sty ObjY+$20.w       ; elevator Y coord
+    sty ObjY+$20       ; elevator Y coord
     lda #$80
     sta ObjX+$20       ; elevator X coord
     jsr GetNameTableAtScrollDir     ;($EB85)
