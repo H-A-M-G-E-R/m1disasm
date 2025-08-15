@@ -308,7 +308,7 @@ L967B:
 ; Bit 1: force enemy speed to point towards samus
 ; Bit 0: can drop big energy
 L968B:
-    .byte $01, $01, $01, $00, $86, $04, $89, $80, $81, $00, $00, $00, $82, $00, $00, $00
+    .byte $01, $01, $01, $00, $86, $04, $89, $90, $81, $00, $00, $00, $82, $00, $00, $00
 
 ; EnData0D table (set upon load, and a couple other times)
 EnemyForceSpeedTowardsSamusDelayTbl:
