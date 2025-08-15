@@ -1423,7 +1423,7 @@ SamusInit:
     stx PipeBugHoles.2.status
     stx PipeBugHoles.3.status
     stx EndTimer                    ;Set end timer bytes to #$FF as-->
-    stx EndTimer+1                  ;escape timer not currently active.
+    stx EndTimer+1.b                ;escape timer not currently active.
     stx RinkaSpawners.0.status
     stx RinkaSpawners.1.status
     ldy #$27
@@ -1564,7 +1564,7 @@ PauseMode:
     
     ;Is escape timer active?
     ;Sorry, can't quit if this is during escape scence.
-    ldy EndTimer+1
+    ldy EndTimer+1.b
     iny
     bne Exit14
     
@@ -2397,7 +2397,7 @@ CommonJump_SubtractHealth:
     jsr IsSamusDead
     beq GotoClearHealthChange
     ;If end escape timer is running, Samus cannot be hurt.
-    ldy EndTimer+1
+    ldy EndTimer+1.b
     iny
     beq LCEA6 ;Branch if end escape timer not active.
     GotoClearHealthChange:
@@ -10606,7 +10606,7 @@ RTS_X410:
 UpdateTourianItems: ; $FDE3
     ; Determine if this is the first frame the end timer is running
     ; (it will have a value of 99.99 the first frame)
-    lda EndTimer+1
+    lda EndTimer+1.b
     cmp #$99
     bne @endIf_A
     clc

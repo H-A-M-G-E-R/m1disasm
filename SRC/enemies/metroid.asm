@@ -1,6 +1,6 @@
 MetroidAIRoutine:
     ; Delete self if escape timer is active (EndTimer+1 != #$FF)
-    ldy EndTimer+1
+    ldy EndTimer+1.b
     iny
     beq L9804
         lda #$00

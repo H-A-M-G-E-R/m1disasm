@@ -700,7 +700,7 @@ UpdateCannon:
     tya
     bne RTS_9B4B
     ; branch if escape timer is active
-    ldy EndTimer+1
+    ldy EndTimer+1.b
     iny
     bne @escape
         ; escape timer is not active, behave normally
@@ -1414,7 +1414,7 @@ MotherBrain_9F49:
     ; timer = 9999 frames = 166.65 seconds
     lda #$99
     sta EndTimer
-    sta EndTimer+1
+    sta EndTimer+1.b
     ; enable end timer enemy
     lda #$01
     sta EndTimerEnemyIsEnabled
@@ -1853,7 +1853,7 @@ RTS_A15D:
 ;-------------------------------------------------------------------------------
 UpdateAllRinkaSpawners:
     ; exit if timer is active
-    ldy EndTimer+1
+    ldy EndTimer+1.b
     iny
     bne RTS_A1DA
     
@@ -1958,7 +1958,7 @@ RinkaSpawnPosTbl:
 ;-------------------------------------------------------------------------------
 UpdateEndTimer:
     ; exit if timer is inactive
-    ldy EndTimer+1
+    ldy EndTimer+1.b
     iny
     beq @RTS
     
@@ -1970,11 +1970,11 @@ UpdateEndTimer:
     jsr CommonJump_Base10Subtract
     sta EndTimer
     ; BCD decrement high byte of timer if overflow
-    lda EndTimer+1
+    lda EndTimer+1.b
     sta $03
     lda #$00
     jsr CommonJump_Base10Subtract
-    sta EndTimer+1
+    sta EndTimer+1.b
     
     ; play alarm sound effect every 32 frames
     lda FrameCount
@@ -1984,12 +1984,12 @@ UpdateEndTimer:
         jsr SFX_SetSQ1SFXFlag
     @endIf_A:
     lda EndTimer
-    ora EndTimer+1
+    ora EndTimer+1.b
     bne @RTS
     
     ; timer became zero, the time bomb exploded and samus failed to escape in time
     ; disable timer
-    dec EndTimer+1
+    dec EndTimer+1.b
     ; reset mother brain health
     sta MotherBrainQtyHits
     ; set mother brain state to bomb exploded
@@ -2035,7 +2035,7 @@ DrawEndTimerEnemy:
     
     tax
     ; set tile of hundreds digit
-    lda EndTimer+1
+    lda EndTimer+1.b
     lsr
     lsr
     lsr
@@ -2046,7 +2046,7 @@ DrawEndTimerEnemy:
     adc #$20+CFG_NUM_SAMUS_TILES.b
     sta SpriteRAM+($00<<2)+$01,x
     ; set tile of tens digit
-    lda EndTimer+1
+    lda EndTimer+1.b
     and #$0F
     clc
     adc #$20+CFG_NUM_SAMUS_TILES.b

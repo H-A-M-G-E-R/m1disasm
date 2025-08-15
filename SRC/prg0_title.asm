@@ -4370,7 +4370,7 @@ DisplayBar:
     lda Health                    ;
     jsr Adiv16                      ;($C2BF)Move lower health digit to 4 LSBs.
     jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    ldy EndTimer+1                  ;
+    ldy EndTimer+1.b                ;
     iny                             ;Is Samus in escape sequence?-->
     bne LE11C                          ;If so, branch.
     ldy MaxMissiles                 ;
@@ -4400,10 +4400,10 @@ LE10A:
 
 ;Display 3-digit end sequence timer.
 LE11C:
-    lda EndTimer+1                  ;
+    lda EndTimer+1.b                ;
     jsr Adiv16                      ;($C2BF)Upper timer digit.
     jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    lda EndTimer+1                  ;
+    lda EndTimer+1.b                ;
     and #$0F                        ;Middle timer digit.
     jsr SPRWriteDigit               ;($E173)Display digit on screen.
     lda EndTimer                  ;

@@ -1375,7 +1375,7 @@ UpdateDoor_Closed:
         ; it is a blue door that changes music
         ; branch if escape timer is active (not #$FF)
         ; this prevents the right door in mother brain's room from opening during the escape
-        ldy EndTimer+1
+        ldy EndTimer+1.b
         iny
         bne DrawDoor
     L8BEE:
