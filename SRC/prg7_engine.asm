@@ -3279,7 +3279,14 @@ SamusDoor:
     pha
     lda ScrollBlockOnNameTable0
     pha
+    lda ScrollDir
+    pha
+    ; to properly delete sprites when scrolling up/left
+    ora #$01
+    sta ScrollDir
     jsr DeleteOffscreenRoomSprites
+    pla
+    sta ScrollDir
     pla
     sta ScrollBlockOnNameTable0
     pla
