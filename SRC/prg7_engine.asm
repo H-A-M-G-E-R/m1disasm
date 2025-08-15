@@ -1394,12 +1394,12 @@ DestroyEnemies: ;($C8BB)
         ; clear all enemy RAM pages
         sta EnY,x
         sta EnsExtra.0.status,x
-        sta EnsExtra2.0.data00,x
+        sta EnsExtra2.0.data20,x
         inx
         bne @loop
     ;Force Samus to have no Metroid stuck to her.
     stx MetroidOnSamus
-    jmp GotoClearAllMetroidLatches
+    rts
 
 ; SamusInit
 ; =========
@@ -3297,7 +3297,6 @@ SamusDoor:
     sta ScrollBlockOnNameTable0
     pla
     sta ScrollBlockOnNameTable3
-    jsr GotoClearAllMetroidLatches ; if it is defined in the current bank
     jsr StartMusic       ; start music
     lda KraidRidleyPresent
     beq Lx052
@@ -7243,9 +7242,8 @@ LEB4D:
     lda #enemyStatus_Resting        ;
     sta EnsExtra.0.status,x                  ;Indicate object slot is taken.
     ; Flag enemy init
-    lda #$FF
-    sta EnsExtra.0.animIndex,x
     lda #$00
+    sta EnsExtra.0.pose,x
     sta EnIsHit,x
     jsr GetNameTableAtScrollDir       ;($EB85)Get name table to place enemy on.
     sta EnsExtra.0.hi,x               ;Store name table.
@@ -8058,8 +8056,7 @@ Lx269:
         cmp #enemyStatus_Explode
         beq NextEnemy
         ; check next enemy if enemy initializes next frame
-        lda EnsExtra.0.animIndex,x
-        cmp #$FF
+        lda EnsExtra.0.pose,x
         beq NextEnemy
         
         ; skip projectile collision if enemy is a pickup
@@ -8612,6 +8609,8 @@ LF340:
 
 ;-------------------------------------------------------------------------------
 UpdateAllEnemies: ; LF345
+    lda #$00
+    sta MetroidOnSamus
     ldx #$50                ;Load x with #$50
     @loop:
         jsr UpdateEnemy                  ;($F351)
@@ -8697,13 +8696,13 @@ UpdateEnemy_UpdateEnData05Bit6:
 
 ;---------------------------------------------
 UpdateEnemy_Resting: ;($F3BE)
-    ; branch if anim index != #$FF (init enemy so it won't look glitched sometimes the first frame it spawns)
-    lda EnsExtra.0.animIndex,x
-    cmp #$FF
+    ; branch if pose != init (init enemy so it won't look glitched sometimes the first frame it spawns)
+    lda EnsExtra.0.pose,x
     bne +
         ; force enemy animation to update
+        lda #$FF
         sta EnsExtra.0.resetAnimIndex,x
-        beq ++ ; branch always
+        bne ++ ; branch always
     +
     ; Branch if bit 6 is set (30FPS)
     lda EnData05,x
@@ -8752,7 +8751,15 @@ UpdateEnemy_Active_BranchA: ; LF401
 UpdateEnemy_Active_BranchB: ; LF40A
     jsr EnemyReactToSamusWeapon
 UpdateEnemy_Explode:
-    jmp ChooseEnemyAIRoutine
+    jsr ChooseEnemyAIRoutine
+    ldx PageIndex
+    ; pose = 1 if pose == init
+    lda EnsExtra.0.pose,x
+    bne +
+        inc EnsExtra.0.pose,x
+    +
+    rts
+
 ;-------------------------------------------
 ; This procedure is called by a lot of enemy AI routines, with three different
 ;  entry points
@@ -8996,14 +9003,6 @@ EnemyReactToSamusWeapon:
     ; set freeze timer to 512 frames
     lda #$40
     sta EnData0D,x
-    ; exit if enemy is not a metroid
-    jsr LoadTableAt977B
-    and #$20
-    beq RTS_X315
-    ; set hp to 20, and clear metroid latch
-    lda #20
-    sta EnHealth,x
-    jmp GotoClearCurrentMetroidLatchAndMetroidOnSamus
 RTS_X315:
     rts
 
@@ -10102,8 +10101,8 @@ UpdatePipeBugHole:
     jsr CheckCollisionOfXSlotAndYSlot
     bcc Exit13
     ; Flag enemy init
-    lda #$FF
-    sta EnsExtra.0.animIndex,x
+    lda #$00
+    sta EnsExtra.0.pose,x
     ; set status to resting
     lda #enemyStatus_Resting ; #$01
     sta EnDelay,x

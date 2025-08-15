@@ -4124,7 +4124,7 @@ GoBankInit:
         .word InitBank0                 ;($C531)Initialize bank 0.
         .word InitGenericAreaBank       ;($C552)Initialize bank 1.
         .word InitGenericAreaBank
-        .word InitBank3                 ;($C590)Initialize bank 3.
+        .word InitGenericAreaBank       ;($C590)Initialize bank 3.
         .word InitGenericAreaBank
         .word InitGenericAreaBank
         .word ExitSub                   ;($C45C)Rts
@@ -4150,11 +4150,6 @@ InitBank0:
 
     jsr InitTitleGFX                ;($C5D7)Load title GFX.
     jmp NMIOn                       ;($C487)Turn on VBlank interrupts.
-
-;Table used by above subroutine and loads the initial data used to describe
-;metroid's behavior in the Tourian section of the game.
-MetroidData:
-    .byte -$02, $02, $0C, -$0C, $18, -$18, $01, $02, $00, $00, $00, $00, $00, $00
 
 InitEndGFX:
     lda #$01                        ;
@@ -4197,16 +4192,6 @@ LoadSamusGFX:
     LC5EB:
     sty CHRBank2
     rts
-
-;Tourian memory page.
-InitBank3:
-    ldy #$0D                        ;
-    LC599:
-        lda MetroidData,y               ;Load info from table below into-->
-        sta MetroidRepelSpeed,y                     ;$77F0 thru $77FD.
-        dey                             ;
-        bpl LC599                       ;
-    ;fallthrough
 
 InitGenericAreaBank:
     lda #$00                        ;GameMode = play.

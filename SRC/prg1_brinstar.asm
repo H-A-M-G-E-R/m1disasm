@@ -72,8 +72,6 @@ AreaPointers:
     .byte $60, $EA, $EA
     .byte $60, $EA, $EA
     .byte $60, $EA, $EA
-    .byte $60, $EA, $EA
-    .byte $60, $EA, $EA
 
 AreaRoutine: ; L95C3
     jmp AreaRoutineStub ; Just an RTS

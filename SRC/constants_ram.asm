@@ -84,7 +84,7 @@
     subPixelX        db ; Unknown
     accelY           db ; Unknown
     accelX           db ; Unknown
-    data1C           db ; Unused
+    pose             db ;#$00=init, #$01=after init if it isn't set already (was unused in vanilla)
     jumpDsplcmnt     db ;Number of pixels vertically/horizontally displaced from jump point; skree blow up delay
     type             db ;Enemy type used as index into enemy data tables.
     data1F           db ;For EnemyFlipAfterDisplacement:
@@ -99,22 +99,22 @@
 .endst
 
 .struct EnExtra2
-    data00           db
-    data01           db
-    data02           db
-    data03           db
-    data04           db
-    data05           db
-    data06           db
-    data07           db
-    data08           db
-    data09           db
-    data0A           db
-    data0B           db
-    data0C           db
-    data0D           db
-    data0E           db
-    data0F           db
+    data20           db
+    data21           db
+    data22           db
+    data23           db
+    data24           db
+    data25           db
+    data26           db
+    data27           db
+    data28           db
+    data29           db
+    data2A           db
+    data2B           db
+    data2C           db
+    data2D           db
+    data2E           db
+    data2F           db
 .endst
 
 .struct Cannon
@@ -981,20 +981,6 @@ CHRBank2               db        ;PPU $1000-$13FF
 CHRBank3               db        ;PPU $1400-$17FF
 CHRBank4               db        ;PPU $1800-$1BFF
 CHRBank5               db        ;PPU $1C00-$1FFF
-
-.ende
-
-.enum $77F0
-
-MetroidRepelSpeed      dw        ;$77F0 for negative, $77F1 for positive
-MetroidAccel           ds 4      ;$77F2-$77F3 for red metroid, $77F4-$77F5 for green metroid
-MetroidMaxSpeed        dw        ;$77F6 for red metroid, $77F7 for green metroid
-MetroidLatch0400       db        ;bits 0-3 is #$0 to #$C, frame counter from touching to fully latched on.
-MetroidLatch0410       db          ;bits 4-6 is #$0 to #$5, count how many bomb hits (5 for separation).
-MetroidLatch0420       db          ;bit 7 is sign of x speed
-MetroidLatch0430       db
-MetroidLatch0440       db
-MetroidLatch0450       db
 
 .ende
 

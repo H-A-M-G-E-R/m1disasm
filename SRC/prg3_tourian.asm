@@ -64,10 +64,6 @@ AreaPointers:
     .word EnAnimTbl                 ;($A406)Index to values in addr tables for enemy animations.
 
 ; Special Tourian Routines
-GotoClearCurrentMetroidLatchAndMetroidOnSamus:
-    jmp ClearCurrentMetroidLatchAndMetroidOnSamus
-GotoClearAllMetroidLatches:
-    jmp ClearAllMetroidLatches
 GotoDeleteOffscreenRoomSprites_Tourian:
     jmp DeleteOffscreenRoomSprites_Tourian
 GotoSpawnCannonRoutine:
@@ -1922,8 +1918,8 @@ UpdateAllRinkaSpawners:
     lda #$F7
     sta EnsExtra.0.animFrame,x
     ; Flag enemy init
-    lda #$FF
-    sta EnsExtra.0.animIndex,x
+    lda #$00
+    sta EnsExtra.0.pose,x
     ; init rinka position
     ldy PageIndex
     lda RinkaSpawners.0.hi,y
@@ -2164,25 +2160,6 @@ LA30A:
 
 ZebetiteAnimFrameTable:
     .byte $0C, $0D, $0E, $0F, $07
-
-;-------------------------------------------------------------------------------
-; Samus no longer has a metroid on her
-ClearAllMetroidLatches:
-    ldy #$05
-    LA317:
-        jsr ClearMetroidLatch
-        dey
-        bpl LA317
-    sta MetroidOnSamus
-    rts
-
-ClearCurrentMetroidLatchAndMetroidOnSamus:
-    txa
-    jsr Adiv16_
-    tay
-    jsr ClearMetroidLatch
-    sta MetroidOnSamus
-    rts
 
 ;-------------------------------------------------------------------------------
 
