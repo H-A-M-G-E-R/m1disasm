@@ -84,7 +84,8 @@ PipeBugAIRoutine:
     tay
     lda @latchXOffsets,y
     sta Temp05_SpeedX
-    lda #-$10
+    lda ObjRadY
+    eor #$FF
     sta Temp04_SpeedY
     jsr ApplySpeedToPosition
     jsr LoadEnemyPositionFromTemp
