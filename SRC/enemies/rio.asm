@@ -21,17 +21,15 @@ RioAIRoutine:
     and #$10
     beq RioExitA
 
-    ; get Samus position relative to enemy
-    lda EnY,x
-    sec
-    sbc ObjY
-    ; branch if Samus is under enemy
-    bpl RioBranch
-        ; negate a
-        jsr TwosComplement
-    RioBranch:
-    ; a now contains the y distance between Samus and the enemy
+    ; get y distance between Samus and the enemy
+    jsr GetEnemyXSlotPosition
+    ldy #$00
+    jsr GetObjectYSlotPosition
+    jsr AbsYDistFromYSlotToXSlot
     ; branch if Samus is not within a block's distance 
+    lda Temp01_DiffHi
+    bne RioExitA
+    lda Temp00_Diff
     cmp #$10
     bcs RioExitA
     ; Samus is vertically aligned with the enemy

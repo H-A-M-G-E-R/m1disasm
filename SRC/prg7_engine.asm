@@ -1296,9 +1296,6 @@ MoreInit:
     lda TilesetIndex
     jsr ChangeTileset
     ldx #$00
-    stx DoorEntryStatus                  ;Samus not in door.
-    stx SamusDoorData               ;Samus is not inside a door.
-    stx UpdatingProjectile          ;No projectiles need to be updated.
     txa                             ;A=0.
 
     LC830:
@@ -1311,6 +1308,10 @@ MoreInit:
         sta PipeBugHoles.0.status,x     ;
         inx                             ;
         bne LC830                       ;Loop until all required RAM is cleared.
+
+    dex                             ;X=#$FF.
+    stx EndTimer                    ;Set end timer bytes to #$FF as-->
+    stx EndTimer+1.b                ;escape timer not currently active.
 
     jsr ScreenOff                   ;($C439)Turn off Background and visibility.
     jsr ClearNameTables             ;($C158)Clear screen data.
@@ -1378,6 +1379,14 @@ CopyAreaPointers:
 ; ==============
 
 DestroyEnemies: ;($C8BB)
+    ldx #$FF
+    stx PipeBugHoles.0.status
+    stx PipeBugHoles.1.status
+    stx PipeBugHoles.2.status
+    stx PipeBugHoles.3.status
+    stx RinkaSpawners.0.status
+    stx RinkaSpawners.1.status
+
     lda #$00
     tax
     @loop:
@@ -1421,17 +1430,6 @@ SamusInit:
     sty ObjAction                   ;Set Samus status as fading onto screen.
     lda #_id_Palette13+1.b
     sta ObjectCounter
-    ldx #$00
-    stx SamusBlink
-    dex                             ;X = $FF
-    stx PipeBugHoles.0.status
-    stx PipeBugHoles.1.status
-    stx PipeBugHoles.2.status
-    stx PipeBugHoles.3.status
-    stx EndTimer                    ;Set end timer bytes to #$FF as-->
-    stx EndTimer+1.b                ;escape timer not currently active.
-    stx RinkaSpawners.0.status
-    stx RinkaSpawners.1.status
     ldy #$27
     lda SaveScrollDir
     sta ScrollDir
@@ -9389,7 +9387,7 @@ LoadEnHiToYAndLoadEorHiToCarry:
 UpdateEnemy_EnData05DistanceToSamusThreshold:
     ; default to masking out bit 4 and bit 3 of EnData05
     lda #~$18
-    sta $06
+    sta $03
     ; set bit 4 and bit 3 of EnData05
     lda #$18
     jsr OrEnData05
@@ -9419,44 +9417,33 @@ UpdateEnemy_EnData05DistanceToSamusThreshold:
     ; save EnemyDistanceToSamusThreshold & #$7F to $02
     lsr
     sta $02
-    ; save mask to $06
-    sty $06
+    ; save mask to $03
+    sty $03
+
+    jsr GetEnemyXSlotPosition
+    ldy #$00
+    jsr GetObjectYSlotPosition
     
-    ; check y axis
-    lda ObjY
-    sta $00
-    ldy EnY,x
     ; branch if bit 7 of EnData05 is set
     lda EnData05,x
     bmi Lx343
         ; bit 7 of EnData05 is not set
         ; check x axis
-        ldy ObjX
-        sty $00
-        ldy EnX,x
+        jsr AbsXDistFromYSlotToXSlot
+        jmp +
     Lx343:
+        ; bit 7 of EnData05 is set
+        ; check y axis
+        jsr AbsYDistFromYSlotToXSlot
+    +
     
-    ; rotate samus hi bit into bit 7 of her position
-    lda ObjHi
+    ; now a contains absolute distance between enemy and samus on a specific axis
+    
+    ; divide further by 16
+    lda Temp01_DiffHi
     lsr
-    ror $00
-    ; rotate enemy hi bit into bit 7 of its position
-    lda EnsExtra.0.hi,x
-    lsr
-    tya
+    lda Temp00_Diff
     ror
-    ; get enemy pos relative to samus pos
-    sec
-    sbc $00
-    ; branch if enemy is to the right of samus
-    bpl Lx344
-        ; enemy is to the left of samus
-        ; negate pos
-        jsr TwosComplement              ;($C3D4)
-    Lx344:
-    ; now a contains absolute distance between enemy and samus on a specific axis, divided by 2
-    
-    ; divide further by 8
     lsr
     lsr
     lsr
@@ -9469,7 +9456,7 @@ UpdateEnemy_EnData05DistanceToSamusThreshold:
     ; we must unset the proper bit of EnData05
 Lx345:
     ; apply mask to EnData05
-    lda $06
+    lda $03
 AndEnData05:
     and EnData05,x
     sta EnData05,x
@@ -10375,16 +10362,20 @@ UpdateMellow_Explode:
     jmp SFX_EnemyHit
 
 UpdateMellow_RunAI:
-    jsr UpdateMellow_StorePositionToTemp
     lda Mellows.0.attackState,x
     cmp #$02
     bcs Lx392
-    ldy Temp08_PositionY
-    cpy ObjY
-    bcc Lx392
+    jsr GetMellowXSlotPosition
+    ldy #$00
+    jsr GetObjectYSlotPosition
+    jsr SignedYDistFromYSlotToXSlot
+    lda Temp01_DiffHi
+    bmi Lx392
+    lda Mellows.0.attackState,x
     ora #$02
     sta Mellows.0.attackState,x
 Lx392:
+    jsr UpdateMellow_StorePositionToTemp
     ldy #$01
     lda Mellows.0.attackState,x
     lsr
@@ -10420,14 +10411,23 @@ RTS_X397:
 UpdateMellow_FD08:
     lda #$00
     sta Mellows.0.attackTimer,x
-    tay
-    lda ObjX
-    sec
-    sbc Mellows.0.x,x
-    bpl Lx398
-        iny
-        jsr TwosComplement              ;($C3D4)
-    Lx398:
+    jsr GetMellowXSlotPosition
+    ldy #$00
+    jsr GetObjectYSlotPosition
+    jsr SignedXDistFromYSlotToXSlot
+    ldy #$01
+    lda Temp00_Diff
+    ora Temp01_DiffHi
+    beq +
+    lda Temp01_DiffHi
+    bpl ++
+        jsr NegateTemp00Temp01
+    +
+        dey
+    ++
+    lda Temp01_DiffHi
+    bne RTS_X399
+    lda Temp00_Diff
     cmp #$10
     bcs RTS_X399
     tya

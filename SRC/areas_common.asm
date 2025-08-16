@@ -1238,6 +1238,10 @@ XorEnData05: ; L856B
     sta EnData05,x
     rts
 
+;----------------------------------------[ More enemy util ]----------------------------------------
+
+.include "more_enemy_util.asm"
+
 ;------------------------------------[ Samus enter door routines ]-----------------------------------
 
 ;This function is called once when Samus first enters a door.
