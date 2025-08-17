@@ -24,6 +24,12 @@
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
+; Save code
+
+.if CFG_SAVE != 0
+    .include "save.asm"
+.endif
+
 MainTitleRoutine:
     ;If intro routines not running, branch.
     lda TitleRoutine
@@ -33,6 +39,7 @@ MainTitleRoutine:
     lda Joy1Change
     and #BUTTON_START
     beq L8022
+    .if CFG_SAVE == 0
         ;Set name table to name table 0.
         lda PPUCTRL_ZP
         and #$FC
@@ -41,7 +48,44 @@ MainTitleRoutine:
         lda #_id_StartContinueScreen1B.b
         sta TitleRoutine
         bne L8027 ;Branch always.
+    .else
+        lda Joy1Status
+        cmp #BUTTON_START | BUTTON_B | BUTTON_A.b
+        bne +
+            ; NUKE THE FILE!!!
+            jsr InitializeStats
+            jsr FileSave
+            jsr SFX_BombExplode
+            jmp L8022
+        +
+        ;Load file and start game.
+        jsr FileLoad
+        jmp InitializeGame
+    .endif
     L8022:
+    .if CFG_SAVE != 0
+        lda Joy1Change
+        and #BUTTON_RIGHT
+        beq +
+            jsr SFX_Beep
+            inc CurrentSaveSlot
+            lda CurrentSaveSlot
+            cmp #$03
+            bne +
+            lda #$00
+            sta CurrentSaveSlot
+        +
+        lda Joy1Change
+        and #BUTTON_LEFT
+        beq +
+            jsr SFX_Beep
+            dec CurrentSaveSlot
+            lda CurrentSaveSlot
+            bpl +
+            lda #$02
+            sta CurrentSaveSlot
+        +
+    .endif
         ;($C1BC)Remove sparkle and crosshair sprites from screen.
         jsr RemoveIntroSprites
 
@@ -112,10 +156,12 @@ IncTitleRoutine0B:
     rts
 
 InitializeAfterReset:
-    ldy #$00
-    sty NARPASSWORD                 ;Set NARPASSWORD not active.
+.if CFG_SAVE != 0
+    jsr CheckForCorruptSaveFiles
+.endif
     lda #$02                        ;A=2.
     sta IntroMusicRestart           ;Title rountines cycle twice before restart of music.
+    ldy #$00
     sty PalDataIndex                ;Reset index to palette data.
     sty ScreenFlashPalIndex         ;Reset index into screen flash palette data.
     sty IntroStarOffset             ;Reset index into IntroStarPntr table.
@@ -2193,13 +2239,20 @@ RTS_9324:
 InitializeStats: ;($932B)
     ;Copy initial save data to RAM when starting new game.
     ldx #InitialSaveDataEnd-InitialSaveData.b
-    @loop:
+    @loop_A:
         lda InitialSaveData-1,x
         sta Health-1,x
         dex
-        bne @loop
+        bne @loop_A
     ;Clear flag to start from password.
     stx StartingFromPassword
+    ;Clear unique item history.
+    ldx #$00
+    txa
+    @loop_B:
+        sta UniqueItemHistory,x
+        inx
+        bne @loop_B
     rts
 
 .include "initial_save_data.asm"
@@ -2207,6 +2260,7 @@ InitializeStats: ;($932B)
 DisplayPassword:
     lda Timer3                      ;Wait for "GAME OVER" to be displayed-->
     bne RTS_9324                    ;for 160 frames (2.6 seconds).
+.if CFG_SAVE == 0
     jsr ClearAll                    ;($909F)Turn off screen, erase sprites and nametables.
     ldx #<L937F.b                     ;Low byte of start of PPU data.
     ldy #>L937F.b                     ;High byte of start of PPU data.
@@ -2219,6 +2273,11 @@ DisplayPassword:
     jsr WriteTitlePal               ;Change palette.
     inc TitleRoutine                ;
     jmp ScreenOn                    ;($C447)Turn screen on.
+.else
+    ; load previous save and start game
+    jsr FileLoad
+    jmp InitializeGame
+.endif
 
 L937F:
     ;Information below is for above routine to display "PASS WORD" on the screen.

@@ -107,10 +107,10 @@ RESET:
         bne @loop_A
     @exitLoop_A:
 
-    ;Clear cartridge RAM at $6000-$7FFF.
-    ;$0000 points to $7F00
+    ;Clear cartridge RAM at $6000-$7BFF.
+    ;$0000 points to $7B00
     ;High byte of start address.
-    ldy #$7F
+    ldy #(>SaveSlots)-1.b
     sty $01
     ;Low byte of start address.
     ldy #$00
@@ -1559,6 +1559,7 @@ PrepareGameOver:
 ;------------------------------------------[ Pause mode ]--------------------------------------------
 
 PauseMode:
+.if CFG_SAVE == 0
     ;Load buttons currently being pressed on joypad 1.
     lda Joy1Status
     ; Exit if not both A & UP pressed.
@@ -1576,6 +1577,7 @@ PauseMode:
     sta GamePaused
     ;Display password is the next routine to run.
     inc MainRoutine
+.endif
 
 Exit14:
     rts                             ;Exit for routines above and below.
@@ -3993,6 +3995,14 @@ ElevatorStop:
         jsr ToggleScroll
         sta MirrorCntrl
     Lx115:
+.if CFG_SAVE != 0
+    ; save the game!
+    lda #:FileSave.b
+    jsr MMCWritePrgBank
+    jsr SaveSamusPos
+    jsr FileSave
+    jsr SetBankToMainBank
+.endif
     jmp DrawElevator
 Lx116:
     jmp ElevScrollRoom

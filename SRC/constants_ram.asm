@@ -151,6 +151,10 @@
     yDir             db   ;MSB set=decrease sprite y pos, else increase sprite y pos.
 .endst
 
+.struct SaveSlot
+    data             ds $11D ; wla currently doesn't support labels in ds
+.endst
+
 ;-------------------------------------------[ Defines ]----------------------------------------------
 ;--------------------------------------------[ Zeropage ]--------------------------------------------
 
@@ -929,6 +933,11 @@ NumberOfUniqueItems    db        ;Counts number of power-ups and red doors-->
 UniqueItemHistory      ds $100   ;Thru $68FC. History of Unique items collected.-->
 ;EndItemHistory         = $68FC   ;Two bytes per item.
 
+SaveChecksum           db
+SaveChecksumXor        db
+SaveChecksumDup        db
+SaveChecksumXorDup     db
+
 ; 18 bytes ($6988-$6999)
 PasswordByte           ds $12
 ; PasswordByte+$00       = $6988   ;Stores status of items 0 thru 7.
@@ -984,7 +993,7 @@ CHRBank5               db        ;PPU $1C00-$1FFF
 
 .ende
 
-.enum $7D80 export
+.enum $7980 export
 .union
 ;---------------------------------------[ More enemy RAM ]-------------------------------------------
 
@@ -1008,5 +1017,14 @@ CHRBank5               db        ;PPU $1C00-$1FFF
     IntroSprs              instanceof IntroSpr 8 startfrom 0
 
 .endu
+.ende
+
+; Save data beyond this point which must be page-aligned
+.enum $7C00 export
+
+SaveSlots              instanceof SaveSlot 3 startfrom 0
+
+CurrentSaveSlot        db
+
 .ende
 
