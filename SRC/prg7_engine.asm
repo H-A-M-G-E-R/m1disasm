@@ -74,6 +74,7 @@ RESET:
     sei
     ldx #$FF                        ;X = $FF
     txs                             ;S points to end of stack page
+    stx NMIStatus                   ;Don't do NMI
 
     lda #$00
     jsr MMCWritePrgBank                ;($C4FA)Swap to PRG bank #0 at $8000
