@@ -205,6 +205,7 @@ KraidUpdateProjectile:
     ; Flag enemy init
     lda #$00
     sta EnsExtra.0.pose,x
+    sta EnsExtra2.0.props2F,x
     ; save as projectile's position
     ; fallthrough
 

@@ -114,7 +114,7 @@
     data2C           db
     data2D           db
     data2E           db
-    data2F           db
+    props2F          db ;bit6 set: h-flip
 .endst
 
 .struct Cannon
@@ -402,8 +402,7 @@ SamusHurt010F          db        ;never read. takes on different values dependin
     SpawnFireball_83       dw        ;right facing anim index for enemy that shoots the fireball
     ; SpawnFireball_83+1     = $84     ;left facing anim index for enemy that shoots the fireball
     SpawnFireball_AnimTableIndex .db       ;index into EnemyFireballRisingAnimIndexTable
-    EnemyFlipAfterDisplacementAnimIndex          dw     ;right facing anim index for enemy using EnemyFlipAfterDisplacement routine
-    ; EnemyFlipAfterDisplacementAnimIndex+1 = $86     ;left facing anim index for enemy using EnemyFlipAfterDisplacement routine
+    EnemyFlipAfterDisplacementAnimIndex          db     ;anim index for enemy using EnemyFlipAfterDisplacement routine
     SpawnFireball_87       db        ;fireball status?
     SpawnFireball_EnData0A db
 

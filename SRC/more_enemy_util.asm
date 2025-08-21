@@ -97,3 +97,19 @@ AbsXDistFromYSlotToXSlot:
     lda Temp01_DiffHi
     bpl SignedXDistFromYSlotToXSlot@RTS
     jmp NegateTemp00Temp01
+
+EnemyUpdateFlipIfBit2Of968BClear:
+    jsr ReadTableAt968B
+    and #$04
+    bne @RTS
+        lda EnsExtra2.0.props2F,x
+        and #~$40
+        sta EnsExtra2.0.props2F,x
+        lda EnData05,x
+        lsr
+        ror
+        lsr
+        ora EnsExtra2.0.props2F,x
+        sta EnsExtra2.0.props2F,x
+    @RTS:
+    rts

@@ -108,6 +108,13 @@ AreaFireballSplatterAnimIndex:
 AreaMellowAnimIndex:
     .byte EnAnim_Mellow - EnAnimTbl
 
+AreaMissilePickupAnimFrame:
+    .byte _id_EnFrame_MissilePickup
+AreaSmallEnergyPickupAnimFrame:
+    .byte _id_EnFrame_SmallEnergyPickup
+AreaBigEnergyPickupAnimFrame:
+    .byte _id_EnFrame_BigEnergyPickup
+
 AreaTilesets:
     .word TileAnim0, PalAnim0
     .word TileAnim1, PalAnim1
@@ -135,22 +142,22 @@ ChooseEnemyAIRoutine:
 
 ; Animation related table ?
 EnemyDeathAnimIndex:
-    .byte EnAnim_SidehopperFloorExplode - EnAnimTbl, EnAnim_SidehopperFloorExplode - EnAnimTbl ; 00 - Sidehopper (unused)
-    .byte EnAnim_SidehopperCeilingExplode - EnAnimTbl, EnAnim_SidehopperCeilingExplode - EnAnimTbl ; 01 - Ceiling sidehopper (unused)
-    .byte EnAnim_WaverExplodeFacingRight - EnAnimTbl, EnAnim_WaverExplodeFacingLeft - EnAnimTbl ; 02 - Waver
-    .byte EnAnim_RipperExplodeFacingRight - EnAnimTbl, EnAnim_RipperExplodeFacingLeft - EnAnimTbl ; 03 - Ripper
-    .byte EnAnim_SkreeExplode - EnAnimTbl, EnAnim_SkreeExplode - EnAnimTbl ; 04 - Skree
-    .byte EnAnim_ZoomerExplode - EnAnimTbl, EnAnim_ZoomerExplode - EnAnimTbl ; 05 - Zoomer (crawler)
-    .byte EnAnim_RioExplode - EnAnimTbl, EnAnim_RioExplode - EnAnimTbl ; 06 - Rio (swoopers)
-    .byte EnAnim_ZebExplodeFacingRight - EnAnimTbl, EnAnim_ZebExplodeFacingLeft - EnAnimTbl ; 07 - Zeb
-    .byte EnAnim_KraidExplodeFacingRight - EnAnimTbl, EnAnim_KraidExplodeFacingLeft - EnAnimTbl ; 08 - Kraid (crashes due to bug)
-    .byte $00, $00 ; 09 - Kraid's lint (crashes)
-    .byte $00, $00 ; 0A - Kraid's nail (crashes)
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl ; 0B - Null pointers (hard crash)
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl ; 0C - Null
-    .byte $00, $00 ; 0D - Null
-    .byte $00, $00 ; 0E - Null
-    .byte $00, $00 ; 0F - Null
+    .byte EnAnim_SidehopperFloorExplode - EnAnimTbl ; 00 - Sidehopper (unused)
+    .byte EnAnim_SidehopperCeilingExplode - EnAnimTbl ; 01 - Ceiling sidehopper (unused)
+    .byte EnAnim_WaverExplodeFacingRight - EnAnimTbl ; 02 - Waver
+    .byte EnAnim_RipperExplodeFacingRight - EnAnimTbl ; 03 - Ripper
+    .byte EnAnim_SkreeExplode - EnAnimTbl ; 04 - Skree
+    .byte EnAnim_ZoomerExplode - EnAnimTbl ; 05 - Zoomer (crawler)
+    .byte EnAnim_RioExplode - EnAnimTbl ; 06 - Rio (swoopers)
+    .byte EnAnim_ZebExplodeFacingRight - EnAnimTbl ; 07 - Zeb
+    .byte EnAnim_KraidExplodeFacingRight - EnAnimTbl ; 08 - Kraid (crashes due to bug)
+    .byte $00 ; 09 - Kraid's lint (crashes)
+    .byte $00 ; 0A - Kraid's nail (crashes)
+    .byte EnAnim_Mellow - EnAnimTbl ; 0B - Null pointers (hard crash)
+    .byte EnAnim_Mellow - EnAnimTbl ; 0C - Null
+    .byte $00 ; 0D - Null
+    .byte $00 ; 0E - Null
+    .byte $00 ; 0F - Null
 
 EnemyHealthTbl:
     .byte $08 ; 00 - Sidehopper (unused)
@@ -255,41 +262,41 @@ EnemyDropChanceTblTough:
 
 ; ResetAnimIndex table for resting enemy
 EnemyRestingAnimIndex:
-    .byte EnAnim_SidehopperFloorIdle - EnAnimTbl, EnAnim_SidehopperFloorIdle - EnAnimTbl ; 00 - Sidehopper (unused)
-    .byte EnAnim_SidehopperCeilingIdle - EnAnimTbl, EnAnim_SidehopperCeilingIdle - EnAnimTbl ; 01 - Ceiling sidehopper (unused)
-    .byte EnAnim_Waver0FacingRight - EnAnimTbl, EnAnim_Waver0FacingLeft - EnAnimTbl ; 02 - Waver
-    .byte EnAnim_RipperFacingRight - EnAnimTbl, EnAnim_RipperFacingLeft - EnAnimTbl ; 03 - Ripper
-    .byte EnAnim_Skree - EnAnimTbl, EnAnim_Skree - EnAnimTbl ; 04 - Skree
-    .byte EnAnim_ZoomerOnFloor - EnAnimTbl, EnAnim_ZoomerOnFloor - EnAnimTbl ; 05 - Zoomer (crawler)
-    .byte EnAnim_Rio - EnAnimTbl, EnAnim_Rio - EnAnimTbl ; 06 - Rio (swoopers)
-    .byte EnAnim_ZebRestingFacingRight - EnAnimTbl, EnAnim_ZebRestingFacingLeft - EnAnimTbl ; 07 - Zeb
-    .byte EnAnim_KraidFacingRight - EnAnimTbl, EnAnim_KraidFacingLeft - EnAnimTbl ; 08 - Kraid (crashes due to bug)
-    .byte EnAnim_KraidLintFacingRight - EnAnimTbl, EnAnim_KraidLintFacingLeft - EnAnimTbl ; 09 - Kraid's lint (crashes)
-    .byte EnAnim_KraidNailIdleFacingRight - EnAnimTbl, EnAnim_KraidNailIdleFacingLeft - EnAnimTbl ; 0A - Kraid's nail (crashes)
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl ; 0B - Null pointers (hard crash)
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl ; 0C - Null
-    .byte $00, $00 ; 0D - Null
-    .byte $00, $00 ; 0E - Null
-    .byte $00, $00 ; 0F - Null
+    .byte EnAnim_SidehopperFloorIdle - EnAnimTbl ; 00 - Sidehopper (unused)
+    .byte EnAnim_SidehopperCeilingIdle - EnAnimTbl ; 01 - Ceiling sidehopper (unused)
+    .byte EnAnim_Waver0FacingRight - EnAnimTbl ; 02 - Waver
+    .byte EnAnim_RipperFacingRight - EnAnimTbl ; 03 - Ripper
+    .byte EnAnim_Skree - EnAnimTbl ; 04 - Skree
+    .byte EnAnim_ZoomerOnFloor - EnAnimTbl ; 05 - Zoomer (crawler)
+    .byte EnAnim_Rio - EnAnimTbl ; 06 - Rio (swoopers)
+    .byte EnAnim_ZebRestingFacingRight - EnAnimTbl ; 07 - Zeb
+    .byte EnAnim_KraidFacingRight - EnAnimTbl ; 08 - Kraid (crashes due to bug)
+    .byte EnAnim_KraidLintFacingRight - EnAnimTbl ; 09 - Kraid's lint (crashes)
+    .byte EnAnim_KraidNailIdleFacingRight - EnAnimTbl ; 0A - Kraid's nail (crashes)
+    .byte EnAnim_Mellow - EnAnimTbl ; 0B - Null pointers (hard crash)
+    .byte EnAnim_Mellow - EnAnimTbl ; 0C - Null
+    .byte $00 ; 0D - Null
+    .byte $00 ; 0E - Null
+    .byte $00 ; 0F - Null
 
 ; ResetAnimIndex table for active enemy
 EnemyActiveAnimIndex:
-    .byte EnAnim_SidehopperFloorIdle - EnAnimTbl, EnAnim_SidehopperFloorIdle - EnAnimTbl ; 00 - Sidehopper (unused)
-    .byte EnAnim_SidehopperCeilingIdle - EnAnimTbl, EnAnim_SidehopperCeilingIdle - EnAnimTbl ; 01 - Ceiling sidehopper (unused)
-    .byte EnAnim_Waver0FacingRight - EnAnimTbl, EnAnim_Waver0FacingLeft - EnAnimTbl ; 02 - Waver
-    .byte EnAnim_RipperFacingRight - EnAnimTbl, EnAnim_RipperFacingLeft - EnAnimTbl ; 03 - Ripper
-    .byte EnAnim_Skree - EnAnimTbl, EnAnim_Skree - EnAnimTbl ; 04 - Skree
-    .byte EnAnim_ZoomerOnFloor - EnAnimTbl, EnAnim_ZoomerOnFloor - EnAnimTbl ; 05 - Zoomer (crawler)
-    .byte EnAnim_Rio - EnAnimTbl, EnAnim_Rio - EnAnimTbl ; 06 - Rio (swoopers)
-    .byte EnAnim_ZebFacingRight - EnAnimTbl, EnAnim_ZebFacingLeft - EnAnimTbl ; 07 - Zeb
-    .byte EnAnim_KraidFacingRight - EnAnimTbl, EnAnim_KraidFacingLeft - EnAnimTbl ; 08 - Kraid (crashes due to bug)
-    .byte EnAnim_KraidLintFacingRight - EnAnimTbl, EnAnim_KraidLintFacingLeft - EnAnimTbl ; 09 - Kraid's lint (crashes)
-    .byte EnAnim_KraidNailMovingFacingRight - EnAnimTbl, EnAnim_KraidNailMovingFacingLeft - EnAnimTbl ; 0A - Kraid's nail (crashes)
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl ; 0B - Null pointers (hard crash)
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl ; 0C - Null
-    .byte $00, $00 ; 0D - Null
-    .byte $00, $00 ; 0E - Null
-    .byte $00, $00 ; 0F - Null
+    .byte EnAnim_SidehopperFloorIdle - EnAnimTbl ; 00 - Sidehopper (unused)
+    .byte EnAnim_SidehopperCeilingIdle - EnAnimTbl ; 01 - Ceiling sidehopper (unused)
+    .byte EnAnim_Waver0FacingRight - EnAnimTbl ; 02 - Waver
+    .byte EnAnim_RipperFacingRight - EnAnimTbl ; 03 - Ripper
+    .byte EnAnim_Skree - EnAnimTbl ; 04 - Skree
+    .byte EnAnim_ZoomerOnFloor - EnAnimTbl ; 05 - Zoomer (crawler)
+    .byte EnAnim_Rio - EnAnimTbl ; 06 - Rio (swoopers)
+    .byte EnAnim_ZebFacingRight - EnAnimTbl ; 07 - Zeb
+    .byte EnAnim_KraidFacingRight - EnAnimTbl ; 08 - Kraid (crashes due to bug)
+    .byte EnAnim_KraidLintFacingRight - EnAnimTbl ; 09 - Kraid's lint (crashes)
+    .byte EnAnim_KraidNailMovingFacingRight - EnAnimTbl ; 0A - Kraid's nail (crashes)
+    .byte EnAnim_Mellow - EnAnimTbl ; 0B - Null pointers (hard crash)
+    .byte EnAnim_Mellow - EnAnimTbl ; 0C - Null
+    .byte $00 ; 0D - Null
+    .byte $00 ; 0E - Null
+    .byte $00 ; 0F - Null
 
 ;another animation related table
 L967B:
@@ -316,16 +323,17 @@ L967B:
 ; Bits 0-4 are used when bit 5 is set
 ; Bit 4: don't do normal enemy touch Samus reaction, let the AI do a custom touch reaction
 ; Bits 2-3: Was: #%00,#%01=normal enemy hit sound, #%10=big enemy hit sound, #%11=metroid hit sound
+; Bit 2: enemy doesn't automatically flip based on bit 1 of EnData05
 ; Bit 1: force enemy speed to point towards samus
 ; Bit 0: can drop big energy
 L968B:
-    .byte %00000001 ; 00 - Sidehopper (unused)
-    .byte %00000001 ; 01 - Ceiling sidehopper (unused)
+    .byte %00000101 ; 00 - Sidehopper (unused)
+    .byte %00000101 ; 01 - Ceiling sidehopper (unused)
     .byte %00000001 ; 02 - Waver
     .byte %00000000 ; 03 - Ripper
     .byte %10000110 ; 04 - Skree
     .byte %00000100 ; 05 - Zoomer (crawler)
-    .byte %10001001 ; 06 - Rio (swoopers)
+    .byte %10000101 ; 06 - Rio (swoopers)
     .byte %10000000 ; 07 - Zeb
     .byte %10000001 ; 08 - Kraid (crashes due to bug)
     .byte %00000000 ; 09 - Kraid's lint (crashes)

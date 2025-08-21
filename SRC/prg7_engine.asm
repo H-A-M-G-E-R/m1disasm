@@ -4760,7 +4760,7 @@ LDCFC:
     sec
     sbc ($01),y
     bcs +
-        lda #_id_EnFrame_SmallEnergyPickup.b
+        lda AreaSmallEnergyPickupAnimFrame
         sta EnsExtra.0.animFrame,x
         rts
     +
@@ -4768,7 +4768,7 @@ LDCFC:
     iny
     sbc ($01),y
     bcs +
-        lda #_id_EnFrame_BigEnergyPickup.b
+        lda AreaBigEnergyPickupAnimFrame
         sta EnsExtra.0.animFrame,x
         rts
     +
@@ -4779,7 +4779,7 @@ LDCFC:
         ; fail if Samus missile capacity is 0
         lda MaxMissiles
         beq LDD5B
-        lda #_id_EnFrame_MissilePickup.b
+        lda AreaMissilePickupAnimFrame
         sta EnsExtra.0.animFrame,x
         rts
 
@@ -7253,6 +7253,7 @@ LEB4D:
     ; Flag enemy init
     lda #$00
     sta EnsExtra.0.pose,x
+    sta EnsExtra2.0.props2F,x
     sta EnIsHit,x
     jsr GetNameTableAtScrollDir       ;($EB85)Get name table to place enemy on.
     sta EnsExtra.0.hi,x               ;Store name table.
@@ -8725,6 +8726,7 @@ UpdateEnemy_Resting: ;($F3BE)
         jsr UpdateEnemy_ForceSpeedTowardsSamus
         jsr UpdateEnemy_EnData05DistanceToSamusThreshold
         jsr InitEnRestingAnimIndex
+        jsr EnemyUpdateFlipIfBit2Of968BClear
         jsr UpdateEnemy_Resting_UpdateEnData1F
 
         ; branch if delay is zero
@@ -8757,6 +8759,7 @@ UpdateEnemy_Active_BranchA: ; LF401
     jsr UpdateEnemy_ForceSpeedTowardsSamus
     jsr UpdateEnemy_EnData05DistanceToSamusThreshold
     jsr RemoveEnemyIfItIsInLava
+    jsr EnemyUpdateFlipIfBit2Of968BClear
 UpdateEnemy_Active_BranchB: ; LF40A
     jsr EnemyReactToSamusWeapon
 UpdateEnemy_Explode:
@@ -8794,6 +8797,10 @@ LF423:
 Lx301:
     lda EnsExtra.0.status,x
     beq LF42D
+        lda EnsExtra2.0.props2F,x
+        and #$40
+        eor ObjectCntrl
+        sta ObjectCntrl
         jsr DrawEnemy
     LF42D:
     ldx PageIndex
@@ -9132,7 +9139,7 @@ ExplodeEnemy:
     jsr LDCFC
     ldx PageIndex
 Lx327:
-    jsr GetEnemyTypeTimes2PlusFacingDirection
+    ldy EnsExtra.0.type,x
     lda EnemyDeathAnimIndex,y
     jsr InitEnAnimIndex
     sta EnSpeedSubPixelY,x
@@ -9199,7 +9206,7 @@ UpdateEnemy_Resting_UpdateEnData1F:
     rts
 
 InitEnRestingAnimIndex:
-    jsr GetEnemyTypeTimes2PlusFacingDirection
+    ldy EnsExtra.0.type,x
     lda EnemyRestingAnimIndex,y
     cmp EnsExtra.0.resetAnimIndex,x
     beq RTS_X331
@@ -9216,7 +9223,7 @@ RTS_X331:
 
 InitEnActiveAnimIndex:
     ; exit if enemy anim is already the same as from EnemyActiveAnimIndex
-    jsr GetEnemyTypeTimes2PlusFacingDirection
+    ldy EnsExtra.0.type,x
     lda EnemyActiveAnimIndex,y
     cmp EnsExtra.0.resetAnimIndex,x
     beq Exit12
@@ -10101,6 +10108,7 @@ UpdatePipeBugHole:
     ; Flag enemy init
     lda #$00
     sta EnsExtra.0.pose,x
+    sta EnsExtra2.0.props2F,x
     ; set status to resting
     lda #enemyStatus_Resting ; #$01
     sta EnDelay,x
@@ -10137,9 +10145,8 @@ Exit13:
 ; Wavers, too?
 EnemyFlipAfterDisplacement:
 CommonJump_EnemyFlipAfterDisplacement:
-    ; load (enemy type * 2 + horizontal facing direction) into y
     ldx PageIndex
-    jsr GetEnemyTypeTimes2PlusFacingDirection
+    ldy EnsExtra.0.type,x
     
     lda EnsExtra.0.jumpDsplcmnt,x
     ; branch if EnData1F is not zero
@@ -10166,12 +10173,8 @@ CommonJump_EnemyFlipAfterDisplacement:
         cmp #$10
         bcs Exit13
         ; displacement is between 8 and 15 pixels inclusive
-        ; set y to horizontal facing direction
-        tya
-        and #$01
-        tay
         ; exit if current enemy animation is the same as the new animation
-        lda EnemyFlipAfterDisplacementAnimIndex,y
+        lda EnemyFlipAfterDisplacementAnimIndex
         cmp EnsExtra.0.resetAnimIndex,x
         beq Exit13
         ; current enemy anim is different, init anim index
@@ -10194,7 +10197,7 @@ CommonJump_InitEnResetAnimIndex:
 LFBCA:
 CommonJump_0A:
     ldx PageIndex
-    jsr GetEnemyTypeTimes2PlusFacingDirection
+    ldy EnsExtra.0.type,x
     lda EnemyActiveAnimIndex,y
     cmp EnsExtra.0.resetAnimIndex,x
     beq Exit13

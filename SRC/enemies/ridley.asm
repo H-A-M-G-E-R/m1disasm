@@ -20,8 +20,6 @@ RidleyBranch_Explode:
 RidleyBranch_Normal:
     lda #EnAnim_RidleyHoppingFacingRight - EnAnimTbl.b
     sta EnemyFlipAfterDisplacementAnimIndex
-    lda #EnAnim_RidleyHoppingFacingLeft - EnAnimTbl.b
-    sta EnemyFlipAfterDisplacementAnimIndex+1.b
     jsr CommonJump_EnemyFlipAfterDisplacement
     jsr RidleyTryToLaunchProjectile
 
@@ -157,6 +155,7 @@ RidleyTryToLaunchProjectile_FoundEnemySlot:
     ; Flag enemy init
     lda #$00
     sta EnsExtra.0.pose,x
+    sta EnsExtra2.0.props2F,x
     ; set projectile's position to its initial position
     jsr LoadEnemyPositionFromTemp_
     jmp CommonJump_0E

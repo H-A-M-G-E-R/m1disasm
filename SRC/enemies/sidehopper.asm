@@ -8,7 +8,6 @@ SidehopperFloorAIRoutine:
     .endif
 Sidehopper_Common:
     sta EnemyFlipAfterDisplacementAnimIndex
-    sta EnemyFlipAfterDisplacementAnimIndex+1.b
     lda EnsExtra.0.status,x
     cmp #enemyStatus_Explode
     beq CommonEnemyStub2
