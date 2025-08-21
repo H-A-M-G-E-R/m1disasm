@@ -143,9 +143,9 @@ SaveSamusPos:
     lda InArea
     sta SaveArea
 
-    lda SamusMapPosX
+    lda MapPosX
     sta SaveSamusMapX
-    lda SamusMapPosY
+    lda MapPosY
     sta SaveSamusMapY
 
     jsr GetNameTableAtScrollDir

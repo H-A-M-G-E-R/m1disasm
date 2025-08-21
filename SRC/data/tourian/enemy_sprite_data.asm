@@ -5,42 +5,42 @@ EnAnim_00:
     .byte _id_EnFrame00, _id_EnFrame01, $FF
 
 EnAnim_FireballKilled:
-    .byte _id_EnFrame02, $FF
+    .byte _id_EnFrame_FireballKilled, $FF
 
-EnAnim_05:
-    .byte _id_EnFrame03, _id_EnFrame04, $FF
+EnAnim_Metroid:
+    .byte _id_EnFrame_Metroid0, _id_EnFrame_Metroid1, $FF
 
-EnAnim_08:
-    .byte _id_EnFrame05, $FF
+EnAnim_MetroidExplode:
+    .byte _id_EnFrame_MetroidExplode, $FF
 
-EnAnim_0A:
-    .byte _id_EnFrame0E, $FF
+EnAnim_CannonBulletDownLeft:
+    .byte _id_EnFrame_CannonBulletDownLeft, $FF
 
-EnAnim_0C:
-    .byte _id_EnFrame0F, $FF
+EnAnim_CannonBulletDownRight:
+    .byte _id_EnFrame_CannonBulletDownRight, $FF
 
-EnAnim_0E:
-    .byte _id_EnFrame10, $FF
+EnAnim_CannonBulletDown:
+    .byte _id_EnFrame_CannonBulletDown, $FF
 
-EnAnim_10:
-    .byte _id_EnFrame11, _id_EnFrame11, _id_EnFrame12, _id_EnFrame12, $F7, $FF
+EnAnim_CannonBulletExplode:
+    .byte _id_EnFrame_CannonBulletExplode0, _id_EnFrame_CannonBulletExplode0, _id_EnFrame_CannonBulletExplode1, _id_EnFrame_CannonBulletExplode1, $F7, $FF
 
 EnAnim_16:
     .byte _id_EnFrame18, $FF
 
 EnAnim_18:
-    .byte _id_EnFrame19, $F7, $FF
+    .byte _id_EnFrame_CannonTimeBombSet, $F7, $FF
 
-EnAnim_1B:
-    .byte _id_EnFrame1B, _id_EnFrame1C
-EnAnim_1D:
-    .byte _id_EnFrame1D, $FF
+EnAnim_RinkaSpawning:
+    .byte _id_EnFrame_RinkaSpawning0, _id_EnFrame_RinkaSpawning1
+EnAnim_Rinka:
+    .byte _id_EnFrame_Rinka, $FF
 
-EnAnim_1F:
-    .byte _id_EnFrame1E, $FF
+EnAnim_RinkaExplode:
+    .byte _id_EnFrame_RinkaExplode, $FF
 
-EnAnim_21:
-    .byte _id_EnFrame61, $F7, _id_EnFrame62, $F7, $FF
+EnAnim_Explosion:
+    .byte _id_EnFrame_Explosion0, $F7, _id_EnFrame_Explosion1, $F7, $FF
 
 EnAnim_26:
     ;nothing
@@ -50,35 +50,35 @@ EnAnim_26:
 EnFramePtrTable1:
     PtrTableEntry EnFramePtrTable1, EnFrame00
     PtrTableEntry EnFramePtrTable1, EnFrame01
-    PtrTableEntry EnFramePtrTable1, EnFrame02
-    PtrTableEntry EnFramePtrTable1, EnFrame03
-    PtrTableEntry EnFramePtrTable1, EnFrame04
-    PtrTableEntry EnFramePtrTable1, EnFrame05
-    PtrTableEntry EnFramePtrTable1, EnFrame06
-    PtrTableEntry EnFramePtrTable1, EnFrame07
-    PtrTableEntry EnFramePtrTable1, EnFrame08
-    PtrTableEntry EnFramePtrTable1, EnFrame09
-    PtrTableEntry EnFramePtrTable1, EnFrame0A
-    PtrTableEntry EnFramePtrTable1, EnFrame0B
-    PtrTableEntry EnFramePtrTable1, EnFrame0C
-    PtrTableEntry EnFramePtrTable1, EnFrame0D
-    PtrTableEntry EnFramePtrTable1, EnFrame0E
-    PtrTableEntry EnFramePtrTable1, EnFrame0F
-    PtrTableEntry EnFramePtrTable1, EnFrame10
-    PtrTableEntry EnFramePtrTable1, EnFrame11
-    PtrTableEntry EnFramePtrTable1, EnFrame12
-    PtrTableEntry EnFramePtrTable1, EnFrame13
-    PtrTableEntry EnFramePtrTable1, EnFrame14
-    PtrTableEntry EnFramePtrTable1, EnFrame15
-    PtrTableEntry EnFramePtrTable1, EnFrame16
-    PtrTableEntry EnFramePtrTable1, EnFrame17
+    PtrTableEntry EnFramePtrTable1, EnFrame_FireballKilled
+    PtrTableEntry EnFramePtrTable1, EnFrame_Metroid0
+    PtrTableEntry EnFramePtrTable1, EnFrame_Metroid1
+    PtrTableEntry EnFramePtrTable1, EnFrame_MetroidExplode
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonUp
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonUpLeft
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonLeft
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonDownLeft
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonDown
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonDownRight
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonRight
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonUpRight
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonBulletDownLeft
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonBulletDownRight
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonBulletDown
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonBulletExplode0
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonBulletExplode1
+    PtrTableEntry EnFramePtrTable1, EnFrame_MotherBrainPulsations0
+    PtrTableEntry EnFramePtrTable1, EnFrame_MotherBrainPulsations1
+    PtrTableEntry EnFramePtrTable1, EnFrame_MotherBrainPulsations2
+    PtrTableEntry EnFramePtrTable1, EnFrame_MotherBrainPulsations3
+    PtrTableEntry EnFramePtrTable1, EnFrame_MotherBrainEyes
     PtrTableEntry EnFramePtrTable1, EnFrame18
-    PtrTableEntry EnFramePtrTable1, EnFrame19
+    PtrTableEntry EnFramePtrTable1, EnFrame_CannonTimeBombSet
     PtrTableEntry EnFramePtrTable1, EnFrame1A
-    PtrTableEntry EnFramePtrTable1, EnFrame1B
-    PtrTableEntry EnFramePtrTable1, EnFrame1C
-    PtrTableEntry EnFramePtrTable1, EnFrame1D
-    PtrTableEntry EnFramePtrTable1, EnFrame1E
+    PtrTableEntry EnFramePtrTable1, EnFrame_RinkaSpawning0
+    PtrTableEntry EnFramePtrTable1, EnFrame_RinkaSpawning1
+    PtrTableEntry EnFramePtrTable1, EnFrame_Rinka
+    PtrTableEntry EnFramePtrTable1, EnFrame_RinkaExplode
     PtrTableEntry EnFramePtrTable1, EnFrame1F
     PtrTableEntry EnFramePtrTable1, EnFrame20
     PtrTableEntry EnFramePtrTable1, EnFrame21
@@ -145,8 +145,8 @@ EnFramePtrTable1:
     PtrTableEntry EnFramePtrTable1, EnFrame5E
     PtrTableEntry EnFramePtrTable1, EnFrame5F
     PtrTableEntry EnFramePtrTable1, EnFrame60
-    PtrTableEntry EnFramePtrTable1, EnFrame61
-    PtrTableEntry EnFramePtrTable1, EnFrame62
+    PtrTableEntry EnFramePtrTable1, EnFrame_Explosion0
+    PtrTableEntry EnFramePtrTable1, EnFrame_Explosion1
     PtrTableEntry EnFramePtrTable1, EnFrame63
     PtrTableEntry EnFramePtrTable1, EnFrame64
     PtrTableEntry EnFramePtrTable1, EnFrame65
@@ -176,8 +176,8 @@ EnFramePtrTable1:
     PtrTableEntry EnFramePtrTable1, EnFrame7D
     PtrTableEntry EnFramePtrTable1, EnFrame7E
     PtrTableEntry EnFramePtrTable1, EnFrame7F
-    PtrTableEntry EnFramePtrTable1, EnFrame80
-    PtrTableEntry EnFramePtrTable1, EnFrame81
+    PtrTableEntry EnFramePtrTable1, EnFrame_MissilePickup
+    PtrTableEntry EnFramePtrTable1, EnFrame_SmallEnergyPickup
     PtrTableEntry EnFramePtrTable1, EnFrame82
     PtrTableEntry EnFramePtrTable1, EnFrame83
     PtrTableEntry EnFramePtrTable1, EnFrame84
@@ -185,7 +185,7 @@ EnFramePtrTable1:
     PtrTableEntry EnFramePtrTable1, EnFrame86
     PtrTableEntry EnFramePtrTable1, EnFrame87
     PtrTableEntry EnFramePtrTable1, EnFrame88
-    PtrTableEntry EnFramePtrTable1, EnFrame89
+    PtrTableEntry EnFramePtrTable1, EnFrame_BigEnergyPickup
 
 ;Enemy frame drawing data.
 
@@ -199,12 +199,12 @@ EnFrame01:
     .byte $FC,$24,$20,$FC
     .byte $80
 
-EnFrame02:
+EnFrame_FireballKilled:
     .byte $00,$00
     .byte $FC,$07+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
-EnFrame03:
+EnFrame_Metroid0:
     .byte $0C,$0C
     .byte $F4,$C0,$23,$F4
     .byte $F4,$C1,$23,$FC
@@ -217,7 +217,7 @@ EnFrame03:
     .byte $04,$E2,$23,$04
     .byte $80
 
-EnFrame04:
+EnFrame_Metroid1:
     .byte $0C,$0C
     .byte $F4,$C3,$23,$F4
     .byte $F4,$C4,$23,$FC
@@ -230,7 +230,7 @@ EnFrame04:
     .byte $04,$E5,$23,$04
     .byte $80
 
-EnFrame05:
+EnFrame_MetroidExplode:
     .byte $80,$00
     .byte $00,$F4,$C0,$23,$F8
     .byte $01,$F4,$C2,$23,$00
@@ -240,67 +240,67 @@ EnFrame05:
     .byte $05,$04,$E2,$23,$00
     .byte $80
 
-EnFrame06:
+EnFrame_CannonUp:
     .byte $07,$07
     .byte $F1,$EA,$22,$FC
     .byte $80
 
-EnFrame07:
+EnFrame_CannonUpLeft:
     .byte $07,$07
     .byte $F3,$EB,$22,$F3
     .byte $80
 
-EnFrame08:
+EnFrame_CannonLeft:
     .byte $07,$07
     .byte $FC,$EC,$22,$F1
     .byte $80
 
-EnFrame09:
+EnFrame_CannonDownLeft:
     .byte $07,$07
     .byte $05,$EB,$A2,$F3
     .byte $80
 
-EnFrame0A:
+EnFrame_CannonDown:
     .byte $07,$07
     .byte $07,$EA,$A2,$FC
     .byte $80
 
-EnFrame0B:
+EnFrame_CannonDownRight:
     .byte $07,$07
     .byte $05,$EB,$E2,$05
     .byte $80
 
-EnFrame0C:
+EnFrame_CannonRight:
     .byte $07,$07
     .byte $FC,$EC,$62,$07
     .byte $80
 
-EnFrame0D:
+EnFrame_CannonUpRight:
     .byte $07,$07
     .byte $F3,$EB,$62,$05
     .byte $80
 
-EnFrame0E:
+EnFrame_CannonBulletDownLeft:
     .byte $04,$04
     .byte $FC,$F1,$23,$FC
     .byte $80
 
-EnFrame0F:
+EnFrame_CannonBulletDownRight:
     .byte $04,$04
     .byte $FC,$F1,$63,$FC
     .byte $80
 
-EnFrame10:
+EnFrame_CannonBulletDown:
     .byte $04,$04
     .byte $FC,$F2,$23,$FC
     .byte $80
 
-EnFrame11:
+EnFrame_CannonBulletExplode0:
     .byte $00,$00
     .byte $FC,$F3,$03,$FC
     .byte $80
 
-EnFrame12:
+EnFrame_CannonBulletExplode1:
     .byte $00,$00
     .byte $F8,$F4,$00,$F8
     .byte $F8,$F4,$40,$00
@@ -308,7 +308,7 @@ EnFrame12:
     .byte $00,$F4,$C0,$00
     .byte $80
 
-EnFrame13:
+EnFrame_MotherBrainPulsations0:
     .byte $08,$14
     .byte $F8,$D8,$02,$E8
     .byte $F8,$D9,$02,$F0
@@ -317,13 +317,13 @@ EnFrame13:
     .byte $08,$F8,$02,$E8
     .byte $80
 
-EnFrame14:
+EnFrame_MotherBrainPulsations1:
     .byte $14,$0C
     .byte $E8,$DA,$02,$F0
     .byte $F0,$C9,$02,$F0
     .byte $80
 
-EnFrame15:
+EnFrame_MotherBrainPulsations2:
     .byte $20,$04
     .byte $E0,$CB,$02,$F8
     .byte $E0,$CC,$02,$00
@@ -331,7 +331,7 @@ EnFrame15:
     .byte $E8,$DC,$02,$00
     .byte $80
 
-EnFrame16:
+EnFrame_MotherBrainPulsations3:
     .byte $18,$14
     .byte $E8,$DD,$02,$08
     .byte $E8,$CE,$02,$10
@@ -339,7 +339,7 @@ EnFrame16:
     .byte $F8,$DD,$02,$10
     .byte $80
 
-EnFrame17:
+EnFrame_MotherBrainEyes:
     .byte $08,$0C
     .byte $00,$CD,$02,$08
     .byte $80
@@ -354,7 +354,7 @@ EnFrame18:
     .byte $F4,$F5,$22,$F8
     .byte $80
 
-EnFrame19:
+EnFrame_CannonTimeBombSet:
     .byte $00,$00
     .byte $FC,$ED,$03,$FC
     .byte $80
@@ -366,7 +366,7 @@ EnFrame1A:
     .byte $FC,$00,$00,$04
     .byte $80
 
-EnFrame1B:
+EnFrame_RinkaSpawning0:
     .byte $08,$08
     .byte $F8,$EF,$03,$F8
     .byte $F8,$EF,$43,$00
@@ -374,7 +374,7 @@ EnFrame1B:
     .byte $00,$EF,$C3,$00
     .byte $80
 
-EnFrame1C:
+EnFrame_RinkaSpawning1:
     .byte $08,$08
     .byte $F8,$DF,$03,$F8
     .byte $F8,$DF,$43,$00
@@ -382,7 +382,7 @@ EnFrame1C:
     .byte $00,$DF,$C3,$00
     .byte $80
 
-EnFrame1D:
+EnFrame_Rinka:
     .byte $08,$08
     .byte $F8,$CF,$03,$F8
     .byte $F8,$CF,$43,$00
@@ -390,7 +390,7 @@ EnFrame1D:
     .byte $00,$CF,$C3,$00
     .byte $80
 
-EnFrame1E:
+EnFrame_RinkaExplode:
     .byte $00,$00
     .byte $80
 
@@ -460,7 +460,7 @@ EnFrame5D:
 EnFrame5E:
 EnFrame5F:
 EnFrame60:
-EnFrame61:
+EnFrame_Explosion0:
     .byte $00,$00
     .byte $F8,$0F+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $F8,$0F+CFG_NUM_SAMUS_TILES,$60,$00
@@ -468,7 +468,7 @@ EnFrame61:
     .byte $00,$0F+CFG_NUM_SAMUS_TILES,$E0,$00
     .byte $80
 
-EnFrame62:
+EnFrame_Explosion1:
     .byte $00,$00
     .byte $F0,$11+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $F0,$12+CFG_NUM_SAMUS_TILES,$20,$08
@@ -513,13 +513,13 @@ EnFrame7C:
 EnFrame7D:
 EnFrame7E:
 EnFrame7F:
-EnFrame80:
+EnFrame_MissilePickup:
     .byte $08,$04
     .byte $F8,$04+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $00,$05+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
-EnFrame81:
+EnFrame_SmallEnergyPickup:
     .byte $04,$04
     .byte $FC,$18+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
@@ -531,7 +531,7 @@ EnFrame85:
 EnFrame86:
 EnFrame87:
 EnFrame88:
-EnFrame89:
+EnFrame_BigEnergyPickup:
     .byte $04,$04
     .byte $FC,$18+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80

@@ -13,132 +13,132 @@ ObjectAnimIndexTbl:
 
 ;Samus run animation.
 ObjAnim_SamusRun: ;$00
-    .byte _id_ObjFrame03, _id_ObjFrame04, _id_ObjFrame05, $FF
+    .byte _id_ObjFrame_SamusRun0, _id_ObjFrame_SamusRun1, _id_ObjFrame_SamusRun2, $FF
 
 ;Samus front animation.
 ObjAnim_SamusFront: ;$04
-    .byte _id_ObjFrame07, $FF
+    .byte _id_ObjFrame_SamusFront, $FF
 
 ;Samus jump out of ball animation.
 ObjAnim_SamusUnroll: ;$06
-    .byte _id_ObjFrame17
+    .byte _id_ObjFrame_SamusSalto0
 ;Samus Stand animation.
 ObjAnim_SamusStand: ;$07
-    .byte _id_ObjFrame08, $FF
+    .byte _id_ObjFrame_SamusStand, $FF
 
 ;Samus stand and fire animation.
 ObjAnim_SamusStandFire: ;$09
-    .byte _id_ObjFrame22, $FF
+    .byte _id_ObjFrame_SamusStandFire, $FF
 
 ;Samus stand and jump animation.
 ObjAnim_SamusJumpTransition: ;$0B
-    .byte _id_ObjFrame04
+    .byte _id_ObjFrame_SamusRun1
 ;Samus Jump animation.
 ObjAnim_SamusJump: ;$0C
-    .byte _id_ObjFrame10, $FF
+    .byte _id_ObjFrame_SamusJump, $FF
 
 ;Samus somersault animation.
 ObjAnim_SamusSalto: ;$0E
-    .byte _id_ObjFrame17, _id_ObjFrame18, _id_ObjFrame19, _id_ObjFrame1A, $FF
+    .byte _id_ObjFrame_SamusSalto0, _id_ObjFrame_SamusSalto1, _id_ObjFrame_SamusSalto2, _id_ObjFrame_SamusSalto3, $FF
 
 ;Samus run and jump animation.
 ObjAnim_SamusRunJump: ;$13
-    .byte _id_ObjFrame03, _id_ObjFrame17, $FF
+    .byte _id_ObjFrame_SamusRun0, _id_ObjFrame_SamusSalto0, $FF
 
 ;Samus roll animation.
 ObjAnim_SamusRoll: ;$16
-    .byte _id_ObjFrame1E, _id_ObjFrame1D, _id_ObjFrame1C, _id_ObjFrame1B, $FF
+    .byte _id_ObjFrame_SamusRoll0, _id_ObjFrame_SamusRoll1, _id_ObjFrame_SamusRoll2, _id_ObjFrame_SamusRoll3, $FF
 
 ;Bullet animation.
 ObjAnim_RegularBullet: ;$1B
-    .byte _id_ObjFrame28, $FF
+    .byte _id_ObjFrame_RegularBullet, $FF
 
 ;Bullet hit animation.
 ObjAnim_BulletHit: ;$1D
-    .byte _id_ObjFrame2A, _id_ObjFrame2A, _id_ObjFrame2A, $F7, $FF
+    .byte _id_ObjFrame_BulletHit, _id_ObjFrame_BulletHit, _id_ObjFrame_BulletHit, $F7, $FF
 
 ;Samus jump and fire animation.
 ObjAnim_SamusJumpFire: ;$20
-    .byte _id_ObjFrame12, $FF
+    .byte _id_ObjFrame_SamusJumpFire, $FF
 
 ;Samus run and fire animation.
 ObjAnim_SamusRunFire: ;$22
-    .byte _id_ObjFrame0C, _id_ObjFrame0D, _id_ObjFrame0E, $FF
+    .byte _id_ObjFrame_SamusRunFire0, _id_ObjFrame_SamusRunFire1, _id_ObjFrame_SamusRunFire2, $FF
 
 ;Samus point up and shoot animation.
 ObjAnim_SamusPntUpFire: ;$26
-    .byte _id_ObjFrame30
+    .byte _id_ObjFrame_SamusPntUpFire
 ;Samus point up animation.
 ObjAnim_SamusPntUp: ;$27
-    .byte _id_ObjFrame2B, $FF
+    .byte _id_ObjFrame_SamusPntUp, $FF
 
 ;Door open animation.
 ObjAnim_DoorOpen: ;$29
-    .byte _id_ObjFrame31, _id_ObjFrame31, _id_ObjFrame33
+    .byte _id_ObjFrame_DoorClosed, _id_ObjFrame_DoorClosed, _id_ObjFrame_DoorOpenClose
 ObjAnim_DoorOpen_Reset: ;$2C
     .byte _id_ObjFrame_DoorOpened, $FF
 
 ;Door close animation.
 ObjAnim_DoorClose: ;$2E
-    .byte _id_ObjFrame33, _id_ObjFrame33
+    .byte _id_ObjFrame_DoorOpenClose, _id_ObjFrame_DoorOpenClose
 ObjAnim_DoorClose_Reset: ;$30
-    .byte _id_ObjFrame31, $FF
+    .byte _id_ObjFrame_DoorClosed, $FF
 
 ;Samus explode animation.
 ObjAnim_SamusExplode: ;$32
-    .byte _id_ObjFrame35, $FF
+    .byte _id_ObjFrame_SamusExplode, $FF
 
 ;Samus jump and point up animation.
 ObjAnim_SamusJumpPntUpFire: ;$34
-    .byte _id_ObjFrame39, $FF
+    .byte _id_ObjFrame_SamusJumpPntUpFire, $FF
 ObjAnim_SamusJumpPntUpTransition:
-    .byte _id_ObjFrame41
+    .byte _id_ObjFrame_SamusRunPntUp1
 ObjAnim_SamusJumpPntUp: ;$35
-    .byte _id_ObjFrame38, $FF
+    .byte _id_ObjFrame_SamusJumpPntUp, $FF
 
 ;Samus run and point up animation.
 ObjAnim_SamusRunPntUp: ;$37
-    .byte _id_ObjFrame40, _id_ObjFrame41, _id_ObjFrame42, $FF
+    .byte _id_ObjFrame_SamusRunPntUp0, _id_ObjFrame_SamusRunPntUp1, _id_ObjFrame_SamusRunPntUp2, $FF
 
 ;Samus run, point up and shoot animation 1.
 ObjAnim_SamusRunPntUpFire1: ;$3B
-    .byte _id_ObjFrame46, $FF
+    .byte _id_ObjFrame_SamusRunPntUpFire0, $FF
 
 ;Samus run, point up and shoot animation 2.
 ObjAnim_SamusRunPntUpFire2: ;$3D
-    .byte _id_ObjFrame47, $FF
+    .byte _id_ObjFrame_SamusRunPntUpFire1, $FF
 
 ;Samus run, point up and shoot animation 3.
 ObjAnim_SamusRunPntUpFire3: ;$3F
-    .byte _id_ObjFrame48, $FF
+    .byte _id_ObjFrame_SamusRunPntUpFire2, $FF
 
 ;Wave beam animation.
 ObjAnim_WaveBeam: ;$7D
-    .byte _id_ObjFrame4B, $FF
+    .byte _id_ObjFrame_WaveBeam, $FF
 
 ;Bomb tick animation.
 ObjAnim_BombTick: ;$7F
-    .byte _id_ObjFrame4E, _id_ObjFrame4F, $FF
+    .byte _id_ObjFrame_Bomb0, _id_ObjFrame_Bomb1, $FF
 
 ;Bomb explode animation.
 ObjAnim_BombExplode: ;$82
-    .byte _id_ObjFrame3C, _id_ObjFrame4A, _id_ObjFrame49, _id_ObjFrame4A, _id_ObjFrame4D, _id_ObjFrame4A, _id_ObjFrame4D, $F7, $FF
+    .byte _id_ObjFrame_BombExplode0, _id_ObjFrame_BombExplodeBlank, _id_ObjFrame_BombExplode1, _id_ObjFrame_BombExplodeBlank, _id_ObjFrame_BombExplode2, _id_ObjFrame_BombExplodeBlank, _id_ObjFrame_BombExplode2, $F7, $FF
 
 ;Missile left animation.
 ObjAnim_MissileLeft: ;$8B
-    .byte _id_ObjFrame26, $FF
+    .byte _id_ObjFrame_MissileLeft, $FF
 
 ;Missile right animation.
 ObjAnim_MissileRight: ;$8D
-    .byte _id_ObjFrame25, $FF
+    .byte _id_ObjFrame_MissileRight, $FF
 
 ;Missile up animation.
 ObjAnim_MissileUp: ;$8F
-    .byte _id_ObjFrame27, $FF
+    .byte _id_ObjFrame_MissileUp, $FF
 
 ;Missile explode animation.
 ObjAnim_MissileExplode: ;$91
-    .byte _id_ObjFrame67, _id_ObjFrame67, _id_ObjFrame67, _id_ObjFrame68, _id_ObjFrame68, _id_ObjFrame69, $F7, $FF
+    .byte _id_ObjFrame_MissileExplode0, _id_ObjFrame_MissileExplode0, _id_ObjFrame_MissileExplode0, _id_ObjFrame_MissileExplode1, _id_ObjFrame_MissileExplode1, _id_ObjFrame_MissileExplode2, $F7, $FF
 
 ;Ice bullet animation.
 ObjAnim_IceBullet:
@@ -161,73 +161,73 @@ ObjAnim_SamusSpider:
 ;The above animation pointers provide an index into the following table
 ;for the animation sequences.
 ObjFramePtrTable:
-    PtrTableEntry ObjFramePtrTable, ObjFrame03
-    PtrTableEntry ObjFramePtrTable, ObjFrame04
-    PtrTableEntry ObjFramePtrTable, ObjFrame05
-    PtrTableEntry ObjFramePtrTable, ObjFrame07
-    PtrTableEntry ObjFramePtrTable, ObjFrame08
-    PtrTableEntry ObjFramePtrTable, ObjFrame0C
-    PtrTableEntry ObjFramePtrTable, ObjFrame0D
-    PtrTableEntry ObjFramePtrTable, ObjFrame0E
-    PtrTableEntry ObjFramePtrTable, ObjFrame10
-    PtrTableEntry ObjFramePtrTable, ObjFrame12
-    PtrTableEntry ObjFramePtrTable, ObjFrame17
-    PtrTableEntry ObjFramePtrTable, ObjFrame18
-    PtrTableEntry ObjFramePtrTable, ObjFrame19
-    PtrTableEntry ObjFramePtrTable, ObjFrame1A
-    PtrTableEntry ObjFramePtrTable, ObjFrame1B
-    PtrTableEntry ObjFramePtrTable, ObjFrame1C
-    PtrTableEntry ObjFramePtrTable, ObjFrame1D
-    PtrTableEntry ObjFramePtrTable, ObjFrame1E
-    PtrTableEntry ObjFramePtrTable, ObjFrame22
-    PtrTableEntry ObjFramePtrTable, ObjFrame23
-    PtrTableEntry ObjFramePtrTable, ObjFrame25
-    PtrTableEntry ObjFramePtrTable, ObjFrame26
-    PtrTableEntry ObjFramePtrTable, ObjFrame27
-    PtrTableEntry ObjFramePtrTable, ObjFrame28
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRun0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRun1
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRun2
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusFront
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusStand
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunFire0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunFire1
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunFire2
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusJump
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusJumpFire
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSalto0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSalto1
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSalto2
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSalto3
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRoll3
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRoll2
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRoll1
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRoll0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusStandFire
+    PtrTableEntry ObjFramePtrTable, ObjFrame_Elevator
+    PtrTableEntry ObjFramePtrTable, ObjFrame_MissileRight
+    PtrTableEntry ObjFramePtrTable, ObjFrame_MissileLeft
+    PtrTableEntry ObjFramePtrTable, ObjFrame_MissileUp
+    PtrTableEntry ObjFramePtrTable, ObjFrame_RegularBullet
     PtrTableEntry ObjFramePtrTable, ObjFrame_IceBulletHit
-    PtrTableEntry ObjFramePtrTable, ObjFrame2A
-    PtrTableEntry ObjFramePtrTable, ObjFrame2B
-    PtrTableEntry ObjFramePtrTable, ObjFrame30
-    PtrTableEntry ObjFramePtrTable, ObjFrame31
-    PtrTableEntry ObjFramePtrTable, ObjFrame33
-    PtrTableEntry ObjFramePtrTable, ObjFrame35
-    PtrTableEntry ObjFramePtrTable, ObjFrame38
-    PtrTableEntry ObjFramePtrTable, ObjFrame39
-    PtrTableEntry ObjFramePtrTable, ObjFrame3C
-    PtrTableEntry ObjFramePtrTable, ObjFrame40
-    PtrTableEntry ObjFramePtrTable, ObjFrame41
-    PtrTableEntry ObjFramePtrTable, ObjFrame42
-    PtrTableEntry ObjFramePtrTable, ObjFrame46
-    PtrTableEntry ObjFramePtrTable, ObjFrame47
-    PtrTableEntry ObjFramePtrTable, ObjFrame48
+    PtrTableEntry ObjFramePtrTable, ObjFrame_BulletHit
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusPntUp
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusPntUpFire
+    PtrTableEntry ObjFramePtrTable, ObjFrame_DoorClosed
+    PtrTableEntry ObjFramePtrTable, ObjFrame_DoorOpenClose
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusExplode
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusJumpPntUp
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusJumpPntUpFire
+    PtrTableEntry ObjFramePtrTable, ObjFrame_BombExplode0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunPntUp0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunPntUp1
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunPntUp2
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunPntUpFire0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunPntUpFire1
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunPntUpFire2
     PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSpider0
     PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSpider1
     PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSpider2
     PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSpider3
-    PtrTableEntry ObjFramePtrTable, ObjFrame49
-    PtrTableEntry ObjFramePtrTable, ObjFrame4A
-    PtrTableEntry ObjFramePtrTable, ObjFrame4B
+    PtrTableEntry ObjFramePtrTable, ObjFrame_BombExplode1
+    PtrTableEntry ObjFramePtrTable, ObjFrame_BombExplodeBlank
+    PtrTableEntry ObjFramePtrTable, ObjFrame_WaveBeam
     PtrTableEntry ObjFramePtrTable, ObjFrame_WaveIceBeam
-    PtrTableEntry ObjFramePtrTable, ObjFrame4D
-    PtrTableEntry ObjFramePtrTable, ObjFrame4E
-    PtrTableEntry ObjFramePtrTable, ObjFrame4F
-    PtrTableEntry ObjFramePtrTable, ObjFrame50
-    PtrTableEntry ObjFramePtrTable, ObjFrame51
-    PtrTableEntry ObjFramePtrTable, ObjFrame52
-    PtrTableEntry ObjFramePtrTable, ObjFrame53
-    PtrTableEntry ObjFramePtrTable, ObjFrame54
-    PtrTableEntry ObjFramePtrTable, ObjFrame55
-    PtrTableEntry ObjFramePtrTable, ObjFrame56
-    PtrTableEntry ObjFramePtrTable, ObjFrame57
-    PtrTableEntry ObjFramePtrTable, ObjFrame58
-    PtrTableEntry ObjFramePtrTable, ObjFrame59
-    PtrTableEntry ObjFramePtrTable, ObjFrame5A
-    PtrTableEntry ObjFramePtrTable, ObjFrame65
-    PtrTableEntry ObjFramePtrTable, ObjFrame66
-    PtrTableEntry ObjFramePtrTable, ObjFrame67
-    PtrTableEntry ObjFramePtrTable, ObjFrame68
-    PtrTableEntry ObjFramePtrTable, ObjFrame69
+    PtrTableEntry ObjFramePtrTable, ObjFrame_BombExplode2
+    PtrTableEntry ObjFramePtrTable, ObjFrame_Bomb0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_Bomb1
+    PtrTableEntry ObjFramePtrTable, ObjFrame_BombItem
+    PtrTableEntry ObjFramePtrTable, ObjFrame_HighJumpItem
+    PtrTableEntry ObjFramePtrTable, ObjFrame_LongBeamItem
+    PtrTableEntry ObjFramePtrTable, ObjFrame_ScrewAttackItem
+    PtrTableEntry ObjFramePtrTable, ObjFrame_MaruMariItem
+    PtrTableEntry ObjFramePtrTable, ObjFrame_VariaSuitItem
+    PtrTableEntry ObjFramePtrTable, ObjFrame_WaveBeamItem
+    PtrTableEntry ObjFramePtrTable, ObjFrame_IceBeamItem
+    PtrTableEntry ObjFramePtrTable, ObjFrame_EnergyTankItem
+    PtrTableEntry ObjFramePtrTable, ObjFrame_MissileItem
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SkreeProjectile
+    PtrTableEntry ObjFramePtrTable, ObjFrame_KraidStatue
+    PtrTableEntry ObjFramePtrTable, ObjFrame_RidleyStatue
+    PtrTableEntry ObjFramePtrTable, ObjFrame_MissileExplode0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_MissileExplode1
+    PtrTableEntry ObjFramePtrTable, ObjFrame_MissileExplode2
     PtrTableEntry ObjFramePtrTable, ObjFrame_IceBullet
     PtrTableEntry ObjFramePtrTable, ObjFrame_DoorOpened
 
@@ -336,7 +336,7 @@ SamusCHRBankTable:
 ;They are then terminated with $80.
 
 ;Samus run.
-ObjFrame03:
+ObjFrame_SamusRun0:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$60,$00
@@ -360,7 +360,7 @@ ObjFrame03:
 .endif
 
 ;Samus run.
-ObjFrame04:
+ObjFrame_SamusRun1:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$60,$00
@@ -388,7 +388,7 @@ ObjFrame04:
 .endif
 
 ;Samus run.
-ObjFrame05:
+ObjFrame_SamusRun2:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$60,$00
@@ -416,7 +416,7 @@ ObjFrame05:
 .endif
 
 ;Samus facing forward.
-ObjFrame07:
+ObjFrame_SamusFront:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$20,$F8
@@ -442,7 +442,7 @@ ObjFrame07:
 .endif
 
 ;Samus stand.
-ObjFrame08:
+ObjFrame_SamusStand:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$20,$00
@@ -470,7 +470,7 @@ ObjFrame08:
 .endif
 
 ;Samus run and fire.
-ObjFrame0C:
+ObjFrame_SamusRunFire0:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$60,$00
@@ -496,7 +496,7 @@ ObjFrame0C:
 .endif
 
 ;Samus run and fire.
-ObjFrame0D:
+ObjFrame_SamusRunFire1:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$09,$60,$00
@@ -526,7 +526,7 @@ ObjFrame0D:
 .endif
 
 ;Samus run and fire.
-ObjFrame0E:
+ObjFrame_SamusRunFire2:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$09,$60,$00
@@ -556,7 +556,7 @@ ObjFrame0E:
 .endif
 
 ;Samus stand and jump.
-ObjFrame10:
+ObjFrame_SamusJump:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$60,$00
@@ -582,7 +582,7 @@ ObjFrame10:
 .endif
 
 ;Samus jump and fire.
-ObjFrame12:
+ObjFrame_SamusJumpFire:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$60,$00
@@ -610,7 +610,7 @@ ObjFrame12:
 .endif
 
 ;Samus somersault.
-ObjFrame17:
+ObjFrame_SamusSalto0:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F3,$00,$60,$00
@@ -632,7 +632,7 @@ ObjFrame17:
 .endif
 
 ;Samus somersault.
-ObjFrame18:
+ObjFrame_SamusSalto1:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F8,$06,$60,$02
@@ -654,7 +654,7 @@ ObjFrame18:
 .endif
 
 ;Samus somersault.
-ObjFrame19:
+ObjFrame_SamusSalto2:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $05,$00,$A0,$F8
@@ -676,7 +676,7 @@ ObjFrame19:
 .endif
 
 ;Samus somersault.
-ObjFrame1A:
+ObjFrame_SamusSalto3:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $00,$06,$A0,$F6
@@ -698,7 +698,7 @@ ObjFrame1A:
 .endif
 
 ;Samus roll.
-ObjFrame1B:
+ObjFrame_SamusRoll3:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $07,$04 ; changed y radius from 8 to 7 to compensate for spider ball
     .byte $F6,$0C,$20,$F8
@@ -716,7 +716,7 @@ ObjFrame1B:
 .endif
 
 ;Samus roll.
-ObjFrame1C:
+ObjFrame_SamusRoll2:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $07,$04
     .byte $02,$0C,$A0,$F8
@@ -734,7 +734,7 @@ ObjFrame1C:
 .endif
 
 ;Samus roll.
-ObjFrame1D:
+ObjFrame_SamusRoll1:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $07,$04
     .byte $02,$0C,$E0,$00
@@ -752,7 +752,7 @@ ObjFrame1D:
 .endif
 
 ;Samus roll.
-ObjFrame1E:
+ObjFrame_SamusRoll0:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $07,$04
     .byte $F6,$0C,$60,$00
@@ -770,7 +770,7 @@ ObjFrame1E:
 .endif
 
 ;Samus stand and fire.
-ObjFrame22:
+ObjFrame_SamusStandFire:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $F0,$00,$20,$00
@@ -798,7 +798,7 @@ ObjFrame22:
 .endif
 
 ;Elevator.
-ObjFrame23:
+ObjFrame_Elevator:
     .byte $04,$10
     .byte $FC,$00+CFG_NUM_SAMUS_TILES,$20,$F0
     .byte $FC,$01+CFG_NUM_SAMUS_TILES,$20,$F8
@@ -807,34 +807,34 @@ ObjFrame23:
     .byte $80
 
 ;Missile right.
-ObjFrame25:
+ObjFrame_MissileRight:
     .byte $04,$08
     .byte $FC,$02+CFG_NUM_SAMUS_TILES,$60,$00
     .byte $FC,$03+CFG_NUM_SAMUS_TILES,$60,$F8
     .byte $80
 
 ;Missile left.
-ObjFrame26:
+ObjFrame_MissileLeft:
     .byte $04,$08
     .byte $FC,$02+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $FC,$03+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $80
 
 ;Missile up.
-ObjFrame27:
+ObjFrame_MissileUp:
     .byte $08,$04
     .byte $F8,$04+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $00,$05+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
 ;Bullet fire.
-ObjFrame28:
+ObjFrame_RegularBullet:
     .byte $02,$02
     .byte $FC,$06+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
 ;Bullet hit.
-ObjFrame2A:
+ObjFrame_BulletHit:
     .byte $00,$00
     .byte $FC,$07+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
@@ -852,7 +852,7 @@ ObjFrame_IceBulletHit:
     .byte $80
 
 ;Samus stand and point up.
-ObjFrame2B:
+ObjFrame_SamusPntUp:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $E8,$09,$60,$FC
@@ -880,7 +880,7 @@ ObjFrame2B:
 .endif
 
 ;Samus from ball to pointing up.
-ObjFrame30:
+ObjFrame_SamusPntUpFire:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $EA,$09,$60,$FC
@@ -908,7 +908,7 @@ ObjFrame30:
 .endif
 
 ;Door closed.
-ObjFrame31:
+ObjFrame_DoorClosed:
     .byte $18,$08
     .byte $E8,$08+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $F0,$09+CFG_NUM_SAMUS_TILES,$20,$00
@@ -919,7 +919,7 @@ ObjFrame31:
     .byte $80
 
 ;Door open/close.
-ObjFrame33:
+ObjFrame_DoorOpenClose:
     .byte $18,$04
     .byte $E8,$0B+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $F0,$0C+CFG_NUM_SAMUS_TILES,$20,$00
@@ -935,7 +935,7 @@ ObjFrame_DoorOpened:
     .byte $80
 
 ;Samus explode.
-ObjFrame35:
+ObjFrame_SamusExplode:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $80,$00
     .byte $00,$F0,$07,$20,$F8
@@ -957,7 +957,7 @@ ObjFrame35:
 .endif
 
 ;Samus jump and point up.
-ObjFrame38:
+ObjFrame_SamusJumpPntUp:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $E8,$0B,$60,$FC
@@ -985,7 +985,7 @@ ObjFrame38:
 .endif
 
 ;Samus jump and point up.
-ObjFrame39:
+ObjFrame_SamusJumpPntUpFire:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $EA,$0B,$60,$FC
@@ -1013,7 +1013,7 @@ ObjFrame39:
 .endif
 
 ;Bomb explode.
-ObjFrame3C:
+ObjFrame_BombExplode0:
     .byte $0C,$0C
     .byte $F8,$0E+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $F8,$0E+CFG_NUM_SAMUS_TILES,$60,$00
@@ -1022,7 +1022,7 @@ ObjFrame3C:
     .byte $80
 
 ;Samus run and point up.
-ObjFrame40:
+ObjFrame_SamusRunPntUp0:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $E8,$0A,$60,$FC
@@ -1048,7 +1048,7 @@ ObjFrame40:
 .endif
 
 ;Samus run and point up.
-ObjFrame41:
+ObjFrame_SamusRunPntUp1:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $E8,$00,$60,$FC
@@ -1078,7 +1078,7 @@ ObjFrame41:
 .endif
 
 ;Samus run and point up.
-ObjFrame42:
+ObjFrame_SamusRunPntUp2:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $E8,$00,$60,$FC
@@ -1108,7 +1108,7 @@ ObjFrame42:
 .endif
 
 ;Samus run and point up.
-ObjFrame46:
+ObjFrame_SamusRunPntUpFire0:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $EA,$0A,$60,$FC
@@ -1134,7 +1134,7 @@ ObjFrame46:
 .endif
 
 ;Samus point up, run and fire.
-ObjFrame47:
+ObjFrame_SamusRunPntUpFire1:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $EA,$00,$60,$FC
@@ -1164,7 +1164,7 @@ ObjFrame47:
 .endif
 
 ;Samus point up, run and fire.
-ObjFrame48:
+ObjFrame_SamusRunPntUpFire2:
 .if CFG_NUM_SAMUS_TILES == 16
     .byte $0F,$04
     .byte $EA,$00,$60,$FC
@@ -1266,7 +1266,7 @@ ObjFrame_SamusSpider3:
 .endif
 
 ;Bomb explode.
-ObjFrame49:
+ObjFrame_BombExplode1:
     .byte $0C,$0C
     .byte $F8,$0F+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $F8,$0F+CFG_NUM_SAMUS_TILES,$60,$00
@@ -1275,12 +1275,12 @@ ObjFrame49:
     .byte $80
 
 ;Bomb explode.
-ObjFrame4A:
+ObjFrame_BombExplodeBlank:
     .byte $00,$00
     .byte $80
 
 ;Wave beam.
-ObjFrame4B:
+ObjFrame_WaveBeam:
     .byte $04,$04
     .byte $FC,$10+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
@@ -1292,7 +1292,7 @@ ObjFrame_WaveIceBeam:
     .byte $80
 
 ;Bomb explode.
-ObjFrame4D:
+ObjFrame_BombExplode2:
     .byte $10,$10
     .byte $F0,$11+CFG_NUM_SAMUS_TILES,$20,$00
     .byte $F0,$12+CFG_NUM_SAMUS_TILES,$20,$08
@@ -1309,19 +1309,19 @@ ObjFrame4D:
     .byte $80
 
 ;Bomb tick.
-ObjFrame4E:
+ObjFrame_Bomb0:
     .byte $04,$04
     .byte $FC,$14+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
 ;Bomb tick.
-ObjFrame4F:
+ObjFrame_Bomb1:
     .byte $04,$04
     .byte $FC,$15+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
 ;Bomb item.
-ObjFrame50:
+ObjFrame_BombItem:
     .byte $03,$03
     .byte $F8,$30+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $F8,$31+CFG_NUM_SAMUS_TILES,$20,$00
@@ -1330,7 +1330,7 @@ ObjFrame50:
     .byte $80
 
 ;High jump item.
-ObjFrame51:
+ObjFrame_HighJumpItem:
     .byte $03,$03
     .byte $F8,$34+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $F8,$35+CFG_NUM_SAMUS_TILES,$20,$00
@@ -1339,7 +1339,7 @@ ObjFrame51:
     .byte $80
 
 ;Long beam item.
-ObjFrame52:
+ObjFrame_LongBeamItem:
     .byte $03,$03
     .byte $F8,$38+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $F8,$39+CFG_NUM_SAMUS_TILES,$20,$00
@@ -1348,7 +1348,7 @@ ObjFrame52:
     .byte $80
 
 ;Screw attack item.
-ObjFrame53:
+ObjFrame_ScrewAttackItem:
     .byte $03,$03
     .byte $F8,$3C+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $F8,$3D+CFG_NUM_SAMUS_TILES,$20,$00
@@ -1357,7 +1357,7 @@ ObjFrame53:
     .byte $80
 
 ;Maru Mari item.
-ObjFrame54:
+ObjFrame_MaruMariItem:
     .byte $03,$03
     .byte $F8,$40+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $F8,$41+CFG_NUM_SAMUS_TILES,$20,$00
@@ -1366,7 +1366,7 @@ ObjFrame54:
     .byte $80
 
 ;Varia item.
-ObjFrame55:
+ObjFrame_VariaSuitItem:
     .byte $03,$03
     .byte $F8,$44+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $F8,$45+CFG_NUM_SAMUS_TILES,$20,$00
@@ -1375,7 +1375,7 @@ ObjFrame55:
     .byte $80
 
 ;Wave beam item.
-ObjFrame56:
+ObjFrame_WaveBeamItem:
     .byte $03,$03
     .byte $F8,$38+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $F8,$48+CFG_NUM_SAMUS_TILES,$20,$00
@@ -1384,7 +1384,7 @@ ObjFrame56:
     .byte $80
 
 ;Ice beam item.
-ObjFrame57:
+ObjFrame_IceBeamItem:
     .byte $03,$03
     .byte $F8,$38+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $F8,$49+CFG_NUM_SAMUS_TILES,$20,$00
@@ -1393,7 +1393,7 @@ ObjFrame57:
     .byte $80
 
 ;Energy tank item.
-ObjFrame58:
+ObjFrame_EnergyTankItem:
     .byte $03,$03
     .byte $F8,$4A+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $F8,$4B+CFG_NUM_SAMUS_TILES,$20,$00
@@ -1402,7 +1402,7 @@ ObjFrame58:
     .byte $80
 
 ;Missile item.
-ObjFrame59:
+ObjFrame_MissileItem:
     .byte $03,$03
     .byte $F8,$4E+CFG_NUM_SAMUS_TILES,$20,$F8
     .byte $F8,$4E+CFG_NUM_SAMUS_TILES,$60,$00
@@ -1411,13 +1411,13 @@ ObjFrame59:
     .byte $80
 
 ;Skree burrow.
-ObjFrame5A:
+ObjFrame_SkreeProjectile:
     .byte $04,$04
     .byte $FC,$EA,$23,$FC
     .byte $80
 
 ;Kraid statue.
-ObjFrame65:
+ObjFrame_KraidStatue:
     .byte $00,$08
     .byte $00,$FA,$21,$F8
     .byte $00,$FB,$21,$00
@@ -1435,7 +1435,7 @@ ObjFrame65:
     .byte $80
 
 ;Ridley statue.
-ObjFrame66:
+ObjFrame_RidleyStatue:
     .byte $00,$08
     .byte $00,$FA,$21,$F8
     .byte $00,$FB,$21,$00
@@ -1450,14 +1450,14 @@ ObjFrame66:
     .byte $80
 
 ;Missile explode.
-ObjFrame67:
+ObjFrame_MissileExplode0:
     .byte $04,$08
     .byte $FC,$16+CFG_NUM_SAMUS_TILES,$00,$F8
     .byte $FC,$16+CFG_NUM_SAMUS_TILES,$40,$00
     .byte $80
 
 ;Missile explode.
-ObjFrame68:
+ObjFrame_MissileExplode1:
     .byte $04,$0C
     .byte $FC,$16+CFG_NUM_SAMUS_TILES,$00,$F0
     .byte $F4,$17+CFG_NUM_SAMUS_TILES,$00,$F8
@@ -1468,7 +1468,7 @@ ObjFrame68:
     .byte $80
 
 ;Missile explode.
-ObjFrame69:
+ObjFrame_MissileExplode2:
     .byte $04,$10
     .byte $FC,$16+CFG_NUM_SAMUS_TILES,$00,$E8
     .byte $EC,$17+CFG_NUM_SAMUS_TILES,$00,$F0
