@@ -278,14 +278,6 @@ GamePaused             db        ;#$00=Game running, #$01=Game paused.
 RoomPtr                dw        ;Low byte of room pointer address.
 ; RoomPtr+1              = $34     ;High byte of room pointer address.
 
-StructPtr              dw        ;Low bute of structure pointer address.
-; StructPtr+1            = $36     ;High byte of structure pointer address.
-
-CartRAMWorkPtr         dw        ;Low byte of pointer to current position in room RAM.
-; CartRAMWorkPtr+1       = $38     ;High byte of pointer to current position in room RAM.
-                                   ;The CartRAMWorkPtr points to the current memory address-->
-                                   ;in the room RAM that is being loaded.
-
 CartRAMPtr             dw        ;Low byte of pointer to room RAM (#$00).
 ; CartRAMPtr+1           = $3A     ;High byte of pointer to room RAM (#$60 or #$64).
                                    ;Room RAM is a screen buffer where the objects that make-->
@@ -394,9 +386,10 @@ SamusHurt010F          db        ;never read. takes on different values dependin
     KraidNailCounter       db        ;Used to determine when to fire Kraid's nail.
     RidleyProjectileCounter db        ;Used to determine when to fire Ridley's projectile.
 
-    EnemyMovementPtr       .dw
+    EnemyMovementPtr       dw
     ; EnemyMovementPtr+1     = $82
     EnemyStatusPreAI       db        ;set to enemy status before enemy ai routine is run
+    EnemyStatusPreWeaponReaction db  ;set to enemy status before enemy weapon reaction routine is run
     Enemy82                db
 
     SpawnFireball_83       dw        ;right facing anim index for enemy that shoots the fireball

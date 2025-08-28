@@ -8991,6 +8991,8 @@ Lx314:
 
 ; handles enemy getting attacked by Samus
 EnemyReactToSamusWeapon:
+    lda EnsExtra.0.status,x
+    sta EnemyStatusPreWeaponReaction
     lda EnSpecialAttribs,x
     sta $0A
     ; exit if enemy was not attacked?
@@ -9009,7 +9011,7 @@ EnemyReactToSamusWeapon:
     bit $0A
     bvs Lx317
     ; branch if enemy is already in the frozen state
-    lda EnsExtra.0.status,x
+    lda EnemyStatusPreWeaponReaction
     cmp #enemyStatus_Frozen
     beq Lx317
     
@@ -9070,7 +9072,7 @@ Lx319:
     Lx320:
     
     ; update EnPrevStatus
-    lda EnsExtra.0.status,x
+    lda EnemyStatusPreWeaponReaction
     cmp #enemyStatus_Frozen
     bne Lx321
         lda EnPrevStatus,x
