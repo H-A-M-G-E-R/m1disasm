@@ -9701,16 +9701,8 @@ CommonJump_SpawnFireball:
     sta $05
     jsr SpawnFireball_SetFireballPosition
     
-    ; exit if bit 6 of SpawnFireball_87 is unset
     ldx PageIndex
-    bit SpawnFireball_87
-    bvc RTS_SpawnFireball_FindSlot
-    ; set animation for enemy that shot the fireball depending on the direction its facing
-    lda EnData05,x
-    and #$01
-    tay
-    lda SpawnFireball_83,y
-    jmp SetEnAnimIndex
+    rts
 
 SpawnFireball_FindSlot:
     ldy #$60

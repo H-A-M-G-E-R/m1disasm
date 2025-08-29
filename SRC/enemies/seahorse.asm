@@ -25,28 +25,18 @@ SeahorseAIRoutine:
         sta SpawnFireball_87
         lda #$00
         sta SpawnFireball_EnData0A
-        lda #EnAnim_DragonIdleFacingRight - EnAnimTbl.b
-        sta SpawnFireball_83
-        lda #EnAnim_DragonIdleFacingLeft - EnAnimTbl.b
-        sta SpawnFireball_83+1.b
         lda #$03
         sta SpawnFireball_AnimTableIndex
         jsr CommonJump_SpawnFireball
         lda #sfxNoise_SpitFlame
         jsr SFX_SetNoiseSFXFlag
-        lda EnData05,x
-        and #$01
-        tay
-        lda SpawnFireball_83,y
+        lda #EnAnim_DragonIdleFacingRight - EnAnimTbl.b
         jsr CommonJump_InitEnAnimIndex
         beq L9B59
     L9B3C:
     cmp #$0F
     bcc L9B59
-    lda EnData05,x
-    and #$01
-    tay
-    lda SeahorseTable,y
+    lda #EnAnim_DragonPrepareToSpitFacingRight - EnAnimTbl.b
     jsr CommonJump_InitEnAnimIndex
     jmp L9B59
 
@@ -60,7 +50,4 @@ L9B59:
     sta $00
     sta $01
     jmp CommonEnemyJump_00_01_02
-
-SeahorseTable:
-    .byte EnAnim_DragonPrepareToSpitFacingRight - EnAnimTbl, EnAnim_DragonPrepareToSpitFacingLeft - EnAnimTbl
 

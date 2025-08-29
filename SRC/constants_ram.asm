@@ -392,8 +392,6 @@ SamusHurt010F          db        ;never read. takes on different values dependin
     EnemyStatusPreWeaponReaction db  ;set to enemy status before enemy weapon reaction routine is run
     Enemy82                db
 
-    SpawnFireball_83       dw        ;right facing anim index for enemy that shoots the fireball
-    ; SpawnFireball_83+1     = $84     ;left facing anim index for enemy that shoots the fireball
     SpawnFireball_AnimTableIndex .db       ;index into EnemyFireballRisingAnimIndexTable
     EnemyFlipAfterDisplacementAnimIndex          db     ;anim index for enemy using EnemyFlipAfterDisplacement routine
     SpawnFireball_87       db        ;fireball status?

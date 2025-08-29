@@ -99,11 +99,11 @@ AreaFireballKilledAnimIndex:
 AreaExplosionAnimIndex:
     .byte EnAnim_Explosion - EnAnimTbl
 
-    .byte EnAnim_DessgeegaIdleCeiling - EnAnimTbl, EnAnim_ViolaOnFloor - EnAnimTbl
+    .byte $00, $00
 AreaFireballFallingAnimIndex:
-    .byte EnAnim_DessgeegaCeilingHopping - EnAnimTbl, EnAnim_ViolaOnFloor - EnAnimTbl
+    .byte $00, $00
 AreaFireballSplatterAnimIndex:
-    .byte EnAnim_ViolaOnFloor - EnAnimTbl, EnAnim_36 - EnAnimTbl, EnAnim_36 - EnAnimTbl, EnAnim_36 - EnAnimTbl
+    .byte $00, $00, $00, $00
 AreaMellowAnimIndex:
     .byte EnAnim_Mella - EnAnimTbl
 
@@ -150,9 +150,9 @@ EnemyDeathAnimIndex:
     .byte $00 ; 08 - same as 4
     .byte EnAnim_RidleyExplode - EnAnimTbl ; 09 - ridley
     .byte EnAnim_RidleyFireballFacingRight - EnAnimTbl ; 0A - ridley fireball
-    .byte EnAnim_MultiviolaSpinningCounterclockwise - EnAnimTbl ; 0B - same as 4
+    .byte $00 ; 0B - same as 4
     .byte EnAnim_MultiviolaExplode - EnAnimTbl ; 0C - bouncy orbs
-    .byte EnAnim_34 - EnAnimTbl ; 0D - same as 4
+    .byte $00 ; 0D - same as 4
     .byte $00 ; 0E - polyp (unused)
     .byte $00 ; 0F - same as 4
 
@@ -265,9 +265,9 @@ EnemyRestingAnimIndex:
     .byte $00 ; 08 - same as 4
     .byte EnAnim_RidleyIdleFacingRight - EnAnimTbl ; 09 - ridley
     .byte EnAnim_RidleyFireballFacingRight - EnAnimTbl ; 0A - ridley fireball
-    .byte EnAnim_HoltzIdle - EnAnimTbl ; 0B - same as 4
+    .byte $00 ; 0B - same as 4
     .byte EnAnim_MultiviolaSpinningClockwise - EnAnimTbl ; 0C - bouncy orbs
-    .byte EnAnim_34 - EnAnimTbl ; 0D - same as 4
+    .byte $00 ; 0D - same as 4
     .byte $00 ; 0E - polyp (unused)
     .byte $00 ; 0F - same as 4
 
@@ -283,9 +283,9 @@ EnemyActiveAnimIndex:
     .byte $00 ; 08 - same as 4
     .byte EnAnim_RidleyIdleFacingRight - EnAnimTbl ; 09 - ridley
     .byte EnAnim_RidleyFireballFacingRight - EnAnimTbl ; 0A - ridley fireball
-    .byte EnAnim_HoltzIdle - EnAnimTbl ; 0B - same as 4
+    .byte $00 ; 0B - same as 4
     .byte EnAnim_MultiviolaSpinningClockwise - EnAnimTbl ; 0C - bouncy orbs
-    .byte EnAnim_34 - EnAnimTbl ; 0D - same as 4
+    .byte $00 ; 0D - same as 4
     .byte $00 ; 0E - polyp (unused)
     .byte $00 ; 0F - same as 4
 
@@ -525,8 +525,8 @@ L977B:
 EnemyFireballRisingAnimIndexTable:
     .byte $00, $00
     .byte $00, $00
-    .byte EnAnim_34 - EnAnimTbl, EnAnim_34 - EnAnimTbl
-    .byte EnAnim_DessgeegaIdleCeiling - EnAnimTbl, EnAnim_ViolaOnFloor - EnAnimTbl
+    .byte $00, $00
+    .byte $00, $00
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00

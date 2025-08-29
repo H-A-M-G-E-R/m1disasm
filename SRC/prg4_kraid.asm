@@ -145,7 +145,7 @@ EnemyDeathAnimIndex:
     .byte EnAnim_RipperExplodeFacingRight - EnAnimTbl ; 03 - ripper
     .byte EnAnim_SkreeExplode - EnAnimTbl ; 04 - skree
     .byte EnAnim_ZeelaExplode - EnAnimTbl ; 05 - crawler
-    .byte EnAnim_GeegaFacingLeft - EnAnimTbl ; 06 - same as 2
+    .byte $00 ; 06 - same as 2
     .byte EnAnim_GeegaExplodeFacingRight - EnAnimTbl ; 07 - geega
     .byte EnAnim_KraidExplodeFacingRight - EnAnimTbl ; 08 - kraid
     .byte $00 ; 09 - kraid lint
@@ -260,7 +260,7 @@ EnemyRestingAnimIndex:
     .byte EnAnim_RipperFacingRight - EnAnimTbl ; 03 - ripper
     .byte EnAnim_Skree - EnAnimTbl ; 04 - skree
     .byte EnAnim_ZeelaOnFloor - EnAnimTbl ; 05 - crawler
-    .byte EnAnim_GeegaFacingLeft - EnAnimTbl ; 06 - same as 2
+    .byte $00 ; 06 - same as 2
     .byte EnAnim_GeegaRestingFacingRight - EnAnimTbl ; 07 - geega
     .byte EnAnim_KraidFacingRight - EnAnimTbl ; 08 - kraid
     .byte EnAnim_KraidLintFacingRight - EnAnimTbl ; 09 - kraid lint
@@ -278,7 +278,7 @@ EnemyActiveAnimIndex:
     .byte EnAnim_RipperFacingRight - EnAnimTbl ; 03 - ripper
     .byte EnAnim_Skree - EnAnimTbl ; 04 - skree
     .byte EnAnim_ZeelaOnFloor - EnAnimTbl ; 05 - crawler
-    .byte EnAnim_GeegaFacingLeft - EnAnimTbl ; 06 - same as 2
+    .byte $00 ; 06 - same as 2
     .byte EnAnim_GeegaFacingRight - EnAnimTbl ; 07 - geega
     .byte EnAnim_KraidFacingRight - EnAnimTbl ; 08 - kraid
     .byte EnAnim_KraidLintFacingRight - EnAnimTbl ; 09 - kraid lint
@@ -524,8 +524,8 @@ L977B:
 
 EnemyFireballRisingAnimIndexTable:
     .byte $00, $00
-    .byte EnAnim_KraidNailMovingFacingLeft - EnAnimTbl, EnAnim_KraidNailIdleFacingLeft - EnAnimTbl
-    .byte EnAnim_Memu - EnAnimTbl, EnAnim_Memu - EnAnimTbl
+    .byte $00, $00
+    .byte $00, $00
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00

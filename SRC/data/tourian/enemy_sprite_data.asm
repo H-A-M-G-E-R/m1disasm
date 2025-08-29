@@ -1,9 +1,6 @@
 ;-----------------------------------[ Enemy animation data tables ]----------------------------------
 
 EnAnimTbl: ;($A406)
-EnAnim_00:
-    .byte _id_EnFrame00, _id_EnFrame01, $FF
-
 EnAnim_FireballKilled:
     .byte _id_EnFrame_FireballKilled, $FF
 
@@ -25,12 +22,6 @@ EnAnim_CannonBulletDown:
 EnAnim_CannonBulletExplode:
     .byte _id_EnFrame_CannonBulletExplode0, _id_EnFrame_CannonBulletExplode0, _id_EnFrame_CannonBulletExplode1, _id_EnFrame_CannonBulletExplode1, $F7, $FF
 
-EnAnim_16:
-    .byte _id_EnFrame18, $FF
-
-EnAnim_18:
-    .byte _id_EnFrame_CannonTimeBombSet, $F7, $FF
-
 EnAnim_RinkaSpawning:
     .byte _id_EnFrame_RinkaSpawning0, _id_EnFrame_RinkaSpawning1
 EnAnim_Rinka:
@@ -42,14 +33,9 @@ EnAnim_RinkaExplode:
 EnAnim_Explosion:
     .byte _id_EnFrame_Explosion0, $F7, _id_EnFrame_Explosion1, $F7, $FF
 
-EnAnim_26:
-    ;nothing
-
 ;----------------------------[ Enemy sprite drawing pointer tables ]---------------------------------
 
 EnFramePtrTable1:
-    PtrTableEntry EnFramePtrTable1, EnFrame00
-    PtrTableEntry EnFramePtrTable1, EnFrame01
     PtrTableEntry EnFramePtrTable1, EnFrame_FireballKilled
     PtrTableEntry EnFramePtrTable1, EnFrame_Metroid0
     PtrTableEntry EnFramePtrTable1, EnFrame_Metroid1
@@ -72,132 +58,19 @@ EnFramePtrTable1:
     PtrTableEntry EnFramePtrTable1, EnFrame_MotherBrainPulsations2
     PtrTableEntry EnFramePtrTable1, EnFrame_MotherBrainPulsations3
     PtrTableEntry EnFramePtrTable1, EnFrame_MotherBrainEyes
-    PtrTableEntry EnFramePtrTable1, EnFrame18
     PtrTableEntry EnFramePtrTable1, EnFrame_CannonTimeBombSet
     PtrTableEntry EnFramePtrTable1, EnFrame1A
     PtrTableEntry EnFramePtrTable1, EnFrame_RinkaSpawning0
     PtrTableEntry EnFramePtrTable1, EnFrame_RinkaSpawning1
     PtrTableEntry EnFramePtrTable1, EnFrame_Rinka
     PtrTableEntry EnFramePtrTable1, EnFrame_RinkaExplode
-    PtrTableEntry EnFramePtrTable1, EnFrame1F
-    PtrTableEntry EnFramePtrTable1, EnFrame20
-    PtrTableEntry EnFramePtrTable1, EnFrame21
-    PtrTableEntry EnFramePtrTable1, EnFrame22
-    PtrTableEntry EnFramePtrTable1, EnFrame23
-    PtrTableEntry EnFramePtrTable1, EnFrame24
-    PtrTableEntry EnFramePtrTable1, EnFrame25
-    PtrTableEntry EnFramePtrTable1, EnFrame26
-    PtrTableEntry EnFramePtrTable1, EnFrame27
-    PtrTableEntry EnFramePtrTable1, EnFrame28
-    PtrTableEntry EnFramePtrTable1, EnFrame29
-    PtrTableEntry EnFramePtrTable1, EnFrame2A
-    PtrTableEntry EnFramePtrTable1, EnFrame2B
-    PtrTableEntry EnFramePtrTable1, EnFrame2C
-    PtrTableEntry EnFramePtrTable1, EnFrame2D
-    PtrTableEntry EnFramePtrTable1, EnFrame2E
-    PtrTableEntry EnFramePtrTable1, EnFrame2F
-    PtrTableEntry EnFramePtrTable1, EnFrame30
-    PtrTableEntry EnFramePtrTable1, EnFrame31
-    PtrTableEntry EnFramePtrTable1, EnFrame32
-    PtrTableEntry EnFramePtrTable1, EnFrame33
-    PtrTableEntry EnFramePtrTable1, EnFrame34
-    PtrTableEntry EnFramePtrTable1, EnFrame35
-    PtrTableEntry EnFramePtrTable1, EnFrame36
-    PtrTableEntry EnFramePtrTable1, EnFrame37
-    PtrTableEntry EnFramePtrTable1, EnFrame38
-    PtrTableEntry EnFramePtrTable1, EnFrame39
-    PtrTableEntry EnFramePtrTable1, EnFrame3A
-    PtrTableEntry EnFramePtrTable1, EnFrame3B
-    PtrTableEntry EnFramePtrTable1, EnFrame3C
-    PtrTableEntry EnFramePtrTable1, EnFrame3D
-    PtrTableEntry EnFramePtrTable1, EnFrame3E
-    PtrTableEntry EnFramePtrTable1, EnFrame3F
-    PtrTableEntry EnFramePtrTable1, EnFrame40
-    PtrTableEntry EnFramePtrTable1, EnFrame41
-    PtrTableEntry EnFramePtrTable1, EnFrame42
-    PtrTableEntry EnFramePtrTable1, EnFrame43
-    PtrTableEntry EnFramePtrTable1, EnFrame44
-    PtrTableEntry EnFramePtrTable1, EnFrame45
-    PtrTableEntry EnFramePtrTable1, EnFrame46
-    PtrTableEntry EnFramePtrTable1, EnFrame47
-    PtrTableEntry EnFramePtrTable1, EnFrame48
-    PtrTableEntry EnFramePtrTable1, EnFrame49
-    PtrTableEntry EnFramePtrTable1, EnFrame4A
-    PtrTableEntry EnFramePtrTable1, EnFrame4B
-    PtrTableEntry EnFramePtrTable1, EnFrame4C
-    PtrTableEntry EnFramePtrTable1, EnFrame4D
-    PtrTableEntry EnFramePtrTable1, EnFrame4E
-    PtrTableEntry EnFramePtrTable1, EnFrame4F
-    PtrTableEntry EnFramePtrTable1, EnFrame50
-    PtrTableEntry EnFramePtrTable1, EnFrame51
-    PtrTableEntry EnFramePtrTable1, EnFrame52
-    PtrTableEntry EnFramePtrTable1, EnFrame53
-    PtrTableEntry EnFramePtrTable1, EnFrame54
-    PtrTableEntry EnFramePtrTable1, EnFrame55
-    PtrTableEntry EnFramePtrTable1, EnFrame56
-    PtrTableEntry EnFramePtrTable1, EnFrame57
-    PtrTableEntry EnFramePtrTable1, EnFrame58
-    PtrTableEntry EnFramePtrTable1, EnFrame59
-    PtrTableEntry EnFramePtrTable1, EnFrame5A
-    PtrTableEntry EnFramePtrTable1, EnFrame5B
-    PtrTableEntry EnFramePtrTable1, EnFrame5C
-    PtrTableEntry EnFramePtrTable1, EnFrame5D
-    PtrTableEntry EnFramePtrTable1, EnFrame5E
-    PtrTableEntry EnFramePtrTable1, EnFrame5F
-    PtrTableEntry EnFramePtrTable1, EnFrame60
     PtrTableEntry EnFramePtrTable1, EnFrame_Explosion0
     PtrTableEntry EnFramePtrTable1, EnFrame_Explosion1
-    PtrTableEntry EnFramePtrTable1, EnFrame63
-    PtrTableEntry EnFramePtrTable1, EnFrame64
-    PtrTableEntry EnFramePtrTable1, EnFrame65
-    PtrTableEntry EnFramePtrTable1, EnFrame66
-    PtrTableEntry EnFramePtrTable1, EnFrame67
-    PtrTableEntry EnFramePtrTable1, EnFrame68
-    PtrTableEntry EnFramePtrTable1, EnFrame69
-    PtrTableEntry EnFramePtrTable1, EnFrame6A
-    PtrTableEntry EnFramePtrTable1, EnFrame6B
-    PtrTableEntry EnFramePtrTable1, EnFrame6C
-    PtrTableEntry EnFramePtrTable1, EnFrame6D
-    PtrTableEntry EnFramePtrTable1, EnFrame6E
-    PtrTableEntry EnFramePtrTable1, EnFrame6F
-    PtrTableEntry EnFramePtrTable1, EnFrame70
-    PtrTableEntry EnFramePtrTable1, EnFrame71
-    PtrTableEntry EnFramePtrTable1, EnFrame72
-    PtrTableEntry EnFramePtrTable1, EnFrame73
-    PtrTableEntry EnFramePtrTable1, EnFrame74
-    PtrTableEntry EnFramePtrTable1, EnFrame75
-    PtrTableEntry EnFramePtrTable1, EnFrame76
-    PtrTableEntry EnFramePtrTable1, EnFrame77
-    PtrTableEntry EnFramePtrTable1, EnFrame78
-    PtrTableEntry EnFramePtrTable1, EnFrame79
-    PtrTableEntry EnFramePtrTable1, EnFrame7A
-    PtrTableEntry EnFramePtrTable1, EnFrame7B
-    PtrTableEntry EnFramePtrTable1, EnFrame7C
-    PtrTableEntry EnFramePtrTable1, EnFrame7D
-    PtrTableEntry EnFramePtrTable1, EnFrame7E
-    PtrTableEntry EnFramePtrTable1, EnFrame7F
     PtrTableEntry EnFramePtrTable1, EnFrame_MissilePickup
     PtrTableEntry EnFramePtrTable1, EnFrame_SmallEnergyPickup
-    PtrTableEntry EnFramePtrTable1, EnFrame82
-    PtrTableEntry EnFramePtrTable1, EnFrame83
-    PtrTableEntry EnFramePtrTable1, EnFrame84
-    PtrTableEntry EnFramePtrTable1, EnFrame85
-    PtrTableEntry EnFramePtrTable1, EnFrame86
-    PtrTableEntry EnFramePtrTable1, EnFrame87
-    PtrTableEntry EnFramePtrTable1, EnFrame88
     PtrTableEntry EnFramePtrTable1, EnFrame_BigEnergyPickup
 
 ;Enemy frame drawing data.
-
-EnFrame00:
-    .byte $02,$02
-    .byte $FC,$14,$20,$FC
-    .byte $80
-
-EnFrame01:
-    .byte $02,$02
-    .byte $FC,$24,$20,$FC
-    .byte $80
 
 EnFrame_FireballKilled:
     .byte $00,$00
@@ -344,16 +217,6 @@ EnFrame_MotherBrainEyes:
     .byte $00,$CD,$02,$08
     .byte $80
 
-EnFrame18:
-    .byte $80,$00
-    .byte $01,$F4,$F5,$22,$00
-    .byte $02,$FC,$F5,$22,$F8
-    .byte $03,$FC,$F5,$22,$00
-    .byte $04,$04,$F5,$22,$F8
-    .byte $05,$04,$F5,$22,$00
-    .byte $F4,$F5,$22,$F8
-    .byte $80
-
 EnFrame_CannonTimeBombSet:
     .byte $00,$00
     .byte $FC,$ED,$03,$FC
@@ -394,72 +257,6 @@ EnFrame_RinkaExplode:
     .byte $00,$00
     .byte $80
 
-EnFrame1F:
-EnFrame20:
-EnFrame21:
-EnFrame22:
-EnFrame23:
-EnFrame24:
-EnFrame25:
-EnFrame26:
-EnFrame27:
-EnFrame28:
-EnFrame29:
-EnFrame2A:
-EnFrame2B:
-EnFrame2C:
-EnFrame2D:
-EnFrame2E:
-EnFrame2F:
-EnFrame30:
-EnFrame31:
-EnFrame32:
-EnFrame33:
-EnFrame34:
-EnFrame35:
-EnFrame36:
-EnFrame37:
-EnFrame38:
-EnFrame39:
-EnFrame3A:
-EnFrame3B:
-EnFrame3C:
-EnFrame3D:
-EnFrame3E:
-EnFrame3F:
-EnFrame40:
-EnFrame41:
-EnFrame42:
-EnFrame43:
-EnFrame44:
-EnFrame45:
-EnFrame46:
-EnFrame47:
-EnFrame48:
-EnFrame49:
-EnFrame4A:
-EnFrame4B:
-EnFrame4C:
-EnFrame4D:
-EnFrame4E:
-EnFrame4F:
-EnFrame50:
-EnFrame51:
-EnFrame52:
-EnFrame53:
-EnFrame54:
-EnFrame55:
-EnFrame56:
-EnFrame57:
-EnFrame58:
-EnFrame59:
-EnFrame5A:
-EnFrame5B:
-EnFrame5C:
-EnFrame5D:
-EnFrame5E:
-EnFrame5F:
-EnFrame60:
 EnFrame_Explosion0:
     .byte $00,$00
     .byte $F8,$0F+CFG_NUM_SAMUS_TILES,$20,$F8
@@ -484,35 +281,6 @@ EnFrame_Explosion1:
     .byte $08,$12+CFG_NUM_SAMUS_TILES,$A0,$08
     .byte $80
 
-EnFrame63:
-EnFrame64:
-EnFrame65:
-EnFrame66:
-EnFrame67:
-EnFrame68:
-EnFrame69:
-EnFrame6A:
-EnFrame6B:
-EnFrame6C:
-EnFrame6D:
-EnFrame6E:
-EnFrame6F:
-EnFrame70:
-EnFrame71:
-EnFrame72:
-EnFrame73:
-EnFrame74:
-EnFrame75:
-EnFrame76:
-EnFrame77:
-EnFrame78:
-EnFrame79:
-EnFrame7A:
-EnFrame7B:
-EnFrame7C:
-EnFrame7D:
-EnFrame7E:
-EnFrame7F:
 EnFrame_MissilePickup:
     .byte $08,$04
     .byte $F8,$04+CFG_NUM_SAMUS_TILES,$20,$FC
@@ -524,13 +292,6 @@ EnFrame_SmallEnergyPickup:
     .byte $FC,$18+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
-EnFrame82:
-EnFrame83:
-EnFrame84:
-EnFrame85:
-EnFrame86:
-EnFrame87:
-EnFrame88:
 EnFrame_BigEnergyPickup:
     .byte $04,$04
     .byte $FC,$18+CFG_NUM_SAMUS_TILES,$20,$FC

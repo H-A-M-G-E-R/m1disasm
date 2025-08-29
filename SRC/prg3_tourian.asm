@@ -149,8 +149,8 @@ ChooseEnemyAIRoutine:
 EnemyDeathAnimIndex:
     .byte EnAnim_MetroidExplode - EnAnimTbl ; 00 - red metroid
     .byte EnAnim_MetroidExplode - EnAnimTbl ; 01 - green metroid
-    .byte EnAnim_16 - EnAnimTbl ; 02 - i dunno but it takes 30 damage with varia
-    .byte EnAnim_18 - EnAnimTbl ; 03 - disappears
+    .byte $00 ; 02 - i dunno but it takes 30 damage with varia
+    .byte $00 ; 03 - disappears
     .byte EnAnim_RinkaExplode - EnAnimTbl ; 04 - rinka
     .byte $00 ; 05 - same as 3
     .byte $00 ; 06 - same as 3
@@ -264,8 +264,8 @@ EnemyDropChanceTblTough:
 EnemyRestingAnimIndex:
     .byte EnAnim_Metroid - EnAnimTbl ; 00 - red metroid
     .byte EnAnim_Metroid - EnAnimTbl ; 01 - green metroid
-    .byte EnAnim_16 - EnAnimTbl ; 02 - i dunno but it takes 30 damage with varia
-    .byte EnAnim_18 - EnAnimTbl ; 03 - disappears
+    .byte $00 ; 02 - i dunno but it takes 30 damage with varia
+    .byte $00 ; 03 - disappears
     .byte EnAnim_RinkaSpawning - EnAnimTbl ; 04 - rinka
     .byte $00 ; 05 - same as 3
     .byte $00 ; 06 - same as 3
@@ -282,8 +282,8 @@ EnemyRestingAnimIndex:
 EnemyActiveAnimIndex:
     .byte EnAnim_Metroid - EnAnimTbl ; 00 - red metroid
     .byte EnAnim_Metroid - EnAnimTbl ; 01 - green metroid
-    .byte EnAnim_16 - EnAnimTbl ; 02 - i dunno but it takes 30 damage with varia
-    .byte EnAnim_18 - EnAnimTbl ; 03 - disappears
+    .byte $00 ; 02 - i dunno but it takes 30 damage with varia
+    .byte $00 ; 03 - disappears
     .byte EnAnim_Rinka - EnAnimTbl ; 04 - rinka
     .byte $00 ; 05 - same as 3
     .byte $00 ; 06 - same as 3
@@ -532,8 +532,8 @@ L977B:
 
 EnemyFireballRisingAnimIndexTable:
     .byte $00, $00
-    .byte EnAnim_26 - EnAnimTbl, EnAnim_26 - EnAnimTbl
-    .byte EnAnim_26 - EnAnimTbl, EnAnim_26 - EnAnimTbl
+    .byte $00, $00
+    .byte $00, $00
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00

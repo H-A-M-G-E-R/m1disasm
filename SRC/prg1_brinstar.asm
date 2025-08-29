@@ -563,8 +563,8 @@ L977B:
 ; Enemy animation related table?
 EnemyFireballRisingAnimIndexTable:
     .byte $00, $00
-    .byte EnAnim_KraidNailMovingFacingLeft - EnAnimTbl, EnAnim_KraidNailIdleFacingLeft - EnAnimTbl
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl
+    .byte $00, $00
+    .byte $00, $00
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
