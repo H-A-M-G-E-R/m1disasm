@@ -20,51 +20,21 @@ RinkaAIRoutine:
     sta EnsExtra.0.subPixelY,x
     sta EnsExtra.0.subPixelX,x
 
-    ; save Samus x pos relative to enemy in $01
-    lda ObjX
-    sec
-    sbc EnX,x
-    sta $01
-    ; push EnData05 to stack
-    lda EnData05,x
-    pha
-    ; shift horizontal facing direction into carry
-    lsr
-    ; push EnData05/2 to stack
-    pha
-    ; branch if facing right
-    bcc L9A5A
-        ; enemy is facing left
-        ; negate $01
-        lda #$00
-        sbc $01
-        sta $01
-    L9A5A:
-    ; $01 now contains the x distance between Samus and the enemy
+    ; get x distance between Samus and the enemy
+    jsr GetEnemyXSlotPosition
+    ldy #$00
+    jsr GetObjectYSlotPosition
+    jsr AbsXDistFromYSlotToXSlot
+    lda Temp00_Diff
+    sta $03
 
-    ; save Samus y pos relative to enemy in $00
-    lda ObjY
-    sec
-    sbc EnY,x
-    sta $00
-    ; pull EnData05/2 from stack
-    pla
-    ; shift vertical facing direction into carry
-    lsr
-    lsr
-    ; branch if facing down
-    bcc L9A6E
-        ; enemy is facing up
-        ; negate $00
-        lda #$00
-        sbc $00
-        sta $00
-    L9A6E:
-    ; $00 now contains the y distance between Samus and the enemy
+    ; get y distance between Samus and the enemy
+    jsr AbsYDistFromYSlotToXSlot
+    lda Temp00_Diff
+    sta $02
 
     ; logic or both together
-    lda $00
-    ora $01
+    ora $03
     ; for bits 7, 6, 5 of this
     ldy #$03
     L9A74:
@@ -80,17 +50,16 @@ L9A7A:
     bmi L9A83
         ; bit 7 or 6 or 5 was set
         ; divide by 2 repeatedly until this isn't the case anymore
-        lsr $00
-        lsr $01
+        lsr $02
+        lsr $03
         bpl L9A7A
     L9A83:
-    ; $00 and $01 now do not have bits 7, 6, 5 set
+    ; $02 and $03 now do not have bits 7, 6, 5 set
 
-    ; set rinka speed based on $00 and $01
+    ; set rinka speed based on $02 and $03
     jsr SetRinkaSpeed
     
-    ; pull EnData05 from stack
-    pla
+    lda EnData05,x
     ; shift horizontal facing direction into carry
     lsr
     ; push EnData05/2 to stack
@@ -169,7 +138,7 @@ L9AB0:
 
 SetRinkaSpeed:
     ; load y speed
-    lda $00
+    lda $02
     pha
     ; write upper nibble to enemy y speed
     jsr Adiv16_
@@ -180,7 +149,7 @@ SetRinkaSpeed:
     sta EnSpeedSubPixelY,x
 
     ; load x speed
-    lda $01
+    lda $03
     pha
     jsr Adiv16_
     ; write upper nibble to enemy x speed

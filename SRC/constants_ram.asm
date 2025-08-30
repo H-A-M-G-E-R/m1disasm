@@ -30,7 +30,6 @@
     attackState      db
     attackTimer      db
     isHit            db
-    unused           db
 .endst
 
 .struct TileBlast
@@ -52,7 +51,6 @@
     y                db   ; y position of hole
     x                db   ; x position of hole
     hi               db   ; nametable position of hole
-    unused           ds 3
 .endst
 
 .struct PowerUp
@@ -60,8 +58,6 @@
     y                db   ;Y coordinate of the power-up.
     x                db   ;X coordiante of the power-up
     hi               db   ;#$00 if on name table 0, #$01 if on name table 3.
-    unused           ds 3
-    data07           db   ;stored to A before ObjDrawFrame immediately overwrites it
 .endst
 
 .struct Zebetite
@@ -88,7 +84,7 @@
     subPixelX        db ; Unknown
     accelY           db ; Unknown
     accelX           db ; Unknown
-    data1C           db ; Unused
+    pose             db ;#$00=init, #$01=after init if it isn't set already (was unused in vanilla)
     jumpDsplcmnt     db ;Number of pixels vertically/horizontally displaced from jump point; skree blow up delay
     type             db ;Enemy type used as index into enemy data tables.
     data1F           db ;For EnemyFlipAfterDisplacement:
@@ -102,6 +98,25 @@
                         
 .endst
 
+.struct EnExtra2
+    data20           db
+    data21           db
+    data22           db
+    data23           db
+    data24           db
+    data25           db
+    data26           db
+    data27           db
+    data28           db
+    data29           db
+    data2A           db
+    data2B           db
+    data2C           db
+    data2D           db
+    data2E           db
+    props2F          db ;bit6 set: h-flip
+.endst
+
 .struct Cannon
     status           db
     y                db
@@ -111,6 +126,33 @@
     angle            db
     instrDelay       db
     instrID          db
+.endst
+
+.struct IntroSpr
+    y                db   ;Loaded into byte 0 of sprite RAM(Y position).
+    tileID           db   ;Loaded into byte 1 of sprite RAM(Pattern table index).
+    attrib           db   ;Loaded into byte 2 of sprite RAM(Control byte).
+    x                db   ;Loaded into byte 3 of sprite RAM(X position).
+    index            db   ;Index to next sparkle sprite data byte.
+    nextDelay        db   ;Decrements each frame. When 0, load new sparkle sprite data.
+    sparkleYChange   .db  ;Sparkle sprite y coordinate change.
+    crossMissileXChange db ;Cross missile sprite x total movement distance.
+    sparkleXChange   .db  ;Sparkle sprite x coordinate change.
+    crossMissileYChange db ;Cross missile sprite y total movement distance.
+    changeDelay      db   ;decrements each frame from #$20. At 0, change sparkle sprite.
+    byteType         db   ;#$00 or #$01. When #$01, next sparkle data byte uses all 8-->
+                                    ;bits for x coord change. if #$00, next data byte contains-->
+                                    ;4 bits for x coord change and 4 bits for y coord change.
+    complete         db   ;#$01=sprite has completed its task, #$00 if not complete.
+    spareB           db   ;Not used.
+    xRun             db   ;x displacement of sprite movement(run).
+    yRise            db   ;y displacement of sprite movement(rise).
+    xDir             db   ;MSB set=decrease sprite x pos, else increase sprite x pos.
+    yDir             db   ;MSB set=decrease sprite y pos, else increase sprite y pos.
+.endst
+
+.struct SaveSlot
+    data             ds $11D ; wla currently doesn't support labels in ds
 .endst
 
 ;-------------------------------------------[ Defines ]----------------------------------------------
@@ -236,14 +278,6 @@ GamePaused             db        ;#$00=Game running, #$01=Game paused.
 RoomPtr                dw        ;Low byte of room pointer address.
 ; RoomPtr+1              = $34     ;High byte of room pointer address.
 
-StructPtr              dw        ;Low bute of structure pointer address.
-; StructPtr+1            = $36     ;High byte of structure pointer address.
-
-CartRAMWorkPtr         dw        ;Low byte of pointer to current position in room RAM.
-; CartRAMWorkPtr+1       = $38     ;High byte of pointer to current position in room RAM.
-                                   ;The CartRAMWorkPtr points to the current memory address-->
-                                   ;in the room RAM that is being loaded.
-
 CartRAMPtr             dw        ;Low byte of pointer to room RAM (#$00).
 ; CartRAMPtr+1           = $3A     ;High byte of pointer to room RAM (#$60 or #$64).
                                    ;Room RAM is a screen buffer where the objects that make-->
@@ -271,8 +305,8 @@ ItemIndex              db        ;#$00 or #$08. Added to PowerUpType addresses t
 
 SamusDir               db        ;0 = Right, 1 = Left.
 SamusDoorDir           db        ;Direction Samus passed through door.
-SamusMapPosY           db        ;Current y position on world map of the screen to load into VRAM.
-SamusMapPosX           db        ;Current x position on world map of the screen to load into VRAM.
+MapPosY                db        ;Current y position on world map of the screen to load into VRAM.
+MapPosX                db        ;Current x position on world map of the screen to load into VRAM.
 WalkSoundDelay         db   
 StatuesBridgeIsSpawned db        ;0=Bridge is not spawned, 1=Bridge is spawned and will build itself.
 IsSamus                db        ;1=Samus object being accessed, 0=not Samus.
@@ -301,8 +335,6 @@ DoorCartRAMPtr         dsw 4
 SamusInLava            db        ;#$01=Samus in lava, #$00=She is not.
 ObjectCounter          db        ;Counts such things as object explosion time.
 EnemyMovePixelQty      db        ;Quantity of times to call the current EnemyMoveOnePixel routine
-ObjectPal              db        ;Attrib. table info for room object(#$00 thru #$03).
-RoomPal                db
 TempX                  db
 TempY                  db
 ObjectCntrl            db        ;Controls object properties such as mirroring and color-->
@@ -325,7 +357,7 @@ ScrollBlockOnNameTable0 db         ;doors loaded on the name tables. The informa
 HealthChange           dw        ;Amount to add/subtract from Health.
 ; HealthChange+1         = $6F
 
-SamusBlink             db        ;Samus's invincibility frames delay counter.
+SamusInvincibleDelay   db        ;Samus's invincibility frames delay counter.
 UpdatingProjectile     db        ;#$01=Projectile update in process. #$00=not in process.
 SamusKnockbackDir      db        ;#$00=Push Samus left when hit, #$01=Push right, #$FF=No push.
                                     ; i think there may something more to this variable, but im not sure what
@@ -333,6 +365,18 @@ SamusKnockbackIsBomb   db        ;bit 7: 0=samus was hurt, 1=samus was bombed
                                    ;bit 0: 0=diagonal knockback, 1=vertical knockback
 
 SamusKnockbackIsBomb77 db        ;set to SamusKnockbackIsBomb
+
+MiniBossKillDelayFlag  db        ;Initiate power up music and delay after Kraid/Ridley killed.
+PowerUpDelayFlag       db        ;Initiate power up music and delay after item pickup.
+
+EndTimer               dw        ;Lower byte of end game escape timer.
+; EndTimer+1             = $010B   ;Upper byte of end game escape timer.
+
+EndTimerEnemyHi        db
+EndTimerEnemyIsEnabled db        ;the end timer in the "TIME BOMB SET" message. #$00=no, #$01=yes
+
+MissileToggle          db        ;0=fire bullets, 1=fire missiles.
+SamusHurt010F          db        ;never read. takes on different values depending on how samus was hit.
 
 ; $7A-$DE cleared in MoreInit (should clear $DF, off-by-one bug?)
 .union
@@ -342,16 +386,14 @@ SamusKnockbackIsBomb77 db        ;set to SamusKnockbackIsBomb
     KraidNailCounter       db        ;Used to determine when to fire Kraid's nail.
     RidleyProjectileCounter db        ;Used to determine when to fire Ridley's projectile.
 
-    EnemyMovementPtr       .dw
+    EnemyMovementPtr       dw
     ; EnemyMovementPtr+1     = $82
     EnemyStatusPreAI       db        ;set to enemy status before enemy ai routine is run
+    EnemyStatusPreWeaponReaction db  ;set to enemy status before enemy weapon reaction routine is run
     Enemy82                db
 
-    SpawnFireball_83       dw        ;right facing anim index for enemy that shoots the fireball
-    ; SpawnFireball_83+1     = $84     ;left facing anim index for enemy that shoots the fireball
     SpawnFireball_AnimTableIndex .db       ;index into EnemyFireballRisingAnimIndexTable
-    EnemyFlipAfterDisplacementAnimIndex          dw     ;right facing anim index for enemy using EnemyFlipAfterDisplacement routine
-    ; EnemyFlipAfterDisplacementAnimIndex+1 = $86     ;left facing anim index for enemy using EnemyFlipAfterDisplacement routine
+    EnemyFlipAfterDisplacementAnimIndex          db     ;anim index for enemy using EnemyFlipAfterDisplacement routine
     SpawnFireball_87       db        ;fireball status?
     SpawnFireball_EnData0A db
 
@@ -470,23 +512,7 @@ PPUCTRL_ZP             db        ;Data byte to be loaded into PPU control regist
 
 ;--------------------------------------------[ Onepage ]--------------------------------------------
 
-.enum $0100 export
-
-MiniBossKillDelayFlag  db        ;Initiate power up music and delay after Kraid/Ridley killed.
-PowerUpDelayFlag       db        ;Initiate power up music and delay after item pickup.
-
-EndTimer               dw        ;Lower byte of end game escape timer.
-; EndTimer+1             = $010B   ;Upper byte of end game escape timer.
-
-EndTimerEnemyHi        db
-EndTimerEnemyIsEnabled db        ;the end timer in the "TIME BOMB SET" message. #$00=no, #$01=yes
-
-MissileToggle          db        ;0=fire bullets, 1=fire missiles.
-SamusHurt010F          db        ;never read. takes on different values depending on how samus was hit.
-
-.ende
-
-PalRam                 = $0110   ;$0110 thru $012F
+PalRam                 = $0100   ;$0100 thru $011F
 
 ;-----------------------------------------[ Sprite RAM ]---------------------------------------------
 
@@ -900,6 +926,11 @@ NumberOfUniqueItems    db        ;Counts number of power-ups and red doors-->
 UniqueItemHistory      ds $100   ;Thru $68FC. History of Unique items collected.-->
 ;EndItemHistory         = $68FC   ;Two bytes per item.
 
+SaveChecksum           db
+SaveChecksumXor        db
+SaveChecksumDup        db
+SaveChecksumXorDup     db
+
 ; 18 bytes ($6988-$6999)
 PasswordByte           ds $12
 ; PasswordByte+$00       = $6988   ;Stores status of items 0 thru 7.
@@ -916,7 +947,7 @@ PasswordByte           ds $12
 ; PasswordByte+$0B       = $6993   ;Stores SamusAge.
 ; PasswordByte+$0C       = $6994   ;Stores SamusAge+1.
 ; PasswordByte+$0D       = $6995   ;Stores SamusAge+2.
-; PasswordByte+$0E       = $6996   ;Stores no data.
+; PasswordByte+$0E       = $6996   ;Stores SamusGear1.
 ; PasswordByte+$0F       = $6997   ;Stores Statue statuses(bits 4 thu 7).
 ; PasswordByte+$10       = $6998   ;Stores value RandomNumber1.
 ; PasswordByte+$11       = $6999   ;Stores sum of $6988 thru $6998(Checksum).
@@ -927,43 +958,7 @@ PasswordByte           ds $12
 ;Upper two bits of PasswordChar bytes will always be %00.
 PasswordChar           ds $18
 
-;---------------------------------------[ More enemy RAM ]-------------------------------------------
-
-; 16 slots of 16 bytes each ($6AF4-$6BF3)
-EnsExtra               instanceof EnExtra $10 startfrom 0
-
-; 16 slots of 8 bytes each ($6BF4-$6C73)
-Cannons                instanceof Cannon $10 startfrom 0
-
-;-------------------------------------[ Intro sprite defines ]---------------------------------------
-
-; 40 slots of 4 bytes each ($6E00-$6E9F)
-IntroStarSprite        instanceof OAMSprite $28 startfrom 0        ;RAM used for storing intro star sprite data.
-
 .ende
-
-; 8 slots of 16 bytes each ($6EA0-$6F1F)
-;Intro sprite 0 and sparkle sprite.
-IntroSprYCoord         = $6EA0   ;Loaded into byte 0 of sprite RAM(Y position).
-IntroSprPattTbl        = $6EA1   ;Loaded into byte 1 of sprite RAM(Pattern table index).
-IntroSprCntrl          = $6EA2   ;Loaded into byte 2 of sprite RAM(Control byte).
-IntroSprXCoord         = $6EA3   ;Loaded into byte 3 of sprite RAM(X position).
-IntroSprIndex          = $6EA4   ;Index to next sparkle sprite data byte.
-IntroSprNextDelay      = $6EA5   ;Decrements each frame. When 0, load new sparkle sprite data.
-SparkleSprYChange      = $6EA6   ;Sparkle sprite y coordinate change.
-IntroSprXChange        = $6EA6   ;Intro sprite x total movement distance.
-SparkleSprXChange      = $6EA7   ;Sparkle sprite x coordinate change.
-IntroSprYChange        = $6EA7   ;Intro sprite y total movement distance.
-IntroSprChangeDelay    = $6EA8   ;decrements each frame from #$20. At 0, change sparkle sprite.
-IntroSprByteType       = $6EA9   ;#$00 or #$01. When #$01, next sparkle data byte uses all 8-->
-                                   ;bits for x coord change. if #$00, next data byte contains-->
-                                   ;4 bits for x coord change and 4 bits for y coord change.
-IntroSprComplete       = $6EAA   ;#$01=sprite has completed its task, #$00 if not complete.
-IntroSprSpareB         = $6EAB   ;Not used.
-IntroSprXRun           = $6EAC   ;x displacement of sprite movement(run).
-IntroSprYRise          = $6EAD   ;y displacement of sprite movement(rise).
-IntroSprXDir           = $6EAE   ;MSB set=decrease sprite x pos, else increase sprite x pos.
-IntroSprYDir           = $6EAF   ;MSB set=decrease sprite y pos, else increase sprite y pos.
 
 ;----------------------------------------------------------------------------------------------------
 
@@ -980,8 +975,6 @@ TileAnimIndex          db
 PalAnimDelay           db
 PalAnimIndex           db
 
-TilesetIndexAheadOfElevator db   ;for readahead
-
 SpiderOrientation      db        ;0=on floor, 1=on right wall, 2=on ceiling, 3=on left wall
 
 CHRBank0               db        ;PPU $0000-$07FF
@@ -993,17 +986,38 @@ CHRBank5               db        ;PPU $1C00-$1FFF
 
 .ende
 
-.enum $77F0
+.enum $7980 export
+.union
+;---------------------------------------[ More enemy RAM ]-------------------------------------------
 
-MetroidRepelSpeed      dw        ;$77F0 for negative, $77F1 for positive
-MetroidAccel           ds 4      ;$77F2-$77F3 for red metroid, $77F4-$77F5 for green metroid
-MetroidMaxSpeed        dw        ;$77F6 for red metroid, $77F7 for green metroid
-MetroidLatch0400       db        ;bits 0-3 is #$0 to #$C, frame counter from touching to fully latched on.
-MetroidLatch0410       db          ;bits 4-6 is #$0 to #$5, count how many bomb hits (5 for separation).
-MetroidLatch0420       db          ;bit 7 is sign of x speed
-MetroidLatch0430       db
-MetroidLatch0440       db
-MetroidLatch0450       db
+    ; 16 slots of 8 bytes each ($7D80-$7DFF)
+    Cannons                instanceof Cannon $10 startfrom 0
+
+    ; 16 slots of 16 bytes each ($7E00-$7EFF) (page-aligned to maximize performance)
+    EnsExtra               instanceof EnExtra $10 startfrom 0
+
+    ; 16 slots of 16 bytes each ($7F00-$7FFF)
+    EnsExtra2              instanceof EnExtra2 $10 startfrom 0
+
+.nextu
+;-------------------------------------[ Intro sprite defines ]---------------------------------------
+
+    ; 40 slots of 4 bytes each ($6E00-$6E9F)
+    IntroStarSprite        instanceof OAMSprite $28 startfrom 0        ;RAM used for storing intro star sprite data.
+
+    ; 8 slots of 16 bytes each ($6EA0-$6F1F)
+    ;Intro sprite 0 and sparkle sprite.
+    IntroSprs              instanceof IntroSpr 8 startfrom 0
+
+.endu
+.ende
+
+; Save data beyond this point which must be page-aligned
+.enum $7C00 export
+
+SaveSlots              instanceof SaveSlot 3 startfrom 0
+
+CurrentSaveSlot        db
 
 .ende
 

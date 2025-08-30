@@ -18,10 +18,8 @@ RidleyBranch_Explode:
     beq RidleyBranch_Exit
 
 RidleyBranch_Normal:
-    lda #EnAnim_0B - EnAnimTbl.b
+    lda #EnAnim_RidleyHoppingFacingRight - EnAnimTbl.b
     sta EnemyFlipAfterDisplacementAnimIndex
-    lda #EnAnim_0E - EnAnimTbl.b
-    sta EnemyFlipAfterDisplacementAnimIndex+1.b
     jsr CommonJump_EnemyFlipAfterDisplacement
     jsr RidleyTryToLaunchProjectile
 
@@ -155,8 +153,9 @@ RidleyTryToLaunchProjectile_FoundEnemySlot:
     lda #enemyStatus_Resting
     sta EnsExtra.0.status,x
     ; Flag enemy init
-    lda #$FF
-    sta EnsExtra.0.animIndex,x
+    lda #$00
+    sta EnsExtra.0.pose,x
+    sta EnsExtra2.0.props2F,x
     ; set projectile's position to its initial position
     jsr LoadEnemyPositionFromTemp_
     jmp CommonJump_0E

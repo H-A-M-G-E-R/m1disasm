@@ -24,6 +24,12 @@
 
 ;------------------------------------------[ Start of code ]-----------------------------------------
 
+; Save code
+
+.if CFG_SAVE != 0
+    .include "save.asm"
+.endif
+
 MainTitleRoutine:
     ;If intro routines not running, branch.
     lda TitleRoutine
@@ -33,6 +39,7 @@ MainTitleRoutine:
     lda Joy1Change
     and #BUTTON_START
     beq L8022
+    .if CFG_SAVE == 0
         ;Set name table to name table 0.
         lda PPUCTRL_ZP
         and #$FC
@@ -41,7 +48,44 @@ MainTitleRoutine:
         lda #_id_StartContinueScreen1B.b
         sta TitleRoutine
         bne L8027 ;Branch always.
+    .else
+        lda Joy1Status
+        cmp #BUTTON_START | BUTTON_B | BUTTON_A.b
+        bne +
+            ; NUKE THE FILE!!!
+            jsr InitializeStats
+            jsr FileSave
+            jsr SFX_BombExplode
+            jmp L8022
+        +
+        ;Load file and start game.
+        jsr FileLoad
+        jmp InitializeGame
+    .endif
     L8022:
+    .if CFG_SAVE != 0
+        lda Joy1Change
+        and #BUTTON_RIGHT
+        beq +
+            jsr SFX_Beep
+            inc CurrentSaveSlot
+            lda CurrentSaveSlot
+            cmp #$03
+            bne +
+            lda #$00
+            sta CurrentSaveSlot
+        +
+        lda Joy1Change
+        and #BUTTON_LEFT
+        beq +
+            jsr SFX_Beep
+            dec CurrentSaveSlot
+            lda CurrentSaveSlot
+            bpl +
+            lda #$02
+            sta CurrentSaveSlot
+        +
+    .endif
         ;($C1BC)Remove sparkle and crosshair sprites from screen.
         jsr RemoveIntroSprites
 
@@ -112,10 +156,12 @@ IncTitleRoutine0B:
     rts
 
 InitializeAfterReset:
-    ldy #$00
-    sty NARPASSWORD                 ;Set NARPASSWORD not active.
+.if CFG_SAVE != 0
+    jsr CheckForCorruptSaveFiles
+.endif
     lda #$02                        ;A=2.
     sta IntroMusicRestart           ;Title rountines cycle twice before restart of music.
+    ldy #$00
     sty PalDataIndex                ;Reset index to palette data.
     sty ScreenFlashPalIndex         ;Reset index into screen flash palette data.
     sty IntroStarOffset             ;Reset index into IntroStarPntr table.
@@ -164,9 +210,10 @@ InitializeAfterReset:
         inx
         cpx #$68
         bne @loop_A
-    ;Draw intro background next.
+    ;Increment to next routine. DrawIntroBackground
     inc TitleRoutine
-    jmp LoadStarSprites             ;($98AE)Loads stars on intro screen.
+    ;Loads stars on intro screen.
+    jmp LoadStarSprites
 
 ;The following table is used by the code above for writing values to RAM.
 RamValueTbl: ;$80C8
@@ -176,9 +223,11 @@ RamValueTbl: ;$80C8
     .byte $C0, $C4
 
 DrawIntroBackground:
-    lda #music_IntroMusic           ;Intro music.
-    sta CurrentMusic                ;
-    jsr ScreenOff                   ;($C439)Turn screen off.
+    ;Initiates intro music.
+    lda #music_IntroMusic
+    sta CurrentMusic
+    ;Turn screen off to draw on the screen.
+    jsr ScreenOff
     ;Compress the nametable to a buffer.
     lda #<TitleNametable_Compressed.b
     sta lzsa_srcptr
@@ -218,23 +267,31 @@ DrawIntroBackground:
         bne @loop_A
     jsr WriteScroll
 
-    lda #$01                        ;
-    jsr WriteTitlePal               ;Write palette 0.
-    lda PPUCTRL_ZP                  ;
-    and #$FC                        ;Switch to name table 0
-    sta PPUCTRL_ZP                  ;
-    inc TitleRoutine                ;Next routine sets up METROID fade in delay.
-    jmp ScreenOn                    ;($C447)Turn screen on.
+    ;Write palette 0.
+    lda #$01
+    jsr WriteTitlePal
+    ;Switch to name table 0
+    lda PPUCTRL_ZP
+    and #$FC
+    sta PPUCTRL_ZP
+    ;Next routine sets up METROID fade in delay. FadeInDelay
+    inc TitleRoutine
+    ;Turn screen back on.
+    jmp ScreenOn
 
 FadeInDelay:
-    lda PPUCTRL_ZP                  ;
-    and #$FE                        ;Switch to name table 0 or 2.
-    sta PPUCTRL_ZP                  ;
-    lda #$08                        ;Loads Timer3 with #$08. Delays Fade in routine.-->
-    jsr SetTimer3                      ;Delays fade in by 80 frames (1.3 seconds).
-    lda #$04                        ;
-    sta PalDataIndex                ;Loads PalDataIndex with #$04
-    inc TitleRoutine                ;Increment to next routine.
+    ;Switch to name table 0 or 2. (useless, PPUCTRL_ZP is always #$90 here)
+    lda PPUCTRL_ZP
+    and #$FE
+    sta PPUCTRL_ZP
+    ;Loads Timer3 with #$08. Delays Fade in routine by 80 frames (1.3 seconds).
+    lda #$08
+    jsr SetTimer3
+    ;Loads PalDataIndex with #$04
+    lda #$04
+    sta PalDataIndex
+    ;Increment to next routine. METROIDFadeIn
+    inc TitleRoutine
     rts
 
 FlashEffect:
@@ -247,14 +304,14 @@ FlashEffect:
     and #$03
     sta PalDataIndex
     jsr LoadPalData
-    ;If Timer3 has not expired, branch so routine will keep running.
+    ;If 80 frames (1.3 seconds) have not elapsed, branch so routine will keep running.
     lda Timer3
     bne @RTS
     ;Ensures the palette index is back at 0.
     lda PalDataIndex
     cmp #$04
     bne @RTS
-    ;Increment to next routine.
+    ;Increment to next routine. METROIDSparkle
     inc TitleRoutine
     jsr LoadSparkleData             ;($87AB) Loads data for next routine.
     ;Sets Timer 3 for a delay of 240 frames (4 seconds).
@@ -264,19 +321,22 @@ FlashEffect:
     rts
 
 METROIDFadeIn:
-    ;
+    ; exit if 80 frames (1.3 seconds) have not elapsed yet.
     lda Timer3
     bne RTS_8141
     ;Every 16th FrameCount, Change palette. Causes the fade in effect.
     lda FrameCount
     and #$0F
     bne RTS_8141
-    ;
-    jsr LoadPalData                 ;($8A8C)Load data into Palettes.
+    ;Load data into Palettes.
+    jsr LoadPalData
+    ; exit if the fade in still has more palettes to go through
     bne RTS_8141
+    ; fade in is completed
     ;Set timer delay for METROID flash effect. Delays flash by 320 frames (5.3 seconds).
     lda #$20
     jsr SetTimer3
+    ;Increment to next routine. LoadFlashTimer
     inc TitleRoutine
 RTS_8141:
     rts
@@ -288,96 +348,140 @@ LoadFlashTimer:
     ;Stores a value of 80 frames in Timer3 (1.3 seconds).
     lda #$08
     jsr SetTimer3
+    ;Increment to next routine. FlashEffect
     inc TitleRoutine
     rts
 
 METROIDSparkle:
-    lda Timer3                      ;Wait until 3 seconds have passed since-->
-    bne RTS_8162                    ;last routine before continuing.
-    lda IntroSprComplete            ;Check if sparkle sprites are done moving.
-    and IntroSprComplete+$10        ;
-    cmp #$01                        ;Is sparkle routine finished? If so,-->
-    bne L815F                       ;go to next title routine, else continue-->
-    inc TitleRoutine                ;with sparkle routine.
-    bne RTS_8162                    ;
-L815F:
-    jsr UpdateSparkleSprites        ;($87CF)Update sparkle sprites on the screen.
-RTS_8162:
+    ;Wait until 3 seconds have passed since last routine before continuing.
+    lda Timer3
+    bne @RTS
+    
+    ;Check if sparkle sprites are done moving.
+    lda IntroSprs.0.complete
+    and IntroSprs.1.complete
+    cmp #$01
+    bne @endIf_A
+        ; sparkle sprites are done moving, sparkle routine is finished
+        ;Increment to next routine. METROIDFadeOut
+        inc TitleRoutine
+        bne @RTS
+    @endIf_A:
+    ; sparkle sprites are not done moving, continue with sparkle routine.
+    ;Update sparkle sprites on the screen.
+    jsr UpdateSparkleSprites
+@RTS:
     rts
 
 METROIDFadeOut:
-    lda FrameCount                  ;Wait until the frame count is a multiple-->
-    and #$07                        ;of eight before proceeding.
-    bne RTS_8181                    ;
-    lda FadeDataIndex               ;If FadeDataIndex is less than #$04, keep-->
-    cmp #$04                        ;doing the palette changing routine.
-    bne L817E                       ;
-    jsr InitCrossMissiles           ;($8897)Load initial sprite values for crosshair routine.
-    lda #$08                        ;
-    jsr SetTimer3                      ;Load Timer3 with a delay of 80 frames(1.3 seconds).
-    sta CrossMsl0to3SlowDelay       ;Set counter for slow sprite movement for 8 frames,
-    lda #$00                        ;
-    sta SecondCrosshairSprites      ;Set SecondCrosshairSprites = #$00
-    inc TitleRoutine                ;Move to next routine
-L817E:
-    jsr DoFadeOut                   ;($8B5F)Fades METROID off the screen.
-RTS_8181:
+    ;Wait until the frame count is a multiple of eight before proceeding.
+    lda FrameCount
+    and #$07
+    bne @RTS
+    ;If FadeDataIndex is less than #$04, keep doing the palette changing routine.
+    lda FadeDataIndex
+    cmp #$04;
+    bne @endIf_A
+        ;($8897)Load initial sprite values for crosshair routine.
+        jsr InitCrossMissiles
+        ;Set counter for slow sprite movement for 8 frames,
+        lda #$08
+        sta CrossMsl0to3SlowDelay
+        ;Load Timer3 with a delay of 80 frames(1.3 seconds).
+        jsr SetTimer3
+        ;Set SecondCrosshairSprites = #$00
+        lda #$00
+        sta SecondCrosshairSprites
+        ;Increment to next routine. Crosshairs
+        inc TitleRoutine
+    @endIf_A:
+    ;Fades METROID off the screen.
+    jsr DoFadeOut
+@RTS:
     rts
 
 Crosshairs:
-    lda FlashScreen                 ;Is it time to flash the screen white?-->
-    beq L8189                       ;If not, branch.
-    jsr FlashIntroScreen            ;($8AA7)Flash screen white.
-L8189:
-    lda Timer3                      ;Wait 80 frames from last routine-->
-    bne RTS_81D0                    ;before running this one.
-    lda IntroSprComplete            ;
-    and IntroSprComplete+$10        ;Check if first 4 sprites have completed-->
-    and IntroSprComplete+$20        ;their movements.  If not, branch.
-    and IntroSprComplete+$30        ;
-    beq L81CA                       ;
-    lda #$01                        ;Prepare to flash screen and draw cross.
-    cmp SecondCrosshairSprites      ;Branch if second crosshair sprites are already-->
-    beq L81AB                       ;active.
-    inc SecondCrosshairSprites      ;Indicates second crosshair sprites are active.
-    sta IsUpdatingCrossExplode            ;Draw cross animation on screen.
-    sta FlashScreen                 ;Flash screen white.
-    lda #$00                        ;
-    sta CrossExplodeLengthIndex              ;Reset index to cross sprite data.
-L81AB:
-    and IntroSprComplete+$40        ;
-    and IntroSprComplete+$50        ;Check if second 4 sprites have completed-->
-    and IntroSprComplete+$60        ;their movements.  If not, branch.
-    and IntroSprComplete+$70        ;
-    beq L81CA                       ;
-    lda #$01                        ;Prepare to flash screen and draw cross.
-    sta IsUpdatingCrossExplode            ;Draw cross animation on screen.
-    sta FlashScreen                 ;Flash screen white.
-    jsr LoadStarSprites             ;($98AE)Loads stars on intro screen.
-    lda #$00                        ;
-    sta CrossExplodeLengthIndex              ;Reset index to cross sprite data.
-    inc TitleRoutine                ;Do MoreCrosshairs next frame.
-    bne L81CD                       ;Branch always.
-L81CA:
-    jsr UpdateCrossMissiles         ;($88FE)Draw sprites that converge in center of screen.
-L81CD:
-    jsr UpdateCrossExplode          ;($8976)Draw cross sprites in middle of the screen.
-RTS_81D0:
+    ;Is it time to flash the screen white? If not, branch.
+    lda FlashScreen
+    beq @endIf_A
+        ;Flash screen white.
+        jsr FlashIntroScreen
+    @endIf_A:
+    ;Wait 80 frames from last routine before running this one.
+    lda Timer3
+    bne @RTS
+    
+    ;Check if first 4 sprites have completed their movements.  If not, branch.
+    lda IntroSprs.0.complete
+    and IntroSprs.1.complete
+    and IntroSprs.2.complete
+    and IntroSprs.3.complete
+    beq @notComplete
+    
+    ;Prepare to flash screen and draw cross.
+    ;Branch if second crosshair sprites are already active.
+    lda #$01
+    cmp SecondCrosshairSprites
+    beq @endIf_B
+        ;Indicates second crosshair sprites are active.
+        inc SecondCrosshairSprites
+        ;Draw cross animation on screen.
+        sta IsUpdatingCrossExplode
+        ;Flash screen white.
+        sta FlashScreen
+        ;Reset index to cross sprite data.
+        lda #$00
+        sta CrossExplodeLengthIndex
+    @endIf_B:
+    ;Check if second 4 sprites have completed their movements.  If not, branch.
+    and IntroSprs.4.complete
+    and IntroSprs.5.complete
+    and IntroSprs.6.complete
+    and IntroSprs.7.complete
+    beq @notComplete
+    
+    ;Prepare to flash screen and draw cross.
+    ;Draw cross animation on screen.
+    lda #$01
+    sta IsUpdatingCrossExplode
+    ;Flash screen white.
+    sta FlashScreen
+    ;Loads stars on intro screen. (useless, stars are already on the screen at this point)
+    jsr LoadStarSprites
+    ;Reset index to cross sprite data.
+    lda #$00
+    sta CrossExplodeLengthIndex
+    ;Increment to next routine. MoreCrosshairs
+    inc TitleRoutine
+    bne @complete ;Branch always.
+@notComplete:
+    ;Draw sprites that converge in center of screen.
+    jsr UpdateCrossMissiles
+@complete:
+    ;Draw cross sprites in middle of the screen.
+    jsr UpdateCrossExplode
+@RTS:
     rts
 
 MoreCrosshairs:
-    lda FlashScreen                 ;Is it time to flash the screen white?-->
-    beq L81DB                       ;If not, branch.
-    jsr UpdateCrossExplode          ;($8976)Draw cross sprites in middle of the screen.
-    jmp FlashIntroScreen            ;($8AA7)Flash screen white.
-L81DB:
-    inc TitleRoutine                ;ChangeIntroNameTable is next routine to run.
-    lda #$60                        ;
-    sta ObjY                        ;
-    lda #$7C                        ;These values are written into memory, but they are-->
-    sta ObjX                        ;not used later in the title routine.  This is the-->
-    lda ObjAnimResetIndex           ;remnants of some abandoned code.
-    sta ObjAnimIndex                ;
+    ;Is it time to flash the screen white? If not, branch.
+    lda FlashScreen
+    beq @endIf_A
+        ;Draw cross sprites in middle of the screen.
+        jsr UpdateCrossExplode
+        ;Flash screen white.
+        jmp FlashIntroScreen
+    @endIf_A:
+    ;Increment to next routine. ChangeIntroNameTable
+    inc TitleRoutine
+    ;These values are written into memory, but they are not used later in the title routine.
+    ;This is the remnants of some abandoned code.
+    lda #$60
+    sta ObjY
+    lda #$7C
+    sta ObjX
+    lda ObjAnimResetIndex
+    sta ObjAnimIndex
     rts
 
 ChangeIntroNameTable:
@@ -396,45 +500,58 @@ ChangeIntroNameTable:
     rts
 
 MessageFadeIn:
-    lda Timer3                      ;Check if delay timer has expired.  If not, branch-->
-    bne RTS_8262                    ;to exit, else run this rouine.
-    lda FrameCount                  ;
-    and #$07                        ;Perform next step of fade every 8th frame.
-    bne RTS_8262                    ;
-    lda FadeDataIndex               ;
-    cmp #$0B                        ;Has end of fade in palette data been reached?-->
-    bne L825F                       ;If not, branch.
-    lda #$00                        ;
-    sta FadeDataIndex               ;Clear FadeDataIndex.
-    lda #$30                        ;
-    jsr SetTimer3                      ;Set Timer3 to 480 frames(8 seconds).
-    inc TitleRoutine                ;Next routine is MessageFadeOut.
-    bne RTS_8262                    ;Branch always.
-L825F:
-    jsr DoFadeOut                   ;($8B5F)Fade message onto screen.
-RTS_8262:
+    ;Check if delay timer has expired.  If not, branch to exit.
+    lda Timer3
+    bne @RTS
+    ;Perform next step of fade every 8th frame.
+    lda FrameCount
+    and #$07
+    bne @RTS
+    ;Has end of fade in palette data been reached? If not, branch.
+    lda FadeDataIndex
+    cmp #$0B
+    bne @endIf_A
+        ;Clear FadeDataIndex.
+        lda #$00
+        sta FadeDataIndex
+        ;Set Timer3 to 480 frames(8 seconds).
+        lda #$30
+        jsr SetTimer3
+        ;Next routine is MessageFadeOut.
+        inc TitleRoutine
+        bne @RTS ;Branch always.
+    @endIf_A:
+    ;Fade message onto screen.
+    jsr DoFadeOut
+@RTS:
     rts
 
 MessageFadeOut:
-    lda Timer3                      ;Check if delay timer has expired.  If not, branch-->
-    bne RTS_8282                    ;to exit, else run this rouine.
-    lda FrameCount                  ;
-    and #$07                        ;Perform next step of fade every 8th frame.
-    bne RTS_8282                    ;
-    lda FadeDataIndex               ;
-    cmp #$05                        ;Has end of fade out palette data been reached?-->
-    bne L827F                       ;If not, branch.
-    lda #$06                        ;
-    sta FadeDataIndex               ;Set index to start of fade in data.
-    inc TitleRoutine                ;Next routine is DelayIntroReplay.
-    bne RTS_8282                    ;Branch always.
-L827F:
-    jsr DoFadeOut                   ;($8B5F)Fade message off of screen.
-RTS_8282:
+    ;Check if delay timer has expired.  If not, branch to exit.
+    lda Timer3
+    bne @RTS
+    ;Perform next step of fade every 8th frame.
+    lda FrameCount
+    and #$07
+    bne @RTS
+    ;Has end of fade out palette data been reached? If not, branch.
+    lda FadeDataIndex
+    cmp #$05
+    bne @endIf_A
+        ;Set index to start of fade in data.
+        lda #$06
+        sta FadeDataIndex
+        ;Next routine is DelayIntroReplay.
+        inc TitleRoutine
+        bne @RTS ;Branch always.
+    @endIf_A:
+    ;Fade message off of screen.
+    jsr DoFadeOut
+@RTS:
     rts
 
 DelayIntroReplay:
-    ;Increment to next routine.
+    ;Increment to next routine. ClearSpareMem
     inc TitleRoutine
     ;Set Timer3 for a delay of 160 frames(2.6 seconds).
     lda #$10
@@ -442,48 +559,62 @@ DelayIntroReplay:
     rts
 
 PrepIntroRestart:
-    lda Timer3                      ;Check if delay timer has expired.  If not, branch-->
-    bne RTS_82E9                    ;to exit, else run this rouine.
-    sta IsSamus                     ;Clear IsSamus memory address.
-    ldy #$1F                        ;
-L82AF:
-    sta ObjAction,y                 ;
-    dey                             ;Clear RAM $0300 thru $031F.
-    bpl L82AF                       ;
-    lda PPUCTRL_ZP                  ;Change to name table 0.
-    and #$FC                        ;
-    sta PPUCTRL_ZP                  ;
-    iny                             ;Y=0.
-    sty PalDataIndex                ;
-    sty ScreenFlashPalIndex         ;Clear all index values from these addresses.
-    sty IntroStarOffset             ;
-    sty FadeDataIndex               ;
-    sty Joy1Change                  ;
-    sty Joy1Status                  ;Clear addresses that were going to be written to by an-->
-    sty Joy1Retrig                  ;unused intro routine.
-    ldy #$02                        ;
-    sty TitleRoutine                ;Next routine sets up METROID fade in delay.
-    lda IntroMusicRestart           ;Check to see if intro music needs to be restarted.-->
-    bne L82EA                       ;Branch if not.
-    lda #$FF                        ;
-    sta PreviousMusic               ;Restart intro music.
-    lda #$02                        ;Set restart of intro music after another two cycles-->
-    sta IntroMusicRestart           ;of the title routines.
-RTS_82E9:
-    rts
+    ;Check if delay timer has expired.  If not, branch to exit.
+    lda Timer3
+    bne @RTS
+    
+    sta IsSamus ;Clear IsSamus memory address.
+    ;Clear RAM $0300 thru $031F.
+    ldy #$1F
+    @loop:
+        sta ObjAction,y
+        dey
+        bpl @loop
+    ;Change to name table 0.
+    lda PPUCTRL_ZP
+    and #$FC
+    sta PPUCTRL_ZP
+    ;Clear all index values from these addresses.
+    iny ;Y=0.
+    sty PalDataIndex
+    sty ScreenFlashPalIndex
+    sty IntroStarOffset
+    sty FadeDataIndex
+    sty Joy1Change
+    sty Joy1Status
+    sty Joy1Retrig
+    ;Next routine sets up METROID fade in delay.
+    ldy #$02
+    sty TitleRoutine
+    ;Check to see if intro music needs to be restarted. Branch if not.
+    lda IntroMusicRestart
+    bne @else_A
+        ;Restart intro music.
+        lda #$FF
+        sta PreviousMusic
+        ;Set restart of intro music after another two cycles of the title routines.
+        lda #$02
+        sta IntroMusicRestart
+    @RTS:
+        rts
 
-L82EA:
-    dec IntroMusicRestart           ;One title routine cycle complete. Decrement intro-->
-    rts                             ;music restart counter.
+    @else_A:
+        ;One title routine cycle complete. Decrement intro music restart counter.
+        dec IntroMusicRestart
+        rts
 
 TitleScreenOff:
-    jsr ScreenOff                   ;($C439)Turn screen off.
-    inc TitleRoutine                ;Next routine is TitleRoutineReturn.
-    rts                             ;This routine should not be reached.
+    ;This routine should not be reached.
+    ;Turn screen off.
+    jsr ScreenOff
+    ;Next routine is TitleRoutineReturn.
+    inc TitleRoutine
+    rts
 
 TitleRoutineReturn13:
 TitleRoutineReturn14:
-    rts                             ;Last title routine function. Should not be reached.
+    ;Last title routine function. Should not be reached.
+    rts
 
 ;The following error message is diplayed if the player enters an incorrect password.
 L8759:
@@ -498,17 +629,17 @@ LoadSparkleData:
     ldx #$0A
     L87AD:
         lda InitSparkleDataTbl,x
-        sta IntroSprYCoord,x           ;Loads $6EA0 thru $6EAA with the table below.
-        sta IntroSprYCoord+$10,x       ;Loads $6EB0 thru $6EBA with the table below.
+        sta IntroSprs.0.y,x            ;Loads $6EA0 thru $6EAA with the table below.
+        sta IntroSprs.1.y,x            ;Loads $6EB0 thru $6EBA with the table below.
         dex
         ;Loop until all values from table below are loaded.
         bpl L87AD
     ;$6EA0 thru $6EAA = #$3C, #$C6, #$01, #$18, #$00, #$00, #$00, #$00, #$20, #$00, #$00, initial.
     ;$6EB0 thru $6EBA = #$6B, #$C6, #$01, #$DC, #$00, #$00, #$00, #$00, #$20, #$00, #$00, initial.
     lda #$6B
-    sta IntroSprYCoord+$10
+    sta IntroSprs.1.y
     lda #$DC
-    sta IntroSprXCoord+$10
+    sta IntroSprs.1.x
     rts
 
 ;Used by above routine to load Metroid initial sparkle data into $6EA0
@@ -529,48 +660,48 @@ DoTwoSparkleUpdates:
     ; fallthrough
 SparkleUpdate:
     ;If $6EA5 has not reached #$00, skip next routine.
-    lda IntroSprNextDelay,x
+    lda IntroSprs.0.nextDelay,x
     bne L87E1
         ;($881A)Update sparkle sprite screen position.
         jsr DoSparkleSpriteCoord
     L87E1:
     
     ;If sprite is already done, skip routine.
-    lda IntroSprComplete,x
+    lda IntroSprs.0.complete,x
     bne RTS_8819
     
-    dec IntroSprNextDelay,x
+    dec IntroSprs.0.nextDelay,x
 
     ;Updates sparkle sprite Y coord.
-    lda SparkleSprYChange,x
+    lda IntroSprs.0.sparkleYChange,x
     clc
-    adc IntroSprYCoord,x
-    sta IntroSprYCoord,x
+    adc IntroSprs.0.y,x
+    sta IntroSprs.0.y,x
 
     ;Updates sparkle sprite X coord.
-    lda SparkleSprXChange,x
+    lda IntroSprs.0.sparkleXChange,x
     clc
-    adc IntroSprXCoord,x
-    sta IntroSprXCoord,x
+    adc IntroSprs.0.x,x
+    sta IntroSprs.0.x,x
 
     ;Decrement IntroSprChangeDelay.
-    dec IntroSprChangeDelay,x
+    dec IntroSprs.0.changeDelay,x
     ;If 0, time to change sprite graphic.
     bne L8816
         ;The sparkle sprite graphic is-->
         ;changed back and forth between pattern table-->
         ;graphic $C6 and $C5. (BUG! Should be $C6 and $C7)
-        lda IntroSprPattTbl,x
+        lda IntroSprs.0.tileID,x
         eor #$C6~$C5
-        sta IntroSprPattTbl,x
+        sta IntroSprs.0.tileID,x
         ;IntroSprChangeDelay is reset to #$20.
         lda #$20
-        sta IntroSprChangeDelay,x
+        sta IntroSprs.0.changeDelay,x
         ;Flips pattern at $C5 in pattern table-->
         ;horizontally when displayed.
         asl ; a = #OAMDATA_HFLIP
-        eor IntroSprCntrl,x
-        sta IntroSprCntrl,x
+        eor IntroSprs.0.attrib,x
+        sta IntroSprs.0.attrib,x
     L8816:
     jmp WriteIntroSprite ;($887B)Transfer sprite info into sprite RAM.
 RTS_8819:
@@ -584,41 +715,41 @@ DoSparkleSpriteCoord:
     sta $00                         ;When working with top sparkle sprite, E1,E0=$89B3-->
     lda SparkleAddressTbl+1,y       ;and when botton sparkle sprite, E1,E0=$89E9.
     sta $01                         ;
-    ldy IntroSprIndex,x             ;Loads index for finding sparkle data (x=$00 or $10).
+    ldy IntroSprs.0.index,x         ;Loads index for finding sparkle data (x=$00 or $10).
     lda ($00),y                     ;
     bpl L8835                       ;If data byte MSB is set, set $6EA9 to #$01 and move to-->
         lda #$01                        ;next index for sparkle sprite data.
-        sta IntroSprByteType,x          ;
+        sta IntroSprs.0.byteType,x  ;
     L8835:
     bne L883C                       ;
         lda #$01                        ;If value is equal to zero, sparkle sprite-->
-        sta IntroSprComplete,x          ;processing is complete.
+        sta IntroSprs.0.complete,x      ;processing is complete.
     L883C:
-    sta IntroSprNextDelay,x         ;
+    sta IntroSprs.0.nextDelay,x     ;
     iny                             ;
     lda ($00),y                     ;Get x/y position byte.
-    dec IntroSprByteType,x          ;If MSB of second byte is set, branch.
+    dec IntroSprs.0.byteType,x      ;If MSB of second byte is set, branch.
     bmi L8850                       ;
         lda #$00                        ;This code is run when the MSB of the first byte-->
-        sta SparkleSprYChange,x        ;is set.  This allows the sprite to change X coord-->
+        sta IntroSprs.0.sparkleYChange,x ;is set.  This allows the sprite to change X coord-->
         lda ($00),y                     ;by more than 7.  Ensures Y coord does not change.
         bmi L8867                       ;
     L8850:
         pha                             ;Store value twice so X and Y-->
         pha                             ;coordinates can be extracted.
         lda #$00                        ;
-        sta IntroSprByteType,x          ;Set IntroSpr0ByteType to #$00 after processing.
+        sta IntroSprs.0.byteType,x      ;Set IntroSpr0ByteType to #$00 after processing.
         pla                             ;
         jsr Adiv16                      ;($C2BF)Move upper 4 bits to lower 4 bits.
         jsr NibbleSubtract              ;($8871)Check if nibble to be converted to twos complement.
-        sta SparkleSprYChange,x         ;Twos complement stored if Y coord decreasing.
+        sta IntroSprs.0.sparkleYChange,x ;Twos complement stored if Y coord decreasing.
         pla                             ;
         and #$0F                        ;Discard upper 4 bits.
         jsr NibbleSubtract              ;($8871)Check if nibble to be converted to twos complement.
     L8867:
-    sta SparkleSprXChange,x         ;Store amount to move spite in x direction.
-    inc IntroSprIndex,x             ;
-    inc IntroSprIndex,x             ;Add two to find index for next data byte.
+    sta IntroSprs.0.sparkleXChange,x ;Store amount to move spite in x direction.
+    inc IntroSprs.0.index,x         ;
+    inc IntroSprs.0.index,x         ;Add two to find index for next data byte.
     rts
 
 NibbleSubtract:
@@ -631,18 +762,18 @@ RTS_887A:
 
 ;Load the four bytes for the intro sprites into sprite RAM.
 WriteIntroSprite:
-    lda IntroSprYCoord,x
+    lda IntroSprs.0.y,x
     sec ;Subtract #$01 from first byte to get proper y coordinate.
     sbc #$01
     sta SpriteRAM.4.y,x
     
-    lda IntroSprPattTbl,x
+    lda IntroSprs.0.tileID,x
     sta SpriteRAM.4.tileID,x
     
-    lda IntroSprCntrl,x
+    lda IntroSprs.0.attrib,x
     sta SpriteRAM.4.attrib,x
     
-    lda IntroSprXCoord,x
+    lda IntroSprs.0.x,x
     sta SpriteRAM.4.x,x
     
     rts
@@ -654,20 +785,20 @@ InitCrossMissiles:
 
     L889D:
         lda InitCrossMissile0and4Tbl,x        ;Load data from tables below.
-        cmp PPUCTRL_ZP                  ;BUG: supposed to be #$FF. Expected behavior:-->
+        cmp #$FF                        ;
         beq L88AA                       ;if #$FF, skip loading that byte and move to next item.
-            sta IntroSprYCoord,x            ;Store initial values for sprites 0 thru 3.
-            sta IntroSprYCoord+$40,x        ;Store initial values for sprites 4 thru 7.
+            sta IntroSprs.0.y,x             ;Store initial values for sprites 0 thru 3.
+            sta IntroSprs.4.y,x             ;Store initial values for sprites 4 thru 7.
         L88AA:
         dex                             ;
         bpl L889D                       ;Loop until all data is loaded.
 
     lda #$B8                        ;Special case for sprite 6 and 7.
-    sta IntroSprYCoord+$60          ;
-    sta IntroSprYCoord+$70          ;Change sprite 6 and 7 initial y position.
+    sta IntroSprs.6.y               ;
+    sta IntroSprs.7.y               ;Change sprite 6 and 7 initial y position.
     lda #$16                        ;
-    sta IntroSprYRise+$60           ;Change sprite 6 and 7 y displacement. The combination-->
-    sta IntroSprYRise+$70           ;of these two changes the slope of the sprite movement.
+    sta IntroSprs.6.yRise           ;Change sprite 6 and 7 y displacement. The combination-->
+    sta IntroSprs.7.yRise           ;of these two changes the slope of the sprite movement.
     rts
 
 ;The following tables are loaded into RAM as initial sprite control values for the crosshair sprites.
@@ -745,7 +876,7 @@ InitCrossMissile3and7Tbl:
     .byte $80                       ;Change sprite y coord in negative direction.
 
 ; this is for the two volleys of 4 missiles colliding in the title screen
-UpdateCrossMissiles:
+UpdateCrossMissiles: ;($88FE)
     ;Has CrossMsl0to3SlowDelay already hit 0? If so, branch.
     lda CrossMsl0to3SlowDelay
     beq L8936
@@ -756,22 +887,22 @@ UpdateCrossMissiles:
     
     ;Multiply the rise and run of the 8 sprites by 2.-->
     ;This doubles their speed.
-    asl IntroSprXRun
-    asl IntroSprYRise
-    asl IntroSprXRun+$10
-    asl IntroSprYRise+$10
-    asl IntroSprXRun+$20
-    asl IntroSprYRise+$20
-    asl IntroSprXRun+$30
-    asl IntroSprYRise+$30
-    asl IntroSprXRun+$40
-    asl IntroSprYRise+$40
-    asl IntroSprXRun+$50
-    asl IntroSprYRise+$50
-    asl IntroSprXRun+$60
-    asl IntroSprYRise+$60
-    asl IntroSprXRun+$70
-    asl IntroSprYRise+$70
+    asl IntroSprs.0.xRun
+    asl IntroSprs.0.yRise
+    asl IntroSprs.1.xRun
+    asl IntroSprs.1.yRise
+    asl IntroSprs.2.xRun
+    asl IntroSprs.2.yRise
+    asl IntroSprs.3.xRun
+    asl IntroSprs.3.yRise
+    asl IntroSprs.4.xRun
+    asl IntroSprs.4.yRise
+    asl IntroSprs.5.xRun
+    asl IntroSprs.5.yRise
+    asl IntroSprs.6.xRun
+    asl IntroSprs.6.yRise
+    asl IntroSprs.7.xRun
+    asl IntroSprs.7.yRise
     
 L8936:
     ;Move sprite 0.
@@ -809,24 +940,24 @@ L8936:
     ; fallthrough
 UpdateCrossMissile: ;($8963)
     ;If the current sprite has finished its movements, exit this routine.
-    lda IntroSprComplete,x
-    bne RTS_8975
+    lda IntroSprs.0.complete,x
+    bne @RTS
     
     ;Calculate new sprite position.
     jsr UpdateCrossMissileCoords
     ;If sprite not at final position, branch to move next frame.
-    bcs L8972
+    bcs @endIf_A
         ;Sprite movement complete.
         lda #$01
-        sta IntroSprComplete,x
-    L8972:
+        sta IntroSprs.0.complete,x
+    @endIf_A:
     ;($887B)Write sprite data to sprite RAM.
     jmp WriteIntroSprite
 
-RTS_8975:
+@RTS:
     rts
 
-UpdateCrossExplode:
+UpdateCrossExplode: ;($8976)
     ;If not ready to draw crosshairs, branch to exit.
     lda IsUpdatingCrossExplode
     beq RTS_89A9
@@ -1028,7 +1159,7 @@ CrossExplodeDataTbl:
 LoadPalData:
     ;Chooses which set of palette data to load from the table below.
     ldy PalDataIndex
-    lda PalSelectTbl,y
+    lda @PalSelectTbl,y
     cmp #$FF
     beq @RTS
     ;Write palette data.
@@ -1038,11 +1169,11 @@ LoadPalData:
     rts
 
 ;The table below is used by above routine to pick the proper palette.
-
-PalSelectTbl:
+@PalSelectTbl:
     .byte $02, $03, $04, $05, $06, $07, $08, $09, $0A, $0B, $0C, $0C, $FF
 
-FlashIntroScreen:
+
+FlashIntroScreen: ;($8AA7)
     ldy ScreenFlashPalIndex         ;Load index into table below.
     lda ScreenFlashPalTbl,y         ;Load palette data byte.
     cmp #$FF                        ;Has the end of the table been reached?-->
@@ -1091,7 +1222,7 @@ IntroStarPal7:  PPUString $3F19, $0F, $12, $14, $0F, $10, $24, $0F
 
 ;----------------------------------------------------------------------------------------------------
 
-DoFadeOut:
+DoFadeOut: ;($8B5F)
     ;Load palette data from table below.
     ldy FadeDataIndex
     lda FadeOutPalData,y
@@ -1827,7 +1958,7 @@ StartContinueScreen1B:
     jsr ClearAll                    ;($909F)Turn off screen, erase sprites and nametables.
     ldx #<L9984.b                     ;Low address for PPU write.
     ldy #>L9984.b                     ;High address for PPU write.
-    jsr PreparePPUProcess           ;($9449)Clears screen and writes "START CONTINUE".
+    jsr PreparePPUProcess_          ;($9449)Clears screen and writes "START CONTINUE".
     ldy #$00                        ;
     sty StartContinue               ;Set selection sprite at START.
     lda #$0D                        ;
@@ -1888,7 +2019,7 @@ LoadPasswordScreen:
     jsr ClearAll                    ;($909F)Turn off screen, erase sprites and nametables.
     ldx #<L99E3.b                     ;Loads PPU with info to display-->
     ldy #>L99E3.b                     ;PASS WORD PLEASE.
-    jsr PreparePPUProcess           ;($9449)Load "PASSWORD PLEASE" on screen.
+    jsr PreparePPUProcess_          ;($9449)Load "PASSWORD PLEASE" on screen.
     jsr DisplayInputCharacters      ;($940B)Write password character to screen.
     lda #$13                        ;
     jsr WriteTitlePal               ;Change palette.
@@ -2178,8 +2309,6 @@ CursorPosXTbl:
     .byte $48, $50, $58, $60, $68, $70, $80, $88, $90, $98, $A0, $A8
 
 InitializeGame:
-    jsr ClearSamusStats             ;($C578)Reset Samus stats for a new game.
-    
     lda #_id_MoreInit.b
     sta MainRoutine                 ;Initialize starting area.
     jsr ScreenNmiOff                ;($C45D)Turn off screen.
@@ -2195,13 +2324,20 @@ RTS_9324:
 InitializeStats: ;($932B)
     ;Copy initial save data to RAM when starting new game.
     ldx #InitialSaveDataEnd-InitialSaveData.b
-    @loop:
+    @loop_A:
         lda InitialSaveData-1,x
         sta Health-1,x
         dex
-        bne @loop
+        bne @loop_A
     ;Clear flag to start from password.
     stx StartingFromPassword
+    ;Clear unique item history.
+    ldx #$00
+    txa
+    @loop_B:
+        sta UniqueItemHistory,x
+        inx
+        bne @loop_B
     rts
 
 .include "initial_save_data.asm"
@@ -2209,10 +2345,11 @@ InitializeStats: ;($932B)
 DisplayPassword:
     lda Timer3                      ;Wait for "GAME OVER" to be displayed-->
     bne RTS_9324                    ;for 160 frames (2.6 seconds).
+.if CFG_SAVE == 0
     jsr ClearAll                    ;($909F)Turn off screen, erase sprites and nametables.
     ldx #<L937F.b                     ;Low byte of start of PPU data.
     ldy #>L937F.b                     ;High byte of start of PPU data.
-    jsr PreparePPUProcess           ;($9449)Clears screen and writes "PASS WORD".
+    jsr PreparePPUProcess_          ;($9449)Clears screen and writes "PASS WORD".
     jsr CalculatePassword           ;($8C7A)Calculates the password.
     jsr NMIOn                       ;($C487)Turn on the nonmaskable interrupt.
     jsr PasswordToScreen            ;($93C6)Displays password on screen.
@@ -2221,6 +2358,11 @@ DisplayPassword:
     jsr WriteTitlePal               ;Change palette.
     inc TitleRoutine                ;
     jmp ScreenOn                    ;($C447)Turn screen on.
+.else
+    ; load previous save and start game
+    jsr FileLoad
+    jmp InitializeGame
+.endif
 
 L937F:
     ;Information below is for above routine to display "PASS WORD" on the screen.
@@ -2250,7 +2392,7 @@ GameOver:
     jsr ClearAll                    ;($909F)Turn off screen, erase sprites and nametables.
     ldx #<L93B9.b                     ;Low byte of start of PPU data.
     ldy #>L93B9.b                     ;High byte of start of PPU data.
-    jsr PreparePPUProcess           ;($9449)Clears screen and writes "GAME OVER".
+    jsr PreparePPUProcess_          ;($9449)Clears screen and writes "GAME OVER".
     jsr NMIOn                       ;($C487)Turn on the nonmaskable interrupt.
     lda #$10                        ;Load Timer3 with a delay of 160 frames-->
     jsr SetTimer3                      ;(2.6 seconds) for displaying "GAME OVER".
@@ -2348,7 +2490,7 @@ PasswordRowsTbl:
     .byte $22, $E4                  ;
 
 
-PreparePPUProcess:
+PreparePPUProcess_:
     stx $00                         ;Lower byte of pointer to PPU string
     sty $01                         ;Upper byte of pointer to PPU string
     jmp ProcessPPUString            ;($C30C)
@@ -2486,47 +2628,47 @@ bank0_Palette12:
     PPUStringEnd
 
 UpdateCrossMissileCoords: ;($981E)
-    lda IntroSprXRun,x             ;Load sprite run(sprite x component).
+    lda IntroSprs.0.xRun,x          ;Load sprite run(sprite x component).
     jsr CalcDisplacement            ;($9871)Calculate sprite displacement in x direction.
-    ldy IntroSprXDir,x             ;Get byte describing if sprite increasing or decreasing pos.
+    ldy IntroSprs.0.xDir,x          ;Get byte describing if sprite increasing or decreasing pos.
     bpl L982E                       ;
         eor #$FF                        ;If MSB is set, sprite is decreasing position. convert-->
         clc                             ;value in A (result from CalcDisplacement) to twos complement.
         adc #$01                        ;
     L982E:
     clc                             ;
-    adc IntroSprXCoord,x           ;Add change to sprite x coord.
-    sta IntroSprXCoord,x           ;
+    adc IntroSprs.0.x,x             ;Add change to sprite x coord.
+    sta IntroSprs.0.x,x             ;
     sec                             ;
-    sbc IntroSprXChange,x          ;Subtract total sprite movemnt value from current sprite x pos.
+    sbc IntroSprs.0.crossMissileXChange,x ;Subtract total sprite movemnt value from current sprite x pos.
     php                             ;Transfer processor status to A.
     pla                             ;
-    eor IntroSprXDir,x             ;Eor carry bit with direction byte to see if sprite has-->
+    eor IntroSprs.0.xDir,x          ;Eor carry bit with direction byte to see if sprite has-->
     lsr                             ;reached its end point.
     bcc L9864                       ;Branch if sprite has reached the end of x movement.
-        lda IntroSprYRise,x            ;Load sprite rise(sprite y component).
+        lda IntroSprs.0.yRise,x         ;Load sprite rise(sprite y component).
         jsr CalcDisplacement            ;($9871)Calculate sprite displacement in y direction.
-        ldy IntroSprYDir,x             ;Get byte describing if sprite increasing or decreasing pos.
+        ldy IntroSprs.0.yDir,x          ;Get byte describing if sprite increasing or decreasing pos.
         bpl L9851                       ;
             eor #$FF                        ;If MSB is set, sprite is decreasing position. convert-->
             clc                             ;value in A (result from CalcDisplacement) to twos complement.
             adc #$01                        ;
         L9851:
         clc                             ;
-        adc IntroSprYCoord,x           ;Add change to sprite y coord.
-        sta IntroSprYCoord,x           ;
+        adc IntroSprs.0.y,x             ;Add change to sprite y coord.
+        sta IntroSprs.0.y,x             ;
         sec                             ;
-        sbc IntroSprYChange,x          ;Subtract total sprite movemnt value from current sprite y pos.
+        sbc IntroSprs.0.crossMissileYChange,x ;Subtract total sprite movemnt value from current sprite y pos.
         php                             ;Transfer processor status to A.
         pla                             ;
-        eor IntroSprYDir,x             ;Eor carry bit with direction byte to see if sprite has-->
+        eor IntroSprs.0.yDir,x          ;Eor carry bit with direction byte to see if sprite has-->
         lsr                             ;reached its end point.
         bcs RTS_9870                       ;Branch if sprite has not reached the end of y movement.
     L9864:
-        lda IntroSprYChange,x          ;After sprite has reached its final position, this code-->
-        sta IntroSprYCoord,x           ;explicitly writes final the x and y coords to to sprite-->
-        lda IntroSprXChange,x          ;position addresses to make sure the sprites don't-->
-        sta IntroSprXCoord,x           ;overshoot their mark.
+        lda IntroSprs.0.crossMissileYChange,x ;After sprite has reached its final position, this code-->
+        sta IntroSprs.0.y,x            ;explicitly writes final the x and y coords to to sprite-->
+        lda IntroSprs.0.crossMissileXChange,x ;position addresses to make sure the sprites don't-->
+        sta IntroSprs.0.x,x            ;overshoot their mark.
     RTS_9870:
     rts
 
@@ -2580,7 +2722,7 @@ DecSpriteYCoord:
 @RTS:
     rts
 
-LoadStarSprites:
+LoadStarSprites: ;($98AE)
     ;Store RAM contents of $6E00 thru $6E9F in sprite RAM at locations $0260 thru $02FF.
     ldy #$9F
     @loop:
@@ -2710,7 +2852,7 @@ NMIScreenWrite:
         ldx EndMessageStringTbl0-2,y
         lda EndMessageStringTbl0-1,y
         tay
-        jsr PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+        jsr PreparePPUProcess           ;($C20E)Prepare to write to PPU.
     L9A24:
     ;If not time to erase end message, branch
     lda HideShowEndMsg              ;
@@ -2724,7 +2866,7 @@ NMIScreenWrite:
         ldx EndMessageStringTbl1-2,y
         lda EndMessageStringTbl1-1,y
         tay
-        jmp PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+        jmp PreparePPUProcess           ;($C20E)Prepare to write to PPU.
 Exit100:
     rts                             ;Exit from above and below routines.
 
@@ -2786,10 +2928,9 @@ Restart:
         sta PasswordByte+(((ItemData_HighJump-ItemData)/2)/8)
     L9A83:
     
-    ;If Samus does not have Maru Mari, branch.
+    ;If Samus does not have screw attack, branch.-->
     lda SamusGear
-    ;A programmer error?  Should check for screw attack data.
-    and #gr_MARUMARI
+    and #gr_SCREWATTACK
     beq L9A92
         ;Else load screw attack data into PasswordByte03.
         lda PasswordByte+(((ItemData_ScrewAttack-ItemData)/2)/8)
@@ -2799,6 +2940,8 @@ Restart:
     
     lda SamusGear                   ;
     sta PasswordByte+$09              ;Store Samus gear data in PasswordByte09.
+    lda SamusGear1                  ;
+    sta PasswordByte+$0E            ;Store Samus extra gear data in PasswordByte0E.
     lda #$00                        ;
     ldy JustInBailey                ;
     beq L9AA1                       ;If Samus is wearing suit, branch.  Else-->
@@ -2855,7 +2998,7 @@ L9AE4:
     sta SpritePointerIndex          ;
     ldx #<LA052.b                     ;Loads the screen where Samus stands on-->
     ldy #>LA052.b                     ;the surface of the planet in end of game.
-    jsr PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+    jsr PreparePPUProcess           ;($C20E)Prepare to write to PPU.
     jsr NMIOn                       ;($C487)Turn on non-maskable interrupt.
     lda #music_EndMusic             ;Initiate end game music.
     sta CurrentMusic                ;
@@ -3159,7 +3302,7 @@ LoadCredits:
     ldx CreditsPointerTbl,y         ;Base is $A291. Lower byte of pointer to PPU string.
     lda CreditsPointerTbl+1,y       ;Upper byte of pointer to PPU string.
     tay
-    jmp PreparePPUProcess_          ;($C20E)Prepare to write to PPU.
+    jmp PreparePPUProcess           ;($C20E)Prepare to write to PPU.
 @RTS:
     rts
 
@@ -4125,7 +4268,7 @@ GoBankInit:
         .word InitBank0                 ;($C531)Initialize bank 0.
         .word InitGenericAreaBank       ;($C552)Initialize bank 1.
         .word InitGenericAreaBank
-        .word InitBank3                 ;($C590)Initialize bank 3.
+        .word InitGenericAreaBank       ;($C590)Initialize bank 3.
         .word InitGenericAreaBank
         .word InitGenericAreaBank
         .word ExitSub                   ;($C45C)Rts
@@ -4151,23 +4294,6 @@ InitBank0:
 
     jsr InitTitleGFX                ;($C5D7)Load title GFX.
     jmp NMIOn                       ;($C487)Turn on VBlank interrupts.
-
-ClearSamusStats:
-    ;Clears Samus stats(Health, full tanks, game timer, etc.).
-    ldy #$0F
-    lda #$00
-    @loop:
-        ;Load $100 thru $10F with #$00.
-        sta $0100,y
-        dey
-        ;Loop 16 times.
-        bpl @loop
-    rts
-
-;Table used by above subroutine and loads the initial data used to describe
-;metroid's behavior in the Tourian section of the game.
-MetroidData:
-    .byte -$02, $02, $0C, -$0C, $18, -$18, $01, $02, $00, $00, $00, $00, $00, $00
 
 InitEndGFX:
     lda #$01                        ;
@@ -4202,16 +4328,6 @@ LoadSamusGFX:
     LC5EB:
     sty CHRBank2
     rts
-
-;Tourian memory page.
-InitBank3:
-    ldy #$0D                        ;
-    LC599:
-        lda MetroidData,y               ;Load info from table below into-->
-        sta MetroidRepelSpeed,y                     ;$77F0 thru $77FD.
-        dey                             ;
-        bpl LC599                       ;
-    ;fallthrough
 
 InitGenericAreaBank:
     lda #$00                        ;GameMode = play.
@@ -4375,7 +4491,7 @@ DisplayBar:
     lda Health                    ;
     jsr Adiv16                      ;($C2BF)Move lower health digit to 4 LSBs.
     jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    ldy EndTimer+1                  ;
+    ldy EndTimer+1.b                ;
     iny                             ;Is Samus in escape sequence?-->
     bne LE11C                          ;If so, branch.
     ldy MaxMissiles                 ;
@@ -4405,10 +4521,10 @@ LE10A:
 
 ;Display 3-digit end sequence timer.
 LE11C:
-    lda EndTimer+1                  ;
+    lda EndTimer+1.b                ;
     jsr Adiv16                      ;($C2BF)Upper timer digit.
     jsr SPRWriteDigit               ;($E173)Display digit on screen.
-    lda EndTimer+1                  ;
+    lda EndTimer+1.b                ;
     and #$0F                        ;Middle timer digit.
     jsr SPRWriteDigit               ;($E173)Display digit on screen.
     lda EndTimer                  ;

@@ -74,6 +74,7 @@ RESET:
     sei
     ldx #$FF                        ;X = $FF
     txs                             ;S points to end of stack page
+    stx NMIStatus                   ;Don't do NMI
 
     lda #$00
     jsr MMCWritePrgBank                ;($C4FA)Swap to PRG bank #0 at $8000
@@ -107,10 +108,10 @@ RESET:
         bne @loop_A
     @exitLoop_A:
 
-    ;Clear cartridge RAM at $6000-$7FFF.
-    ;$0000 points to $7F00
+    ;Clear cartridge RAM at $6000-$7BFF.
+    ;$0000 points to $7B00
     ;High byte of start address.
-    ldy #$7F
+    ldy #(>SaveSlots)-1.b
     sty $01
     ;Low byte of start address.
     ldy #$00
@@ -586,7 +587,7 @@ Exit101:
 
 ;----------------------------------[ Write PPU string to palette ]-----------------------------------
 
-PreparePPUProcess_:
+PreparePPUProcess:
     stx $00                         ;Lower byte of pointer to PPU string.
     sty $01                         ;Upper byte of pointer to PPU string.
     jmp ProcessPPUString            ;($C30C)Write data string to PPU.
@@ -1299,9 +1300,6 @@ MoreInit:
     lda TilesetIndex
     jsr ChangeTileset
     ldx #$00
-    stx DoorEntryStatus                  ;Samus not in door.
-    stx SamusDoorData               ;Samus is not inside a door.
-    stx UpdatingProjectile          ;No projectiles need to be updated.
     txa                             ;A=0.
 
     LC830:
@@ -1315,6 +1313,10 @@ MoreInit:
         inx                             ;
         bne LC830                       ;Loop until all required RAM is cleared.
 
+    dex                             ;X=#$FF.
+    stx EndTimer                    ;Set end timer bytes to #$FF as-->
+    stx EndTimer+1.b                ;escape timer not currently active.
+
     jsr ScreenOff                   ;($C439)Turn off Background and visibility.
     jsr ClearNameTables             ;($C158)Clear screen data.
     jsr EraseAllSprites             ;($C1A3)Erase all sprites from sprite RAM.
@@ -1326,9 +1328,9 @@ MoreInit:
     inx                             ;
     stx ScrollDir                   ;Set initial scroll direction as left.
     lda SaveSamusMapX               ;Get Samus start x pos on map.
-    sta SamusMapPosX                ;
+    sta MapPosX                     ;
     lda SaveSamusMapY               ;Get Samus start y pos on map.
-    sta SamusMapPosY                ;
+    sta MapPosY                     ;
 
     jsr CopyAreaPointers    ; copy pointers from ROM to RAM
     jsr GetRoomNum                  ;($E720)Put room number at current map pos in $5A.
@@ -1381,6 +1383,14 @@ CopyAreaPointers:
 ; ==============
 
 DestroyEnemies: ;($C8BB)
+    ldx #$FF
+    stx PipeBugHoles.0.status
+    stx PipeBugHoles.1.status
+    stx PipeBugHoles.2.status
+    stx PipeBugHoles.3.status
+    stx RinkaSpawners.0.status
+    stx RinkaSpawners.1.status
+
     lda #$00
     tax
     @loop:
@@ -1389,14 +1399,20 @@ DestroyEnemies: ;($C8BB)
             ; clear $97-$DF
             sta CannonIndex,x
         @endIf_A:
-        ; clear both enemy RAM pages
+        ; clear cannon RAM
+        cpx #_sizeof_Cannons
+        bcs @endIf_B
+            sta Cannons.0.status,x
+        @endIf_B:
+        ; clear all enemy RAM pages
         sta EnY,x
         sta EnsExtra.0.status,x
+        sta EnsExtra2.0.data20,x
         inx
         bne @loop
     ;Force Samus to have no Metroid stuck to her.
     stx MetroidOnSamus
-    jmp GotoClearAllMetroidLatches
+    rts
 
 ; SamusInit
 ; =========
@@ -1418,17 +1434,6 @@ SamusInit:
     sty ObjAction                   ;Set Samus status as fading onto screen.
     lda #_id_Palette13+1.b
     sta ObjectCounter
-    ldx #$00
-    stx SamusBlink
-    dex                             ;X = $FF
-    stx PipeBugHoles.0.status
-    stx PipeBugHoles.1.status
-    stx PipeBugHoles.2.status
-    stx PipeBugHoles.3.status
-    stx EndTimer                    ;Set end timer bytes to #$FF as-->
-    stx EndTimer+1.w                  ;escape timer not currently active.
-    stx RinkaSpawners.0.status
-    stx RinkaSpawners.1.status
     ldy #$27
     lda SaveScrollDir
     sta ScrollDir
@@ -1570,6 +1575,7 @@ PrepareGameOver:
 ;------------------------------------------[ Pause mode ]--------------------------------------------
 
 PauseMode:
+.if CFG_SAVE == 0
     ;Load buttons currently being pressed on joypad 1.
     lda Joy1Status
     ; Exit if not both A & UP pressed.
@@ -1579,7 +1585,7 @@ PauseMode:
     
     ;Is escape timer active?
     ;Sorry, can't quit if this is during escape scence.
-    ldy EndTimer+1
+    ldy EndTimer+1.b
     iny
     bne Exit14
     
@@ -1587,6 +1593,7 @@ PauseMode:
     sta GamePaused
     ;Display password is the next routine to run.
     inc MainRoutine
+.endif
 
 Exit14:
     rts                             ;Exit for routines above and below.
@@ -2282,7 +2289,7 @@ CheckHealthStatus: ;($CDFA)
     beq Lx006
         ;Samus has been hit. Set blink for 50 frames.
         lda #$32
-        sta SamusBlink
+        sta SamusInvincibleDelay
         ; default to no knockback
         lda #$FF
         sta SamusKnockbackDir
@@ -2314,10 +2321,10 @@ CheckHealthStatus: ;($CDFA)
             jmp CheckHealthBeep
     Lx006:
     ; exit if samus has no i-frames
-    lda SamusBlink
+    lda SamusInvincibleDelay
     beq CheckHealthBeep
     ; samus has i-frames, decrement them
-    dec SamusBlink
+    dec SamusInvincibleDelay
     ; branch if direction is nothing
     ldx SamusKnockbackDir
     inx
@@ -2406,7 +2413,7 @@ CommonJump_SubtractHealth:
     jsr IsSamusDead
     beq GotoClearHealthChange
     ;If end escape timer is running, Samus cannot be hurt.
-    ldy EndTimer+1
+    ldy EndTimer+1.b
     iny
     beq LCEA6 ;Branch if end escape timer not active.
     GotoClearHealthChange:
@@ -2839,7 +2846,7 @@ SamusRoll:
         ;jsr LoadObjectPositionFromTemp
         jsr SetSamusStand
         ; set unroll anim
-        lda #ObjAnim_Unroll - ObjectAnimIndexTbl.b
+        lda #ObjAnim_SamusUnroll - ObjectAnimIndexTbl.b
         sta ObjAnimIndex
         jsr StopVertMovement
         ; unroll anim for 1 frame
@@ -3290,9 +3297,23 @@ SamusDoor:
         sta DoorEntryStatus
         bne Lx055
     Lx049:
-    jsr LD48C
-    jsr Doors_RemoveIfOffScreen
-    jsr GotoClearAllMetroidLatches ; if it is defined in the current bank
+    ; preserve scroll blocks
+    lda ScrollBlockOnNameTable3
+    pha
+    lda ScrollBlockOnNameTable0
+    pha
+    lda ScrollDir
+    pha
+    ; to properly delete sprites when scrolling up/left
+    ora #$01
+    sta ScrollDir
+    jsr DeleteOffscreenRoomSprites
+    pla
+    sta ScrollDir
+    pla
+    sta ScrollBlockOnNameTable0
+    pla
+    sta ScrollBlockOnNameTable3
     jsr StartMusic       ; start music
     lda KraidRidleyPresent
     beq Lx052
@@ -3369,9 +3390,9 @@ SamusDead2:
 SamusElevator:
     lda ElevatorStatus
     cmp #$03
-    bcc LD47E
+    bcc Lx063
     cmp #$06
-    bcs LD47E
+    bcs Lx063
     lda ElevatorType
     bmi Lx059
         lda ObjY
@@ -3415,42 +3436,6 @@ Lx063:
     lda #$01
     jmp AnimDrawObject
 RTS_X064:
-    rts
-
-LD48C:
-    ldx #$60
-    sec
-    Lx065:
-        jsr LD4B4
-        txa
-        sbc #$20
-        tax
-        bpl Lx065
-    jsr GetNameTableAtScrollDir     ;($EB85)
-    tay
-    ldx #$18
-    Lx066:
-        jsr LD4A8
-        txa
-        sec
-        sbc #$08
-        tax
-        bne Lx066
-LD4A8:
-    tya
-    cmp PipeBugHoles.0.hi,x
-    bne RTS_X067
-        lda #$FF
-        sta PipeBugHoles.0.status,x
-    RTS_X067:
-    rts
-
-LD4B4:
-    lda EnData05,x
-    and #$02
-    bne RTS_D4BE
-        sta EnsExtra.0.status,x
-    RTS_D4BE:
     rts
 
 ; UpdateProjectiles
@@ -3669,7 +3654,11 @@ UpdateBullet_DeleteIfOffScreen:
     bcs Exit5
 Lx078:
     lda #$00
-    beq Lx077   ; branch always
+    sta ObjAction,x
+    ; double return, abort updating projectile (bugfix)
+    pla
+    pla
+    rts
 
 GotoProjectileHitDoorOrStatue:
     jmp ProjectileHitDoorOrStatue
@@ -4022,6 +4011,14 @@ ElevatorStop:
         jsr ToggleScroll
         sta MirrorCntrl
     Lx115:
+.if CFG_SAVE != 0
+    ; save the game!
+    lda #:FileSave.b
+    jsr MMCWritePrgBank
+    jsr SaveSamusPos
+    jsr FileSave
+    jsr SetBankToMainBank
+.endif
     jmp DrawElevator
 Lx116:
     jmp ElevScrollRoom
@@ -4194,8 +4191,8 @@ StatueXTable:
     .byte $88 ; Kraid's X position
     .byte $68 ; Ridley's X position
 StatueAnimFrameTable:
-    .byte _id_ObjFrame65 ; Kraid anim frame
-    .byte _id_ObjFrame66 ; Ridley anim frame
+    .byte _id_ObjFrame_KraidStatue ; Kraid anim frame
+    .byte _id_ObjFrame_RidleyStatue ; Ridley anim frame
 
 UpdateStatue_Raise:
     ; exit if statue is raised
@@ -4445,7 +4442,7 @@ CheckOneItem:
     bcc RTS_DB36                       ;If so, branch to exit.
     lda PowerUps.0.type,x           ;
     and #$0F                        ;Load power up type byte and keep only bits 0 thru 3.
-    adc #_id_ObjFrame50-1.b         ;Set bits 4 and 6.
+    adc #_id_ObjFrame_BombItem-1.b  ;Set bits 4 and 6.
     sta PowerUpDrawAnimFrame        ;Save index to find object animation.
     lda FrameCount                  ;
     lsr                             ;Color affected every other frame.
@@ -4550,13 +4547,13 @@ MissileEnergyTank:
 ;properly calculated.
 
 GetItemXYPos:
-    lda SamusMapPosX
+    lda MapPosX
 MapScrollRoutine:
     ;Temp storage of Samus map position x and y in $07 and $06 respectively.
-    ; note that SamusMapPosX and SamusMapPosY are the map position of the edge of the screen ->
+    ; note that MapPosX and MapPosY are the map position of the edge of the screen ->
     ; that samus is scrolling the screen towards.
     sta Temp07_ItemX
-    lda SamusMapPosY
+    lda MapPosY
     sta Temp06_ItemY
 
     ;Load scroll direction and shift LSB into carry bit.
@@ -4778,7 +4775,7 @@ LDCFC:
     sec
     sbc ($01),y
     bcs +
-        lda #_id_EnFrame81.b
+        lda AreaSmallEnergyPickupAnimFrame
         sta EnsExtra.0.animFrame,x
         rts
     +
@@ -4786,7 +4783,7 @@ LDCFC:
     iny
     sbc ($01),y
     bcs +
-        lda #_id_EnFrame89.b
+        lda AreaBigEnergyPickupAnimFrame
         sta EnsExtra.0.animFrame,x
         rts
     +
@@ -4797,7 +4794,7 @@ LDCFC:
         ; fail if Samus missile capacity is 0
         lda MaxMissiles
         beq LDD5B
-        lda #_id_EnFrame80.b
+        lda AreaMissilePickupAnimFrame
         sta EnsExtra.0.animFrame,x
         rts
 
@@ -4979,9 +4976,9 @@ ObjDrawFrame:
     GotoClearObjectCntrl:
         jmp ClearObjectCntrl            ;($DF2D)Clear object control byte.
     LDE56:
-    ;    cmp #_id_ObjFrame07.b           ;Is the animation of Samus facing forward or exploding?-->
+    ;    cmp #_id_ObjFrame_SamusFront.b           ;Is the animation of Samus facing forward or exploding?-->
     ;    beq +
-    ;    cmp #_id_ObjFrame35.b
+    ;    cmp #_id_ObjFrame_SamusExplode.b
     ;    bne LDE60                           ;If not, branch.
 
     ;+
@@ -5381,7 +5378,7 @@ LavaAndMoveCheck:
     jsr ClearHealthChange
     ;Make Samus blink.
     lda #$32
-    sta SamusBlink
+    sta SamusInvincibleDelay
     ;Start the jump SFX every 4th frame while in lava.
     lda FrameCount
     and #$03
@@ -5876,12 +5873,12 @@ ScrollUp:
         dec ScrollDir       ; ScrollDir = up
         lda ScrollY
         beq @currentlyScrollingUp
-        dec SamusMapPosY
+        dec MapPosY
     @currentlyScrollingUp:
     ldx ScrollY
     bne @noNewRoom
         ; new room is above
-        dec SamusMapPosY    ; decrement MapY
+        dec MapPosY    ; decrement MapY
         jsr GetRoomNum      ; put room # at current map pos in $5A
         bcs @atTopBound     ; if function returns CF = 1, moving up is not possible
         jsr ToggleNameTable ; switch to the opposite Name Table
@@ -5890,7 +5887,7 @@ ScrollUp:
     dex
     jmp ScrollVertically_Merge
 @atTopBound:
-    inc SamusMapPosY
+    inc MapPosY
 @cantScroll:
     sec
     rts
@@ -5906,11 +5903,11 @@ ScrollDown:
         inc ScrollDir       ; ScrollDir = down
         lda ScrollY
         beq @currentlyScrollingDown
-        inc SamusMapPosY
+        inc MapPosY
     @currentlyScrollingDown:
     lda ScrollY
     bne @noNewRoom
-        inc SamusMapPosY                ; increment MapY
+        inc MapPosY                ; increment MapY
         jsr GetRoomNum                  ; put room # at current map pos in $5A
         bcs ScrollDown_atBottomBound    ; if function returns CF = 1, moving down is not possible
     @noNewRoom:
@@ -5928,7 +5925,7 @@ ScrollVertically_Merge:
     clc
     rts
 ScrollDown_atBottomBound:
-    dec SamusMapPosY
+    dec MapPosY
 ScrollDown_cantScroll:
     sec
 RTS_X173:
@@ -6298,11 +6295,11 @@ ScrollLeft:
         dec ScrollDir       ; ScrollDir = left
         lda ScrollX
         beq @currentlyScrollingLeft
-        dec SamusMapPosX
+        dec MapPosX
     @currentlyScrollingLeft:
     lda ScrollX
     bne @noNewRoom
-        dec SamusMapPosX    ; decrement MapX
+        dec MapPosX    ; decrement MapX
         jsr GetRoomNum      ; put room # at current map pos in $5A
         bcs @atLeftBound    ; if function returns CF=1, scrolling left is not possible
         jsr ToggleNameTable ; switch to the opposite Name Table
@@ -6312,7 +6309,7 @@ ScrollLeft:
     clc
     rts
 @atLeftBound:
-    inc SamusMapPosX
+    inc MapPosX
 @cantScroll:
     sec
     rts
@@ -6329,11 +6326,11 @@ ScrollRight:
         inc ScrollDir
         lda ScrollX
         beq @currentlyScrollingRight
-        inc SamusMapPosX
+        inc MapPosX
     @currentlyScrollingRight:
     lda ScrollX
     bne @noNewRoom
-        inc SamusMapPosX
+        inc MapPosX
         jsr GetRoomNum      ; put room # at current map pos in $5A
         bcs @atRightBound   ; if function returns CF=1, scrolling right is not possible
     @noNewRoom:
@@ -6345,7 +6342,7 @@ ScrollRight:
     clc
     rts
 @atRightBound:
-    dec SamusMapPosX
+    dec MapPosX
 @cantScroll:
     sec
 RTS_X196:
@@ -6397,7 +6394,7 @@ GetRoomNum:
 LE733:
     lda #:WorldMap.b
     jsr MMCWritePrgBank
-    lda SamusMapPosY                ;Map pos y.
+    lda MapPosY                     ;Map pos y.
     jsr Amul16                      ;($C2C5)Multiply by 16.
     sta $00                         ;Store multiplied value in $00.
     lda #$00                        ;
@@ -6406,7 +6403,7 @@ LE733:
     rol                             ;Save carry, if any.
     sta $01                         ;
     lda $00                         ;
-    adc SamusMapPosX                ;Add map pos X to A.
+    adc MapPosX                     ;Add map pos X to A.
     sta $00                         ;Store result.
     lda $01                         ;
     adc #>WorldMap.b                ;Add #$7000 to result.
@@ -7029,7 +7026,7 @@ SetupRoom:
     lda RoomNumber                  ;Room number.
     cmp #$FF                        ;
     beq RTS_EA2A                           ;Branch to exit if room is undefined.
-    jsr UpdateRoomSpriteInfo        ;($EC9B)Update which sprite belongs on which name table.
+    jsr DeleteOffscreenRoomSprites  ;($EC9B)Update which sprite belongs on which name table.
 
     jsr ScanForItems                ;($ED98)Set up any special items.
     bcc +
@@ -7272,9 +7269,9 @@ LEB4D:
     lda #enemyStatus_Resting        ;
     sta EnsExtra.0.status,x                  ;Indicate object slot is taken.
     ; Flag enemy init
-    lda #$FF
-    sta EnsExtra.0.animIndex,x
     lda #$00
+    sta EnsExtra.0.pose,x
+    sta EnsExtra2.0.props2F,x
     sta EnIsHit,x
     jsr GetNameTableAtScrollDir       ;($EB85)Get name table to place enemy on.
     sta EnsExtra.0.hi,x               ;Store name table.
@@ -7351,10 +7348,10 @@ SpawnDoorRoutine:
     pha
     jsr Amul16      ; CF = door side (0=right, 1=left)
     php
-    ; get color on checkerboard (white square = SamusMapPosX + SamusMapPosY even, black square = vice versa)
-    lda SamusMapPosX
+    ; get color on checkerboard (white square = MapPosX + MapPosY even, black square = vice versa)
+    lda MapPosX
     clc
-    adc SamusMapPosY
+    adc MapPosY
     plp
     rol
     and #$03
@@ -7373,11 +7370,11 @@ SpawnDoorRoutine:
     ; missile door, check item ID
     lda #$0A
     sta $09
-    ldy SamusMapPosX
+    ldy MapPosX
     txa
     jsr Amul16       ; * 16
     bcc @endif_A
-        ; left door, Y = SamusMapPosX - 1 so adjacent doors stay open
+        ; left door, Y = MapPosX - 1 so adjacent doors stay open
         dey
     @endif_A:
     tya
@@ -7438,12 +7435,12 @@ SpawnElevatorRoutine:
     bne @alreadyPresent      ; branch if elevator already present
     sta ElevatorType
     ldy #$83
-    sty ObjY+$20.w       ; elevator Y coord
+    sty ObjY+$20       ; elevator Y coord
     lda #$80
     sta ObjX+$20       ; elevator X coord
     jsr GetNameTableAtScrollDir     ;($EB85)
     sta ObjHi+$20       ; high Y coord
-    lda #_id_ObjFrame23.b
+    lda #_id_ObjFrame_Elevator.b
     sta ObjAnimFrame+$20       ; elevator frame
     inc ElevatorStatus              ;1
     lda #$02
@@ -7538,7 +7535,7 @@ OnNameTable0:
     rts
 
 ; Despawn offscreen room sprites to make room for new room sprites.
-UpdateRoomSpriteInfo:
+DeleteOffscreenRoomSprites:
     ; If the enemy is in the opposite nametable and is offscreen, delete it.
     ldx #$50
     jsr GetNameTableAtScrollDir     ;($EB85)
@@ -7633,10 +7630,10 @@ UpdateRoomSpriteInfo:
     ; power-ups
     ldx #$00
     jsr PowerUp_RemoveIfOffScreen
-    ldx #$08
+    ldx #_sizeof_PowerUps.0
     jsr PowerUp_RemoveIfOffScreen
     ; tourian stuff
-    jmp GotoUpdateRoomSpriteInfo_Tourian
+    jmp GotoDeleteOffscreenRoomSprites_Tourian
 
 EraseScrollBlockOnNameTableAtScrollDir:
     jsr GetNameTableAtScrollDir     ;($EB85)
@@ -7712,7 +7709,7 @@ ScanForItems:
     sta $01                         ;
     ldy #$00                        ;Index starts at #$00.
     lda ($00),y                     ;Load map Ypos of item.-->
-    cmp SamusMapPosY                ;Does it equal Samus' Ypos on map?-->
+    cmp MapPosY                     ;Does it equal Samus' Ypos on map?-->
     beq @checkX                     ;If yes, check Xpos too.
 
     bcs @noItem                     ;Exit if item Y pos >  Samus Y Pos.
@@ -7735,7 +7732,7 @@ ScanForItems:
 @loop_X:
     ldy #$00                        ;
     lda ($00),y                     ;Load map Xpos of object.-->
-    cmp SamusMapPosX                ;Does it equal Samus' Xpos on map?-->
+    cmp MapPosX                     ;Does it equal Samus' Xpos on map?-->
     beq @hasItem                    ;If so, then load object.
     bcs @noItem                     ;Exit if item pos X > Samus Pos X.
 
@@ -7836,12 +7833,12 @@ PrepareItemID:
     ;Store item type.
     sta Temp09_ItemType
 
-    lda SamusMapPosX
+    lda MapPosX
 LEE41:
     ;Store item X coordinate.
     sta Temp07_ItemX
 
-    lda SamusMapPosY
+    lda MapPosY
     ;Store item Y coordinate.
     sta Temp06_ItemY
 
@@ -8015,7 +8012,7 @@ CollisionDetection:
         jsr GetMellowXSlotPosition
         jsr IsSamusDead
         beq Lx262
-        lda SamusBlink
+        lda SamusInvincibleDelay
         ora DoorEntryStatus
         bne Lx262
         ldy #$00
@@ -8087,8 +8084,7 @@ Lx269:
         cmp #enemyStatus_Explode
         beq NextEnemy
         ; check next enemy if enemy initializes next frame
-        lda EnsExtra.0.animIndex,x
-        cmp #$FF
+        lda EnsExtra.0.pose,x
         beq NextEnemy
         
         ; skip projectile collision if enemy is a pickup
@@ -8125,7 +8121,7 @@ Lx269:
         lda EnsExtra.0.status,x
         cmp #enemyStatus_Pickup
         beq +
-        lda SamusBlink
+        lda SamusInvincibleDelay
         ora DoorEntryStatus
         bne NextEnemy
         +
@@ -8155,7 +8151,7 @@ Lx275:
         cmp #$05
         beq Lx277
         ; check next fireball if samus has i-frames or in door
-        lda SamusBlink
+        lda SamusInvincibleDelay
         ora DoorEntryStatus
         bne Lx277
         ; check next fireball if samus is dead
@@ -8642,6 +8638,8 @@ LF340:
 
 ;-------------------------------------------------------------------------------
 UpdateAllEnemies: ; LF345
+    lda #$00
+    sta MetroidOnSamus
     ldx #$50                ;Load x with #$50
     @loop:
         jsr UpdateEnemy                  ;($F351)
@@ -8727,13 +8725,13 @@ UpdateEnemy_UpdateEnData05Bit6:
 
 ;---------------------------------------------
 UpdateEnemy_Resting: ;($F3BE)
-    ; branch if anim index != #$FF (init enemy so it won't look glitched sometimes the first frame it spawns)
-    lda EnsExtra.0.animIndex,x
-    cmp #$FF
+    ; branch if pose != init (init enemy so it won't look glitched sometimes the first frame it spawns)
+    lda EnsExtra.0.pose,x
     bne +
         ; force enemy animation to update
+        lda #$FF
         sta EnsExtra.0.resetAnimIndex,x
-        beq ++ ; branch always
+        bne ++ ; branch always
     +
     ; Branch if bit 6 is set (30FPS)
     lda EnData05,x
@@ -8747,6 +8745,7 @@ UpdateEnemy_Resting: ;($F3BE)
         jsr UpdateEnemy_ForceSpeedTowardsSamus
         jsr UpdateEnemy_EnData05DistanceToSamusThreshold
         jsr InitEnRestingAnimIndex
+        jsr EnemyUpdateFlipIfBit2Of968BClear
         jsr UpdateEnemy_Resting_UpdateEnData1F
 
         ; branch if delay is zero
@@ -8779,10 +8778,19 @@ UpdateEnemy_Active_BranchA: ; LF401
     jsr UpdateEnemy_ForceSpeedTowardsSamus
     jsr UpdateEnemy_EnData05DistanceToSamusThreshold
     jsr RemoveEnemyIfItIsInLava
+    jsr EnemyUpdateFlipIfBit2Of968BClear
 UpdateEnemy_Active_BranchB: ; LF40A
     jsr EnemyReactToSamusWeapon
 UpdateEnemy_Explode:
-    jmp ChooseEnemyAIRoutine
+    jsr ChooseEnemyAIRoutine
+    ldx PageIndex
+    ; pose = 1 if pose == init
+    lda EnsExtra.0.pose,x
+    bne +
+        inc EnsExtra.0.pose,x
+    +
+    rts
+
 ;-------------------------------------------
 ; This procedure is called by a lot of enemy AI routines, with three different
 ;  entry points
@@ -8808,6 +8816,10 @@ LF423:
 Lx301:
     lda EnsExtra.0.status,x
     beq LF42D
+        lda EnsExtra2.0.props2F,x
+        and #$40
+        eor ObjectCntrl
+        sta ObjectCntrl
         jsr DrawEnemy
     LF42D:
     ldx PageIndex
@@ -8867,7 +8879,7 @@ UpdateEnemy_Pickup: ;($F483)
     
     ; if anim frame is #$80, it is a missile pickup
     ldy EnsExtra.0.animFrame,x
-    cpy #_id_EnFrame80.b
+    cpy #_id_EnFrame_MissilePickup.b
     beq @pickupMissile
     
     ; health pickup
@@ -8886,7 +8898,7 @@ UpdateEnemy_Pickup: ;($F483)
         dex
         pla
         ; branch if not small health pickup
-        cmp #_id_EnFrame81.b
+        cmp #_id_EnFrame_SmallEnergyPickup.b
         bne @endIf_B
             ; small health pickup
             ;Increase Health by 5.
@@ -8998,6 +9010,8 @@ Lx314:
 
 ; handles enemy getting attacked by Samus
 EnemyReactToSamusWeapon:
+    lda EnsExtra.0.status,x
+    sta EnemyStatusPreWeaponReaction
     lda EnSpecialAttribs,x
     sta $0A
     ; exit if enemy was not attacked?
@@ -9016,7 +9030,7 @@ EnemyReactToSamusWeapon:
     bit $0A
     bvs Lx317
     ; branch if enemy is already in the frozen state
-    lda EnsExtra.0.status,x
+    lda EnemyStatusPreWeaponReaction
     cmp #enemyStatus_Frozen
     beq Lx317
     
@@ -9026,14 +9040,6 @@ EnemyReactToSamusWeapon:
     ; set freeze timer to 512 frames
     lda #$40
     sta EnData0D,x
-    ; exit if enemy is not a metroid
-    jsr LoadTableAt977B
-    and #$20
-    beq RTS_X315
-    ; set hp to 20, and clear metroid latch
-    lda #20
-    sta EnHealth,x
-    jmp GotoClearCurrentMetroidLatchAndMetroidOnSamus
 RTS_X315:
     rts
 
@@ -9085,7 +9091,7 @@ Lx319:
     Lx320:
     
     ; update EnPrevStatus
-    lda EnsExtra.0.status,x
+    lda EnemyStatusPreWeaponReaction
     cmp #enemyStatus_Frozen
     bne Lx321
         lda EnPrevStatus,x
@@ -9154,7 +9160,7 @@ ExplodeEnemy:
     jsr LDCFC
     ldx PageIndex
 Lx327:
-    jsr GetEnemyTypeTimes2PlusFacingDirection
+    ldy EnsExtra.0.type,x
     lda EnemyDeathAnimIndex,y
     jsr InitEnAnimIndex
     sta EnSpeedSubPixelY,x
@@ -9221,7 +9227,7 @@ UpdateEnemy_Resting_UpdateEnData1F:
     rts
 
 InitEnRestingAnimIndex:
-    jsr GetEnemyTypeTimes2PlusFacingDirection
+    ldy EnsExtra.0.type,x
     lda EnemyRestingAnimIndex,y
     cmp EnsExtra.0.resetAnimIndex,x
     beq RTS_X331
@@ -9238,7 +9244,7 @@ RTS_X331:
 
 InitEnActiveAnimIndex:
     ; exit if enemy anim is already the same as from EnemyActiveAnimIndex
-    jsr GetEnemyTypeTimes2PlusFacingDirection
+    ldy EnsExtra.0.type,x
     lda EnemyActiveAnimIndex,y
     cmp EnsExtra.0.resetAnimIndex,x
     beq Exit12
@@ -9420,7 +9426,7 @@ LoadEnHiToYAndLoadEorHiToCarry:
 UpdateEnemy_EnData05DistanceToSamusThreshold:
     ; default to masking out bit 4 and bit 3 of EnData05
     lda #~$18
-    sta $06
+    sta $03
     ; set bit 4 and bit 3 of EnData05
     lda #$18
     jsr OrEnData05
@@ -9450,44 +9456,33 @@ UpdateEnemy_EnData05DistanceToSamusThreshold:
     ; save EnemyDistanceToSamusThreshold & #$7F to $02
     lsr
     sta $02
-    ; save mask to $06
-    sty $06
+    ; save mask to $03
+    sty $03
+
+    jsr GetEnemyXSlotPosition
+    ldy #$00
+    jsr GetObjectYSlotPosition
     
-    ; check y axis
-    lda ObjY
-    sta $00
-    ldy EnY,x
     ; branch if bit 7 of EnData05 is set
     lda EnData05,x
     bmi Lx343
         ; bit 7 of EnData05 is not set
         ; check x axis
-        ldy ObjX
-        sty $00
-        ldy EnX,x
+        jsr AbsXDistFromYSlotToXSlot
+        jmp +
     Lx343:
+        ; bit 7 of EnData05 is set
+        ; check y axis
+        jsr AbsYDistFromYSlotToXSlot
+    +
     
-    ; rotate samus hi bit into bit 7 of her position
-    lda ObjHi
+    ; now a contains absolute distance between enemy and samus on a specific axis
+    
+    ; divide further by 16
+    lda Temp01_DiffHi
     lsr
-    ror $00
-    ; rotate enemy hi bit into bit 7 of its position
-    lda EnsExtra.0.hi,x
-    lsr
-    tya
+    lda Temp00_Diff
     ror
-    ; get enemy pos relative to samus pos
-    sec
-    sbc $00
-    ; branch if enemy is to the right of samus
-    bpl Lx344
-        ; enemy is to the left of samus
-        ; negate pos
-        jsr TwosComplement              ;($C3D4)
-    Lx344:
-    ; now a contains absolute distance between enemy and samus on a specific axis, divided by 2
-    
-    ; divide further by 8
     lsr
     lsr
     lsr
@@ -9500,7 +9495,7 @@ UpdateEnemy_EnData05DistanceToSamusThreshold:
     ; we must unset the proper bit of EnData05
 Lx345:
     ; apply mask to EnData05
-    lda $06
+    lda $03
 AndEnData05:
     and EnData05,x
     sta EnData05,x
@@ -9725,16 +9720,8 @@ CommonJump_SpawnFireball:
     sta $05
     jsr SpawnFireball_SetFireballPosition
     
-    ; exit if bit 6 of SpawnFireball_87 is unset
     ldx PageIndex
-    bit SpawnFireball_87
-    bvc RTS_SpawnFireball_FindSlot
-    ; set animation for enemy that shot the fireball depending on the direction its facing
-    lda EnData05,x
-    and #$01
-    tay
-    lda SpawnFireball_83,y
-    jmp SetEnAnimIndex
+    rts
 
 SpawnFireball_FindSlot:
     ldy #$60
@@ -10132,8 +10119,9 @@ UpdatePipeBugHole:
     jsr CheckCollisionOfXSlotAndYSlot
     bcc Exit13
     ; Flag enemy init
-    lda #$FF
-    sta EnsExtra.0.animIndex,x
+    lda #$00
+    sta EnsExtra.0.pose,x
+    sta EnsExtra2.0.props2F,x
     ; set status to resting
     lda #enemyStatus_Resting ; #$01
     sta EnDelay,x
@@ -10170,9 +10158,8 @@ Exit13:
 ; Wavers, too?
 EnemyFlipAfterDisplacement:
 CommonJump_EnemyFlipAfterDisplacement:
-    ; load (enemy type * 2 + horizontal facing direction) into y
     ldx PageIndex
-    jsr GetEnemyTypeTimes2PlusFacingDirection
+    ldy EnsExtra.0.type,x
     
     lda EnsExtra.0.jumpDsplcmnt,x
     ; branch if EnData1F is not zero
@@ -10199,15 +10186,11 @@ CommonJump_EnemyFlipAfterDisplacement:
         cmp #$10
         bcs Exit13
         ; displacement is between 8 and 15 pixels inclusive
-        ; set y to horizontal facing direction
-        tya
-        and #$01
-        tay
-        ; exit if enemy animation is facing the correct way
-        lda EnemyFlipAfterDisplacementAnimIndex,y
+        ; exit if current enemy animation is the same as the new animation
+        lda EnemyFlipAfterDisplacementAnimIndex
         cmp EnsExtra.0.resetAnimIndex,x
         beq Exit13
-        ; enemy is facing the wrong way, init anim index
+        ; current enemy anim is different, init anim index
         sta EnsExtra.0.animIndex,x
         dec EnsExtra.0.animIndex,x
 InitEnResetAnimIndex: ; referenced in areas_common.asm
@@ -10227,7 +10210,7 @@ CommonJump_InitEnResetAnimIndex:
 LFBCA:
 CommonJump_0A:
     ldx PageIndex
-    jsr GetEnemyTypeTimes2PlusFacingDirection
+    ldy EnsExtra.0.type,x
     lda EnemyActiveAnimIndex,y
     cmp EnsExtra.0.resetAnimIndex,x
     beq Exit13
@@ -10297,7 +10280,7 @@ UpdateSkreeProjectile:
     sta PowerUpDrawHi
     
     ;Save index to find object animation.
-    lda #_id_ObjFrame5A.b
+    lda #_id_ObjFrame_SkreeProjectile.b
     sta PowerUpDrawAnimFrame
     txa
     pha
@@ -10305,7 +10288,7 @@ UpdateSkreeProjectile:
     
     ; exit if samus is in i-frames or in door
     /*
-    lda SamusBlink
+    lda SamusInvincibleDelay
     ora DoorEntryStatus
     bne @endIf_A
     ; exit if samus can't be hurt
@@ -10408,16 +10391,20 @@ UpdateMellow_Explode:
     jmp SFX_EnemyHit
 
 UpdateMellow_RunAI:
-    jsr UpdateMellow_StorePositionToTemp
     lda Mellows.0.attackState,x
     cmp #$02
     bcs Lx392
-    ldy Temp08_PositionY
-    cpy ObjY
-    bcc Lx392
+    jsr GetMellowXSlotPosition
+    ldy #$00
+    jsr GetObjectYSlotPosition
+    jsr SignedYDistFromYSlotToXSlot
+    lda Temp01_DiffHi
+    bmi Lx392
+    lda Mellows.0.attackState,x
     ora #$02
     sta Mellows.0.attackState,x
 Lx392:
+    jsr UpdateMellow_StorePositionToTemp
     ldy #$01
     lda Mellows.0.attackState,x
     lsr
@@ -10453,14 +10440,23 @@ RTS_X397:
 UpdateMellow_FD08:
     lda #$00
     sta Mellows.0.attackTimer,x
-    tay
-    lda ObjX
-    sec
-    sbc Mellows.0.x,x
-    bpl Lx398
-        iny
-        jsr TwosComplement              ;($C3D4)
-    Lx398:
+    jsr GetMellowXSlotPosition
+    ldy #$00
+    jsr GetObjectYSlotPosition
+    jsr SignedXDistFromYSlotToXSlot
+    ldy #$01
+    lda Temp00_Diff
+    ora Temp01_DiffHi
+    beq +
+    lda Temp01_DiffHi
+    bpl ++
+        jsr NegateTemp00Temp01
+    +
+        dey
+    ++
+    lda Temp01_DiffHi
+    bne RTS_X399
+    lda Temp00_Diff
     cmp #$10
     bcs RTS_X399
     tya
@@ -10644,7 +10640,7 @@ RTS_X410:
 UpdateTourianItems: ; $FDE3
     ; Determine if this is the first frame the end timer is running
     ; (it will have a value of 99.99 the first frame)
-    lda EndTimer+1
+    lda EndTimer+1.b
     cmp #$99
     bne @endIf_A
     clc

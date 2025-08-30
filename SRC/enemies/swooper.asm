@@ -34,7 +34,7 @@ UpdateSwooperAnim:
     .if BANK == 2
         lda #EnAnim_GerutaSwooping - EnAnimTbl.b
     .elif BANK == 5
-        lda #EnAnim_20 - EnAnimTbl.b
+        lda #EnAnim_HoltzSwooping - EnAnimTbl.b
     .endif
     ; branch if y speed is positive (swooper is swooping downwards)
     ldy EnSpeedY,x
@@ -44,7 +44,7 @@ UpdateSwooperAnim:
         .if BANK == 2
             lda #EnAnim_GerutaIdle - EnAnimTbl.b
         .elif BANK == 5
-            lda #EnAnim_1D - EnAnimTbl.b
+            lda #EnAnim_HoltzIdle - EnAnimTbl.b
         .endif
     L9904:
     sta EnsExtra.0.resetAnimIndex,x
@@ -92,18 +92,15 @@ L9923:
     and #$10
     beq L9949
     
-    ; get position relative to samus
-    lda EnY,x
-    sec
-    sbc ObjY
-    ; branch if swooper is under samus
-    bpl L9940
-        ; swooper is above samus
-        ; negate relative position
-        jsr TwosComplement
-    L9940:
-    ; now a contains the distance between samus and swooper on the y axis
+    ; get y distance between Samus and the enemy
+    jsr GetEnemyXSlotPosition
+    ldy #$00
+    jsr GetObjectYSlotPosition
+    jsr AbsYDistFromYSlotToXSlot
     ; branch if Samus is not within a block's distance
+    lda Temp01_DiffHi
+    bne L9949
+    lda Temp00_Diff
     cmp #$10
     bcs L9949
         ; Samus is vertically aligned with the enemy

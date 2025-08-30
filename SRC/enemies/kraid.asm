@@ -203,8 +203,9 @@ KraidUpdateProjectile:
     bne LoadEnemyPositionFromTemp_
     inc EnsExtra.0.status,x
     ; Flag enemy init
-    lda #$FF
-    sta EnsExtra.0.animIndex,x
+    lda #$00
+    sta EnsExtra.0.pose,x
+    sta EnsExtra2.0.props2F,x
     ; save as projectile's position
     ; fallthrough
 

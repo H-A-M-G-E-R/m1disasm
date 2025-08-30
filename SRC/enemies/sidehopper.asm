@@ -2,13 +2,12 @@
 ; Bank 5 is Dessgeega
 SidehopperFloorAIRoutine:
     .if BANK == 1 || BANK == 4
-        lda #EnAnim_09 - EnAnimTbl.b
+        lda #EnAnim_SidehopperFloorHopping - EnAnimTbl.b
     .elif BANK == 5
-        lda #EnAnim_42 - EnAnimTbl.b
+        lda #EnAnim_DessgeegaFloorHopping - EnAnimTbl.b
     .endif
 Sidehopper_Common:
     sta EnemyFlipAfterDisplacementAnimIndex
-    sta EnemyFlipAfterDisplacementAnimIndex+1.b
     lda EnsExtra.0.status,x
     cmp #enemyStatus_Explode
     beq CommonEnemyStub2
@@ -24,9 +23,9 @@ CommonEnemyStub:
 ; Ceiling Sidehopper Routine
 SidehopperCeilingAIRoutine:
     .if BANK == 1 || BANK == 4
-        lda #EnAnim_0F - EnAnimTbl.b
+        lda #EnAnim_SidehopperCeilingHopping - EnAnimTbl.b
     .elif BANK == 5
-        lda #EnAnim_48 - EnAnimTbl.b
+        lda #EnAnim_DessgeegaCeilingHopping - EnAnimTbl.b
     .endif
     jmp Sidehopper_Common
 

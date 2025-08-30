@@ -12,6 +12,7 @@ SqueeptAIRoutine:
     beq SqueeptExit_Resting
     
     ; branch if current status is not active
+    lda EnemyStatusPreWeaponReaction
     cmp #enemyStatus_Active
     bne L9A88
         ; status changed from resting to active

@@ -6,3 +6,6 @@ CFG_BEAM_UNIQUE_ITEMS = 0
 
 ; 0 = don't stack, 1 = stack
 CFG_BEAM_STACK = 1
+
+; 0 = use passwords, 1 = use saves
+CFG_SAVE = 0
