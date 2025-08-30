@@ -1,3 +1,6 @@
+0.3:
+    Modified title screen, random paint jobs, bugfixes
+
 0.2.1:
     Several improvements and bugfixes
 
