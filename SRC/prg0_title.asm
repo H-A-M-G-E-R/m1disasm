@@ -1560,6 +1560,15 @@ LoadPasswordData:
         sta SamusAge,y
         dey
         bpl L8D33
+
+    ;Don't use color $0D as a paint job (see https://www.nesdev.org/wiki/Color_$0D_games for more info).
+    lda SamusGear1
+    and #$3F
+    cmp #$0D
+    bne +
+        adc #$00
+    +
+    sta SamusGear1
 RTS_8D3C:
     rts
 
@@ -2338,7 +2347,26 @@ InitializeStats: ;($932B)
         sta UniqueItemHistory,x
         inx
         bne @loop_B
+    ;Choose random bus paint job.
+    ;fallthrough
+
+ChooseRandomBusPaintJob:
+    @loop:
+        jsr RandomNumbers
+        and #$3F
+        cmp #$36
+        bcs @loop
+
+    tax
+    lda @paintJobs,x
+    sta SamusGear1
     rts
+
+@paintJobs:
+    .byte $00, $01, $02, $03, $04, $05, $06, $07, $08, $09, $0A, $0B, $0C,      $0E
+    .byte $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $1A, $1B, $1C
+    .byte $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $2A, $2B, $2C, $2D
+    .byte      $31, $32, $33, $34, $35, $36, $37, $38, $39, $3A, $3B, $3C, $3D
 
 .include "initial_save_data.asm"
 
@@ -2940,8 +2968,8 @@ Restart:
     
     lda SamusGear                   ;
     sta PasswordByte+$09              ;Store Samus gear data in PasswordByte09.
-    lda SamusGear1                  ;
-    sta PasswordByte+$0E            ;Store Samus extra gear data in PasswordByte0E.
+    jsr ChooseRandomBusPaintJob     ;
+    sta PasswordByte+$0E            ;Store new random bus paint job in PasswordByte0E.
     lda #$00                        ;
     ldy JustInBailey                ;
     beq L9AA1                       ;If Samus is wearing suit, branch.  Else-->

@@ -1432,6 +1432,7 @@ SamusInit:
     jsr StartMusic                  ;($CBFD)Start the intro music.
     ldy #sa_Begin                   ;
     sty ObjAction                   ;Set Samus status as fading onto screen.
+    jsr SelectSamusPal
     lda #_id_Palette13+1.b
     sta ObjectCounter
     ldy #$27
@@ -1764,6 +1765,9 @@ SelectSamusPal: ;$CB73
         adc #_id_Palette18-_id_Palette01.b ;Add #$17 to the pal # to reach "no suit"-palettes.
     @endIf:
     jsr WriteAreaPal                ;Palette will be written next NMI.
+
+    lda SamusGear1
+    sta PalRam+$12
     
     ;Restore the contents of y.
     pla
