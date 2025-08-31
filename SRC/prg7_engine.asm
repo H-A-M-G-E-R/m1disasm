@@ -8883,7 +8883,7 @@ UpdateEnemy_Pickup: ;($F483)
     
     ; if anim frame is #$80, it is a missile pickup
     ldy EnsExtra.0.animFrame,x
-    cpy #_id_EnFrame_MissilePickup.b
+    cpy AreaMissilePickupAnimFrame
     beq @pickupMissile
     
     ; health pickup
@@ -8902,7 +8902,7 @@ UpdateEnemy_Pickup: ;($F483)
         dex
         pla
         ; branch if not small health pickup
-        cmp #_id_EnFrame_SmallEnergyPickup.b
+        cmp AreaSmallEnergyPickupAnimFrame
         bne @endIf_B
             ; small health pickup
             ;Increase Health by 5.
