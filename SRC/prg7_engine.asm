@@ -2864,18 +2864,18 @@ SamusRoll:
         ;lda #$00
         ;sta MoveSamusUp_IsUnrollCheck
     Lx032:
-        lda Joy1Change
-        and #BUTTON_DOWN
-        beq +
-            lda SamusGear1
-            and #gr1_SPIDERBALL
-            beq +      ; branch if Samus doesn't have spider ball
-            lda #sa_SpiderFall
-            sta ObjAction
-            lda #ObjAnim_SamusSpider - ObjectAnimIndexTbl.b
-            jsr SetSamusAnim
-            jsr SFX_SamusBall
-        +
+        ;lda Joy1Change
+        ;and #BUTTON_DOWN
+        ;beq +
+        ;    lda SamusGear1
+        ;    and #gr1_SPIDERBALL
+        ;    beq +      ; branch if Samus doesn't have spider ball
+        ;    lda #sa_SpiderFall
+        ;    sta ObjAction
+        ;    lda #ObjAnim_SamusSpider - ObjectAnimIndexTbl.b
+        ;    jsr SetSamusAnim
+        ;    jsr SFX_SamusBall
+        ;+
         lda Joy1Status
         jsr BitScan                     ;($E1E1)
         cmp #BUTTONBIT_DOWN
