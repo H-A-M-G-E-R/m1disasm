@@ -1,3 +1,6 @@
+0.3.3:
+    Fix hyperfast rinkas
+
 0.3.2:
     Fix bug with pickups I accidently made
 
