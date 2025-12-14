@@ -3034,21 +3034,15 @@ FireWeaponForwards:
     ; exit if no slots are available
     bne @exit
     
-    
-    jsr InitBullet
-    jsr CheckHorizontalWaveBulletFire
-    lda #$0C
-    sta ProjectileDieDelay,y
+    jsr InitBulletHorz
     ldx SamusDir
     lda BulletSpeedXTable,x   ; get bullet speed
     sta ObjSpeedX,y     ; -4 or 4, depending on Samus' direction
     lda #$00
     sta ObjSpeedY,y
-    lda #$01
-    sta ObjOnScreen,y
     jsr CheckHorizontalMissileLaunch
     ; place bullet at arm cannon
-    lda ObjAction,y
+    lda ProjectileStatus,y
     asl
     ora SamusDir
     and #$03
@@ -3058,18 +3052,6 @@ FireWeaponForwards:
     lda #-$06
     sta Temp04_SpeedY
     jsr PlaceBulletAtArmCannon
-    ; branch if not regular beam (sound played at CheckHorizontalWaveBulletFire or CheckIceBulletFire)
-    ldx ObjAction,y
-    dex
-    bne @exit
-    ldx #sfxSQ1_BulletFire
-    lda SamusGear
-    and #gr_LONGBEAM
-    beq +
-        inx
-    +
-    txa
-    jsr SFX_SetSQ1SFXFlag
 @exit:
     ldy #ObjAnim_SamusStandFire - ObjectAnimIndexTbl.b
 LD26B:
@@ -3092,39 +3074,22 @@ FireWeaponUpwards:
     ; exit if no slots are available
     bne @exit
     
-    jsr InitBullet
-    jsr CheckVerticalWaveBulletFire
-    lda #$0C
-    sta ProjectileDieDelay,y
+    jsr InitBulletVert
     lda #$FC
     sta ObjSpeedY,y
     lda #$00
     sta ObjSpeedX,y
-    lda #$01
-    sta ObjOnScreen,y
     jsr CheckVerticalMissileLaunch
     ; place bullet at arm cannon
     ldx SamusDir
     lda BulletUpwardsOffsetXTable,x
     sta Temp05_SpeedX
-    lda ObjAction,y
+    lda ProjectileStatus,y
     and #$01
     tax
     lda BulletUpwardsOffsetYTable,x
     sta Temp04_SpeedY
     jsr PlaceBulletAtArmCannon
-    ; branch if not regular beam (sound played at CheckVerticalWaveBulletFire or CheckIceBulletFire)
-    lda ObjAction,y
-    cmp #wa_RegularBeam
-    bne @exit
-    ldx #sfxSQ1_BulletFire
-    lda SamusGear
-    and #gr_LONGBEAM
-    beq +
-        inx
-    +
-    txa
-    jsr SFX_SetSQ1SFXFlag
 @exit:
     ldx SamusDir
     ldy StandAimUpFireAnimTbl,x
@@ -3149,18 +3114,6 @@ BulletUpwardsOffsetXTable:
 BulletUpwardsOffsetYTable:
     .byte -$14, -$10
 
-InitBullet:
-    tya
-    tax
-    inc ProjectileStatus,x
-    lda #$02
-    sta ProjectileRadY,y
-    sta ProjectileRadX,y
-    lda #ObjAnim_RegularBullet - ObjectAnimIndexTbl.b
-    bit SamusGear
-    bpl InitObjAnimIndex ; branch if Samus doesn't have Ice Beam
-    lda #ObjAnim_IceBullet - ObjectAnimIndexTbl.b
-
 InitObjAnimIndex:
     sta ObjAnimResetIndex,x
 SetObjAnimIndex:
@@ -3182,18 +3135,18 @@ PlaceBulletAtArmCannon:
 
 CheckHorizontalMissileLaunch:
     lda MissileToggle
-    beq Exit4       ; exit if Samus not in "missile fire" mode
+    beq SetBulletAnim@RTS       ; exit if Samus not in "missile fire" mode
     ldx SamusDir
     lda HorizontalMissileAnims,x
-Lx047:
+@merge:
     jsr SetBulletAnim
     jsr SFX_MissileLaunch
     lda #wa_Missile ; missile handler
-    sta ObjAction,y
+    sta ProjectileStatus,y
     lda #$FF
     sta ProjectileDieDelay,y     ; # of frames projectile should last
     dec MissileCount
-    bne Exit4       ; exit if not the last missile
+    bne SetBulletAnim@RTS       ; exit if not the last missile
 ; Samus has no more missiles left
     dec MissileToggle       ; put Samus in "regular fire" mode
     jmp SelectSamusPal      ; update Samus' palette to reflect this
@@ -3204,64 +3157,87 @@ HorizontalMissileAnims:
 
 CheckVerticalMissileLaunch:
     lda MissileToggle
-    beq Exit4
+    beq SetBulletAnim@RTS
     lda #ObjAnim_MissileUp - ObjectAnimIndexTbl.b
-    bne Lx047 ; branch always
+    bne CheckHorizontalMissileLaunch@merge ; branch always
 
 SetBulletAnim:
     sta ObjAnimIndex,y
     sta ObjAnimResetIndex,y
     lda #$00
     sta ObjAnimDelay,y
-Exit4:
+@RTS:
     rts
 
-CheckHorizontalWaveBulletFire:
+InitBulletVert:
+    lda #$02
+    bne InitBulletHorz@merge ; branch always
+
+InitBulletHorz:
     lda SamusDir
-LD35B:
+@merge:
     sta ProjectileWaveDir,y
+    lda #$02
+    sta ProjectileRadY,y
+    sta ProjectileRadX,y
+    lda #$01
+    sta ObjOnScreen,y
+    lda #$0C
+    sta ProjectileDieDelay,y
     lda MissileToggle
-    bne Exit4
+    bne SetBulletAnim@RTS
     bit SamusGear
-    bvc CheckIceBulletFire       ; branch if Samus doesn't have Wave Beam
+    bvc @noWave       ; branch if Samus doesn't have Wave Beam
     lda MissileToggle
-    bne Exit4
+    bne SetBulletAnim@RTS
     lda #$00
     sta ProjectileWaveInstrTimer,y
     sta ProjectileAnimDelay,y
     tya
     jsr Adiv32      ; / 32
-    lda #$00
-    bcs Lx048
-    lda #$0C
-Lx048:
+    lda #$00 ; odd slots (D,F)
+    bcs @wave_oddSlot
+        lda #$0C ; even slot (E)
+    @wave_oddSlot:
     sta ProjectileWaveInstrID,y
     lda SamusGear
-    bmi @ice
+    bmi @waveIce
     lda #wa_WaveBeam
-    sta ObjAction,y
+    sta ProjectileStatus,y
     lda #ObjAnim_WaveBeam - ObjectAnimIndexTbl.b
     jsr SetBulletAnim
     jmp SFX_WaveFire
 
-@ice:
+@waveIce:
     lda #wa_WaveIceBeam
-    sta ObjAction,y
+    sta ProjectileStatus,y
     lda #ObjAnim_WaveIceBeam - ObjectAnimIndexTbl.b
     jsr SetBulletAnim
     lda #sfxSQ1_IceBeam
     jmp SFX_SetSQ1SFXFlag
 
-CheckVerticalWaveBulletFire:
-    lda #$02
-    bne LD35B ; branch always
-
-CheckIceBulletFire:
+@noWave:
     lda SamusGear
-    bpl Exit4       ; branch if Samus doesn't have Ice Beam
+    bpl @normalBeam       ; branch if Samus doesn't have Ice Beam
     lda #wa_IceBeam
-    sta ObjAction,y
+    sta ProjectileStatus,y
+    lda #ObjAnim_IceBullet - ObjectAnimIndexTbl.b
+    jsr SetBulletAnim
     lda #sfxSQ1_IceBeam
+    jmp SFX_SetSQ1SFXFlag
+
+@normalBeam:
+    lda #wa_RegularBeam
+    sta ProjectileStatus,y
+    lda #ObjAnim_RegularBullet - ObjectAnimIndexTbl.b
+    jsr SetBulletAnim
+    ldx #sfxSQ1_BulletFire
+    lda SamusGear
+    and #gr_LONGBEAM
+    beq +
+        inx
+    +
+    txa
     jmp SFX_SetSQ1SFXFlag
 
 ; SamusDoor
