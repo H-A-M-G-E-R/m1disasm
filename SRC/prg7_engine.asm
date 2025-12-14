@@ -3188,8 +3188,6 @@ InitBulletHorz:
     bne SetBulletAnim@RTS
     bit SamusGear
     bvc @noWave       ; branch if Samus doesn't have Wave Beam
-    lda MissileToggle
-    bne SetBulletAnim@RTS
     lda #$00
     sta ProjectileWaveInstrTimer,y
     sta ProjectileAnimDelay,y
