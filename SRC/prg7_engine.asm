@@ -3040,7 +3040,6 @@ FireWeaponForwards:
     sta ObjSpeedX,y     ; -4 or 4, depending on Samus' direction
     lda #$00
     sta ObjSpeedY,y
-    jsr CheckHorizontalMissileLaunch
     ; place bullet at arm cannon
     lda ProjectileStatus,y
     asl
@@ -3079,7 +3078,6 @@ FireWeaponUpwards:
     sta ObjSpeedY,y
     lda #$00
     sta ObjSpeedX,y
-    jsr CheckVerticalMissileLaunch
     ; place bullet at arm cannon
     ldx SamusDir
     lda BulletUpwardsOffsetXTable,x
@@ -3133,34 +3131,6 @@ PlaceBulletAtArmCannon:
     tay
     jmp LoadObjectPositionFromTemp
 
-CheckHorizontalMissileLaunch:
-    lda MissileToggle
-    beq SetBulletAnim@RTS       ; exit if Samus not in "missile fire" mode
-    ldx SamusDir
-    lda HorizontalMissileAnims,x
-@merge:
-    jsr SetBulletAnim
-    jsr SFX_MissileLaunch
-    lda #wa_Missile ; missile handler
-    sta ProjectileStatus,y
-    lda #$FF
-    sta ProjectileDieDelay,y     ; # of frames projectile should last
-    dec MissileCount
-    bne SetBulletAnim@RTS       ; exit if not the last missile
-; Samus has no more missiles left
-    dec MissileToggle       ; put Samus in "regular fire" mode
-    jmp SelectSamusPal      ; update Samus' palette to reflect this
-
-HorizontalMissileAnims:
-    .byte ObjAnim_MissileRight - ObjectAnimIndexTbl
-    .byte ObjAnim_MissileLeft - ObjectAnimIndexTbl
-
-CheckVerticalMissileLaunch:
-    lda MissileToggle
-    beq SetBulletAnim@RTS
-    lda #ObjAnim_MissileUp - ObjectAnimIndexTbl.b
-    bne CheckHorizontalMissileLaunch@merge ; branch always
-
 SetBulletAnim:
     sta ObjAnimIndex,y
     sta ObjAnimResetIndex,y
@@ -3177,17 +3147,47 @@ InitBulletHorz:
     lda SamusDir
 @merge:
     sta ProjectileWaveDir,y
+    tax
     lda #$02
     sta ProjectileRadY,y
     sta ProjectileRadX,y
     lda #$01
     sta ObjOnScreen,y
-    lda #$0C
-    sta ProjectileDieDelay,y
     lda MissileToggle
-    bne SetBulletAnim@RTS
+    beq @beam
+    ; missile
+    lda #$00
+    sta ProjectileDieDelay,y ; make it last forever
+    lda #wa_Missile
+    sta ProjectileStatus,y
+    lda @missileAnims,x
+    jsr SetBulletAnim
+    jsr SFX_MissileLaunch
+    ; decrement missiles
+    dec MissileCount
+    bne SetBulletAnim@RTS       ; exit if not the last missile
+; Samus has no more missiles left
+    dec MissileToggle       ; put Samus in "regular fire" mode
+    jmp SelectSamusPal      ; update Samus' palette to reflect this
+
+@missileAnims:
+    .byte ObjAnim_MissileRight - ObjectAnimIndexTbl
+    .byte ObjAnim_MissileLeft - ObjectAnimIndexTbl
+    .byte ObjAnim_MissileUp - ObjectAnimIndexTbl
+
+@beam:
+    ; init die delay
+    ldx #$00
+    lda SamusGear
+    and #gr_LONGBEAM
+    bne @long  ; branch if Samus has Long Beam
+        ldx #$0C
+    @long:
+    txa
+    sta ProjectileDieDelay,y
     bit SamusGear
     bvc @noWave       ; branch if Samus doesn't have Wave Beam
+    ; wave beam
     lda #$00
     sta ProjectileWaveInstrTimer,y
     sta ProjectileAnimDelay,y
@@ -3199,14 +3199,8 @@ InitBulletHorz:
     @wave_oddSlot:
     sta ProjectileWaveInstrID,y
     lda SamusGear
-    bmi @waveIce
-    lda #wa_WaveBeam
-    sta ProjectileStatus,y
-    lda #ObjAnim_WaveBeam - ObjectAnimIndexTbl.b
-    jsr SetBulletAnim
-    jmp SFX_WaveFire
-
-@waveIce:
+    bpl @soloWave
+    ; wave + ice beam
     lda #wa_WaveIceBeam
     sta ProjectileStatus,y
     lda #ObjAnim_WaveIceBeam - ObjectAnimIndexTbl.b
@@ -3214,9 +3208,18 @@ InitBulletHorz:
     lda #sfxSQ1_IceBeam
     jmp SFX_SetSQ1SFXFlag
 
+@soloWave:
+    ; solo wave beam
+    lda #wa_WaveBeam
+    sta ProjectileStatus,y
+    lda #ObjAnim_WaveBeam - ObjectAnimIndexTbl.b
+    jsr SetBulletAnim
+    jmp SFX_WaveFire
+
 @noWave:
     lda SamusGear
     bpl @normalBeam       ; branch if Samus doesn't have Ice Beam
+    ; solo ice beam
     lda #wa_IceBeam
     sta ProjectileStatus,y
     lda #ObjAnim_IceBullet - ObjectAnimIndexTbl.b
@@ -3225,6 +3228,7 @@ InitBulletHorz:
     jmp SFX_SetSQ1SFXFlag
 
 @normalBeam:
+    ; normal beam
     lda #wa_RegularBeam
     sta ProjectileStatus,y
     lda #ObjAnim_RegularBullet - ObjectAnimIndexTbl.b
@@ -3434,9 +3438,8 @@ UpdateBullet:
 CheckBulletStat:
     ldx PageIndex
     bcc @collided
-        lda SamusGear
-        and #gr_LONGBEAM
-        bne DrawBullet  ; branch if Samus has Long Beam
+        lda ProjectileDieDelay,x
+        beq DrawBullet ; branch if projectile lasts forever (ProjectileDieDelay == 0)
         dec ProjectileDieDelay,x     ; decrement bullet timer
         bne DrawBullet
         lda #$00        ; timer hit 0, kill bullet
