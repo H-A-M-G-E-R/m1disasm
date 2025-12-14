@@ -3153,11 +3153,11 @@ InitBulletHorz:
     sta ProjectileRadX,y
     lda #$01
     sta ObjOnScreen,y
+    lda #$00
+    sta ProjectileDieDelay,y ; make it last forever
     lda MissileToggle
     beq @beam
     ; missile
-    lda #$00
-    sta ProjectileDieDelay,y ; make it last forever
     lda #wa_Missile
     sta ProjectileStatus,y
     lda @missileAnims,x
@@ -3176,15 +3176,13 @@ InitBulletHorz:
     .byte ObjAnim_MissileUp - ObjectAnimIndexTbl
 
 @beam:
-    ; init die delay
-    ldx #$00
+    ; init die delay if no long beam
     lda SamusGear
     and #gr_LONGBEAM
     bne @long  ; branch if Samus has Long Beam
-        ldx #$0C
+        lda #$0C
+        sta ProjectileDieDelay,y
     @long:
-    txa
-    sta ProjectileDieDelay,y
     bit SamusGear
     bvc @noWave       ; branch if Samus doesn't have Wave Beam
     ; wave beam
