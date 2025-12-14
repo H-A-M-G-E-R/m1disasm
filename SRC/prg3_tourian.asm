@@ -852,18 +852,17 @@ Cannon_ShootFireball:
     cmp #$04
     bcs @exit
     ; loop through all enemy fireballs
-    ldy #$60
+    ldy #$B0
     @loop:
         ; branch if slot is empty
         lda EnsExtra.0.status,y
         beq @slotFound
         ; slot is not empty, check next slot
         tya
-        clc
-        adc #$10
+        sec
+        sbc #$10
         tay
-        cmp #$A0
-        bne @loop
+        bcs @loop
     ; no fireball slots found, exit
 @exit:
     pla
@@ -880,7 +879,7 @@ Cannon_ShootFireball:
     lda Cannons.0.hi,x
     sta EnsExtra.0.hi,y
     ; set fireball status to active
-    lda #enemyStatus_Active
+    lda #enemyStatus_Active | $80.b
     sta EnsExtra.0.status,y
     ; init fireball animation timers
     lda #$00

@@ -3115,7 +3115,7 @@ FireWeaponUpwards:
     jsr PlaceBulletAtArmCannon
     ; branch if not regular beam (sound played at CheckVerticalWaveBulletFire or CheckIceBulletFire)
     lda ObjAction,y
-    cmp #$01
+    cmp #wa_RegularBeam
     bne @exit
     ldx #sfxSQ1_BulletFire
     lda SamusGear
@@ -3133,7 +3133,7 @@ FireWeaponUpwards:
         ldy AimUpFireMidairAnimTbl,x
     Lx045:
     lda ObjAction
-    cmp #$01
+    cmp #sa_Run
     beq RTS_X046
     jmp LD26B
 
@@ -4016,29 +4016,48 @@ SamusOnElevatorOrEnemy:
     
     ; set y to #$00, object slot of samus
     tay
-    ldx #$50 ; prepare x for the loop
+    ldx #$B0 ; prepare x for the loop
     ; get samus position
     jsr GetObjectYSlotPosition
+    sec
     @loop:
-        ; branch if enemy is not frozen
+        ; branch if enemy is not frozen nor solid
         lda EnsExtra.0.status,x
+        beq @notOnEnemy_sec
+        bmi @notOnEnemy_sec
         cmp #enemyStatus_Frozen
-        bne @notOnEnemy
+        beq @enemyIsSolid
+            cmp #enemyStatus_Explode
+            beq @notOnEnemy_sec
+            cmp #enemyStatus_Pickup
+            beq @notOnEnemy_sec
+            lda EnsExtra2.0.props2F,x
+            and #$02
+            beq @notOnEnemy
+        @enemyIsSolid:
         ; branch if samus is not touching enemy
         jsr GetEnemyXSlotPosition
         jsr GetRadiusSumsOfEnXSlotAndObjYSlot
         jsr CheckCollisionOfXSlotAndYSlot
-        bcs @notOnEnemy
+        bcs @notOnEnemy_sec
         ; branch if samus is not on top of enemy
         jsr @isSamusOnTop
         bne @notOnEnemy
             ;Samus is standing on a frozen enemy.
+            ; set Samus standing on solid enemy flag
+            lda EnsExtra2.0.props2F,x
+            ora #$04
+            sta EnsExtra2.0.props2F,x
             inc OnFrozenEnemy
             bne @loopExit ; branch always
         @notOnEnemy:
             ; samus is not standing on that enemy
-            jsr Xminus16
-            bpl @loop
+            sec
+        @notOnEnemy_sec:
+            txa
+            sbc #$10
+            tax
+            bcs @loop
     @loopExit:
 
     ; exit if there is no elevator
@@ -7203,21 +7222,28 @@ GetEnemyData:
     lda ($00),y                     ;Get 1st byte again.
     and #$F0                        ;Get object slot that enemy will occupy.
     tax                             ;
-    jsr IsSlotTaken                 ;($EB7A)Check if object slot is already in use.
-    bne Lx226                          ;Exit if object slot taken.
-        iny                             ;
-        lda ($00),y                     ;Get enemy type.
-        jsr GetEnemyType                ;($EB28)Load data about enemy.
-        ldy #$02                        ;
-        lda ($00),y                     ;Get enemy initial Y position.
-        sta EnY,x                       ;
-        iny
-        lda ($00),y                     ;Get enemy initial X position.
-        sta EnX,x                       ;
-        jsr LEB4D
-        pha
-    Lx225:
-        pla
+    ;Check if object slot is already in use.
+    lda EnsExtra.0.status,x
+    beq @found
+    bmi @found ; if there's an enemy projectile in the slot, overwrite it
+    lda EnData05,x
+    and #$02
+    ;Exit if object slot taken.
+    bne Lx226
+@found:
+    iny                             ;
+    lda ($00),y                     ;Get enemy type.
+    jsr GetEnemyType                ;($EB28)Load data about enemy.
+    ldy #$02                        ;
+    lda ($00),y                     ;Get enemy initial Y position.
+    sta EnY,x                       ;
+    iny
+    lda ($00),y                     ;Get enemy initial X position.
+    sta EnX,x                       ;
+    jsr LEB4D
+    pha
+Lx225:
+    pla
 Lx226:
     ;Number of bytes to add to ptr to find next room item.
     lda #$04
@@ -7263,14 +7289,6 @@ CommonJump_0E:
     asl EnData05,x                     ;*2
     jsr LFB7B
     jmp InitEnemyForceSpeedTowardsSamusDelayAndHealth
-
-IsSlotTaken:
-    lda EnsExtra.0.status,x
-    beq @RTS
-        lda EnData05,x
-        and #$02
-    @RTS:
-    rts
 
 ;------------------------------------------[ Get name table ]----------------------------------------
 
@@ -8056,12 +8074,13 @@ CollisionDetection:
 
 ; enemy <--> bullet/missile/bomb detection and enemy <--> samus detection
 Lx269:
-    ; start with enemy slot #5
-    ldx #$50
+    ; start with enemy slot #$B
+    ldx #$B0
     LF09F:
         ; check next enemy if enemy slot is empty
         lda EnsExtra.0.status,x
         beq NextEnemy      ; next slot
+        bmi NextEnemy
         ; check next enemy if enemy is currently exploding
         cmp #enemyStatus_Explode
         beq NextEnemy
@@ -8118,7 +8137,7 @@ Lx269:
         sec
         sbc #$10
         tax
-        bmi Lx275
+        bcc Lx275
             jmp LF09F
 
 ; enemy fireball <--> samus detection
@@ -8126,11 +8145,12 @@ Lx275:
     ; get samus coord data
     ldy #$00
     jsr GetObjectYSlotPosition
-    ldx #$60
+    ldx #$B0
     Lx276:
         lda EnsExtra.0.status,x
         beq Lx277
-        cmp #$05
+        bpl Lx277
+        cmp #enemyStatus_Pickup | $80.b
         beq Lx277
         ; check next fireball if samus has i-frames or in door
         lda SamusInvincibleDelay
@@ -8146,11 +8166,10 @@ Lx275:
         jsr CollisionDetectionFireball_ReactToCollisionWithSamus
     Lx277:
         txa
-        clc
-        adc #$10
+        sec
+        sbc #$10
         tax
-        cmp #$C0
-        bne Lx276
+        bcs Lx276
 
 ; bomb <--> samus detection
     ; skip this if samus is dead
@@ -8462,6 +8481,11 @@ Lx287:
         lda L968B,y
         and #$10
         bne Exit17
+
+        ; exit if enemy is solid
+        lda EnsExtra2.0.props2F,x
+        and #$02
+        bne Exit17
     Lx288:
     
     ldy #$00
@@ -8621,24 +8645,38 @@ LF340:
 UpdateAllEnemies: ; LF345
     lda #$00
     sta MetroidOnSamus
-    ldx #$50                ;Load x with #$50
+    lda #$B0                ;Load a with #$B0
     @loop:
-        jsr UpdateEnemy                  ;($F351)
-        ldx PageIndex
-        jsr Xminus16
+        tax
+        ldy EnsExtra.0.status,x
+        beq @noEnemy
+        bmi @noEnemy
+            jsr UpdateEnemy                  ;($F351)
+            lda PageIndex
+        @noEnemy:
+        sec
+        sbc #$10
         bne @loop
     ; After loop, UpdateEnemy for the case X=$00
+    tax
+    ldy EnsExtra.0.status,x
+    beq Exit22
 
 ;-------------------------------------------------------------------------------
+; Y is enemy status here
 UpdateEnemy: ;LF351
-    stx PageIndex                   ;PageIndex starts at $50 and is subtracted by #$0F each-->
-                                    ;iteration. There is a max of 6 enemies at a time.
-    ldy EnsExtra.0.status,x
-    beq @endIf
-        cpy #enemyStatus_Active+1.b
+    stx PageIndex                   ;PageIndex starts at $B0 and is subtracted by #$10 each-->
+                                    ;iteration. There is a max of 12 enemies at a time.
+    cpy #enemyStatus_Active+1.b
+    bcs @endIf
+        ; enemy status is enemyStatus_Resting or enemyStatus_Active here
+        ; skip offscreen check if pose == init or if enemy can process offscreen
+        lda EnsExtra.0.pose,x
+        beq @endIf
+        lda EnsExtra2.0.props2F,x
+        lsr
         bcs @endIf
-            ; enemy status is enemyStatus_Resting or enemyStatus_Active here
-            jsr UpdateEnemy_CheckIfVisible
+        jsr UpdateEnemy_CheckIfVisible
     @endIf:
     jsr UpdateEnemy_UpdateEnData05Bit6
     lda EnsExtra.0.status,x
@@ -8758,7 +8796,6 @@ UpdateEnemy_Active: ; LF3E6
 UpdateEnemy_Active_BranchA: ; LF401
     jsr UpdateEnemy_ForceSpeedTowardsSamus
     jsr UpdateEnemy_EnData05DistanceToSamusThreshold
-    jsr RemoveEnemyIfItIsInLava
     jsr EnemyUpdateFlipIfBit2Of968BClear
 UpdateEnemy_Active_BranchB: ; LF40A
     jsr EnemyReactToSamusWeapon
@@ -8807,6 +8844,10 @@ Lx301:
     lda #$00
     sta EnIsHit,x
     sta EnWeaponAction,x
+    ; clear Samus standing on solid enemy flag
+    lda EnsExtra2.0.props2F,x
+    and #~$04
+    sta EnsExtra2.0.props2F,x
     rts
 
 ; Entry Point 3 ; CommonJump_01
@@ -8966,21 +9007,6 @@ LF518:
     lda #enemyStatus_Frozen
     sta EnsExtra.0.status,x
     rts
-
-;-------------------------------------------------------------------------------
-RemoveEnemyIfItIsInLava:
-    ; exit if room scrolls vertically
-    lda ScrollDir
-    ldx PageIndex
-    cmp #$02
-    bcc RTS_X315
-    ; room scrolls horizontally
-    ; exit if enemy is above lava
-    lda EnY,x     ; Y coord
-    cmp #$EC
-    bcc RTS_X315
-    ; enemy is in lava
-    jmp RemoveEnemy                  ;($FA18)Free enemy data slot.
 
 ;-------------------------------------------------------------------------------
 Lx314:
@@ -9647,7 +9673,7 @@ CommonJump_SpawnFireball:
     ; attempt to find open enemy fireball slot
     jsr SpawnFireball_FindSlot
     ; exit if all slots are occupied
-    bcs RTS_SpawnFireball_FindSlot
+    bcc RTS_SpawnFireball_FindSlot
     
     ; a is #$00 here
     sta EnIsHit,y
@@ -9672,7 +9698,7 @@ CommonJump_SpawnFireball:
     
     ; set fireball status to resting
     ldx PageIndex
-    lda #enemyStatus_Resting ;#$01
+    lda #enemyStatus_Resting | $80.b ;#$01
     sta EnsExtra.0.status,y
     ; use horizontal facing dir flag to set fireball x speed
     and EnData05,x
@@ -9705,14 +9731,15 @@ CommonJump_SpawnFireball:
     rts
 
 SpawnFireball_FindSlot:
-    ldy #$60
-    clc
+    ldy #$B0
+    sec
     @loop:
         lda EnsExtra.0.status,y
         beq RTS_SpawnFireball_FindSlot
-        jsr Yplus16
-        cmp #$C0
-        bne @loop
+        tya
+        sbc #$10
+        tay
+        bcs @loop
 RTS_SpawnFireball_FindSlot:
     rts
 
@@ -9731,7 +9758,7 @@ SpawnFireball_F8F8:
     and #$07
     sta EnData0A,y
     ; set fireball status to active
-    lda #enemyStatus_Active
+    lda #enemyStatus_Active | $80.b
     sta EnsExtra.0.status,y
     ; clear fireball anim delay and movement
     lda #$00
@@ -9767,23 +9794,32 @@ SpawnFireball_F92C:
 
 
 UpdateAllEnemyFireballs:
-    ldx #$B0
+    lda #$B0
     Lx359:
-        jsr UpdateEnemyFireball
-        ldx PageIndex
-        jsr Xminus16
-        cmp #$60
+        tax
+        ldy EnsExtra.0.status,x
+        beq @noFireball
+        bpl @noFireball
+            jsr UpdateEnemyFireball
+            lda PageIndex
+        @noFireball:
+        sec
+        sbc #$10
         bne Lx359
-        ; fallthrough
+    tax
+    ldy EnsExtra.0.status,x
+    beq Exit19
+    bpl Exit19
+    ; fallthrough
 UpdateEnemyFireball:
     stx PageIndex
     lda EnData05,x
     and #$02
     bne Lx360
-        jsr RemoveEnemy                  ;($FA18)Free enemy data slot.
+        jmp RemoveEnemy                  ;($FA18)Free enemy data slot.
+
     Lx360:
     lda EnsExtra.0.status,x
-    beq Exit19
     jsr ChooseRoutine
         .word ExitSub     ;($C45C) rts
         .word UpdateEnemyFireball_Resting
@@ -9949,7 +9985,7 @@ EnemyBecomePickupIfHit:
 EnemyBecomePickup:
     lda #$00
     sta EnIsHit,x
-    lda #enemyStatus_Pickup
+    lda #enemyStatus_Pickup | $80.b
     sta EnsExtra.0.status,x
 Exit20:
     rts

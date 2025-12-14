@@ -46,6 +46,10 @@ ClearObjectCntrl:
     rts                             ;
 
 DrawMetaspriteXFlipped:
+    lda Temp0E_ScreenX
+    sec
+    sbc #$08
+    sta Temp0E_ScreenX
     @loop:
         ; y
         lda (Temp00_FramePtr),y
@@ -69,8 +73,6 @@ DrawMetaspriteXFlipped:
         sec
         sbc (Temp00_FramePtr),y
         iny
-        sec
-        sbc #$08
         sta SpriteRAM.0.x,x
 
         inx
@@ -152,6 +154,10 @@ DrawExplodingMetasprite:
     jmp ClearObjectCntrl
 
 DrawExplodingMetaspriteXFlipped:
+    lda Temp0E_ScreenX
+    sec
+    sbc #$08
+    sta Temp0E_ScreenX
     @loop:
         ; explode displacement index
         lda (Temp00_FramePtr),y
@@ -192,8 +198,6 @@ DrawExplodingMetaspriteXFlipped:
         sec
         sbc (Temp00_FramePtr),y
         iny
-        sec
-        sbc #$08
         sta SpriteRAM.0.x,x
         ; displace x by explosion
         lda Temp03_ExplodePlaceIndex

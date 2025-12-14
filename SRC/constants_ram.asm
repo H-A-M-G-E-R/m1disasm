@@ -114,7 +114,10 @@
     data2C           db
     data2D           db
     data2E           db
-    props2F          db ;bit6 set: h-flip
+    props2F          db ;bit0 set: process offscreen
+                         ;bit1 set: enemy is solid (regardless if it's frozen or not)
+                         ;bit2 set: Samus standing on enemy (only if enemy is solid)
+                         ;bit6 set: h-flip
 .endst
 
 .struct Cannon
@@ -629,8 +632,7 @@ StartContinue          = $0325   ;0=START selected, 1=CONTINUE selected.
 ;------------------------------------------[ Enemy RAM ]---------------------------------------------
 
 ; 16 slots of 16 bytes each ($0400-$04FF)
-; slot 0 to 5 is for normal enemies
-; slot 6 to B is for enemy fireballs
+; slot 0 to B is for normal enemies and fireballs
 ; slot C to D is for enemy explosions
 ; slot E is for mother brain
 ; slot F is for mellow handler enemy
@@ -987,13 +989,13 @@ CHRBank5               db        ;PPU $1C00-$1FFF
 .union
 ;---------------------------------------[ More enemy RAM ]-------------------------------------------
 
-    ; 16 slots of 8 bytes each ($7D80-$7DFF)
+    ; 16 slots of 8 bytes each ($7980-$79FF)
     Cannons                instanceof Cannon $10 startfrom 0
 
-    ; 16 slots of 16 bytes each ($7E00-$7EFF) (page-aligned to maximize performance)
+    ; 16 slots of 16 bytes each ($7A00-$7AFF) (page-aligned to maximize performance)
     EnsExtra               instanceof EnExtra $10 startfrom 0
 
-    ; 16 slots of 16 bytes each ($7F00-$7FFF)
+    ; 16 slots of 16 bytes each ($7B00-$7BFF)
     EnsExtra2              instanceof EnExtra2 $10 startfrom 0
 
 .nextu
