@@ -1554,7 +1554,7 @@ UpdateAge:
     sta SamusAge
     ;Loop to update the higher bytes of age.
     @loop:
-        cpx #$03
+        cpx #$02
         bcs @RTS
         inx
         inc SamusAge,x
