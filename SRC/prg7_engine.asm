@@ -1543,7 +1543,7 @@ UpdateAge:
     bne @RTS
 
     ;Minor Age = Minor Age + 1.
-    inc SamusAge,x
+    inc SamusAge
     ;Has Minor Age reached $D0?-->
     lda SamusAge
     cmp #$D0
@@ -1555,12 +1555,21 @@ UpdateAge:
     ;Loop to update the higher bytes of age.
     @loop:
         cpx #$02
-        bcs @RTS
+        bcs @capAge
         inx
         inc SamusAge,x
         ;Branch if carry to next byte. Else exit.
         beq @loop
 @RTS:
+    rts
+
+@capAge
+    ;Age overflowed, cap age at FF.FF.CF
+    lda #$FF
+    sta SamusAge+2
+    sta SamusAge+1
+    lda #$CF
+    sta SamusAge
     rts
 
 ;-------------------------------------------[ Game over ]--------------------------------------------
