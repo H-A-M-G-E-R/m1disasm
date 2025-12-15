@@ -1,20 +1,20 @@
 ;-----------------------------------[ Enemy animation data tables ]----------------------------------
 
-EnAnimTbl: ;($9B85)
-EnAnim_FireballKilled:
-    .byte _id_EnFrame_FireballKilled, $FF
+EnAnimTable: ;($9B85)
+EnAnim_EnProjectileKilled:
+    .byte _id_EnFrame_EnProjectileKilled, $FF
 
-EnAnim_RidleyIdleFacingRight:
-    .byte _id_EnFrame_RidleyIdleFacingRight0, _id_EnFrame_RidleyIdleFacingRight1, $FF
+EnAnim_RidleyIdle_R:
+    .byte _id_EnFrame_RidleyIdle0_R, _id_EnFrame_RidleyIdle1_R, $FF
 
-EnAnim_RidleyHoppingFacingRight:
-    .byte _id_EnFrame_RidleyHoppingFacingRight0, _id_EnFrame_RidleyHoppingFacingRight1, $FF
+EnAnim_RidleyHopping_R:
+    .byte _id_EnFrame_RidleyHopping0_R, _id_EnFrame_RidleyHopping1_R, $FF
 
 EnAnim_RidleyExplode:
     .byte _id_EnFrame_RidleyExplode, $FF
 
-EnAnim_RidleyFireballFacingRight:
-    .byte _id_EnFrame_RidleyFireballFacingRight0, _id_EnFrame_RidleyFireballFacingRight1, _id_EnFrame_RidleyFireballFacingRight2, _id_EnFrame_RidleyFireballFacingRight3, $FF
+EnAnim_RidleyFireball_R:
+    .byte _id_EnFrame_RidleyFireball0_R, _id_EnFrame_RidleyFireball1_R, _id_EnFrame_RidleyFireball2_R, _id_EnFrame_RidleyFireball3_R, $FF
 
 EnAnim_HoltzIdle:
     .byte _id_EnFrame_HoltzIdle0, _id_EnFrame_HoltzIdle1, $FF
@@ -74,28 +74,28 @@ EnAnim_ViolaExplode:
 EnAnim_Explosion:
     .byte _id_EnFrame_Explosion0, $F7, _id_EnFrame_Explosion1, $F7, $FF
 
-EnAnim_ZebboFacingRight:
-    .byte _id_EnFrame_ZebboFacingRight0, _id_EnFrame_ZebboFacingRight1, $FF
+EnAnim_Zebbo_R:
+    .byte _id_EnFrame_Zebbo0_R, _id_EnFrame_Zebbo1_R, $FF
 
-EnAnim_ZebboExplodeFacingRight:
-    .byte _id_EnFrame_ZebboExplodeFacingRight, $FF
+EnAnim_ZebboExplode_R:
+    .byte _id_EnFrame_ZebboExplode_R, $FF
 
-EnAnim_ZebboRestingFacingRight:
-    .byte _id_EnFrame_ZebboFacingRight0, $FF
+EnAnim_ZebboResting_R:
+    .byte _id_EnFrame_Zebbo0_R, $FF
 
 ;----------------------------[ Enemy sprite drawing pointer tables ]---------------------------------
 
 EnFramePtrTable1:
-    PtrTableEntry EnFramePtrTable1, EnFrame_FireballKilled
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyIdleFacingRight0
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyIdleFacingRight1
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyHoppingFacingRight0
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyHoppingFacingRight1
+    PtrTableEntry EnFramePtrTable1, EnFrame_EnProjectileKilled
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyIdle0_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyIdle1_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyHopping0_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyHopping1_R
     PtrTableEntry EnFramePtrTable1, EnFrame_RidleyExplode
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireballFacingRight0
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireballFacingRight1
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireballFacingRight2
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireballFacingRight3
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireball0_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireball1_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireball2_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireball3_R
     PtrTableEntry EnFramePtrTable1, EnFrame_HoltzIdle0
     PtrTableEntry EnFramePtrTable1, EnFrame_HoltzIdle1
     PtrTableEntry EnFramePtrTable1, EnFrame_HoltzSwooping0
@@ -127,21 +127,21 @@ EnFramePtrTable1:
     PtrTableEntry EnFramePtrTable1, EnFrame_ViolaExplode
     PtrTableEntry EnFramePtrTable1, EnFrame_Explosion0
     PtrTableEntry EnFramePtrTable1, EnFrame_Explosion1
-    PtrTableEntry EnFramePtrTable1, EnFrame_ZebboFacingRight0
-    PtrTableEntry EnFramePtrTable1, EnFrame_ZebboFacingRight1
-    PtrTableEntry EnFramePtrTable1, EnFrame_ZebboExplodeFacingRight
+    PtrTableEntry EnFramePtrTable1, EnFrame_Zebbo0_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_Zebbo1_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_ZebboExplode_R
     PtrTableEntry EnFramePtrTable1, EnFrame_MissilePickup
     PtrTableEntry EnFramePtrTable1, EnFrame_SmallEnergyPickup
     PtrTableEntry EnFramePtrTable1, EnFrame_BigEnergyPickup
 
 ;Enemy frame drawing data.
 
-EnFrame_FireballKilled:
+EnFrame_EnProjectileKilled:
     .byte $00,$00
     .byte $FC,$07+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
-EnFrame_RidleyIdleFacingRight0:
+EnFrame_RidleyIdle0_R:
     .byte $13,$14
     .byte $EC,$C8,$22,$F8
     .byte $EC,$C9,$22,$00
@@ -160,7 +160,7 @@ EnFrame_RidleyIdleFacingRight0:
     .byte $F4,$F8,$22,$EC
     .byte $80
 
-EnFrame_RidleyIdleFacingRight1:
+EnFrame_RidleyIdle1_R:
     .byte $13,$14
     .byte $EC,$C8,$22,$F8
     .byte $EC,$C9,$22,$00
@@ -179,7 +179,7 @@ EnFrame_RidleyIdleFacingRight1:
     .byte $FC,$E8,$22,$F4
     .byte $80
 
-EnFrame_RidleyHoppingFacingRight0:
+EnFrame_RidleyHopping0_R:
     .byte $13,$14
     .byte $EC,$C8,$22,$F8
     .byte $EC,$C9,$22,$00
@@ -199,7 +199,7 @@ EnFrame_RidleyHoppingFacingRight0:
     .byte $14,$FA,$22,$F8
     .byte $80
 
-EnFrame_RidleyHoppingFacingRight1:
+EnFrame_RidleyHopping1_R:
     .byte $13,$14
     .byte $EC,$C8,$22,$F8
     .byte $EC,$C9,$22,$00
@@ -229,22 +229,22 @@ EnFrame_RidleyExplode:
     .byte $05,$04,$E7,$22,$00
     .byte $80
 
-EnFrame_RidleyFireballFacingRight0:
+EnFrame_RidleyFireball0_R:
     .byte $07,$07
     .byte $FC,$EC,$23,$FC
     .byte $80
 
-EnFrame_RidleyFireballFacingRight1:
+EnFrame_RidleyFireball1_R:
     .byte $07,$07
     .byte $FC,$FB,$23,$FC
     .byte $80
 
-EnFrame_RidleyFireballFacingRight2:
+EnFrame_RidleyFireball2_R:
     .byte $07,$07
     .byte $FC,$EC,$E3,$FC
     .byte $80
 
-EnFrame_RidleyFireballFacingRight3:
+EnFrame_RidleyFireball3_R:
     .byte $07,$07
     .byte $FC,$FB,$E3,$FC
     .byte $80
@@ -517,7 +517,7 @@ EnFrame_Explosion1:
     .byte $08,$12+CFG_NUM_SAMUS_TILES,$A0,$08
     .byte $80
 
-EnFrame_ZebboFacingRight0:
+EnFrame_Zebbo0_R:
     .byte $08,$08
     .byte $F8,$C2,$62,$00
     .byte $F8,$C3,$62,$F8
@@ -525,7 +525,7 @@ EnFrame_ZebboFacingRight0:
     .byte $00,$D3,$62,$F8
     .byte $80
 
-EnFrame_ZebboFacingRight1:
+EnFrame_Zebbo1_R:
     .byte $08,$08
     .byte $F8,$C2,$62,$00
     .byte $F8,$C4,$62,$F8
@@ -533,7 +533,7 @@ EnFrame_ZebboFacingRight1:
     .byte $00,$D4,$62,$F8
     .byte $80
 
-EnFrame_ZebboExplodeFacingRight:
+EnFrame_ZebboExplode_R:
     .byte $88,$08
     .byte $00,$F4,$C2,$62,$00
     .byte $01,$F4,$C4,$62,$F8

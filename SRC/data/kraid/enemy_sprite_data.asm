@@ -1,8 +1,8 @@
 ;-----------------------------------[ Enemy animation data tables ]----------------------------------
 
-EnAnimTbl: ;($9C86)
-EnAnim_FireballKilled:
-    .byte _id_EnFrame_FireballKilled, $FF
+EnAnimTable: ;($9C86)
+EnAnim_EnProjectileKilled:
+    .byte _id_EnFrame_EnProjectileKilled, $FF
 
 EnAnim_SidehopperFloorIdle:
     .byte _id_EnFrame_SidehopperFloorIdle0, _id_EnFrame_SidehopperFloorIdle1, $FF
@@ -20,16 +20,16 @@ EnAnim_SidehopperCeilingStartHopping:
 EnAnim_SidehopperCeilingHopping:
     .byte _id_EnFrame_SidehopperCeilingHopping, $FF
 
-EnAnim_Waver0FacingRight:
-    .byte _id_EnFrame_Waver0FacingRight, $FF
+EnAnim_Waver0_R:
+    .byte _id_EnFrame_Waver0_R, $FF
 
-EnAnim_RipperFacingRight:
-    .byte _id_EnFrame_RipperFacingRight, $FF
+EnAnim_Ripper_R:
+    .byte _id_EnFrame_Ripper_R, $FF
 
-EnAnim_Waver1FacingRight:
-    .byte _id_EnFrame_Waver1FacingRight
-EnAnim_Waver2FacingRight:
-    .byte _id_EnFrame_Waver2FacingRight, $FF
+EnAnim_Waver1_R:
+    .byte _id_EnFrame_Waver1_R
+EnAnim_Waver2_R:
+    .byte _id_EnFrame_Waver2_R, $FF
 
 EnAnim_Skree:
     .byte _id_EnFrame_Skree0, _id_EnFrame_Skree1, _id_EnFrame_Skree2, $FF
@@ -40,11 +40,11 @@ EnAnim_SidehopperFloorExplode:
 EnAnim_SidehopperCeilingExplode:
     .byte _id_EnFrame_SidehopperCeilingExplode, $FF
 
-EnAnim_WaverExplodeFacingRight:
-    .byte _id_EnFrame_WaverExplodeFacingRight, $FF
+EnAnim_WaverExplode_R:
+    .byte _id_EnFrame_WaverExplode_R, $FF
 
-EnAnim_RipperExplodeFacingRight:
-    .byte _id_EnFrame_RipperExplodeFacingRight, $FF
+EnAnim_RipperExplode_R:
+    .byte _id_EnFrame_RipperExplode_R, $FF
 
 EnAnim_SkreeExplode:
     .byte _id_EnFrame_SkreeExplode, $FF
@@ -67,53 +67,53 @@ EnAnim_ZeelaExplode:
 EnAnim_Explosion:
     .byte _id_EnFrame_Explosion0, $F7, _id_EnFrame_Explosion1, $F7, $FF
 
-EnAnim_GeegaFacingRight:
-    .byte _id_EnFrame_GeegaFacingRight0, _id_EnFrame_GeegaFacingRight1, $FF
+EnAnim_Geega_R:
+    .byte _id_EnFrame_Geega0_R, _id_EnFrame_Geega1_R, $FF
 
-EnAnim_GeegaExplodeFacingRight:
-    .byte _id_EnFrame_GeegaExplodeFacingRight, $FF
+EnAnim_GeegaExplode_R:
+    .byte _id_EnFrame_GeegaExplode_R, $FF
 
-EnAnim_GeegaRestingFacingRight:
-    .byte _id_EnFrame_GeegaFacingRight0, $FF
+EnAnim_GeegaResting_R:
+    .byte _id_EnFrame_Geega0_R, $FF
 
-EnAnim_KraidLintFacingRight:
-    .byte _id_EnFrame_KraidLintFacingRight, $FF
+EnAnim_KraidLint_R:
+    .byte _id_EnFrame_KraidLint_R, $FF
 
-EnAnim_KraidNailMovingFacingRight:
-    .byte _id_EnFrame_KraidNailFacingRight1, _id_EnFrame_KraidNailFacingRight2, _id_EnFrame_KraidNailFacingRight3
-EnAnim_KraidNailIdleFacingRight:
-    .byte _id_EnFrame_KraidNailFacingRight0, $FF
+EnAnim_KraidNailMoving_R:
+    .byte _id_EnFrame_KraidNail1_R, _id_EnFrame_KraidNail2_R, _id_EnFrame_KraidNail3_R
+EnAnim_KraidNailIdle_R:
+    .byte _id_EnFrame_KraidNail0_R, $FF
 
 EnAnim_Memu:
     .byte _id_EnFrame_Memu0, _id_EnFrame_Memu1, $FF
 
-EnAnim_KraidFacingRight:
-    .byte _id_EnFrame_KraidFacingRight0, _id_EnFrame_KraidFacingRight1, $FF
+EnAnim_Kraid_R:
+    .byte _id_EnFrame_Kraid0_R, _id_EnFrame_Kraid1_R, $FF
 
-EnAnim_KraidExplodeFacingRight:
-    .byte _id_EnFrame_KraidExplodeFacingRight, $FF
+EnAnim_KraidExplode_R:
+    .byte _id_EnFrame_KraidExplode_R, $FF
 
 ;----------------------------[ Enemy sprite drawing pointer tables ]---------------------------------
 
 EnFramePtrTable1:
-    PtrTableEntry EnFramePtrTable1, EnFrame_FireballKilled
-    PtrTableEntry EnFramePtrTable1, EnFrame_Waver2FacingRight
+    PtrTableEntry EnFramePtrTable1, EnFrame_EnProjectileKilled
+    PtrTableEntry EnFramePtrTable1, EnFrame_Waver2_R
     PtrTableEntry EnFramePtrTable1, EnFrame_SidehopperFloorIdle0
     PtrTableEntry EnFramePtrTable1, EnFrame_SidehopperFloorIdle1
     PtrTableEntry EnFramePtrTable1, EnFrame_SidehopperFloorHopping
     PtrTableEntry EnFramePtrTable1, EnFrame_SidehopperCeilingIdle0
     PtrTableEntry EnFramePtrTable1, EnFrame_SidehopperCeilingIdle1
     PtrTableEntry EnFramePtrTable1, EnFrame_SidehopperCeilingHopping
-    PtrTableEntry EnFramePtrTable1, EnFrame_RipperFacingRight
-    PtrTableEntry EnFramePtrTable1, EnFrame_Waver1FacingRight
-    PtrTableEntry EnFramePtrTable1, EnFrame_Waver0FacingRight
+    PtrTableEntry EnFramePtrTable1, EnFrame_Ripper_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_Waver1_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_Waver0_R
     PtrTableEntry EnFramePtrTable1, EnFrame_Skree0
     PtrTableEntry EnFramePtrTable1, EnFrame_Skree1
     PtrTableEntry EnFramePtrTable1, EnFrame_Skree2
     PtrTableEntry EnFramePtrTable1, EnFrame_SidehopperFloorExplode
     PtrTableEntry EnFramePtrTable1, EnFrame_SidehopperCeilingExplode
-    PtrTableEntry EnFramePtrTable1, EnFrame_WaverExplodeFacingRight
-    PtrTableEntry EnFramePtrTable1, EnFrame_RipperExplodeFacingRight
+    PtrTableEntry EnFramePtrTable1, EnFrame_WaverExplode_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RipperExplode_R
     PtrTableEntry EnFramePtrTable1, EnFrame_SkreeExplode
     PtrTableEntry EnFramePtrTable1, EnFrame_ZeelaOnFloor0
     PtrTableEntry EnFramePtrTable1, EnFrame_ZeelaOnFloor1
@@ -126,31 +126,31 @@ EnFramePtrTable1:
     PtrTableEntry EnFramePtrTable1, EnFrame_ZeelaExplode
     PtrTableEntry EnFramePtrTable1, EnFrame_Explosion0
     PtrTableEntry EnFramePtrTable1, EnFrame_Explosion1
-    PtrTableEntry EnFramePtrTable1, EnFrame_GeegaFacingRight0
-    PtrTableEntry EnFramePtrTable1, EnFrame_GeegaFacingRight1
-    PtrTableEntry EnFramePtrTable1, EnFrame_GeegaExplodeFacingRight
-    PtrTableEntry EnFramePtrTable1, EnFrame_KraidLintFacingRight
-    PtrTableEntry EnFramePtrTable1, EnFrame_KraidNailFacingRight0
-    PtrTableEntry EnFramePtrTable1, EnFrame_KraidNailFacingRight1
-    PtrTableEntry EnFramePtrTable1, EnFrame_KraidNailFacingRight2
-    PtrTableEntry EnFramePtrTable1, EnFrame_KraidNailFacingRight3
+    PtrTableEntry EnFramePtrTable1, EnFrame_Geega0_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_Geega1_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_GeegaExplode_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_KraidLint_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_KraidNail0_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_KraidNail1_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_KraidNail2_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_KraidNail3_R
     PtrTableEntry EnFramePtrTable1, EnFrame_MissilePickup
     PtrTableEntry EnFramePtrTable1, EnFrame_SmallEnergyPickup
     PtrTableEntry EnFramePtrTable1, EnFrame_BigEnergyPickup
     PtrTableEntry EnFramePtrTable1, EnFrame_Memu0
     PtrTableEntry EnFramePtrTable1, EnFrame_Memu1
-    PtrTableEntry EnFramePtrTable1, EnFrame_KraidFacingRight0
-    PtrTableEntry EnFramePtrTable1, EnFrame_KraidFacingRight1
-    PtrTableEntry EnFramePtrTable1, EnFrame_KraidExplodeFacingRight
+    PtrTableEntry EnFramePtrTable1, EnFrame_Kraid0_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_Kraid1_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_KraidExplode_R
 
 ;Enemy frame drawing data.
 
-EnFrame_FireballKilled:
+EnFrame_EnProjectileKilled:
     .byte $00,$00
     .byte $FC,$07+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
-EnFrame_Waver2FacingRight:
+EnFrame_Waver2_R:
 EnFrame_SidehopperFloorIdle0:
     .byte $08,$0A
     .byte $F8,$E2,$22,$F4
@@ -211,13 +211,13 @@ EnFrame_SidehopperCeilingHopping:
     .byte $EE,$F2,$E2,$04
     .byte $80
 
-EnFrame_RipperFacingRight:
+EnFrame_Ripper_R:
     .byte $06,$08
     .byte $FC,$C0,$22,$F8
     .byte $FC,$C1,$22,$00
     .byte $80
 
-EnFrame_Waver1FacingRight:
+EnFrame_Waver1_R:
     .byte $06,$08
     .byte $F8,$E0,$22,$F8
     .byte $F8,$E1,$22,$00
@@ -225,7 +225,7 @@ EnFrame_Waver1FacingRight:
     .byte $00,$E1,$A2,$00
     .byte $80
 
-EnFrame_Waver0FacingRight:
+EnFrame_Waver0_R:
     .byte $06,$08
     .byte $F8,$F0,$22,$F8
     .byte $F8,$F1,$22,$00
@@ -272,7 +272,7 @@ EnFrame_SidehopperCeilingExplode:
     .byte $03,$FC,$E2,$22,$04
     .byte $80
 
-EnFrame_WaverExplodeFacingRight:
+EnFrame_WaverExplode_R:
     .byte $80,$00
     .byte $00,$F8,$F0,$22,$F8
     .byte $01,$F8,$F1,$22,$00
@@ -280,7 +280,7 @@ EnFrame_WaverExplodeFacingRight:
     .byte $03,$00,$F1,$22,$00
     .byte $80
 
-EnFrame_RipperExplodeFacingRight:
+EnFrame_RipperExplode_R:
     .byte $80,$00
     .byte $00,$FC,$D0,$22,$F8
     .byte $01,$FC,$D1,$22,$00
@@ -399,7 +399,7 @@ EnFrame_Explosion1:
     .byte $08,$12+CFG_NUM_SAMUS_TILES,$A0,$08
     .byte $80
 
-EnFrame_GeegaFacingRight0:
+EnFrame_Geega0_R:
     .byte $08,$08
     .byte $F8,$C2,$62,$00
     .byte $F8,$C3,$62,$F8
@@ -407,7 +407,7 @@ EnFrame_GeegaFacingRight0:
     .byte $00,$D3,$62,$F8
     .byte $80
 
-EnFrame_GeegaFacingRight1:
+EnFrame_Geega1_R:
     .byte $08,$08
     .byte $F8,$C2,$62,$00
     .byte $F8,$C4,$62,$F8
@@ -415,7 +415,7 @@ EnFrame_GeegaFacingRight1:
     .byte $00,$D4,$62,$F8
     .byte $80
 
-EnFrame_GeegaExplodeFacingRight:
+EnFrame_GeegaExplode_R:
     .byte $88,$08
     .byte $00,$F4,$C2,$62,$00
     .byte $01,$F4,$C4,$62,$F8
@@ -423,27 +423,27 @@ EnFrame_GeegaExplodeFacingRight:
     .byte $03,$FC,$D4,$62,$F8
     .byte $80
 
-EnFrame_KraidLintFacingRight:
+EnFrame_KraidLint_R:
     .byte $02,$04
     .byte $FB,$F8,$22,$FC
     .byte $80
 
-EnFrame_KraidNailFacingRight0:
+EnFrame_KraidNail0_R:
     .byte $02,$02
     .byte $FA,$D9,$22,$FC
     .byte $80
 
-EnFrame_KraidNailFacingRight1:
+EnFrame_KraidNail1_R:
     .byte $02,$02
     .byte $FC,$D8,$E2,$FE
     .byte $80
 
-EnFrame_KraidNailFacingRight2:
+EnFrame_KraidNail2_R:
     .byte $02,$02
     .byte $FE,$D9,$E2,$FC
     .byte $80
 
-EnFrame_KraidNailFacingRight3:
+EnFrame_KraidNail3_R:
     .byte $02,$02
     .byte $FC,$D8,$22,$FA
     .byte $80
@@ -476,7 +476,7 @@ EnFrame_Memu1:
     .byte $FC,$ED,$43,$00
     .byte $80
 
-EnFrame_KraidFacingRight0:
+EnFrame_Kraid0_R:
     .byte $10,$0C
     .byte $F0,$C5,$22,$F4
     .byte $F0,$C6,$22,$FC
@@ -492,7 +492,7 @@ EnFrame_KraidFacingRight0:
     .byte $08,$F7,$22,$04
     .byte $80
 
-EnFrame_KraidFacingRight1:
+EnFrame_Kraid1_R:
     .byte $10,$0C
     .byte $F0,$C5,$22,$F4
     .byte $F0,$C6,$22,$FC
@@ -508,7 +508,7 @@ EnFrame_KraidFacingRight1:
     .byte $08,$F9,$22,$04
     .byte $80
 
-EnFrame_KraidExplodeFacingRight:
+EnFrame_KraidExplode_R:
     .byte $80,$00
     .byte $00,$F4,$C5,$22,$F8
     .byte $01,$F4,$C7,$22,$00

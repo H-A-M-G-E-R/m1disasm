@@ -58,10 +58,13 @@ PalPntrTbl:
     PtrTableEntry PalPntrTbl, Palette1A                 ;($A1C5)Suitless Samus power suit with missiles selected palette.
     PtrTableEntry PalPntrTbl, Palette1B                 ;($A1CD)Suitless Samus varia suit with missiles selected palette.
 
-AreaPointers:
+SpecItmsTblPtr:
     .word SpecItmsTbl               ;($A26D)Beginning of special items table.
-    .word EnFramePtrTable1          ;($9CF7)Address table into enemy animation data.
-    .word EnAnimTbl                 ;($9C86)Index to values in addr tables for enemy animations.
+
+.DSTRUCT AreaPointers_ROM INSTANCEOF AreaPointersStruct VALUES
+    EnFramePtrTable1:   .word EnFramePtrTable1          ;($9DE0)Pointer table into enemy animation data.
+    EnAnimTable:        .word EnAnimTable               ;($9D6A)Index to values in addr tables for enemy animations.
+.ENDST
 
 ; Tourian-specific jump table (dummied out in other banks)
 ;  Each line is RTS, NOP, NOP in this bank
@@ -94,18 +97,18 @@ AreaMusicFlag:
 AreaTilesetIndex:
     .byte $00
 
-AreaFireballKilledAnimIndex:
-    .byte EnAnim_FireballKilled - EnAnimTbl
+AreaEnProjectileKilledAnimIndex:
+    .byte EnAnim_EnProjectileKilled - EnAnimTable
 AreaExplosionAnimIndex:
-    .byte EnAnim_Explosion - EnAnimTbl
+    .byte EnAnim_Explosion - EnAnimTable
 
     .byte $00, $00
-AreaFireballFallingAnimIndex:
+AreaEnProjectileFallingAnimIndex:
     .byte $00, $00
-AreaFireballSplatterAnimIndex:
+AreaEnProjectileSplatterAnimIndex:
     .byte $00, $00, $00, $00
 AreaMellowAnimIndex:
-    .byte EnAnim_Memu - EnAnimTbl
+    .byte EnAnim_Memu - EnAnimTable
 
 AreaMissilePickupAnimFrame:
     .byte _id_EnFrame_MissilePickup
@@ -139,19 +142,19 @@ ChooseEnemyAIRoutine:
         .word AreaRoutineStub ; 0F - same as 2
 
 EnemyDeathAnimIndex:
-    .byte EnAnim_SidehopperFloorExplode - EnAnimTbl ; 00 - sidehopper
-    .byte EnAnim_SidehopperCeilingExplode - EnAnimTbl ; 01 - ceiling sidehopper
-    .byte EnAnim_WaverExplodeFacingRight - EnAnimTbl ; 02 - unused enemy type that doesn't properly clear itself
-    .byte EnAnim_RipperExplodeFacingRight - EnAnimTbl ; 03 - ripper
-    .byte EnAnim_SkreeExplode - EnAnimTbl ; 04 - skree
-    .byte EnAnim_ZeelaExplode - EnAnimTbl ; 05 - crawler
+    .byte EnAnim_SidehopperFloorExplode - EnAnimTable ; 00 - sidehopper
+    .byte EnAnim_SidehopperCeilingExplode - EnAnimTable ; 01 - ceiling sidehopper
+    .byte EnAnim_WaverExplode_R - EnAnimTable ; 02 - unused enemy type that doesn't properly clear itself
+    .byte EnAnim_RipperExplode_R - EnAnimTable ; 03 - ripper
+    .byte EnAnim_SkreeExplode - EnAnimTable ; 04 - skree
+    .byte EnAnim_ZeelaExplode - EnAnimTable ; 05 - crawler
     .byte $00 ; 06 - same as 2
-    .byte EnAnim_GeegaExplodeFacingRight - EnAnimTbl ; 07 - geega
-    .byte EnAnim_KraidExplodeFacingRight - EnAnimTbl ; 08 - kraid
+    .byte EnAnim_GeegaExplode_R - EnAnimTable ; 07 - geega
+    .byte EnAnim_KraidExplode_R - EnAnimTable ; 08 - kraid
     .byte $00 ; 09 - kraid lint
     .byte $00 ; 0A - kraid nail
-    .byte EnAnim_Memu - EnAnimTbl ; 0B - same as 2
-    .byte EnAnim_Memu - EnAnimTbl ; 0C - same as 2
+    .byte EnAnim_Memu - EnAnimTable ; 0B - same as 2
+    .byte EnAnim_Memu - EnAnimTable ; 0C - same as 2
     .byte $00 ; 0D - same as 2
     .byte $00 ; 0E - same as 2
     .byte $00 ; 0F - same as 2
@@ -254,37 +257,37 @@ EnemyDropChanceTblTough:
     .byte 90, 60, 90
 
 EnemyRestingAnimIndex:
-    .byte EnAnim_SidehopperFloorIdle - EnAnimTbl ; 00 - sidehopper
-    .byte EnAnim_SidehopperCeilingIdle - EnAnimTbl ; 01 - ceiling sidehopper
-    .byte EnAnim_Waver0FacingRight - EnAnimTbl ; 02 - unused enemy type that doesn't properly clear itself
-    .byte EnAnim_RipperFacingRight - EnAnimTbl ; 03 - ripper
-    .byte EnAnim_Skree - EnAnimTbl ; 04 - skree
-    .byte EnAnim_ZeelaOnFloor - EnAnimTbl ; 05 - crawler
+    .byte EnAnim_SidehopperFloorIdle - EnAnimTable ; 00 - sidehopper
+    .byte EnAnim_SidehopperCeilingIdle - EnAnimTable ; 01 - ceiling sidehopper
+    .byte EnAnim_Waver0_R - EnAnimTable ; 02 - unused enemy type that doesn't properly clear itself
+    .byte EnAnim_Ripper_R - EnAnimTable ; 03 - ripper
+    .byte EnAnim_Skree - EnAnimTable ; 04 - skree
+    .byte EnAnim_ZeelaOnFloor - EnAnimTable ; 05 - crawler
     .byte $00 ; 06 - same as 2
-    .byte EnAnim_GeegaRestingFacingRight - EnAnimTbl ; 07 - geega
-    .byte EnAnim_KraidFacingRight - EnAnimTbl ; 08 - kraid
-    .byte EnAnim_KraidLintFacingRight - EnAnimTbl ; 09 - kraid lint
-    .byte EnAnim_KraidNailIdleFacingRight - EnAnimTbl ; 0A - kraid nail
-    .byte EnAnim_Memu - EnAnimTbl ; 0B - same as 2
-    .byte EnAnim_Memu - EnAnimTbl ; 0C - same as 2
+    .byte EnAnim_GeegaResting_R - EnAnimTable ; 07 - geega
+    .byte EnAnim_Kraid_R - EnAnimTable ; 08 - kraid
+    .byte EnAnim_KraidLint_R - EnAnimTable ; 09 - kraid lint
+    .byte EnAnim_KraidNailIdle_R - EnAnimTable ; 0A - kraid nail
+    .byte EnAnim_Memu - EnAnimTable ; 0B - same as 2
+    .byte EnAnim_Memu - EnAnimTable ; 0C - same as 2
     .byte $00 ; 0D - same as 2
     .byte $00 ; 0E - same as 2
     .byte $00 ; 0F - same as 2
 
 EnemyActiveAnimIndex:
-    .byte EnAnim_SidehopperFloorIdle - EnAnimTbl ; 00 - sidehopper
-    .byte EnAnim_SidehopperCeilingIdle - EnAnimTbl ; 01 - ceiling sidehopper
-    .byte EnAnim_Waver0FacingRight - EnAnimTbl ; 02 - unused enemy type that doesn't properly clear itself
-    .byte EnAnim_RipperFacingRight - EnAnimTbl ; 03 - ripper
-    .byte EnAnim_Skree - EnAnimTbl ; 04 - skree
-    .byte EnAnim_ZeelaOnFloor - EnAnimTbl ; 05 - crawler
+    .byte EnAnim_SidehopperFloorIdle - EnAnimTable ; 00 - sidehopper
+    .byte EnAnim_SidehopperCeilingIdle - EnAnimTable ; 01 - ceiling sidehopper
+    .byte EnAnim_Waver0_R - EnAnimTable ; 02 - unused enemy type that doesn't properly clear itself
+    .byte EnAnim_Ripper_R - EnAnimTable ; 03 - ripper
+    .byte EnAnim_Skree - EnAnimTable ; 04 - skree
+    .byte EnAnim_ZeelaOnFloor - EnAnimTable ; 05 - crawler
     .byte $00 ; 06 - same as 2
-    .byte EnAnim_GeegaFacingRight - EnAnimTbl ; 07 - geega
-    .byte EnAnim_KraidFacingRight - EnAnimTbl ; 08 - kraid
-    .byte EnAnim_KraidLintFacingRight - EnAnimTbl ; 09 - kraid lint
-    .byte EnAnim_KraidNailMovingFacingRight - EnAnimTbl ; 0A - kraid nail
-    .byte EnAnim_Memu - EnAnimTbl ; 0B - same as 2
-    .byte EnAnim_Memu - EnAnimTbl ; 0C - same as 2
+    .byte EnAnim_Geega_R - EnAnimTable ; 07 - geega
+    .byte EnAnim_Kraid_R - EnAnimTable ; 08 - kraid
+    .byte EnAnim_KraidLint_R - EnAnimTable ; 09 - kraid lint
+    .byte EnAnim_KraidNailMoving_R - EnAnimTable ; 0A - kraid nail
+    .byte EnAnim_Memu - EnAnimTable ; 0B - same as 2
+    .byte EnAnim_Memu - EnAnimTable ; 0C - same as 2
     .byte $00 ; 0D - same as 2
     .byte $00 ; 0E - same as 2
     .byte $00 ; 0F - same as 2
@@ -522,7 +525,7 @@ L977B:
     .byte %00000000 ; 0E - same as 2
     .byte %00000000 ; 0F - same as 2
 
-EnemyFireballRisingAnimIndexTable:
+EnProjectileRisingAnimIndexTable:
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
@@ -531,25 +534,25 @@ EnemyFireballRisingAnimIndexTable:
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
-EnemyFireballPosOffsetX:
+EnProjectilePosOffsetX:
     .byte $0C, $F4
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
-EnemyFireballPosOffsetY:
+EnProjectilePosOffsetY:
     .byte $F4
     .byte $00
     .byte $00
     .byte $00
 
-EnemyFireballMovementPtrTable:
-    .word EnemyFireballMovement0
-    .word EnemyFireballMovement1
-    .word EnemyFireballMovement2
-    .word EnemyFireballMovement3
+EnProjectileMovementPtrTable:
+    .word EnProjectileMovement0
+    .word EnProjectileMovement1
+    .word EnProjectileMovement2
+    .word EnProjectileMovement3
 
 ; Referenced using EnData0A / 2
-EnemyFireballDamageTbl:
+EnemyProjectileDamageTbl:
     .byte $20, $20, $20, $20
 
 TileBlastBlastAnimIndexTable:
@@ -849,7 +852,7 @@ EnemyMovement11_L:
     SignMagSpeed $A0, -2,  7
     EnemyMovementInstr_Restart
 
-EnemyFireballMovement0:
+EnProjectileMovement0:
     SignMagSpeed $04,  3, -3
     SignMagSpeed $05,  3, -2
     SignMagSpeed $06,  3, -1
@@ -859,7 +862,7 @@ EnemyFireballMovement0:
     SignMagSpeed $50,  3,  3
     .byte $FF
 
-EnemyFireballMovement1:
+EnProjectileMovement1:
     SignMagSpeed $09,  2, -4
     SignMagSpeed $08,  2, -2
     SignMagSpeed $07,  2, -1
@@ -869,7 +872,7 @@ EnemyFireballMovement1:
     SignMagSpeed $50,  2,  7
     .byte $FF
 
-EnemyFireballMovement2:
+EnProjectileMovement2:
     SignMagSpeed $07,  2, -4
     SignMagSpeed $06,  2, -2
     SignMagSpeed $05,  2, -1
@@ -879,7 +882,7 @@ EnemyFireballMovement2:
     SignMagSpeed $50,  2,  7
     .byte $FF
 
-EnemyFireballMovement3:
+EnProjectileMovement3:
     SignMagSpeed $05,  2, -4
     SignMagSpeed $04,  2, -2
     SignMagSpeed $03,  2, -1

@@ -111,7 +111,7 @@
     .endr
 .endm
 
-.macro EnemyMovementInstr_StopMovementSeahorse
+.macro EnemyMovementInstr_StopMovementDragon
     .byte $FA
 .endm
 
@@ -266,5 +266,11 @@
 
 .macro SongRepeat
     .byte $FF
+.endm
+
+
+
+.macro NES_CNSUS_IllegalOpcode42
+    .byte $42
 .endm
 

@@ -1,8 +1,8 @@
 ;-----------------------------------[ Enemy animation data tables ]----------------------------------
 
-EnAnimTbl: ;($A406)
-EnAnim_FireballKilled:
-    .byte _id_EnFrame_FireballKilled, $FF
+EnAnimTable: ;($A406)
+EnAnim_EnProjectileKilled:
+    .byte _id_EnFrame_EnProjectileKilled, $FF
 
 EnAnim_Metroid:
     .byte _id_EnFrame_Metroid0, _id_EnFrame_Metroid1, $FF
@@ -36,7 +36,7 @@ EnAnim_Explosion:
 ;----------------------------[ Enemy sprite drawing pointer tables ]---------------------------------
 
 EnFramePtrTable1:
-    PtrTableEntry EnFramePtrTable1, EnFrame_FireballKilled
+    PtrTableEntry EnFramePtrTable1, EnFrame_EnProjectileKilled
     PtrTableEntry EnFramePtrTable1, EnFrame_Metroid0
     PtrTableEntry EnFramePtrTable1, EnFrame_Metroid1
     PtrTableEntry EnFramePtrTable1, EnFrame_MetroidExplode
@@ -72,7 +72,7 @@ EnFramePtrTable1:
 
 ;Enemy frame drawing data.
 
-EnFrame_FireballKilled:
+EnFrame_EnProjectileKilled:
     .byte $00,$00
     .byte $FC,$07+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80

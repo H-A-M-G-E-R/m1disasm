@@ -54,7 +54,7 @@ L9A88:
     sta Temp05_SpeedX
     
     ; default to jumping animation
-    lda #EnAnim_SqueeptJumping - EnAnimTbl.b
+    lda #EnAnim_SqueeptJumping - EnAnimTable.b
     ; set y speed to delta y
     ldy $00
     sty Temp04_SpeedY
@@ -62,7 +62,7 @@ L9A88:
     bmi L9AAC
         ; delta y is not negative (squeept is falling)
         ; use falling animation
-        lda #EnAnim_SqueeptFalling - EnAnimTbl.b
+        lda #EnAnim_SqueeptFalling - EnAnimTable.b
     L9AAC:
     sta EnsExtra.0.resetAnimIndex,x
     

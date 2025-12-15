@@ -36,10 +36,10 @@
 ;    jmp InitEnResetAnimIndex
 ;CommonJump_EnemyFlipAfterDisplacement: ;$801B
 ;    jmp EnemyFlipAfterDisplacement
-;CommonJump_0A: ;$801E
-;    jmp LFBCA
-;CommonJump_SpawnFireball: ;$8021
-;    jmp SpawnFireball
+;CommonJump_InitEnActiveAnimIndex_NoL967BOffset: ;$801E
+;    jmp InitEnActiveAnimIndex_NoL967BOffset
+;CommonJump_SpawnEnProjectile: ;$8021
+;    jmp SpawnEnProjectile
 ;CommonJump_ChooseRoutine: ;$8024
 ;    jmp ChooseRoutine               ;($C27C)
 ;CommonJump_ApplySpeedToPosition: ;$8027
@@ -1582,13 +1582,13 @@ WriteDoorBGTiles_Common:
     lda ObjHi,x
     sta Temp0B_PositionHi
     ; call
-    jsr MakeCartRAMPtr
+    jsr MakeRoomRAMPtr
     ldy #$00 ; init y for loop
     pla
     ; cart ram pointer of door is now in $04-$05
     ; write 6 air or door tiles in a vertical line to cart ram
     @loop:
-        sta (Temp04_CartRAMPtr),y
+        sta (Temp04_RoomRAMPtr),y
         tax
         tya
         clc
@@ -1604,10 +1604,10 @@ WriteDoorBGTiles_Common:
     lsr
     and #$06
     tay
-    lda Temp04_CartRAMPtr
-    sta DoorCartRAMPtr,y
-    lda Temp04_CartRAMPtr+1.b
-    sta DoorCartRAMPtr+1,y
+    lda Temp04_RoomRAMPtr
+    sta DoorRoomRAMPtr,y
+    lda Temp04_RoomRAMPtr+1.b
+    sta DoorRoomRAMPtr+1,y
     rts
 
 ; x coordinate of door's background tiles in pixels

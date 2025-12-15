@@ -58,10 +58,13 @@ PalPntrTbl:
     PtrTableEntry PalPntrTbl, Palette1A                 ;($A16F)Suitless Samus power suit with missiles selected palette.
     PtrTableEntry PalPntrTbl, Palette1B                 ;($A177)Suitless Samus varia suit with missiles selected palette.
 
-AreaPointers:
+SpecItmsTblPtr:
     .word SpecItmsTbl               ;($A20D)Beginning of special items table.
-    .word EnFramePtrTable1          ;($9BF0)Address table into enemy animation data.
-    .word EnAnimTbl                 ;($9B85)Index to values in addr tables for enemy animations.
+
+.DSTRUCT AreaPointers_ROM INSTANCEOF AreaPointersStruct VALUES
+    EnFramePtrTable1:   .word EnFramePtrTable1          ;($9DE0)Pointer table into enemy animation data.
+    EnAnimTable:        .word EnAnimTable               ;($9D6A)Index to values in addr tables for enemy animations.
+.ENDST
 
 ; Tourian-specific jump table (dummied out in other banks)
 ;  Each line is RTS, NOP, NOP in this bank
@@ -94,18 +97,18 @@ AreaMusicFlag:
 AreaTilesetIndex:
     .byte $00
 
-AreaFireballKilledAnimIndex:
-    .byte EnAnim_FireballKilled - EnAnimTbl
+AreaEnProjectileKilledAnimIndex:
+    .byte EnAnim_EnProjectileKilled - EnAnimTable
 AreaExplosionAnimIndex:
-    .byte EnAnim_Explosion - EnAnimTbl
+    .byte EnAnim_Explosion - EnAnimTable
 
     .byte $00, $00
-AreaFireballFallingAnimIndex:
+AreaEnProjectileFallingAnimIndex:
     .byte $00, $00
-AreaFireballSplatterAnimIndex:
+AreaEnProjectileSplatterAnimIndex:
     .byte $00, $00, $00, $00
 AreaMellowAnimIndex:
-    .byte EnAnim_Mella - EnAnimTbl
+    .byte EnAnim_Mella - EnAnimTable
 
 AreaMissilePickupAnimFrame:
     .byte _id_EnFrame_MissilePickup
@@ -131,7 +134,7 @@ ChooseEnemyAIRoutine:
         .word PipeBugAIRoutine ; 07 - zebbo
         .word RemoveEnemy_ ; 08 - same as 4
         .word RidleyAIRoutine ; 09 - ridley
-        .word RidleyProjectileAIRoutine ; 0A - ridley fireball
+        .word RidleyFireballAIRoutine ; 0A - ridley fireball
         .word RemoveEnemy_ ; 0B - same as 4
         .word MultiviolaAIRoutine ; 0C - bouncy orbs
         .word RemoveEnemy_ ; 0D - same as 4
@@ -139,19 +142,19 @@ ChooseEnemyAIRoutine:
         .word RemoveEnemy_ ; 0F - same as 4
 
 EnemyDeathAnimIndex:
-    .byte EnAnim_HoltzExplode - EnAnimTbl ; 00 - swooper has not seen samus
-    .byte EnAnim_HoltzExplode - EnAnimTbl ; 01 - swooper targetting samus
-    .byte EnAnim_DessgeegaExplodeFloor - EnAnimTbl ; 02 - dessgeegas
-    .byte EnAnim_DessgeegaExplodeCeiling - EnAnimTbl ; 03 - ceiling dessgeegas
+    .byte EnAnim_HoltzExplode - EnAnimTable ; 00 - swooper has not seen samus
+    .byte EnAnim_HoltzExplode - EnAnimTable ; 01 - swooper targetting samus
+    .byte EnAnim_DessgeegaExplodeFloor - EnAnimTable ; 02 - dessgeegas
+    .byte EnAnim_DessgeegaExplodeCeiling - EnAnimTable ; 03 - ceiling dessgeegas
     .byte $00 ; 04 - disappears
     .byte $00 ; 05 - same as 4
-    .byte EnAnim_ViolaExplode - EnAnimTbl ; 06 - crawler
-    .byte EnAnim_ZebboExplodeFacingRight - EnAnimTbl ; 07 - zebbo
+    .byte EnAnim_ViolaExplode - EnAnimTable ; 06 - crawler
+    .byte EnAnim_ZebboExplode_R - EnAnimTable ; 07 - zebbo
     .byte $00 ; 08 - same as 4
-    .byte EnAnim_RidleyExplode - EnAnimTbl ; 09 - ridley
-    .byte EnAnim_RidleyFireballFacingRight - EnAnimTbl ; 0A - ridley fireball
+    .byte EnAnim_RidleyExplode - EnAnimTable ; 09 - ridley
+    .byte EnAnim_RidleyFireball_R - EnAnimTable ; 0A - ridley fireball
     .byte $00 ; 0B - same as 4
-    .byte EnAnim_MultiviolaExplode - EnAnimTbl ; 0C - bouncy orbs
+    .byte EnAnim_MultiviolaExplode - EnAnimTable ; 0C - bouncy orbs
     .byte $00 ; 0D - same as 4
     .byte $00 ; 0E - polyp (unused)
     .byte $00 ; 0F - same as 4
@@ -254,37 +257,37 @@ EnemyDropChanceTblTough:
     .byte 90, 60, 90
 
 EnemyRestingAnimIndex:
-    .byte EnAnim_HoltzIdle - EnAnimTbl ; 00 - swooper has not seen samus
-    .byte EnAnim_HoltzIdle - EnAnimTbl ; 01 - swooper targetting samus
-    .byte EnAnim_DessgeegaIdleFloor - EnAnimTbl ; 02 - dessgeegas
-    .byte EnAnim_DessgeegaIdleCeiling - EnAnimTbl ; 03 - ceiling dessgeegas
+    .byte EnAnim_HoltzIdle - EnAnimTable ; 00 - swooper has not seen samus
+    .byte EnAnim_HoltzIdle - EnAnimTable ; 01 - swooper targetting samus
+    .byte EnAnim_DessgeegaIdleFloor - EnAnimTable ; 02 - dessgeegas
+    .byte EnAnim_DessgeegaIdleCeiling - EnAnimTable ; 03 - ceiling dessgeegas
     .byte $00 ; 04 - disappears
     .byte $00 ; 05 - same as 4
-    .byte EnAnim_ViolaOnFloor - EnAnimTbl ; 06 - crawler
-    .byte EnAnim_ZebboRestingFacingRight - EnAnimTbl ; 07 - zebbo
+    .byte EnAnim_ViolaOnFloor - EnAnimTable ; 06 - crawler
+    .byte EnAnim_ZebboResting_R - EnAnimTable ; 07 - zebbo
     .byte $00 ; 08 - same as 4
-    .byte EnAnim_RidleyIdleFacingRight - EnAnimTbl ; 09 - ridley
-    .byte EnAnim_RidleyFireballFacingRight - EnAnimTbl ; 0A - ridley fireball
+    .byte EnAnim_RidleyIdle_R - EnAnimTable ; 09 - ridley
+    .byte EnAnim_RidleyFireball_R - EnAnimTable ; 0A - ridley fireball
     .byte $00 ; 0B - same as 4
-    .byte EnAnim_MultiviolaSpinningClockwise - EnAnimTbl ; 0C - bouncy orbs
+    .byte EnAnim_MultiviolaSpinningClockwise - EnAnimTable ; 0C - bouncy orbs
     .byte $00 ; 0D - same as 4
     .byte $00 ; 0E - polyp (unused)
     .byte $00 ; 0F - same as 4
 
 EnemyActiveAnimIndex:
-    .byte EnAnim_HoltzSwooping - EnAnimTbl ; 00 - swooper has not seen samus
-    .byte EnAnim_HoltzSwooping - EnAnimTbl ; 01 - swooper targetting samus
-    .byte EnAnim_DessgeegaIdleFloor - EnAnimTbl ; 02 - dessgeegas
-    .byte EnAnim_DessgeegaIdleCeiling - EnAnimTbl ; 03 - ceiling dessgeegas
+    .byte EnAnim_HoltzSwooping - EnAnimTable ; 00 - swooper has not seen samus
+    .byte EnAnim_HoltzSwooping - EnAnimTable ; 01 - swooper targetting samus
+    .byte EnAnim_DessgeegaIdleFloor - EnAnimTable ; 02 - dessgeegas
+    .byte EnAnim_DessgeegaIdleCeiling - EnAnimTable ; 03 - ceiling dessgeegas
     .byte $00 ; 04 - disappears
     .byte $00 ; 05 - same as 4
-    .byte EnAnim_ViolaOnFloor - EnAnimTbl ; 06 - crawler
-    .byte EnAnim_ZebboFacingRight - EnAnimTbl ; 07 - zebbo
+    .byte EnAnim_ViolaOnFloor - EnAnimTable ; 06 - crawler
+    .byte EnAnim_Zebbo_R - EnAnimTable ; 07 - zebbo
     .byte $00 ; 08 - same as 4
-    .byte EnAnim_RidleyIdleFacingRight - EnAnimTbl ; 09 - ridley
-    .byte EnAnim_RidleyFireballFacingRight - EnAnimTbl ; 0A - ridley fireball
+    .byte EnAnim_RidleyIdle_R - EnAnimTable ; 09 - ridley
+    .byte EnAnim_RidleyFireball_R - EnAnimTable ; 0A - ridley fireball
     .byte $00 ; 0B - same as 4
-    .byte EnAnim_MultiviolaSpinningClockwise - EnAnimTbl ; 0C - bouncy orbs
+    .byte EnAnim_MultiviolaSpinningClockwise - EnAnimTable ; 0C - bouncy orbs
     .byte $00 ; 0D - same as 4
     .byte $00 ; 0E - polyp (unused)
     .byte $00 ; 0F - same as 4
@@ -522,7 +525,7 @@ L977B:
     .byte %00000000 ; 0E - polyp (unused)
     .byte %00000000 ; 0F - same as 4
 
-EnemyFireballRisingAnimIndexTable:
+EnProjectileRisingAnimIndexTable:
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
@@ -531,25 +534,25 @@ EnemyFireballRisingAnimIndexTable:
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
-EnemyFireballPosOffsetX:
+EnProjectilePosOffsetX:
     .byte $08, $F8
     .byte $00, $00
     .byte $00, $00
     .byte $08, $F8
-EnemyFireballPosOffsetY:
+EnProjectilePosOffsetY:
     .byte $00
     .byte $00
     .byte $00
     .byte $F8
 
-EnemyFireballMovementPtrTable:
-    .word EnemyFireballMovement0
-    .word EnemyFireballMovement0
-    .word EnemyFireballMovement2
-    .word EnemyFireballMovement3
+EnProjectileMovementPtrTable:
+    .word EnProjectileMovement0
+    .word EnProjectileMovement1
+    .word EnProjectileMovement2
+    .word EnProjectileMovement3
 
 ; Referenced using EnData0A / 2
-EnemyFireballDamageTbl:
+EnemyProjectileDamageTbl:
     .byte $24, $24, $24, $24
 
 TileBlastBlastAnimIndexTable:
@@ -712,7 +715,7 @@ EnemyMovement10_R:
 EnemyMovement10_L:
     ; nothing
 
-; unused (seahorse)
+; unused (dragon)
 EnemyMovement11_R:
 EnemyMovement11_L:
     SignMagSpeed $28,  0, -1
@@ -720,10 +723,10 @@ EnemyMovement11_L:
     EnemyMovementInstr_ClearEnJumpDsplcmnt
     SignMagSpeed $60,  0,  0
     SignMagSpeed $28,  0,  1
-    EnemyMovementInstr_StopMovementSeahorse
+    EnemyMovementInstr_StopMovementDragon
 
-EnemyFireballMovement0:
-EnemyFireballMovement1:
+EnProjectileMovement0:
+EnProjectileMovement1:
     SignMagSpeed $09,  2, -4
     SignMagSpeed $08,  2, -2
     SignMagSpeed $07,  2, -1
@@ -733,7 +736,7 @@ EnemyFireballMovement1:
     SignMagSpeed $50,  2,  7
     .byte $FF
 
-EnemyFireballMovement2:
+EnProjectileMovement2:
     SignMagSpeed $07,  2, -4
     SignMagSpeed $06,  2, -2
     SignMagSpeed $05,  2, -1
@@ -743,7 +746,7 @@ EnemyFireballMovement2:
     SignMagSpeed $50,  2,  7
     .byte $FF
 
-EnemyFireballMovement3:
+EnProjectileMovement3:
     SignMagSpeed $05,  2, -4
     SignMagSpeed $04,  2, -2
     SignMagSpeed $03,  2, -1

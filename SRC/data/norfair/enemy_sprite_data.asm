@@ -1,20 +1,20 @@
 ;-----------------------------------[ Enemy animation data tables ]----------------------------------
 
-EnAnimTbl: ;($9BDA)
-EnAnim_FireballKilled:
-    .byte _id_EnFrame_FireballKilled, $FF
+EnAnimTable: ;($9BDA)
+EnAnim_EnProjectileKilled:
+    .byte _id_EnFrame_EnProjectileKilled, $FF
 
-EnAnim_RidleyIdleFacingRight:
-    .byte _id_EnFrame_RidleyIdleFacingRight0, _id_EnFrame_RidleyIdleFacingRight1, $FF
+EnAnim_RidleyIdle_R:
+    .byte _id_EnFrame_RidleyIdle0_R, _id_EnFrame_RidleyIdle1_R, $FF
 
-EnAnim_RidleyHoppingFacingRight:
-    .byte _id_EnFrame_RidleyHoppingFacingRight0, _id_EnFrame_RidleyHoppingFacingRight1, $FF
+EnAnim_RidleyHopping_R:
+    .byte _id_EnFrame_RidleyHopping0_R, _id_EnFrame_RidleyHopping1_R, $FF
 
 EnAnim_RidleyExplode:
     .byte _id_EnFrame_RidleyExplode, $FF
 
-EnAnim_RidleyFireballFacingRight:
-    .byte _id_EnFrame_RidleyFireballFacingRight0, _id_EnFrame_RidleyFireballFacingRight1, _id_EnFrame_RidleyFireballFacingRight2, _id_EnFrame_RidleyFireballFacingRight3, $FF
+EnAnim_RidleyFireball_R:
+    .byte _id_EnFrame_RidleyFireball0_R, _id_EnFrame_RidleyFireball1_R, _id_EnFrame_RidleyFireball2_R, _id_EnFrame_RidleyFireball3_R, $FF
 
 EnAnim_SqueeptJumping:
     .byte _id_EnFrame_SqueeptJumping0, _id_EnFrame_SqueeptJumping1, $FF
@@ -31,8 +31,8 @@ EnAnim_GerutaSwooping:
 EnAnim_GerutaExplode:
     .byte _id_EnFrame_GerutaExplode, $FF
 
-EnAnim_RipperIIFacingRight:
-    .byte _id_EnFrame_RipperIIFacingRight0, _id_EnFrame_RipperIIFacingRight1, $FF
+EnAnim_RipperII_R:
+    .byte _id_EnFrame_RipperII0_R, _id_EnFrame_RipperII1_R, $FF
 
 EnAnim_RipperIIExplode:
     .byte _id_EnFrame_RipperIIExplode, $FF
@@ -49,11 +49,11 @@ EnAnim_MultiviolaSpinningClockwise:
 EnAnim_MultiviolaExplode:
     .byte _id_EnFrame_MultiviolaExplode, $FF
 
-EnAnim_DragonIdleFacingRight:
-    .byte _id_EnFrame_DragonIdleFacingRight, $FF
+EnAnim_DragonIdle_R:
+    .byte _id_EnFrame_DragonIdle_R, $FF
 
-EnAnim_DragonPrepareToSpitFacingRight:
-    .byte _id_EnFrame_DragonPrepareToSpitFacingRight, $FF
+EnAnim_DragonPrepareToSpit_R:
+    .byte _id_EnFrame_DragonPrepareToSpit_R, $FF
 
 EnAnim_DragonExplode:
     .byte _id_EnFrame_DragonExplode, $FF
@@ -64,14 +64,14 @@ EnAnim_PolypRock:
 EnAnim_PolypRockShatter:
     .byte _id_EnFrame_PolypRockShatter0, _id_EnFrame_PolypRockShatter1, $F7, $FF
 
-EnAnim_DragonFireballUpRight:
-    .byte _id_EnFrame_DragonFireballUpRight, $FF
+EnAnim_DragonFireballUp_R:
+    .byte _id_EnFrame_DragonFireballUp_R, $FF
 
 EnAnim_DragonFireballDownRight:
     .byte _id_EnFrame_DragonFireballDownRight, $FF
 
-EnAnim_DragonFireballUpLeft:
-    .byte _id_EnFrame_DragonFireballUpLeft, $FF
+EnAnim_DragonFireballUp_L:
+    .byte _id_EnFrame_DragonFireballUp_L, $FF
 
 EnAnim_DragonFireballDownLeft:
     .byte _id_EnFrame_DragonFireballDownLeft, $FF
@@ -97,28 +97,28 @@ EnAnim_NovaExplode:
 EnAnim_Explosion:
     .byte _id_EnFrame_Explosion0, $F7, _id_EnFrame_Explosion1, $F7, $FF
 
-EnAnim_GametActiveFacingRight:
-    .byte _id_EnFrame_GametFacingRight0, _id_EnFrame_GametFacingRight1, $FF
+EnAnim_GametActive_R:
+    .byte _id_EnFrame_Gamet0_R, _id_EnFrame_Gamet1_R, $FF
 
-EnAnim_GametExplodeFacingRight:
-    .byte _id_EnFrame_GametExplodeFacingRight, $FF
+EnAnim_GametExplode_R:
+    .byte _id_EnFrame_GametExplode_R, $FF
 
-EnAnim_GametRestingFacingRight:
-    .byte _id_EnFrame_GametFacingRight0, $FF
+EnAnim_GametResting_R:
+    .byte _id_EnFrame_Gamet0_R, $FF
 
 ;----------------------------[ Enemy sprite drawing pointer tables ]---------------------------------
 
 EnFramePtrTable1:
-    PtrTableEntry EnFramePtrTable1, EnFrame_FireballKilled
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyIdleFacingRight0
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyIdleFacingRight1
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyHoppingFacingRight0
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyHoppingFacingRight1
+    PtrTableEntry EnFramePtrTable1, EnFrame_EnProjectileKilled
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyIdle0_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyIdle1_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyHopping0_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyHopping1_R
     PtrTableEntry EnFramePtrTable1, EnFrame_RidleyExplode
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireballFacingRight0
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireballFacingRight1
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireballFacingRight2
-    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireballFacingRight3
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireball0_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireball1_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireball2_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RidleyFireball3_R
     PtrTableEntry EnFramePtrTable1, EnFrame_SqueeptJumping1
     PtrTableEntry EnFramePtrTable1, EnFrame_SqueeptJumping0
     PtrTableEntry EnFramePtrTable1, EnFrame_SqueeptFalling
@@ -127,8 +127,8 @@ EnFramePtrTable1:
     PtrTableEntry EnFramePtrTable1, EnFrame_GerutaSwooping0
     PtrTableEntry EnFramePtrTable1, EnFrame_GerutaSwooping1
     PtrTableEntry EnFramePtrTable1, EnFrame_GerutaExplode
-    PtrTableEntry EnFramePtrTable1, EnFrame_RipperIIFacingRight0
-    PtrTableEntry EnFramePtrTable1, EnFrame_RipperIIFacingRight1
+    PtrTableEntry EnFramePtrTable1, EnFrame_RipperII0_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_RipperII1_R
     PtrTableEntry EnFramePtrTable1, EnFrame_RipperIIExplode
     PtrTableEntry EnFramePtrTable1, EnFrame_Mella0
     PtrTableEntry EnFramePtrTable1, EnFrame_Mella1
@@ -138,12 +138,12 @@ EnFramePtrTable1:
     PtrTableEntry EnFramePtrTable1, EnFrame_MultiviolaSpinningClockwise2
     PtrTableEntry EnFramePtrTable1, EnFrame_MultiviolaSpinningClockwise3
     PtrTableEntry EnFramePtrTable1, EnFrame_MultiviolaExplode
-    PtrTableEntry EnFramePtrTable1, EnFrame_DragonIdleFacingRight
-    PtrTableEntry EnFramePtrTable1, EnFrame_DragonPrepareToSpitFacingRight
+    PtrTableEntry EnFramePtrTable1, EnFrame_DragonIdle_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_DragonPrepareToSpit_R
     PtrTableEntry EnFramePtrTable1, EnFrame_DragonExplode
-    PtrTableEntry EnFramePtrTable1, EnFrame_DragonFireballUpRight
+    PtrTableEntry EnFramePtrTable1, EnFrame_DragonFireballUp_R
     PtrTableEntry EnFramePtrTable1, EnFrame_DragonFireballDownRight
-    PtrTableEntry EnFramePtrTable1, EnFrame_DragonFireballUpLeft
+    PtrTableEntry EnFramePtrTable1, EnFrame_DragonFireballUp_L
     PtrTableEntry EnFramePtrTable1, EnFrame_DragonFireballDownLeft
     PtrTableEntry EnFramePtrTable1, EnFrame_DragonFireballSplatter0
     PtrTableEntry EnFramePtrTable1, EnFrame_DragonFireballSplatter2
@@ -162,9 +162,9 @@ EnFramePtrTable1:
     PtrTableEntry EnFramePtrTable1, EnFrame_NovaExplode
     PtrTableEntry EnFramePtrTable1, EnFrame_Explosion0
     PtrTableEntry EnFramePtrTable1, EnFrame_Explosion1
-    PtrTableEntry EnFramePtrTable1, EnFrame_GametFacingRight0
-    PtrTableEntry EnFramePtrTable1, EnFrame_GametFacingRight1
-    PtrTableEntry EnFramePtrTable1, EnFrame_GametExplodeFacingRight
+    PtrTableEntry EnFramePtrTable1, EnFrame_Gamet0_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_Gamet1_R
+    PtrTableEntry EnFramePtrTable1, EnFrame_GametExplode_R
     PtrTableEntry EnFramePtrTable1, EnFrame_MissilePickup
     PtrTableEntry EnFramePtrTable1, EnFrame_SmallEnergyPickup
     PtrTableEntry EnFramePtrTable1, EnFrame_BigEnergyPickup
@@ -172,12 +172,12 @@ EnFramePtrTable1:
 ;Enemy frame drawing data.
 
 ;Fireball killed.
-EnFrame_FireballKilled:
+EnFrame_EnProjectileKilled:
     .byte $00,$00
     .byte $FC,$07+CFG_NUM_SAMUS_TILES,$20,$FC
     .byte $80
 
-EnFrame_RidleyIdleFacingRight0:
+EnFrame_RidleyIdle0_R:
     .byte $13,$08
     .byte $F4,$C8,$22,$F4
     .byte $F4,$C9,$22,$04
@@ -196,7 +196,7 @@ EnFrame_RidleyIdleFacingRight0:
     .byte $00,$F8,$22,$00
     .byte $80
 
-EnFrame_RidleyIdleFacingRight1:
+EnFrame_RidleyIdle1_R:
     .byte $13,$08
     .byte $F4,$C8,$22,$F4
     .byte $F4,$C9,$22,$04
@@ -215,7 +215,7 @@ EnFrame_RidleyIdleFacingRight1:
     .byte $08,$E8,$22,$F8
     .byte $80
 
-EnFrame_RidleyHoppingFacingRight0:
+EnFrame_RidleyHopping0_R:
     .byte $13,$08
     .byte $F4,$C8,$22,$F4
     .byte $F4,$C9,$22,$04
@@ -235,7 +235,7 @@ EnFrame_RidleyHoppingFacingRight0:
     .byte $F8,$FA,$22,$E8
     .byte $80
 
-EnFrame_RidleyHoppingFacingRight1:
+EnFrame_RidleyHopping1_R:
     .byte $13,$08
     .byte $F4,$C8,$22,$F4
     .byte $F4,$C9,$22,$04
@@ -265,22 +265,22 @@ EnFrame_RidleyExplode:
     .byte $05,$04,$E7,$22,$00
     .byte $80
 
-EnFrame_RidleyFireballFacingRight0:
+EnFrame_RidleyFireball0_R:
     .byte $04,$04
     .byte $FC,$EC,$22,$FC
     .byte $80
 
-EnFrame_RidleyFireballFacingRight1:
+EnFrame_RidleyFireball1_R:
     .byte $04,$04
     .byte $FC,$FB,$22,$FC
     .byte $80
 
-EnFrame_RidleyFireballFacingRight2:
+EnFrame_RidleyFireball2_R:
     .byte $04,$04
     .byte $FC,$EC,$E2,$FC
     .byte $80
 
-EnFrame_RidleyFireballFacingRight3:
+EnFrame_RidleyFireball3_R:
     .byte $04,$04
     .byte $FC,$FB,$E2,$FC
     .byte $80
@@ -362,14 +362,14 @@ EnFrame_GerutaExplode:
     .byte $80
 
 ;Ripper II facing right.
-EnFrame_RipperIIFacingRight0:
+EnFrame_RipperII0_R:
     .byte $04,$08
     .byte $F8,$F6,$22,$F8
     .byte $F8,$F7,$22,$00
     .byte $80
 
 ;Ripper II facing right.
-EnFrame_RipperIIFacingRight1:
+EnFrame_RipperII1_R:
     .byte $04,$08
     .byte $F8,$E7,$22,$F8
     .byte $F8,$F7,$22,$00
@@ -451,7 +451,7 @@ EnFrame_MultiviolaExplode:
     .byte $80
 
 ;Dragon idle facing right.
-EnFrame_DragonIdleFacingRight:
+EnFrame_DragonIdle_R:
     .byte $08,$08
     .byte $F8,$C8,$22,$F8
     .byte $F8,$C9,$22,$00
@@ -464,7 +464,7 @@ EnFrame_DragonIdleFacingRight:
     .byte $80
 
 ;Dragon prepare to spit facing right.
-EnFrame_DragonPrepareToSpitFacingRight:
+EnFrame_DragonPrepareToSpit_R:
     .byte $08,$08
     .byte $F8,$C8,$22,$F8
     .byte $F8,$C7,$22,$00
@@ -488,7 +488,7 @@ EnFrame_DragonExplode:
     .byte $80
 
 ;Dragon fireball up-right.
-EnFrame_DragonFireballUpRight:
+EnFrame_DragonFireballUp_R:
     .byte $04,$04
     .byte $F8,$E0,$23,$F8
     .byte $F8,$E1,$23,$00
@@ -506,7 +506,7 @@ EnFrame_DragonFireballDownRight:
     .byte $80
 
 ;Dragon fireball up-left.
-EnFrame_DragonFireballUpLeft:
+EnFrame_DragonFireballUp_L:
     .byte $04,$04
     .byte $F8,$E0,$63,$00
     .byte $F8,$E1,$63,$F8
@@ -671,7 +671,7 @@ EnFrame_Explosion1:
     .byte $80
 
 ;Gamet facing right.
-EnFrame_GametFacingRight0:
+EnFrame_Gamet0_R:
     .byte $08,$08
     .byte $F8,$C2,$62,$00
     .byte $F8,$C3,$62,$F8
@@ -680,7 +680,7 @@ EnFrame_GametFacingRight0:
     .byte $80
 
 ;Gamet facing right.
-EnFrame_GametFacingRight1:
+EnFrame_Gamet1_R:
     .byte $08,$08
     .byte $F8,$C2,$62,$00
     .byte $F8,$C4,$62,$F8
@@ -689,7 +689,7 @@ EnFrame_GametFacingRight1:
     .byte $80
 
 ;Gamet explode facing right.
-EnFrame_GametExplodeFacingRight:
+EnFrame_GametExplode_R:
     .byte $88,$08
     .byte $00,$F4,$C2,$62,$00
     .byte $01,$F4,$C4,$62,$F8

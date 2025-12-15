@@ -18,7 +18,7 @@ RidleyBranch_Explode:
     beq RidleyBranch_Exit
 
 RidleyBranch_Normal:
-    lda #EnAnim_RidleyHoppingFacingRight - EnAnimTbl.b
+    lda #EnAnim_RidleyHopping_R - EnAnimTable.b
     sta EnemyFlipAfterDisplacementAnimIndex
     jsr CommonJump_EnemyFlipAfterDisplacement
     jsr RidleyTryToLaunchProjectile
@@ -32,7 +32,7 @@ RidleyBranch_Exit:
 
 ;-------------------------------------------------------------------------------
 ; Ridley Fireball Routine
-RidleyProjectileAIRoutine:
+RidleyFireballAIRoutine:
     ; push EnData05 to stack
     lda EnData05,x
     pha

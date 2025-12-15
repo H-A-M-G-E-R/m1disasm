@@ -1606,7 +1606,7 @@ VolumeEnvelopePtrTable:
     .word VolumeEnvelope1, VolumeEnvelope2, VolumeEnvelope3, VolumeEnvelope4, VolumeEnvelope5
 
 VolumeEnvelope1:
-.if BUILDTARGET == "NES_NTSC"
+.if BUILDTARGET == "NES_NTSC" || BUILDTARGET == "NES_MZMUS" || BUILDTARGET == "NES_MZMJP" || BUILDTARGET == "NES_CNSUS"
     .byte $01, $02, $02, $03, $03, $04, $05, $06, $07, $08, $FF
 .elif BUILDTARGET == "NES_PAL"
     .byte $01, $02, $03, $04, $04, $05, $06, $06, $07, $08, $FF
@@ -1645,7 +1645,7 @@ VolumeEnvelope5:
 ;Byte 6=Volume data for SQ2.
 
 
-.if BUILDTARGET == "NES_NTSC"
+.if BUILDTARGET == "NES_NTSC" || BUILDTARGET == "NES_MZMUS" || BUILDTARGET == "NES_MZMJP" || BUILDTARGET == "NES_CNSUS"
     .include "songs/ntsc/item_room.asm"
 
     .include "songs/ntsc/power_up.asm"
@@ -1773,7 +1773,7 @@ MusicNotesTbl:
 ;numbers below divide more evenly.
 
 NoteLengthsTbl:
-.if BUILDTARGET == "NES_NTSC"
+.if BUILDTARGET == "NES_NTSC" || BUILDTARGET == "NES_MZMUS" || BUILDTARGET == "NES_MZMJP" || BUILDTARGET == "NES_CNSUS"
     ;Used by power up music and Kraid area music.
     @4:
         .byte $04                       ;About    1/16 seconds ($B0)
