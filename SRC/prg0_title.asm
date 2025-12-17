@@ -4570,40 +4570,65 @@ InitBrinstarGFX:
     jsr LoadAreaGFX
     .byte BrinstarBG/$400
     .byte BrinstarBG/$400+2
+.if CFG_NUM_SAMUS_TILES != 64
     .byte ItemsGFX/$400
     .byte BlankSPR/$400
+.elif CFG_NUM_SAMUS_TILES == 64
+    .byte CommonSPRGFX/$400
+    .byte ItemsGFX/$400
+.endif
     .byte BrinstarSPR/$400
 
 InitNorfairGFX:
     jsr LoadAreaGFX
     .byte NorfairBG/$400
     .byte NorfairBG/$400+2
+.if CFG_NUM_SAMUS_TILES != 64
     .byte ItemsGFX/$400
     .byte BlankSPR/$400
+.elif CFG_NUM_SAMUS_TILES == 64
+    .byte CommonSPRGFX/$400
+    .byte ItemsGFX/$400
+.endif
     .byte NorfairSPR/$400
 
 InitTourianGFX:
     jsr LoadAreaGFX
     .byte TourianBG/$400
     .byte TourianBG/$400+2
+.if CFG_NUM_SAMUS_TILES != 64
     .byte ItemsGFX/$400
     .byte BlankSPR/$400
+.elif CFG_NUM_SAMUS_TILES == 64
+    .byte CommonSPRGFX/$400
+    .byte ItemsGFX/$400
+.endif
     .byte TourianSPR/$400
 
 InitKraidGFX:
     jsr LoadAreaGFX
     .byte KraidBG/$400
     .byte KraidBG/$400+2
+.if CFG_NUM_SAMUS_TILES != 64
     .byte ItemsGFX/$400
     .byte BlankSPR/$400
+.elif CFG_NUM_SAMUS_TILES == 64
+    .byte CommonSPRGFX/$400
+    .byte ItemsGFX/$400
+.endif
     .byte KraidSPR/$400
 
 InitRidleyGFX:
     jsr LoadAreaGFX
     .byte RidleyBG/$400
     .byte RidleyBG/$400+2
+.if CFG_NUM_SAMUS_TILES != 64
     .byte ItemsGFX/$400
     .byte BlankSPR/$400
+.elif CFG_NUM_SAMUS_TILES == 64
+    .byte CommonSPRGFX/$400
+    .byte ItemsGFX/$400
+.endif
     .byte RidleySPR/$400
 
 LoadAreaGFX:

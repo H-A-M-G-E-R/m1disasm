@@ -47,6 +47,14 @@
         SamusSuitlessGFXSpider: .incbin "common_chr/32/samus_suit_spider.chr" ; 1 (placeholder)
 
         ItemsGFX: .incbin "common_chr/32/items.chr" ; 1
+    .elif CFG_NUM_SAMUS_TILES == 64
+        SamusSuitGFX0: .incbin "common_chr/64/samus_suit_0.chr" ; 1
+        SamusSuitGFX1: .incbin "common_chr/64/samus_suit_1.chr" ; 1
+        SamusSuitlessGFX0: .incbin "common_chr/64/samus_suitless_0.chr" ; 1
+        SamusSuitlessGFX1: .incbin "common_chr/64/samus_suitless_1.chr" ; 1
+
+        CommonSPRGFX: .incbin "common_chr/64/common_spr.chr" ; 1
+        ItemsGFX: .incbin "common_chr/64/items.chr" ; 1
     .endif
 
     BrinstarSPR: .incbin "data/brinstar/sprite_tiles.chr" ; 1
