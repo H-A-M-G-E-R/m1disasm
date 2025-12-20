@@ -9,3 +9,7 @@ CFG_BEAM_STACK = 1
 
 ; 0 = use passwords, 1 = use saves
 CFG_SAVE = 1
+
+; 0 = mirror right-facing frames, 1 = use unique left-facing frames
+; TODO: only works when CFG_NUM_SAMUS_TILES == 64
+CFG_UNIQUE_LEFT_FACING_SAMUS_FRAMES = 1

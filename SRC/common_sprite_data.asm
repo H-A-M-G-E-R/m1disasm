@@ -205,6 +205,28 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSpider1
     PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSpider2
     PtrTableEntry ObjFramePtrTable, ObjFrame_SamusSpider3
+.if CFG_UNIQUE_LEFT_FACING_SAMUS_FRAMES != 0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRun0_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRun1_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRun2_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusStand_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunFire0_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunFire1_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunFire2_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusJump_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusJumpFire_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusStandFire_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusPntUp_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusPntUpFire_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusJumpPntUp_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusJumpPntUpFire_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunPntUp0_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunPntUp1_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunPntUp2_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunPntUpFire0_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunPntUpFire1_L
+    PtrTableEntry ObjFramePtrTable, ObjFrame_SamusRunPntUpFire2_L
+.endif
     PtrTableEntry ObjFramePtrTable, ObjFrame_BombExplode1
     PtrTableEntry ObjFramePtrTable, ObjFrame_BombExplodeBlank
     PtrTableEntry ObjFramePtrTable, ObjFrame_WaveBeam
@@ -367,6 +389,74 @@ SamusCHRBankTable:
     .byte SamusSuitGFX1/$400 ; ObjFrame_SamusSpider1
     .byte SamusSuitGFX1/$400 ; ObjFrame_SamusSpider2
     .byte SamusSuitGFX1/$400 ; ObjFrame_SamusSpider3
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+    .byte SamusSuitGFX0/$400
+.endif
+
+.if CFG_UNIQUE_LEFT_FACING_SAMUS_FRAMES != 0
+SamusFrameRightToLeftLookupTable:
+    .byte _id_ObjFrame_SamusRun0_L ; ObjFrame03
+    .byte _id_ObjFrame_SamusRun1_L ; ObjFrame04
+    .byte _id_ObjFrame_SamusRun2_L ; ObjFrame05
+    .byte $00 ; ObjFrame07
+    .byte _id_ObjFrame_SamusStand_L ; ObjFrame08
+    .byte _id_ObjFrame_SamusRunFire0_L ; ObjFrame0C
+    .byte _id_ObjFrame_SamusRunFire1_L ; ObjFrame0D
+    .byte _id_ObjFrame_SamusRunFire2_L ; ObjFrame0E
+    .byte _id_ObjFrame_SamusJump_L ; ObjFrame10
+    .byte _id_ObjFrame_SamusJumpFire_L ; ObjFrame12
+    .byte $00 ; ObjFrame17
+    .byte $00 ; ObjFrame18
+    .byte $00 ; ObjFrame19
+    .byte $00 ; ObjFrame1A
+    .byte $00 ; ObjFrame1B
+    .byte $00 ; ObjFrame1C
+    .byte $00 ; ObjFrame1D
+    .byte $00 ; ObjFrame1E
+    .byte _id_ObjFrame_SamusStandFire_L ; ObjFrame22
+    .byte $00 ; ObjFrame23
+    .byte $00 ; ObjFrame25
+    .byte $00 ; ObjFrame26
+    .byte $00 ; ObjFrame27
+    .byte $00 ; ObjFrame28
+    .byte $00 ; ObjFrame_IceBulletHit
+    .byte $00 ; ObjFrame2A
+    .byte _id_ObjFrame_SamusPntUp_L ; ObjFrame2B
+    .byte _id_ObjFrame_SamusPntUpFire_L ; ObjFrame30
+    .byte $00 ; ObjFrame31
+    .byte $00 ; ObjFrame33
+    .byte $00 ; ObjFrame35
+    .byte _id_ObjFrame_SamusJumpPntUp_L ; ObjFrame38
+    .byte _id_ObjFrame_SamusJumpPntUpFire_L ; ObjFrame39
+    .byte $00 ; ObjFrame3C
+    .byte _id_ObjFrame_SamusRunPntUp0_L ; ObjFrame40
+    .byte _id_ObjFrame_SamusRunPntUp1_L ; ObjFrame41
+    .byte _id_ObjFrame_SamusRunPntUp2_L ; ObjFrame42
+    .byte _id_ObjFrame_SamusRunPntUpFire0_L ; ObjFrame46
+    .byte _id_ObjFrame_SamusRunPntUpFire1_L ; ObjFrame47
+    .byte _id_ObjFrame_SamusRunPntUpFire2_L ; ObjFrame48
+    .byte $00 ; ObjFrame_SamusSpider0
+    .byte $00 ; ObjFrame_SamusSpider1
+    .byte $00 ; ObjFrame_SamusSpider2
+    .byte $00 ; ObjFrame_SamusSpider3
 .endif
 
 ;-------------------------------[ Sprite frame data tables ]---------------------------------------
@@ -1964,3 +2054,265 @@ ObjFrame_MissileExplode2:
     .byte $0C,$17+CFG_NUM_SAMUS_TILES,$C0,$F0
     .byte $0C,$17+CFG_NUM_SAMUS_TILES,$C0,$08
     .byte $80
+
+.if CFG_UNIQUE_LEFT_FACING_SAMUS_FRAMES != 0
+ObjFrame_SamusRun0_L:
+    .byte $0F,$04
+    .byte $F0,$00,$20,$F8
+    .byte $F0,$01,$20,$00
+    .byte $F8,$2E,$20,$F8
+    .byte $F8,$2F,$20,$00
+    .byte $00,$04,$20,$F8
+    .byte $00,$05,$20,$00
+    .byte $08,$06,$20,$00
+    .byte $80
+
+ObjFrame_SamusRun1_L:
+    .byte $0F,$04
+    .byte $F0,$07,$20,$F8
+    .byte $F0,$08,$20,$00
+    .byte $F8,$30,$20,$F8
+    .byte $F8,$31,$20,$00
+    .byte $00,$0B,$20,$F8
+    .byte $00,$0C,$20,$00
+    .byte $08,$0D,$20,$F8
+    .byte $08,$0E,$20,$00
+    .byte $08,$0F,$20,$08
+    .byte $80
+
+ObjFrame_SamusRun2_L:
+    .byte $0F,$04
+    .byte $F0,$10,$20,$F8
+    .byte $F0,$11,$20,$00
+    .byte $F8,$32,$20,$F8
+    .byte $F8,$33,$20,$00
+    .byte $00,$14,$20,$F8
+    .byte $00,$15,$20,$00
+    .byte $00,$16,$20,$08
+    .byte $08,$17,$20,$F8
+    .byte $08,$18,$20,$00
+    .byte $80
+
+ObjFrame_SamusRunFire0_L:
+    .byte $0F,$04
+    .byte $F0,$00,$20,$F8
+    .byte $F0,$01,$20,$00
+    .byte $F8,$19,$60,$F0
+    .byte $F8,$2C,$20,$F8
+    .byte $F8,$2D,$20,$00
+    .byte $00,$04,$20,$F8
+    .byte $00,$05,$20,$00
+    .byte $08,$06,$20,$00
+    .byte $80
+
+ObjFrame_SamusRunFire1_L:
+    .byte $0F,$04
+    .byte $F0,$00,$20,$F8
+    .byte $F0,$01,$20,$00
+    .byte $F8,$19,$60,$F0
+    .byte $F8,$2C,$20,$F8
+    .byte $F8,$2D,$20,$00
+    .byte $00,$0B,$20,$F8
+    .byte $00,$0C,$20,$00
+    .byte $08,$0D,$20,$F8
+    .byte $08,$0E,$20,$00
+    .byte $08,$0F,$20,$08
+    .byte $80
+
+ObjFrame_SamusRunFire2_L:
+    .byte $0F,$04
+    .byte $F0,$00,$20,$F8
+    .byte $F0,$01,$20,$00
+    .byte $F8,$19,$60,$F0
+    .byte $F8,$2C,$20,$F8
+    .byte $F8,$2D,$20,$00
+    .byte $00,$14,$20,$F8
+    .byte $00,$15,$20,$00
+    .byte $00,$16,$20,$08
+    .byte $08,$17,$20,$F8
+    .byte $08,$18,$20,$00
+    .byte $80
+
+ObjFrame_SamusJump_L:
+    .byte $0F,$04
+    .byte $F0,$00,$20,$F8
+    .byte $F0,$01,$20,$00
+    .byte $F8,$2E,$20,$F8
+    .byte $F8,$2F,$20,$00
+    .byte $00,$0B,$20,$F8
+    .byte $00,$1C,$20,$00
+    .byte $00,$1D,$20,$08
+    .byte $08,$0D,$20,$F8
+    .byte $80
+
+ObjFrame_SamusJumpFire_L:
+    .byte $0F,$04
+    .byte $F0,$00,$20,$F8
+    .byte $F0,$01,$20,$00
+    .byte $F8,$19,$60,$F0
+    .byte $F8,$2C,$20,$F8
+    .byte $F8,$2D,$20,$00
+    .byte $00,$0B,$20,$F8
+    .byte $00,$1C,$20,$00
+    .byte $00,$1D,$20,$08
+    .byte $08,$0D,$20,$F8
+    .byte $80
+
+ObjFrame_SamusStand_L:
+    .byte $0F,$04
+    .byte $F0,$38,$20,$F8
+    .byte $F0,$39,$20,$00
+    .byte $F8,$3A,$20,$F8
+    .byte $F8,$3B,$20,$00
+    .byte $00,$22,$60,$F8
+    .byte $00,$23,$60,$00
+    .byte $08,$24,$20,$F8
+    .byte $08,$25,$20,$00
+    .byte $F8,$26,$20,$F4
+    .byte $80
+
+ObjFrame_SamusStandFire_L:
+    .byte $0F,$04
+    .byte $F0,$38,$20,$F8
+    .byte $F0,$39,$20,$00
+    .byte $F8,$3A,$20,$F8
+    .byte $F8,$3B,$20,$00
+    .byte $00,$22,$60,$F8
+    .byte $00,$23,$60,$00
+    .byte $08,$24,$20,$F8
+    .byte $08,$25,$20,$00
+    .byte $F8,$26,$20,$F6
+    .byte $80
+
+ObjFrame_SamusPntUp_L:
+    .byte $0F,$04
+    .byte $E8,$27,$20,$FC
+    .byte $F0,$34,$20,$F8
+    .byte $F0,$35,$20,$00
+    .byte $F8,$36,$20,$F8
+    .byte $F8,$37,$20,$00
+    .byte $00,$22,$60,$F8
+    .byte $00,$23,$60,$00
+    .byte $08,$24,$20,$F8
+    .byte $08,$25,$20,$00
+    .byte $80
+
+ObjFrame_SamusPntUpFire_L:
+    .byte $0F,$04
+    .byte $EA,$27,$20,$FC
+    .byte $F0,$34,$20,$F8
+    .byte $F0,$35,$20,$00
+    .byte $F8,$36,$20,$F8
+    .byte $F8,$37,$20,$00
+    .byte $00,$22,$60,$F8
+    .byte $00,$23,$60,$00
+    .byte $08,$24,$20,$F8
+    .byte $08,$25,$20,$00
+    .byte $80
+
+ObjFrame_SamusJumpPntUp_L:
+    .byte $0F,$04
+    .byte $E8,$27,$20,$FC
+    .byte $F0,$34,$20,$F8
+    .byte $F0,$35,$20,$00
+    .byte $F8,$36,$20,$F8
+    .byte $F8,$37,$20,$00
+    .byte $00,$0B,$20,$F8
+    .byte $00,$1C,$20,$00
+    .byte $00,$1D,$20,$08
+    .byte $08,$0D,$20,$F8
+    .byte $80
+
+ObjFrame_SamusJumpPntUpFire_L:
+    .byte $0F,$04
+    .byte $EA,$27,$20,$FC
+    .byte $F0,$34,$20,$F8
+    .byte $F0,$35,$20,$00
+    .byte $F8,$36,$20,$F8
+    .byte $F8,$37,$20,$00
+    .byte $00,$0B,$20,$F8
+    .byte $00,$1C,$20,$00
+    .byte $00,$1D,$20,$08
+    .byte $08,$0D,$20,$F8
+    .byte $80
+
+ObjFrame_SamusRunPntUp0_L:
+    .byte $0F,$04
+    .byte $E8,$27,$20,$FC
+    .byte $F0,$34,$20,$F8
+    .byte $F0,$35,$20,$00
+    .byte $F8,$36,$20,$F8
+    .byte $F8,$37,$20,$00
+    .byte $00,$04,$20,$F8
+    .byte $00,$05,$20,$00
+    .byte $08,$06,$20,$00
+    .byte $80
+
+ObjFrame_SamusRunPntUp1_L:
+    .byte $0F,$04
+    .byte $E8,$27,$20,$FC
+    .byte $F0,$34,$20,$F8
+    .byte $F0,$35,$20,$00
+    .byte $F8,$36,$20,$F8
+    .byte $F8,$37,$20,$00
+    .byte $00,$0B,$20,$F8
+    .byte $00,$0C,$20,$00
+    .byte $08,$0D,$20,$F8
+    .byte $08,$0E,$20,$00
+    .byte $08,$0F,$20,$08
+    .byte $80
+
+ObjFrame_SamusRunPntUp2_L:
+    .byte $0F,$04
+    .byte $E8,$27,$20,$FC
+    .byte $F0,$34,$20,$F8
+    .byte $F0,$35,$20,$00
+    .byte $F8,$36,$20,$F8
+    .byte $F8,$37,$20,$00
+    .byte $00,$14,$20,$F8
+    .byte $00,$15,$20,$00
+    .byte $00,$16,$20,$08
+    .byte $08,$17,$20,$F8
+    .byte $08,$18,$20,$00
+    .byte $80
+
+ObjFrame_SamusRunPntUpFire0_L:
+    .byte $0F,$04
+    .byte $EA,$27,$20,$FC
+    .byte $F0,$34,$20,$F8
+    .byte $F0,$35,$20,$00
+    .byte $F8,$36,$20,$F8
+    .byte $F8,$37,$20,$00
+    .byte $00,$04,$20,$F8
+    .byte $00,$05,$20,$00
+    .byte $08,$06,$20,$00
+    .byte $80
+
+ObjFrame_SamusRunPntUpFire1_L:
+    .byte $0F,$04
+    .byte $EA,$27,$20,$FC
+    .byte $F0,$34,$20,$F8
+    .byte $F0,$35,$20,$00
+    .byte $F8,$36,$20,$F8
+    .byte $F8,$37,$20,$00
+    .byte $00,$0B,$20,$F8
+    .byte $00,$0C,$20,$00
+    .byte $08,$0D,$20,$F8
+    .byte $08,$0E,$20,$00
+    .byte $08,$0F,$20,$08
+    .byte $80
+
+ObjFrame_SamusRunPntUpFire2_L:
+    .byte $0F,$04
+    .byte $EA,$27,$20,$FC
+    .byte $F0,$34,$20,$F8
+    .byte $F0,$35,$20,$00
+    .byte $F8,$36,$20,$F8
+    .byte $F8,$37,$20,$00
+    .byte $00,$14,$20,$F8
+    .byte $00,$15,$20,$00
+    .byte $00,$16,$20,$08
+    .byte $08,$17,$20,$F8
+    .byte $08,$18,$20,$00
+    .byte $80
+.endif

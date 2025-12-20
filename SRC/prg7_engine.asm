@@ -5100,6 +5100,21 @@ LDE60:
     ldy IsSamus
     beq +
         tax
+    .if CFG_UNIQUE_LEFT_FACING_SAMUS_FRAMES != 0
+        lda ObjectCntrl
+        and #OAMDATA_HFLIP
+        beq ++
+        ; samus is facing left
+        lda SamusFrameRightToLeftLookupTable,x
+        beq ++
+            ; unique left-facing frame detected, switch to it and unmirror
+            tax
+            lda ObjectCntrl
+            and #~OAMDATA_HFLIP.b
+            sta ObjectCntrl
+        ++
+    .endif
+        ; switch samus chr
         lda SamusCHRBankTable,x
         ldy JustInBailey
         beq ++
