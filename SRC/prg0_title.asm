@@ -4728,9 +4728,22 @@ DisplayBar:
     ldy #$00                        ;Reset data index.
     lda SpritePagePos               ;Load current sprite index.
     pha                             ;save sprite page pos.
+    pha
     tax
     @loop:
         ;Store contents of DataDisplayTbl in sprite RAM.
+        lda DataDisplayTbl,y
+        sta SpriteRAM,x
+        inx
+        iny
+        lda DataDisplayTbl,y
+        sta SpriteRAM,x
+        inx
+        iny
+        lda DataDisplayTbl,y
+        sta SpriteRAM,x
+        inx
+        iny
         lda DataDisplayTbl,y
         sta SpriteRAM,x
         inx
@@ -4801,7 +4814,7 @@ LE14A:
     ldx SpritePagePos               ;Restore initial sprite page pos.
     lda MaxHealth+1                 ;
     and #$F0                        ;
-    beq RTS_E172                          ;Branch to exit if Samus has no energy tanks.
+    beq LE16C@checkOverflow                          ;Branch to exit if Samus has no energy tanks.
 
 ;Display full/empty energy tanks.
     jsr Adiv16
@@ -4816,7 +4829,22 @@ LE14A:
     dec $00                         ;Else switch to "empty energy tank" tile.
 
 AddTanks:
-    jsr AddOneTank                  ;($E17B)Add energy tank to display.
+    ;Add energy tank to Samus' data display.
+    lda EnergyTankYPositions,y
+    sta SpriteRAM.0.y,x
+    ;Tile value.
+    lda $00
+    sta SpriteRAM.0.tileID,x
+    ;Palette #.
+    lda #$01
+    sta SpriteRAM.0.attrib,x
+    ;X coord.
+    lda EnergyTankXPositions,y
+    sta SpriteRAM.0.x,x
+    inx
+    inx
+    inx
+    inx
     iny
     dec $01                         ;Any more full energy tanks left?-->
     bne LE16C                           ;If so, then branch.-->
@@ -4826,6 +4854,13 @@ AddTanks:
     bne AddTanks                    ;if not, loop to do another.
 
     stx SpritePagePos               ;Store new sprite page position.
+@checkOverflow:
+    ; overflow failsafe
+    pla
+    cmp SpritePagePos
+    bcc RTS_E172
+        lda #$00
+        sta SpritePagePos
 RTS_E172:
     rts
 
@@ -4838,25 +4873,7 @@ SPRWriteDigit:
     clc
     adc #$20+CFG_NUM_SAMUS_TILES.b  ;#$A0 is index into pattern table for numbers.
     sta SpriteRAM.0.tileID,x             ;Store proper nametable pattern in sprite RAM.
-    jmp Xplus4                      ;Find next sprite pattern table byte.
-
-;----------------------------------[ Add energy tank to display ]------------------------------------
-
-;Add energy tank to Samus' data display.
-
-AddOneTank:
-    ;Y coord-1.
-    lda EnergyTankYPositions,y
-    sta SpriteRAM.0.y,x
-    ;Tile value.
-    lda $00
-    sta SpriteRAM.0.tileID,x
-    ;Palette #.
-    lda #$01
-    sta SpriteRAM.0.attrib,x
-    ;X coord.
-    lda EnergyTankXPositions,y
-    sta SpriteRAM.0.x,x
+    ;Find next sprite pattern table byte.
     ; fallthrough
 
 ;-----------------------------------------[ Add 4 to x ]---------------------------------------------

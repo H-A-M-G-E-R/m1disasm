@@ -1740,6 +1740,7 @@ UpdateWorld:
 
 ;Clear remaining sprite RAM
     ldx SpritePagePos
+    beq @RTS
     lda #$F4
     @loop:
         sta SpriteRAM,x
@@ -1749,6 +1750,7 @@ UpdateWorld:
         inx
         inx
         bne @loop
+@RTS
     rts
 
 ;------------------------------------[ Select Samus palette ]----------------------------------------
@@ -2750,29 +2752,6 @@ SamusJump_CheckHorzMovement:
     ; Y = 1
     iny
 Lx024:
-    ; branch if not turning around
-    cpy SamusDir
-    beq Lx027
-    ; turning around
-    lda ObjAction
-    cmp #sa_PntJump
-    bne Lx025
-        ; aiming up
-        lda ObjAnimResetIndex
-        cmp Table04,y
-        bne Lx026
-        lda Table04+1,y
-        jmp Lx026
-
-    Lx025:
-    lda ObjAnimResetIndex
-    cmp Table06,y
-    bne Lx026
-    lda Table06+1,y
-Lx026:
-    jsr SetSamusAnim
-    lda #$08
-    sta ObjAnimDelay
     ; SamusDir = Y
     sty SamusDir
 Lx027:
@@ -2780,17 +2759,6 @@ Lx027:
     stx ObjSpeedX
 RTS_X028:
     rts
-
-; Table used by above subroutine
-
-Table06:
-    .byte ObjAnim_SamusJump - ObjectAnimIndexTbl
-    .byte ObjAnim_SamusJump - ObjectAnimIndexTbl
-    .byte ObjAnim_SamusJump - ObjectAnimIndexTbl
-Table04:
-    .byte ObjAnim_SamusJumpPntUp - ObjectAnimIndexTbl
-    .byte ObjAnim_SamusJumpPntUp - ObjectAnimIndexTbl
-    .byte ObjAnim_SamusJumpPntUp - ObjectAnimIndexTbl
 
 SamusJump_CheckFire:
     lda Joy1Status
