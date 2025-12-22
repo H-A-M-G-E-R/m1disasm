@@ -7176,7 +7176,7 @@ SetupRoom:
     lda #$00
     sta $00
     sta $03
-    lda #>MacroDefs.b
+    lda #>MetatileDefs.b
     sta $04
     lda RoomRAMPtr+1.b
     ora #$03
@@ -7195,9 +7195,9 @@ SetupRoom:
     ldx #$00
 
 @loop_metatiles:
-    lda DecompressedRoomBuffer,x    ;Get macro number.
+    lda DecompressedRoomBuffer,x    ;Get metatile number.
     cmp #$FF
-    bne @draw_metatile              ;Draw blank if macro number = $FF.
+    bne @draw_metatile              ;Draw blank if metatile number = $FF.
         ldy #$00
         sta ($00),y
         iny
@@ -7208,23 +7208,23 @@ SetupRoom:
         sta ($00),y
         bne @next
     @draw_metatile:
-        asl                             ;A=macro number * 4. Each macro is 4 bytes long.
+        asl                             ;A=metatile number * 4. Each metatile is 4 bytes long.
         bcc +
-            inc $04                         ;If MSB set, add $200 to MacroPtr.
+            inc $04                         ;If MSB set, add $200 to MetatilePtr.
             inc $04                         ;
         +
         asl
         bcc +
-            inc $04                         ;If second MSB set, add $100 to MacroPtr.
+            inc $04                         ;If second MSB set, add $100 to MetatilePtr.
         +
-        sta $02                         ;Store macro index.
+        sta $02                         ;Store metatile index.
 
         tay
         lda ($03),y                     ;Get tile number.
-        ldy #$00                        ;get tile position in macro.
+        ldy #$00                        ;get tile position in metatile.
         sta ($00),y                     ;Write tile number to room RAM.
 
-        ldy $02                         ;Macro index loaded into Y.
+        ldy $02                         ;Metatile index loaded into Y.
         iny
         lda ($03),y
         ldy #$01
@@ -7245,7 +7245,7 @@ SetupRoom:
         ldy #$21
         sta ($00),y
 
-        lda #>MacroDefs.b               ;Restore MacroPtr+1.
+        lda #>MetatileDefs.b               ;Restore MetatilePtr+1.
         sta $04                         ;
 
     ; Next metatile
