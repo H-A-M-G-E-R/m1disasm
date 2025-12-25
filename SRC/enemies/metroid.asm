@@ -37,8 +37,10 @@ MetroidAIRoutine:
         ; make it vincible with 20 health
         lda #20
         sta EnHealth,x
-        jsr ClearCurrentMetroidLatch
-        beq L9822
+        ; clear latch
+        lda #$00
+        sta EnsExtra2.0.data20,x
+        beq L9822 ; branch always
     L9894:
         ; metroid is not frozen, metroid is invincible
         lda #$FF
@@ -271,11 +273,6 @@ L999E:
         sta ObjectCntrl
     L99AB:
     jmp CommonEnemyJump_00_01_02
-
-ClearCurrentMetroidLatch:
-    lda #$00
-    sta EnsExtra2.0.data20,x
-    rts
 
 ClearMetroidSpeed:
     lda #$00

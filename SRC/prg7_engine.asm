@@ -3048,8 +3048,18 @@ SearchOpenProjectileSlot:
     ; found open samus projectile slot
     ; clear ProjectileIsHit
     sta ProjectileIsHit,y
+.if CFG_UNCAPPED_MISSILES == 0
+    ; return set zero flag if Samus is not shooting a missile
+    lda MissileToggle
+    beq @endIf_A
+        ; Samus is shooting a missile
+        ; return set zero flag if the slot found is $03D0 (missiles can only be in that slot)
+        cpy #$D0
+    @endIf_A:
+.else
     ; return set zero flag
     lda #$00
+.endif
     rts
 
 
@@ -10063,7 +10073,8 @@ Lx365:
     tay
     lda AreaEnProjectileSplatterAnimIndex,y
     jsr InitEnAnimIndex
-    jsr LF518
+    lda #enemyStatus_Frozen | $80.b
+    sta EnsExtra.0.status,x
     lda #$0A
     sta EnDelay,x
 Lx367:
