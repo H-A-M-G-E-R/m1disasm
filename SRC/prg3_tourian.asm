@@ -636,23 +636,23 @@ TileBlastAnim8:  .byte $07,$06,$0B,$FE ; respawning tile #$78
 TileBlastAnim9:  .byte $07,$06,$08,$FE ; respawning tile #$90
 
 TileBlastFramePtrTable:
-    .word TileBlastFrame00
-    .word TileBlastFrame01
-    .word TileBlastFrame02
-    .word TileBlastFrame03
-    .word TileBlastFrame04
-    .word TileBlastFrame05
+    .word TileBlastFrame_MotherBrainDeath
+    .word TileBlastFrame_DestroyMotherBrainGlass
+    .word TileBlastFrame_TimeBombMessage1
+    .word TileBlastFrame_TimeBombMessage3
+    .word TileBlastFrame_TimeBombMessage5
+    .word TileBlastFrame_TimeBombMessage7
     .word TileBlastFrame06
-    .word TileBlastFrame07
-    .word TileBlastFrame08
-    .word TileBlastFrame09
-    .word TileBlastFrame0A
-    .word TileBlastFrame0B
-    .word TileBlastFrame0C
-    .word TileBlastFrame0D
-    .word TileBlastFrame0E
-    .word TileBlastFrame0F
-    .word TileBlastFrame10
+    .word TileBlastFrame_ZebetiteDestroyed
+    .word TileBlastFrame_TimeBombMessage0
+    .word TileBlastFrame_TimeBombMessage2
+    .word TileBlastFrame_TimeBombMessage4
+    .word TileBlastFrame_TimeBombMessage6
+    .word TileBlastFrame_Zebetite0
+    .word TileBlastFrame_Zebetite1
+    .word TileBlastFrame_Zebetite2
+    .word TileBlastFrame_Zebetite3
+    .word TileBlastFrame_EscapeDoor
 
 EnemyMovementChoices:
 EnemyMovementChoice_MetroidRed:
@@ -1511,13 +1511,15 @@ MotherBrain_TimeBombMessage_ScrollBackOnScreen:
         ; the MotherBrainTimeBombCounter is used as an index for which part to draw
         tay
         ; set TileBlast frame for this part
-        lda @animFrameTable,y
-        sta TileBlasts.0.animFrame
+        lda @animFrameLoTable,y
+        sta $02
+        lda @animFrameHiTable,y
+        sta $03
         ; set low byte of roomRAM pointer to upper-left tile for TileBlast
         lda @roomRAMPtrTable,y
         clc
         adc #<$6142
-        sta TileBlasts.0.roomRAMPtr
+        sta $00
         ; save carry to stack
         php
         ; set hi byte of roomRAM pointer from mother brain hi
@@ -1527,16 +1529,13 @@ MotherBrain_TimeBombMessage_ScrollBackOnScreen:
         asl
         plp
         adc #>$6142
-        sta TileBlasts.0.roomRAMPtr+1
-        ; prepare to draw TileBlasts.0
-        lda #$00
-        sta PageIndex
+        sta $01
         ; exit if PPUStrIndex is not zero
         ; (counter will not be incremented, so the same part will be attempted again next frame)
         lda PPUStrIndex
         bne @RTS
         ; try to draw TileBlast and exit without incrementing counter if failed
-        jsr CommonJump_DrawTileBlast
+        jsr DrawTileBlast_Generic
         bcs @RTS
         ; TileBlast was drawn successfully, move on to next part
     @endIf_A:
@@ -1559,15 +1558,25 @@ MotherBrain_TimeBombMessage_ScrollBackOnScreen:
     .byte $61CA - $6142
     .byte $620A - $6142
 
-@animFrameTable:
-    .byte $08 ; TIME B
-    .byte $02 ; GET OU
-    .byte $09 ; OMB SET
-    .byte $03 ; T FAST!
-    .byte $0A
-    .byte $04 ; TIME
-    .byte $0B
-    .byte $05
+@animFrameLoTable:
+    .byte <TileBlastFrame_TimeBombMessage0 ; TIME B
+    .byte <TileBlastFrame_TimeBombMessage1 ; GET OU
+    .byte <TileBlastFrame_TimeBombMessage2 ; OMB SET
+    .byte <TileBlastFrame_TimeBombMessage3 ; T FAST!
+    .byte <TileBlastFrame_TimeBombMessage4
+    .byte <TileBlastFrame_TimeBombMessage5 ; TIME
+    .byte <TileBlastFrame_TimeBombMessage6
+    .byte <TileBlastFrame_TimeBombMessage7
+
+@animFrameHiTable:
+    .byte >TileBlastFrame_TimeBombMessage0 ; TIME B
+    .byte >TileBlastFrame_TimeBombMessage1 ; GET OU
+    .byte >TileBlastFrame_TimeBombMessage2 ; OMB SET
+    .byte >TileBlastFrame_TimeBombMessage3 ; T FAST!
+    .byte >TileBlastFrame_TimeBombMessage4
+    .byte >TileBlastFrame_TimeBombMessage5 ; TIME
+    .byte >TileBlastFrame_TimeBombMessage6
+    .byte >TileBlastFrame_TimeBombMessage7
 
 MotherBrain_SetTimeBomb: ; 03:9F49
     ; try to spawn door until it succeeds
@@ -1628,18 +1637,18 @@ MotherBrain_SpawnDoor: ; 03:9F69
     lda #_id_ObjFrame_DoorOpened.b
     sta ObjAnimFrame,x
     ; create door tiles
-    lda #$10
-    sta TileBlasts.0.animFrame
+    lda #<TileBlastFrame_EscapeDoor.b
+    sta $02
+    lda #>TileBlastFrame_EscapeDoor.b
+    sta $03
     lda #$40
-    sta TileBlasts.0.roomRAMPtr
+    sta $00
     lda MotherBrainHi
     asl
     asl
     ora #$61
-    sta TileBlasts.0.roomRAMPtr+1
-    lda #$00
-    sta PageIndex
-    jmp CommonJump_DrawTileBlast
+    sta $01
+    jmp DrawTileBlast_Generic
 
 ;-------------------------------------------------------------------------------
 MotherBrain_9FC0: ; 03:9FC0
@@ -1824,7 +1833,7 @@ MotherBrain_Disappear_Disintegrate:
 @disintegrate:
     ; add ($6144 + MotherBrainHi*$0400) to byte
     adc #$44
-    sta TileBlasts.0.roomRAMPtr
+    sta $00
     php
     lda MotherBrainHi
     asl
@@ -1832,12 +1841,13 @@ MotherBrain_Disappear_Disintegrate:
     ora #$61
     plp
     adc #$00
-    sta TileBlasts.0.roomRAMPtr+1
+    sta $01
     ; clear 2x2 tile region at that location
-    lda #$00
-    sta TileBlasts.0.animFrame
-    sta PageIndex
-    jmp CommonJump_DrawTileBlast
+    lda #<TileBlastFrame_MotherBrainDeath.b
+    sta $02
+    lda #>TileBlastFrame_MotherBrainDeath.b
+    sta $03
+    jmp DrawTileBlast_Generic
 
 MotherBrainDeathString:
 MotherBrainDeathString_1:
@@ -1916,23 +1926,17 @@ UpdateBullet_CollisionWithZebetiteAndMotherBrainGlass:
         @slotFound:
         ; set pointer
         lda #$8C
-        sta TileBlasts.0.roomRAMPtr,x
+        sta $00
         lda Temp04_RoomRAMPtr+1.b
-        sta TileBlasts.0.roomRAMPtr+1,x
+        sta $01
         ; set to clear 2x3 tile region
-        lda #$01
-        sta TileBlasts.0.animFrame,x
-        ; push current samus projectile slot
-        lda PageIndex
-        pha
-        ; set TileBlast slot
-        stx PageIndex
+        lda #<TileBlastFrame_DestroyMotherBrainGlass.b
+        sta $02
+        lda #>TileBlastFrame_DestroyMotherBrainGlass.b
+        sta $03
         ; go remove the glass shield
-        jsr CommonJump_DrawTileBlast
-        ; restore projectile slot
-        pla
-        sta PageIndex
-        bne @exit ; branch always
+        jsr DrawTileBlast_Generic
+        jmp @exit
 
     @checkZebetite:
         ; tile is not #$98, check if samus shot a zebetite
@@ -2273,13 +2277,15 @@ UpdateZebetite:
     inc Zebetites.0.status,x
 LA2BA:
     ; set anim frame
-    lda ZebetiteAnimFrameTable,y
-    sta TileBlasts.1.animFrame
+    lda ZebetiteAnimFrameLoTable,y
+    sta $02
+    lda ZebetiteAnimFrameHiTable,y
+    sta $03
     ; set vram pointer
     lda Zebetites.0.roomRAMPtr,x
-    sta TileBlasts.1.roomRAMPtr
+    sta $00
     lda Zebetites.0.roomRAMPtr+1,x
-    sta TileBlasts.1.roomRAMPtr+1
+    sta $01
     ; if a ppu string is in the buffer, dont update gfx
     lda PPUStrIndex
     bne LA2DA
@@ -2287,7 +2293,7 @@ LA2BA:
         ; update zebetite gfx
         txa
         pha
-        jsr CommonJump_DrawTileBlast
+        jsr DrawTileBlast_Generic
         pla
         tax
         ; branch if gfx update is successful
@@ -2330,38 +2336,49 @@ LA30A:
     sta Zebetites.0.isHit,x
     rts
 
-ZebetiteAnimFrameTable:
-    .byte $0C, $0D, $0E, $0F, $07
+ZebetiteAnimFrameLoTable:
+    .byte <TileBlastFrame_Zebetite0
+    .byte <TileBlastFrame_Zebetite1
+    .byte <TileBlastFrame_Zebetite2
+    .byte <TileBlastFrame_Zebetite3
+    .byte <TileBlastFrame_ZebetiteDestroyed
+
+ZebetiteAnimFrameHiTable:
+    .byte >TileBlastFrame_Zebetite0
+    .byte >TileBlastFrame_Zebetite1
+    .byte >TileBlastFrame_Zebetite2
+    .byte >TileBlastFrame_Zebetite3
+    .byte >TileBlastFrame_ZebetiteDestroyed
 
 ;-------------------------------------------------------------------------------
 
-TileBlastFrame00:
+TileBlastFrame_MotherBrainDeath:
     .byte $22
     .byte $FF, $FF
     .byte $FF, $FF
 
-TileBlastFrame01:
+TileBlastFrame_DestroyMotherBrainGlass:
     .byte $32
     .byte $FF, $FF
     .byte $FF, $FF
     .byte $FF, $FF
 
-TileBlastFrame02: ; GET OU
+TileBlastFrame_TimeBombMessage1: ; GET OU
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $E0, $DE, $ED, $FF, $E8, $EE
 
-TileBlastFrame03: ; T FAST!
+TileBlastFrame_TimeBombMessage3: ; T FAST!
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $ED, $FF, $DF, $DA, $EC, $ED, $F4, $FF
 
-TileBlastFrame04: ; TIME
+TileBlastFrame_TimeBombMessage5: ; TIME
     .byte $28
     .byte $FF, $FF, $FF, $FF, $ED, $E2, $E6, $DE
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-TileBlastFrame05:
+TileBlastFrame_TimeBombMessage7:
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
@@ -2375,62 +2392,62 @@ TileBlastFrame06:
     .byte $FF, $FF
     .byte $FF, $FF
 
-TileBlastFrame07:
+TileBlastFrame_ZebetiteDestroyed:
     .byte $42
     .byte $FF, $FF
     .byte $FF, $FF
     .byte $FF, $FF
     .byte $FF, $FF
 
-TileBlastFrame08: ; TIME B
+TileBlastFrame_TimeBombMessage0: ; TIME B
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $ED, $E2, $E6, $DE, $FF, $DB
 
-TileBlastFrame09: ; OMB SET
+TileBlastFrame_TimeBombMessage2: ; OMB SET
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $E8, $E6, $DB, $FF, $EC, $DE, $ED, $FF
 
-TileBlastFrame0A:
+TileBlastFrame_TimeBombMessage4:
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-TileBlastFrame0B:
+TileBlastFrame_TimeBombMessage6:
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-TileBlastFrame0C:
+TileBlastFrame_Zebetite0:
     .byte $42
     .byte $90, $91
     .byte $90, $91
     .byte $90, $91
     .byte $90, $91
 
-TileBlastFrame0D:
+TileBlastFrame_Zebetite1:
     .byte $42
     .byte $92, $93
     .byte $92, $93
     .byte $92, $93
     .byte $92, $93
 
-TileBlastFrame0E:
+TileBlastFrame_Zebetite2:
     .byte $42
     .byte $94, $95
     .byte $94, $95
     .byte $94, $95
     .byte $94, $95
 
-TileBlastFrame0F:
+TileBlastFrame_Zebetite3:
     .byte $42
     .byte $96, $97
     .byte $96, $97
     .byte $96, $97
     .byte $96, $97
 
-TileBlastFrame10:
+TileBlastFrame_EscapeDoor:
     .byte $62
     .byte $A0, $A0
     .byte $A0, $A0

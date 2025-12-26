@@ -4306,25 +4306,20 @@ UpdateStatue_StartRaising:
 UpdateStatueBGTiles:
     ; set destination pointer low byte
     lda StatueTileBlastRoomRAMPtrLoTable,y
-    sta TileBlasts.12.roomRAMPtr
+    sta $00
     ; set destination pointer high byte
     lda StatueHi
     asl
     asl
     ora StatueTileBlastRoomRAMPtrHiTable,y
-    sta TileBlasts.12.roomRAMPtr+1
+    sta $01
     ; set 2x3 tile region of solid blank tiles
-    lda #$09
-    sta TileBlasts.12.animFrame
-    ; set tile blast index to #$C0
-    lda #_sizeof_TileBlasts.0*$C.b
-    sta PageIndex
+    lda #<StatueTileBlastFrame.b
+    sta $02
+    lda #>StatueTileBlastFrame.b
+    sta $03
     ; update bg tiles
-    jsr DrawTileBlast
-    ; restore page index to statues object slot
-    lda #$60
-    sta PageIndex
-    rts
+    jmp DrawTileBlast_Generic
 
 ; Table used by above subroutine
 StatueTileBlastRoomRAMPtrLoTable:
@@ -4337,6 +4332,12 @@ StatueTileBlastRoomRAMPtrHiTable:
     .byte >$60AC
     .byte >$60F0
     .byte >$606C
+
+StatueTileBlastFrame:
+    .byte $32
+    .byte $4E, $4E
+    .byte $4E, $4E
+    .byte $4E, $4E
 
 UpdateAllStatues_Bridge:
     ; exit if the bridge is already spawned
@@ -10962,7 +10963,7 @@ UpdateTileBlast_Respawned:
     adc ObjRadX
     sta Temp05_YSlotRadX
     jsr CheckCollisionOfXSlotAndYSlot
-    bcs GetTileBlastFramePtr@RTS
+    bcs SetTileAnim@RTS
 
     ; tile hit Samus
     jsr SamusHurt_F311
@@ -10971,7 +10972,17 @@ UpdateTileBlast_Respawned:
     sta HealthChange
     jmp SubtractHealth
 
-GetTileBlastFramePtr:
+; return carry clear if successfully drawn
+; return carry set if there is not enough space in the ppu string buffer
+DrawTileBlast: ;($FEDC)
+CommonJump_DrawTileBlast:
+    ldx PageIndex
+    ; $01.$00 = TileBlastRoomRAMPtr
+    lda TileBlasts.0.roomRAMPtr,x
+    sta $00
+    lda TileBlasts.0.roomRAMPtr+1,x
+    sta $01
+    ; $03.$02 = tile blast frame ptr
     lda TileBlasts.0.animFrame,x
     asl
     tay
@@ -10979,23 +10990,35 @@ GetTileBlastFramePtr:
     sta $02
     lda TileBlastFramePtrTable+1,y
     sta $03
-@RTS:
-    rts
+    ; fallthrough
 
-; return carry clear if successfully drawn
-; return carry set if there is not enough space in the ppu string buffer
-DrawTileBlast: ;($FEDC)
-CommonJump_DrawTileBlast:
+; $01.$00 = room ram ptr
+; $03.$02 = tile blast frame ptr
+DrawTileBlast_Generic:
     lda PPUStrIndex
     cmp #$1F
-    bcs GetTileBlastFramePtr@RTS
-    ldx PageIndex
-    ; $01.$00 = TileBlastRoomRAMPtr
-    lda TileBlasts.0.roomRAMPtr,x
-    sta $00
-    lda TileBlasts.0.roomRAMPtr+1,x
+    bcs SetTileAnim@RTS
+    jsr DrawTileBlast_NoNametableUpdate
+
+    ; $01.$00 = PPU address to write tile blast
+    ; branch if in RoomRAMA
+    lda $01
+    and #$04
+    beq @inNameTable0
+        ; write to nametable 3
+        lda $01
+        ora #$0C
+        sta $01
+    @inNameTable0:
+    lda $01
+    and #$2F
     sta $01
-    jsr GetTileBlastFramePtr
+    jsr WriteTileBlast
+    clc
+    rts
+
+; use this when loading a room
+DrawTileBlast_NoNametableUpdate:
     ; $11 = room RAM index = 0
     ldy #$00
     sty $11
@@ -11038,21 +11061,6 @@ CommonJump_DrawTileBlast:
         ; loop if there are rows remaining
         dec $04
         bne @loop_rows
-    ; $01.$00 = PPU address to write tile blast
-    ; branch if in RoomRAMA
-    lda $01
-    and #$04
-    beq @inNameTable0
-        ; write to nametable 3
-        lda $01
-        ora #$0C
-        sta $01
-    @inNameTable0:
-    lda $01
-    and #$2F
-    sta $01
-    jsr WriteTileBlast
-    clc
     rts
 
 GetPosAtNameTableAddr:
