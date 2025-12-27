@@ -109,6 +109,7 @@ EnemyUpdateFlipIfBit2Of968BClear:
         lsr
         ror
         lsr
+        and #$40
         ora EnsExtra2.0.props2F,x
         sta EnsExtra2.0.props2F,x
     @RTS:
