@@ -1010,7 +1010,7 @@ TileBlastFrame10:
 
 TileAnim0:
 TileAnim1:
-    .byte $FF, KraidBG/$400
+    .byte $FF, KraidBG/$400, KraidBG/$400+1, KraidBG/$400+2, KraidBG/$400+3
     .byte $00
 
 PalAnim0:

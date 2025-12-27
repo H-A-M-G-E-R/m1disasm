@@ -1167,11 +1167,11 @@ TileBlastFrame0F:
 TileBlastFrame10:
     ; nothing
 
-; duration, CHR bank
+; duration, CHR banks
 ; 0 = end
 TileAnim0:
 TileAnim1:
-    .byte $FF, BrinstarBG/$400
+    .byte $FF, BrinstarBG/$400, BrinstarBG/$400+1, BrinstarBG/$400+2, BrinstarBG/$400+3
     .byte $00
 
 ; first entry is initial palette index

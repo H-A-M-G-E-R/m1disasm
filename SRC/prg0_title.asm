@@ -4514,20 +4514,24 @@ InitEndGFX:
     lda #$01                        ;
     sta GameMode                    ;Game is at title/end game.
     lda #EndingSPR/$400.b
-    sta CHRBank2
+    sta CHRBank4
     jsr LoadAreaGFX
     .byte EndingBG/$400
+    .byte EndingBG/$400+1
     .byte EndingBG/$400+2
+    .byte EndingBG/$400+3
     .byte EndingSPR/$400+1
     .byte EndingSPR/$400+2
     .byte EndingSPR/$400+3
 
 InitTitleGFX:
     lda #TitleSPR/$400.b
-    sta CHRBank2
+    sta CHRBank4
     jsr LoadAreaGFX
     .byte TitleBG/$400
+    .byte TitleBG/$400+1
     .byte TitleBG/$400+2
+    .byte TitleBG/$400+3
     .byte TitleSPR/$400+1
     .byte TitleSPR/$400+2
     .byte TitleSPR/$400+3
@@ -4549,7 +4553,7 @@ LoadSamusGFX:
         ldy #SamusSuitlessGFX1/$400.b
     .endif
     LC5EB:
-    sty CHRBank2
+    sty CHRBank4
     rts
 
 InitGenericAreaBank:
@@ -4569,7 +4573,9 @@ InitGenericAreaBank:
 InitBrinstarGFX:
     jsr LoadAreaGFX
     .byte BrinstarBG/$400
+    .byte BrinstarBG/$400+1
     .byte BrinstarBG/$400+2
+    .byte BrinstarBG/$400+3
 .if CFG_NUM_SAMUS_TILES != 64
     .byte ItemsGFX/$400
     .byte BlankSPR/$400
@@ -4582,7 +4588,9 @@ InitBrinstarGFX:
 InitNorfairGFX:
     jsr LoadAreaGFX
     .byte NorfairBG/$400
+    .byte NorfairBG/$400+1
     .byte NorfairBG/$400+2
+    .byte NorfairBG/$400+3
 .if CFG_NUM_SAMUS_TILES != 64
     .byte ItemsGFX/$400
     .byte BlankSPR/$400
@@ -4595,7 +4603,9 @@ InitNorfairGFX:
 InitTourianGFX:
     jsr LoadAreaGFX
     .byte TourianBG/$400
+    .byte TourianBG/$400+1
     .byte TourianBG/$400+2
+    .byte TourianBG/$400+3
 .if CFG_NUM_SAMUS_TILES != 64
     .byte ItemsGFX/$400
     .byte BlankSPR/$400
@@ -4608,7 +4618,9 @@ InitTourianGFX:
 InitKraidGFX:
     jsr LoadAreaGFX
     .byte KraidBG/$400
+    .byte KraidBG/$400+1
     .byte KraidBG/$400+2
+    .byte KraidBG/$400+3
 .if CFG_NUM_SAMUS_TILES != 64
     .byte ItemsGFX/$400
     .byte BlankSPR/$400
@@ -4621,7 +4633,9 @@ InitKraidGFX:
 InitRidleyGFX:
     jsr LoadAreaGFX
     .byte RidleyBG/$400
+    .byte RidleyBG/$400+1
     .byte RidleyBG/$400+2
+    .byte RidleyBG/$400+3
 .if CFG_NUM_SAMUS_TILES != 64
     .byte ItemsGFX/$400
     .byte BlankSPR/$400
@@ -4644,13 +4658,19 @@ LoadAreaGFX:
     sta CHRBank1
     iny
     lda ($07),y
+    sta CHRBank2
+    iny
+    lda ($07),y
     sta CHRBank3
     iny
     lda ($07),y
-    sta CHRBank4
+    sta CHRBank5
     iny
     lda ($07),y
-    sta CHRBank5
+    sta CHRBank6
+    iny
+    lda ($07),y
+    sta CHRBank7
     rts
 
 ;---------------------------------------[ Remove intro sprites ]-------------------------------------

@@ -898,7 +898,7 @@ TileBlastFrame10:
 
 TileAnim0:
 TileAnim1:
-    .byte $FF, RidleyBG/$400
+    .byte $FF, RidleyBG/$400, RidleyBG/$400+1, RidleyBG/$400+2, RidleyBG/$400+3
     .byte $00
 
 PalAnim0:

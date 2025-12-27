@@ -2458,7 +2458,7 @@ TileBlastFrame_EscapeDoor:
 
 TileAnim0:
 TileAnim1:
-    .byte $FF, TourianBG/$400
+    .byte $FF, TourianBG/$400, TourianBG/$400+1, TourianBG/$400+2, TourianBG/$400+3
     .byte $00
 
 PalAnim0:

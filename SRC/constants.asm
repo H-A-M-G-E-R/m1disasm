@@ -21,6 +21,9 @@
     .fail "no build target specified"
 .endif
 
+.ifndef BUILDTARGET_MAPPER
+    .fail "no build target mapper specified"
+.endif
 
 .memorymap
     defaultslot 0

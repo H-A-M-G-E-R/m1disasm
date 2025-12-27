@@ -1027,12 +1027,14 @@ PalAnimIndex           db
 
 SpiderOrientation      db            ;0=on floor, 1=on right wall, 2=on ceiling, 3=on left wall
 
-CHRBank0               db            ;PPU $0000-$07FF
-CHRBank1               db            ;PPU $0800-$0FFF
-CHRBank2               db            ;PPU $1000-$13FF
-CHRBank3               db            ;PPU $1400-$17FF
-CHRBank4               db            ;PPU $1800-$1BFF
-CHRBank5               db            ;PPU $1C00-$1FFF
+CHRBank0               db            ;PPU $0000-$07FF for MMC3, PPU $0000-$03FF for MMC5
+CHRBank1               db            ;PPU $0400-$07FF for MMC5 only
+CHRBank2               db            ;PPU $0800-$0FFF for MMC3, $0800-$0BFF for MMC5
+CHRBank3               db            ;PPU $0C00-$0FFF for MMC5 only
+CHRBank4               db            ;PPU $1000-$13FF
+CHRBank5               db            ;PPU $1400-$17FF
+CHRBank6               db            ;PPU $1800-$1BFF
+CHRBank7               db            ;PPU $1C00-$1FFF
 
 .ende
 

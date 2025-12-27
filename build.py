@@ -30,14 +30,18 @@ banks = [
 ]
 
 class BuildTarget:
-    def __init__(self, md5_hash_expected_hex, filename):
+    def __init__(self, md5_hash_expected_hex, filename, mapper, lnk_filename):
         self.md5_hash_expected_hex = md5_hash_expected_hex
         self.filename = filename
+        self.mapper = mapper
+        self.lnk_filename = lnk_filename
 
 build_targets = {
     "NES_NTSC": BuildTarget(
         md5_hash_expected_hex="d7da4a907be0012abca6625471ef2c9c",
-        filename="out/M1_NES_NTSC.nes",
+        filename="out/M1_NES_NTSC_MMC5.nes",
+        mapper="MMC5",
+        lnk_filename="linkfile_mmc5"
     ),
     #"NES_PAL": BuildTarget(
     #    md5_hash_expected_hex="442fcb92fce27cabdb7635bd35593d8a",
@@ -62,12 +66,12 @@ for bt, bto in build_targets.items():
     print('Assembling .asm files')
     for bank in banks:
         #run_or_exit("wla-6502 -h -w -D BUILDTARGET=\"" + bt + "\" -o out/" + bank + ".o -I SRC SRC/" + bank + ".asm", "Assembler Error.")
-        run_or_exit("wla-6502 -h -D BUILDTARGET=\"" + bt + "\" -o out/" + bank + ".o -I SRC SRC/" + bank + ".asm", "Assembler Error.")
+        run_or_exit(f"wla-6502 -h -D BUILDTARGET=\"{bt}\" -D BUILDTARGET_MAPPER=\"{bto.mapper}\" -o out/{bank}.o -I SRC SRC/{bank}.asm", "Assembler Error.")
     print('Success\n')
 
     print('Linking .o files')
     log_filename = "out/linkerlog_" + bt + ".txt"
-    completed_process = subprocess.run("wlalink -c -S SRC/linkfile " + bto.filename + " 2> " + log_filename, shell=True)
+    completed_process = subprocess.run(f"wlalink -c -S SRC/{bto.lnk_filename} {bto.filename} 2> {log_filename}", shell=True)
     if completed_process.returncode != 0:
         print("Linker Error. Here are the last few lines of " + log_filename)
         with open(log_filename, "r") as f:

@@ -911,7 +911,7 @@ TileBlastFrame10:
 
 TileAnim0:
 TileAnim1:
-    .byte $FF, NorfairBG/$400
+    .byte $FF, NorfairBG/$400, NorfairBG/$400+1, NorfairBG/$400+2, NorfairBG/$400+3
     .byte $00
 
 PalAnim0:

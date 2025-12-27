@@ -67,9 +67,9 @@ RandomNumbers: ;$C000
     lda RandomNumber1
     rts
 
-;-----------------------------------------------[ RESET ]--------------------------------------------
+;------------------------------------------[ Startup ]----------------------------------------------
 
-RESET:
+Startup:
     ;Disables interrupt.
     sei
     ldx #$FF                        ;X = $FF
@@ -79,8 +79,16 @@ RESET:
     lda #$00
     jsr MMCWritePrgBank                ;($C4FA)Swap to PRG bank #0 at $8000
 
-    lda #$80                        ;
-    sta $A001                       ;Enable MMC3 PRG RAM
+    ; Enable PRG RAM
+.if BUILDTARGET_MAPPER == "MMC3"
+    lda #$80
+    sta $A001
+.elif BUILDTARGET_MAPPER == "MMC5"
+    ldy #$02
+    sty $5102
+    dey
+    sty $5103
+.endif
 
 ;Clear RAM at $0000-$07FF.
     ;$0000 = #$0700
@@ -366,20 +374,13 @@ NMI:
         sta OAMDMA
 
         ;Set CHR banks.
+    .if BUILDTARGET_MAPPER == "MMC3"
         sty $8000
         lda CHRBank0
         sta $8001
         iny
         sty $8000
-        lda CHRBank1
-        sta $8001
-        iny
-        sty $8000
         lda CHRBank2
-        sta $8001
-        iny
-        sty $8000
-        lda CHRBank3
         sta $8001
         iny
         sty $8000
@@ -389,7 +390,32 @@ NMI:
         sty $8000
         lda CHRBank5
         sta $8001
-
+        iny
+        sty $8000
+        lda CHRBank6
+        sta $8001
+        iny
+        sty $8000
+        lda CHRBank7
+        sta $8001
+    .elif BUILDTARGET_MAPPER == "MMC5"
+        lda CHRBank0
+        sta $5120
+        lda CHRBank1
+        sta $5121
+        lda CHRBank2
+        sta $5122
+        lda CHRBank3
+        sta $5123
+        lda CHRBank4
+        sta $5124
+        lda CHRBank5
+        sta $5125
+        lda CHRBank6
+        sta $5126
+        lda CHRBank7
+        sta $5127
+    .endif
         ;($C215)Read both joypads.
         jsr ReadJoyPads
     LC103:
@@ -1237,9 +1263,20 @@ SetPPUMirror:
     lsr
     ;Remove all other bits.
     and #$01
+.if BUILDTARGET_MAPPER == "MMC3"
     ;Set the MMC3 nametable arrangement register.
     sta $A000
     rts
+.elif BUILDTARGET_MAPPER == "MMC5"
+    ;Set the MMC5 nametable arrangement register.
+    tax
+    lda @table,x
+    sta $5105
+    rts
+
+@table:
+    .byte $44, $50
+.endif
 
 PrepPPUMirror:
     lda MirrorCntrl                 ;Load MirrorCntrl into A.
@@ -1276,6 +1313,7 @@ SetBankToMainBank:
 
 MMCWritePrgBank:
     sta CurrentBank
+.if BUILDTARGET_MAPPER == "MMC3"
     ;Select bank at $8000-$9FFF
     lda #$06
     sta $8000
@@ -1292,6 +1330,13 @@ MMCWritePrgBank:
     adc #$01
     ;Switch bank to CurrentBank * 2 + 1 at $A000-$BFFF
     sta $8001
+.elif BUILDTARGET_MAPPER == "MMC5"
+    ;Select bank at $8000-$BFFF
+    lda CurrentBank
+    asl
+    ora #$81
+    sta $5115
+.endif
 RTS_C50F:
     rts
 
@@ -5100,7 +5145,7 @@ LDE60:
             clc
             adc #(SamusSuitlessGFX0-SamusSuitGFX0)/$400.b
         ++
-        sta CHRBank2
+        sta CHRBank4
         txa
     +
     asl                             ;*2. Frame pointers are two bytes.
@@ -11153,13 +11198,19 @@ UpdateTilesetAnim:
         lda ($00),y
     @tile_noReset:
     sta TileAnimDelay
-    ; get CHR bank
+    ; get CHR banks
     iny
     lda ($00),y
     sta CHRBank0
-    clc
-    adc #$02
+    iny
+    lda ($00),y
     sta CHRBank1
+    iny
+    lda ($00),y
+    sta CHRBank2
+    iny
+    lda ($00),y
+    sta CHRBank3
 
     iny
     sty TileAnimIndex
@@ -11205,6 +11256,20 @@ UpdateTilesetAnim:
     dey
     sty PalAnimDelay
     rts
+
+;-----------------------------------------------[ RESET ]--------------------------------------------
+
+; In MMC5, only $E000-$FFFF is fixed, and the PRG banking mode defaults to 4 8KB banks, so we set it here.
+RESET:
+.if BUILDTARGET_MAPPER == "MMC5"
+    ; PRG mode = 2 16KB banks
+    lda #$01
+    sta $5100
+    ; chr mode = 8 1KB CHR pages
+    lda #$03
+    sta $5101
+.endif
+    jmp Startup
 
 .ends
 
