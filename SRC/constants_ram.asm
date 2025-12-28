@@ -567,7 +567,30 @@ PPUCTRL_ZP             db   ;$FF     ;Data byte to be loaded into PPU control re
 
 ;--------------------------------------------[ Onepage ]--------------------------------------------
 
-PalRam                 = $0100       ;$0100 thru $011F
+.enum $0100 export
+
+PalRam                 ds $20        ;$0100 thru $011F
+
+CHRBank0               db            ;PPU $0000-$07FF for MMC3, PPU $0000-$03FF for MMC5
+CHRBank1               db            ;PPU $0400-$07FF for MMC5 only
+CHRBank2               db            ;PPU $0800-$0FFF for MMC3, $0800-$0BFF for MMC5
+CHRBank3               db            ;PPU $0C00-$0FFF for MMC5 only
+CHRBank4               db            ;PPU $1000-$13FF
+CHRBank5               db            ;PPU $1400-$17FF
+CHRBank6               db            ;PPU $1800-$1BFF
+CHRBank7               db            ;PPU $1C00-$1FFF
+
+StartingFromPassword   db
+
+TileAnimDelay          db
+TileAnimIndex          db
+
+PalAnimDelay           db
+PalAnimIndex           db
+
+SpiderOrientation      db            ;0=on floor, 1=on right wall, 2=on ceiling, 3=on left wall
+
+.ende
 
 ;-----------------------------------------[ Sprite RAM ]---------------------------------------------
 
@@ -744,8 +767,6 @@ EnExplosionAnimFrame   = $0407
 TileBlasts             instanceof TileBlast $D startfrom 0
 
 .ende
-
-TileBlastType          = $050A
 
 ;Samus projectiles extra RAM for wave beam
 ; 3 slots of 16 bytes each ($05D0-$05FF)
@@ -1014,29 +1035,6 @@ PasswordChar           ds $18
 ;----------------------------------------------------------------------------------------------------
 
 DecompressedRoomBuffer = $7000       ;$7000-$7130+
-
-.enum $7300
-
-StartingFromPassword   db
-
-TileAnimDelay          db
-TileAnimIndex          db
-
-PalAnimDelay           db
-PalAnimIndex           db
-
-SpiderOrientation      db            ;0=on floor, 1=on right wall, 2=on ceiling, 3=on left wall
-
-CHRBank0               db            ;PPU $0000-$07FF for MMC3, PPU $0000-$03FF for MMC5
-CHRBank1               db            ;PPU $0400-$07FF for MMC5 only
-CHRBank2               db            ;PPU $0800-$0FFF for MMC3, $0800-$0BFF for MMC5
-CHRBank3               db            ;PPU $0C00-$0FFF for MMC5 only
-CHRBank4               db            ;PPU $1000-$13FF
-CHRBank5               db            ;PPU $1400-$17FF
-CHRBank6               db            ;PPU $1800-$1BFF
-CHRBank7               db            ;PPU $1C00-$1FFF
-
-.ende
 
 .enum $7980 export
 .union
