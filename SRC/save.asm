@@ -42,6 +42,10 @@ FileSave:
     rts
 
 FileLoad:
+    ; clear starting from password flag
+    lda #$00
+    sta StartingFromPassword
+
     ; get save slot address
     lda CurrentSaveSlot
     asl
