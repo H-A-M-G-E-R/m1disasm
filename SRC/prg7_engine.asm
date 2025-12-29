@@ -3009,7 +3009,12 @@ CheckBombLaunch:
     sta ObjY,x
     lda #wa_LayBomb
     sta ObjAction,x
-    jsr SFX_BombLaunch
+    ; init props, disable collision with enemies
+    lda #$00
+    sta ProjectileProps,x
+    ; play sound
+    jmp SFX_BombLaunch
+
 @RTS:
     rts
 
@@ -3240,6 +3245,7 @@ InitBulletHorz:
     sta ProjectileRadX,y
     lda #$01
     sta ObjOnScreen,y
+    sta ProjectileProps,y ; init props, enable collision with enemies
     lda #$00
     sta ProjectileDieDelay,y ; make it last forever
     lda MissileToggle
@@ -3676,6 +3682,11 @@ BulletExplode:
     beq Exit5
     cpy #wa_BulletExplode
     beq Exit5
+    ; disable collision with enemies
+    lda ProjectileProps,x
+    and #~$01
+    sta ProjectileProps,x
+    ; set animation
     lda BulletExplodeAnimTbl-1,y
     jsr InitObjAnimIndex
     lda #wa_BulletExplode
@@ -3773,9 +3784,16 @@ BombCountdown:
     dec ProjectileDieDelay,x
     bne Lx085
     ; countdown is over, time to explode
+    ; enable collision with enemies
+    lda ProjectileProps,x
+    ora #$01
+    sta ProjectileProps,x
+    ; set anim
     lda #ObjAnim_BombExplode - ObjectAnimIndexTbl.b
     jsr InitObjAnimIndex
+    ; action = wa_BombExplode
     inc ObjAction,x
+    ; play sound
     jsr SFX_BombExplode
 Lx085:
     jmp DrawBomb
@@ -8219,14 +8237,10 @@ CollisionDetection:
                 ; try next projectile if this one is not active
                 lda ObjAction,y
                 beq Lx265
-                ; try next projectile if it is not a bullet, bomb or missile
-                cmp #wa_BulletExplode
-                bcc Lx264
-                cmp #wa_BombExplode
-                beq Lx264
-                cmp #wa_Missile
-                bne Lx265
-                Lx264:
+                ; try next projectile if it isn't tangible
+                lda ProjectileProps,y
+                and #$01
+                beq Lx265
                     ; projectile is of the right type
                     ; hit mellow if they collided
                     jsr CollisionDetectionMellow_CheckWithObjectYSlot
@@ -8296,14 +8310,10 @@ Lx269:
         Lx271:
             lda ObjAction,y  ; is it active?
             beq Lx273            ; branch if not
-            cmp #wa_BulletExplode
-            bcc Lx272
-            cmp #wa_BombExplode
-            beq Lx272
-            cmp #wa_Missile
-            bne Lx273
+            lda ProjectileProps,y
+            and #$01
+            beq Lx273
             ; check if enemy is actually hit
-            Lx272:
                 jsr CollisionDetectionEnemy_CheckWithObjectYSlot
                 jsr CollisionDetectionEnemy_ReactToCollisionWithProjectile
             Lx273:

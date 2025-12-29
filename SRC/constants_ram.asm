@@ -697,6 +697,7 @@ ProjectileAnimFrame    = $0303   ;*2 = Index into FramePtrTable for current anim
 ProjectileAnimDelay    = $0304   ;Number of frames to delay between animation frames.
 ProjectileAnimResetIndex = $0305   ;Restart index-1 when AnimIndex finished with last frame.
 ProjectileAnimIndex    = $0306   ;Current index into ObjectAnimIndexTbl.
+ProjectileProps        = $0307   ;bit0 set: can collide with enemies
 ProjectileIsHit        = $030A
 ProjectileHi           = $030C   ;0=Object on nametable 0, 1=Object on nametable 3.
 ProjectileDieDelay     = $030F   ;delay until short beam projectile dies
