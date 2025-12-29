@@ -1988,8 +1988,11 @@ SetCurrentMusic:
 ;--------------------------------------[ Update Samus ]----------------------------------------------
 
 UpdateSamus:
+    ;Don't ignore a solid enemy when moving Samus.
+    ldx #$FF
+    stx MoveSamus_IgnoreSolidEnemyIndex
     ;Samus data is located at index #$00.
-    ldx #$00
+    inx ;x=0.
     stx PageIndex
     ;Indicate Samus is the object being updated.
     inx ;x=1.
@@ -4084,6 +4087,9 @@ SamusCollisionWithSolidEntities: ;($D976)
         lda EnsExtra.0.status,x
         beq @notOnEnemy_sec
         bmi @notOnEnemy_sec
+        ; branch if enemy is being ignored
+        cpx MoveSamus_IgnoreSolidEnemyIndex
+        beq @notOnEnemy_sec
         cmp #enemyStatus_Frozen
         beq @enemyIsSolid
             cmp #enemyStatus_Explode
@@ -8867,6 +8873,10 @@ UpdateEnemy: ;LF351
         jsr UpdateEnemy_CheckIfVisible
     @endIf:
     jsr UpdateEnemy_UpdateEnData05Bit6
+    ; Don't ignore a solid enemy when moving Samus.
+    lda #$FF
+    sta MoveSamus_IgnoreSolidEnemyIndex
+
     lda EnsExtra.0.status,x
     sta EnemyStatusPreAI
     cmp #enemyStatus_Hurt+1.b

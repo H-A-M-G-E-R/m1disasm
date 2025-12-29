@@ -512,6 +512,8 @@ SkreeProjectiles       instanceof SkreeProjectile 4 startfrom 0
     KraidRidleyPresent     db        ;#$01=Kraid/Ridley present, #$00=Kraid/Ridley not present.
 
     MoveSamusUp_IsUnrollCheck db
+    MoveSamus_IgnoreSolidEnemyIndex db   ;Used when moving Samus on a solid enemy,-->
+                                           ;to make her not fall off when it moves up or down.
 
     AreaChangePending      db
 .nextu

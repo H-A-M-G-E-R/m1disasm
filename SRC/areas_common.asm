@@ -940,6 +940,16 @@ CommonJump_EnemyGetDeltaX_UsingAcceleration:
 ; Those checks below prevent the enemy from going to unloaded rooms.
 EnemyMoveOnePixelUp:
     ldx PageIndex
+    lda EnsExtra2.0.props2F,x
+    and #$04
+    beq +
+        stx MoveSamus_IgnoreSolidEnemyIndex
+        lda #$00
+        sta PageIndex
+        jsr MoveSamusUp
+        ldx MoveSamus_IgnoreSolidEnemyIndex
+        stx PageIndex
+    +
     ; check for collision if top boundary is at a block boundary
     lda EnY,x
     sec
@@ -1009,6 +1019,16 @@ RTS_844A:
 ; Down movement related ?
 EnemyMoveOnePixelDown:
     ldx PageIndex
+    lda EnsExtra2.0.props2F,x
+    and #$04
+    beq +
+        stx MoveSamus_IgnoreSolidEnemyIndex
+        lda #$00
+        sta PageIndex
+        jsr MoveSamusDown
+        ldx MoveSamus_IgnoreSolidEnemyIndex
+        stx PageIndex
+    +
     ; check for collision if bottom boundary is at a block boundary
     lda EnY,x
     clc
@@ -1080,6 +1100,16 @@ RTS_84A6:
 ; Left movement related
 EnemyMoveOnePixelLeft:
     ldx PageIndex
+    lda EnsExtra2.0.props2F,x
+    and #$04
+    beq +
+        stx MoveSamus_IgnoreSolidEnemyIndex
+        lda #$00
+        sta PageIndex
+        jsr MoveSamusLeft
+        ldx MoveSamus_IgnoreSolidEnemyIndex
+        stx PageIndex
+    +
     ; check for collision if left boundary is at a block boundary
     lda EnX,x
     sec
@@ -1147,6 +1177,16 @@ RTS_84FD:
 ; Right movement related
 EnemyMoveOnePixelRight:
     ldx PageIndex
+    lda EnsExtra2.0.props2F,x
+    and #$04
+    beq +
+        stx MoveSamus_IgnoreSolidEnemyIndex
+        lda #$00
+        sta PageIndex
+        jsr MoveSamusRight
+        ldx MoveSamus_IgnoreSolidEnemyIndex
+        stx PageIndex
+    +
     ; check for collision if right boundary is at a block boundary
     lda EnX,x
     clc
