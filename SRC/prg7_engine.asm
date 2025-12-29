@@ -8282,8 +8282,11 @@ Lx269:
         lda EnsExtra.0.pose,x
         beq NextEnemy
         
-        ; skip projectile collision if enemy is a pickup
+        ; skip projectile collision if enemy ignores projectile collision or is a pickup
         jsr GetEnemyXSlotPosition
+        lda EnsExtra2.0.props2F,x
+        and #$08
+        bne Lx274
         lda EnsExtra.0.status,x
         cmp #enemyStatus_Pickup
         beq Lx274
@@ -8311,11 +8314,14 @@ Lx269:
             tay
             bne Lx271
     Lx274:
-        ldy #$00
-        ; check next enemy if samus has i-frames or in door, unless it's a pickup (fix added by me)
+        ; check next enemy if ignores non-solid samus collision, samus has i-frames or in door,
+        ; unless it's a pickup (fix added by me)
         lda EnsExtra.0.status,x
         cmp #enemyStatus_Pickup
         beq +
+        lda EnsExtra2.0.props2F,x
+        and #$10
+        bne NextEnemy
         lda SamusInvincibleDelay
         ora DoorEntryStatus
         bne NextEnemy
@@ -8324,6 +8330,7 @@ Lx269:
         jsr IsSamusDead
         beq NextEnemy
         ; enemy collide with samus
+        ldy #$00
         jsr CollisionDetectionEnemy_CheckWithObjectYSlot
         jsr CollisionDetectionEnemy_ReactToCollisionWithSamus
         NextEnemy:

@@ -114,6 +114,9 @@
     props2F                db ;bit0 set: process offscreen
                                 ;bit1 set: enemy is solid (regardless if it's frozen or not)
                                 ;bit2 set: Samus standing on enemy (only if enemy is solid)
+                                  ;i recommend setting bit 4 of props2F to save cycles
+                                ;bit3 set: ignore projectile collision
+                                ;bit4 set: ignore non-solid samus collision (unless it's a pickup)
                                 ;bit6 set: h-flip
 .endst
 
