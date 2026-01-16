@@ -892,23 +892,6 @@ EnProjectileMovement3:
     SignMagSpeed $50,  2,  7
     .byte $FF
 
-CommonEnemyJump_00_01_02:
-    lda EnemyStatusPreAI
-    cmp #enemyStatus_Resting
-    beq @resting
-    cmp #enemyStatus_Explode
-    beq @explode
-        ; enemy default
-        lda $00
-        jmp CommonJump_00
-    @resting:
-        ; enemy resting
-        lda $01
-        jmp CommonJump_01
-    @explode:
-        ; enemy explode
-        jmp CommonJump_02
-
 ;-------------------------------------------------------------------------------
 
 .include "enemies/sidehopper.asm"

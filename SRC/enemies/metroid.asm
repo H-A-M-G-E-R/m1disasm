@@ -20,8 +20,10 @@ MetroidAIRoutine:
     ; branch if metroid is exploding
     lda EnsExtra.0.status,x
     cmp #enemyStatus_Explode
-    beq CommonEnemyJump_00_01_02
-    
+    bne +
+    jmp CommonEnemyJump_00_01_02
+
+    +
     ; branch if enemy is not initing
     lda EnsExtra.0.pose,x
     bne +

@@ -128,18 +128,18 @@ ChooseEnemyAIRoutine:
         .word SwooperAIRoutine01 ; 01 - swooper targetting samus
         .word SidehopperFloorAIRoutine ; 02 - dessgeegas
         .word SidehopperCeilingAIRoutine ; 03 - ceiling dessgeegas
-        .word RemoveEnemy_ ; 04 - disappears
-        .word RemoveEnemy_ ; 05 - same as 4
+        .word RemoveEnemy ; 04 - disappears
+        .word RemoveEnemy ; 05 - same as 4
         .word CrawlerAIRoutine ; 06 - crawler
         .word PipeBugAIRoutine ; 07 - zebbo
-        .word RemoveEnemy_ ; 08 - same as 4
+        .word RemoveEnemy ; 08 - same as 4
         .word RidleyAIRoutine ; 09 - ridley
         .word RidleyFireballAIRoutine ; 0A - ridley fireball
-        .word RemoveEnemy_ ; 0B - same as 4
+        .word RemoveEnemy ; 0B - same as 4
         .word MultiviolaAIRoutine ; 0C - bouncy orbs
-        .word RemoveEnemy_ ; 0D - same as 4
+        .word RemoveEnemy ; 0D - same as 4
         .word PolypAIRoutine ; 0E - polyp (unused)
-        .word RemoveEnemy_ ; 0F - same as 4
+        .word RemoveEnemy ; 0F - same as 4
 
 EnemyDeathAnimIndex:
     .byte EnAnim_HoltzExplode - EnAnimTable ; 00 - swooper has not seen samus
@@ -755,29 +755,6 @@ EnProjectileMovement3:
     SignMagSpeed $05,  2,  4
     SignMagSpeed $50,  2,  7
     .byte $FF
-
-;-------------------------------------------------------------------------------
-RemoveEnemy_:
-    lda #$00
-    sta EnsExtra.0.status,x
-    rts
-
-CommonEnemyJump_00_01_02:
-    lda EnemyStatusPreAI
-    cmp #enemyStatus_Resting
-    beq @resting
-    cmp #enemyStatus_Explode
-    beq @explode
-        ; enemy default
-        lda $00
-        jmp CommonJump_00
-    @resting:
-        ; enemy resting
-        lda $01
-        jmp CommonJump_01
-    @explode:
-        ; enemy explode
-        jmp CommonJump_02
 
 ;-------------------------------------------------------------------------------
 

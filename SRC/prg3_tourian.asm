@@ -134,19 +134,19 @@ ChooseEnemyAIRoutine:
         .word MetroidAIRoutine ; 00 - red metroid
         .word MetroidAIRoutine ; 01 - green metroid
         .word L9A27 ; 02 - i dunno but it takes 30 damage with varia
-        .word RemoveEnemy_ ; 03 - disappears
+        .word RemoveEnemy ; 03 - disappears
         .word RinkaAIRoutine ; 04 - rinka
-        .word RemoveEnemy_ ; 05 - same as 3
-        .word RemoveEnemy_ ; 06 - same as 3
-        .word RemoveEnemy_ ; 07 - same as 3
-        .word RemoveEnemy_ ; 08 - same as 3
-        .word RemoveEnemy_ ; 09 - same as 3
-        .word RemoveEnemy_ ; 0A - same as 3
-        .word RemoveEnemy_ ; 0B - same as 3
-        .word RemoveEnemy_ ; 0C - same as 3
-        .word RemoveEnemy_ ; 0D - same as 3
-        .word RemoveEnemy_ ; 0E - same as 3
-        .word RemoveEnemy_ ; 0F - same as 3
+        .word RemoveEnemy ; 05 - same as 3
+        .word RemoveEnemy ; 06 - same as 3
+        .word RemoveEnemy ; 07 - same as 3
+        .word RemoveEnemy ; 08 - same as 3
+        .word RemoveEnemy ; 09 - same as 3
+        .word RemoveEnemy ; 0A - same as 3
+        .word RemoveEnemy ; 0B - same as 3
+        .word RemoveEnemy ; 0C - same as 3
+        .word RemoveEnemy ; 0D - same as 3
+        .word RemoveEnemy ; 0E - same as 3
+        .word RemoveEnemy ; 0F - same as 3
 
 
 EnemyDeathAnimIndex:
@@ -711,28 +711,6 @@ EnemyEnProjectileMovement2:
 
 EnemyEnProjectileMovement3:
     .byte $FF
-
-RemoveEnemy_:
-    lda #$00
-    sta EnsExtra.0.status,x
-    rts
-
-CommonEnemyJump_00_01_02:
-    lda EnemyStatusPreAI
-    cmp #enemyStatus_Resting
-    beq @resting
-    cmp #enemyStatus_Explode
-    beq @explode
-        ; enemy default
-        lda $00
-        jmp CommonJump_00
-    @resting:
-        ; enemy resting
-        lda $01
-        jmp CommonJump_01
-    @explode:
-        ; enemy explode
-        jmp CommonJump_02
 
 ;-------------------------------------------------------------------------------
 ; Metroid Routine
