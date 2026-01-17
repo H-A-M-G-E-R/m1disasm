@@ -182,7 +182,7 @@ KraidUpdateProjectile:
     .ENDIF
     ; store kraid's position in temp
     ldx #$00
-    jsr StoreEnemyPositionToTemp_
+    jsr StoreEnemyPositionToTemp
     .IF BANK != 1
         ; pull x from stack
         pla
@@ -200,34 +200,18 @@ KraidUpdateProjectile:
     bcc KraidUpdateProjectile_Exit
     ; set projectile status to enemyStatus_Resting if it was enemyStatus_NoEnemy
     lda EnsExtra.0.status,x
-    bne LoadEnemyPositionFromTemp_
+    bne @loadPosition
     inc EnsExtra.0.status,x
     ; Flag enemy init
     lda #$00
     sta EnsExtra.0.pose,x
     sta EnsExtra2.0.props2F,x
     ; save as projectile's position
-    ; fallthrough
 
-LoadEnemyPositionFromTemp_:
-    lda Temp08_PositionY
-    sta EnY,x
-    lda Temp09_PositionX
-    sta EnX,x
-    lda Temp0B_PositionHi
-    and #$01
-    sta EnsExtra.0.hi,x
+@loadPosition:
+    jmp LoadEnemyPositionFromTemp
 
 KraidUpdateProjectile_Exit:
-    rts
-
-StoreEnemyPositionToTemp_:
-    lda EnY,x
-    sta Temp08_PositionY
-    lda EnX,x
-    sta Temp09_PositionX
-    lda EnsExtra.0.hi,x
-    sta Temp0B_PositionHi
     rts
 
 KraidProjectileOffsetY:

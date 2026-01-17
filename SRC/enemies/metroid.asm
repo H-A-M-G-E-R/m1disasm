@@ -242,7 +242,7 @@ L98A9:
     ; add offset to Samus position
     jsr CommonJump_ApplySpeedToPosition
     ; set as metroid position
-    jsr LoadEnemyPositionFromTemp_
+    jsr LoadEnemyPositionFromTemp
 
 L9967:
     ; Don't suck Samus's energy if metroid isn't fully attached to Samus
@@ -298,17 +298,6 @@ StoreSamusPositionToTemp:
     sta Temp08_PositionY
     lda ObjHi
     sta Temp0B_PositionHi
-    rts
-
-LoadEnemyPositionFromTemp_:
-    ; save function result as enemy position
-    lda Temp09_PositionX
-    sta EnX,x
-    lda Temp08_PositionY
-    sta EnY,x
-    lda Temp0B_PositionHi
-    and #$01
-    sta EnsExtra.0.hi,x
     rts
 
 GetMetroidAccel:

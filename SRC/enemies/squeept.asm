@@ -67,7 +67,7 @@ L9A88:
     sta EnsExtra.0.resetAnimIndex,x
     
     ; apply speed
-    jsr StoreEnemyPositionToTemp_
+    jsr StoreEnemyPositionToTemp
     jsr CommonJump_ApplySpeedToPosition
     
     ; load lava y position
@@ -88,7 +88,7 @@ L9A88:
         ora #$20
         sta EnData05,x
     L9AC7:
-    jsr LoadEnemyPositionFromTemp_
+    jsr LoadEnemyPositionFromTemp
 
 SqueeptExit_Resting:
     ; squeept is resting (jumping and falling)

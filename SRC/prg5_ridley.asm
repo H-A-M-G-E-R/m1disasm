@@ -77,7 +77,7 @@ SpecItmsTblPtr:
     .byte $60, $EA, $EA
 
 AreaRoutine:
-    jmp RTS_Polyp                       ;Area specific routine.
+    .byte $60, $EA, $EA ; Just an RTS
 
 AreaMinibossMusic:
     .byte music_Tourian
@@ -776,25 +776,6 @@ EnProjectileMovement3:
 ;-------------------------------------------------------------------------------
 
 .include "enemies/ridley.asm"
-
-StoreEnemyPositionToTemp_:
-    lda EnY,x
-    sta Temp08_PositionY
-    lda EnX,x
-    sta Temp09_PositionX
-    lda EnsExtra.0.hi,x
-    sta Temp0B_PositionHi
-    rts
-
-LoadEnemyPositionFromTemp_:
-    lda Temp0B_PositionHi
-    and #$01
-    sta EnsExtra.0.hi,x
-    lda Temp08_PositionY
-    sta EnY,x
-    lda Temp09_PositionX
-    sta EnX,x
-    rts
 
 ;-------------------------------------------------------------------------------
 ; Bouncy Orb Routine

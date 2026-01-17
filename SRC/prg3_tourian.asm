@@ -900,7 +900,7 @@ Cannon_ShootEnProjectile:
     ; apply offset to cannon position
     jsr CommonJump_ApplySpeedToPosition
     ; use as projectile position
-    jsr LoadEnemyPositionFromTemp_
+    jsr LoadEnemyPositionFromTemp
     ldx CannonIndex
     rts
 

@@ -77,7 +77,7 @@ SpecItmsTblPtr:
     .byte $60, $EA, $EA
 
 AreaRoutine: ; L95C3
-    jmp AreaRoutineStub ; Just an RTS
+    .byte $60, $EA, $EA ; Just an RTS
 
 AreaMinibossMusic:
     .byte music_Tourian
@@ -1082,12 +1082,6 @@ EnProjectileMovement3:
 ;-------------------------------------------------------------------------------
 ; Brinstar Kraid Routine
 .include "enemies/kraid.asm"
-; Note: For this bank the functions StorePositionToTemp and LoadPositionFromTemp
-;  are in are in kraid.asm. Extract those functions from that file if you plan
-;  on removing it.
-
-AreaRoutineStub: ;L9D35
-    rts
 
 ; Strings pointed to by TileBlastFramePtrTable
 TileBlastFrame00:

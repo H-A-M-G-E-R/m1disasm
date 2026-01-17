@@ -77,7 +77,7 @@ SpecItmsTblPtr:
     .byte $60, $EA, $EA
 
 AreaRoutine:
-    jmp AreaRoutineStub ; Just an RTS
+    .byte $60, $EA, $EA ; Just an RTS
 
 AreaMinibossMusic:
     .byte music_Tourian
@@ -126,20 +126,20 @@ ChooseEnemyAIRoutine:
     jsr CommonJump_ChooseRoutine
         .word SidehopperFloorAIRoutine ; 00 - sidehopper
         .word SidehopperCeilingAIRoutine ; 01 - ceiling sidehopper
-        .word AreaRoutineStub ; 02 - unused enemy type that doesn't properly clear itself
+        .word RemoveEnemy ; 02 - unused enemy type that doesn't properly clear itself
         .word RipperAIRoutine ; 03 - ripper
         .word SkreeAIRoutine ; 04 - skree
         .word CrawlerAIRoutine ; 05 - crawler
-        .word AreaRoutineStub ; 06 - same as 2
+        .word RemoveEnemy ; 06 - same as 2
         .word PipeBugAIRoutine ; 07 - geega
         .word KraidAIRoutine ; 08 - kraid
         .word KraidLintAIRoutine ; 09 - kraid lint
         .word KraidNailAIRoutine ; 0A - kraid nail
-        .word AreaRoutineStub ; 0B - same as 2
-        .word AreaRoutineStub ; 0C - same as 2
-        .word AreaRoutineStub ; 0D - same as 2
-        .word AreaRoutineStub ; 0E - same as 2
-        .word AreaRoutineStub ; 0F - same as 2
+        .word RemoveEnemy ; 0B - same as 2
+        .word RemoveEnemy ; 0C - same as 2
+        .word RemoveEnemy ; 0D - same as 2
+        .word RemoveEnemy ; 0E - same as 2
+        .word RemoveEnemy ; 0F - same as 2
 
 EnemyDeathAnimIndex:
     .byte EnAnim_SidehopperFloorExplode - EnAnimTable ; 00 - sidehopper
@@ -916,12 +916,6 @@ EnProjectileMovement3:
 ;-------------------------------------------------------------------------------
 ; Kraid Routine
 .include "enemies/kraid.asm"
-; Note: For this bank the functions StorePositionToTemp and LoadPositionFromTemp
-;  are in are in kraid.asm. Extract those functions from that file if you plan
-;  on removing it.
-
-AreaRoutineStub:
-    rts
 
 ; What's this table?
 TileBlastFrame00:
