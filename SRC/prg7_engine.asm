@@ -3286,9 +3286,9 @@ InitBulletHorz:
     jmp SelectSamusPal      ; update Samus' palette to reflect this
 
 @missileAnims:
-    .byte ObjAnim_MissileRight - ObjectAnimIndexTbl
-    .byte ObjAnim_MissileLeft - ObjectAnimIndexTbl
-    .byte ObjAnim_MissileUp - ObjectAnimIndexTbl
+    .byte ObjAnim_ChargedShotRight - ObjectAnimIndexTbl
+    .byte ObjAnim_ChargedShotRight - ObjectAnimIndexTbl
+    .byte ObjAnim_ChargedShotUp - ObjectAnimIndexTbl
 
 @beam:
     ; init die delay if no long beam
@@ -3567,6 +3567,13 @@ CheckBulletStat:
     beq Lx069
         jsr BulletExplode
 DrawBullet:
+        ldy ProjectileWaveDir,x
+        dey
+        bne +
+            lda ObjectCntrl
+            ora #OAMDATA_HFLIP
+            sta ObjectCntrl
+        +
         lda #$01
         jsr AnimDrawObject
     Lx069:
@@ -3699,6 +3706,9 @@ UpdateBulletExplode:
     jmp DrawBullet
 
 UpdateBullet_ExplodeIfHitSprite:
+    lda ObjAction,x
+    cmp #wa_Missile
+    beq Exit5
     ; exit if projectile didn't hit anything
     lda ProjectileIsHit,x
     beq Exit5

@@ -460,8 +460,11 @@ EnFrame_SmallEnergyPickup:
     .byte $80
 
 EnFrame_BigEnergyPickup:
-    .byte $04,$04
-    .byte $FC,$18+CFG_NUM_SAMUS_TILES,$20,$FC
+    .byte $08,$08
+    .byte $F8,$79,$00,$F8
+    .byte $F8,$7A,$00,$00
+    .byte $00,$7B,$00,$F8
+    .byte $00,$7C,$00,$00
     .byte $80
 
 EnFrame_Memu0:

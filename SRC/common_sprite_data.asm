@@ -159,6 +159,12 @@ ObjAnim_WaveIceBeam: ;$7D
 ObjAnim_SamusSpider:
     .byte _id_ObjFrame_SamusSpider0, _id_ObjFrame_SamusSpider1, _id_ObjFrame_SamusSpider2, _id_ObjFrame_SamusSpider3, $FF
 
+ObjAnim_ChargedShotRight:
+    .byte _id_ObjFrame_ChargedShotRight0, _id_ObjFrame_ChargedShotRight1, $FF
+
+ObjAnim_ChargedShotUp:
+    .byte _id_ObjFrame_ChargedShotUp0, _id_ObjFrame_ChargedShotUp1, $FF
+
 ;----------------------------[ Sprite drawing pointer tables ]--------------------------------------
 
 ;The above animation pointers provide an index into the following table
@@ -237,6 +243,10 @@ ObjFramePtrTable:
     PtrTableEntry ObjFramePtrTable, ObjFrame_MissileExplode2
     PtrTableEntry ObjFramePtrTable, ObjFrame_IceBullet
     PtrTableEntry ObjFramePtrTable, ObjFrame_DoorOpened
+    PtrTableEntry ObjFramePtrTable, ObjFrame_ChargedShotRight0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_ChargedShotRight1
+    PtrTableEntry ObjFramePtrTable, ObjFrame_ChargedShotUp0
+    PtrTableEntry ObjFramePtrTable, ObjFrame_ChargedShotUp1
 
 SamusCHRBankTable:
     .byte SamusSuitGFX0/$400 ; ObjFrame_SamusRun0
@@ -1630,6 +1640,38 @@ ObjFrame_MissileExplode2:
     .byte $FC,$16+CFG_NUM_SAMUS_TILES,$40,$10
     .byte $0C,$17+CFG_NUM_SAMUS_TILES,$C0,$F0
     .byte $0C,$17+CFG_NUM_SAMUS_TILES,$C0,$08
+    .byte $80
+
+ObjFrame_ChargedShotRight0:
+    .byte $08,$08
+    .byte $F8,$6A,$00,$F8
+    .byte $F8,$6B,$00,$00
+    .byte $00,$6C,$00,$F8
+    .byte $00,$6D,$00,$00
+    .byte $80
+
+ObjFrame_ChargedShotRight1:
+    .byte $08,$08
+    .byte $F8,$6E,$00,$F8
+    .byte $F8,$6F,$00,$00
+    .byte $00,$6E,$80,$F8
+    .byte $00,$6F,$80,$00
+    .byte $80
+
+ObjFrame_ChargedShotUp0:
+    .byte $08,$08
+    .byte $F8,$70,$00,$F8
+    .byte $F8,$71,$00,$00
+    .byte $00,$72,$00,$F8
+    .byte $00,$73,$00,$00
+    .byte $80
+
+ObjFrame_ChargedShotUp1:
+    .byte $08,$08
+    .byte $F8,$74,$00,$F8
+    .byte $00,$75,$00,$F8
+    .byte $F8,$74,$40,$00
+    .byte $00,$75,$40,$00
     .byte $80
 
 .if CFG_UNIQUE_LEFT_FACING_SAMUS_FRAMES != 0

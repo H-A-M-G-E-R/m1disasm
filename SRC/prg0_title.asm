@@ -4840,13 +4840,14 @@ LE14A:
     jsr Adiv16
     sta $03                         ;Temp store tank count.
     ldy #$00                        ;Tank index.
-    lda #$1D+CFG_NUM_SAMUS_TILES.b  ;"Full energy tank" tile.
+    lda #$5C                        ;"Full energy tank" tile.
     sta $00                         ;
     lda Health+1                    ;
     jsr Adiv16                      ;($C2BF)/16. A contains # of full energy tanks.
     sta $01                         ;Storage of full tanks.
     bne AddTanks                    ;Branch if at least 1 tank is full.
-    dec $00                         ;Else switch to "empty energy tank" tile.
+    lda #$4A                        ;Else switch to "empty energy tank" tile.
+    sta $00
 
 AddTanks:
     ;Add energy tank to Samus' data display.
@@ -4856,7 +4857,7 @@ AddTanks:
     lda $00
     sta SpriteRAM.0.tileID,x
     ;Palette #.
-    lda #$01
+    lda #$00
     sta SpriteRAM.0.attrib,x
     ;X coord.
     lda EnergyTankXPositions,y
@@ -4868,7 +4869,8 @@ AddTanks:
     iny
     dec $01                         ;Any more full energy tanks left?-->
     bne LE16C                           ;If so, then branch.-->
-        dec $00                         ;Otherwise, switch to "empty energy tank" tile.
+        lda #$4A                        ;Otherwise, switch to "empty energy tank" tile.
+        sta $00
     LE16C:
     dec $03                         ;done all tanks?-->
     bne AddTanks                    ;if not, loop to do another.
