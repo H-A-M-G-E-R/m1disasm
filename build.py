@@ -39,7 +39,7 @@ class BuildTarget:
 build_targets = {
     "NES_NTSC": BuildTarget(
         md5_hash_expected_hex="d7da4a907be0012abca6625471ef2c9c",
-        filename="out/M1_NES_NTSC_MMC5.nes",
+        filename="out/doropie_in_m1.nes",
         mapper="MMC5",
         lnk_filename="linkfile_mmc5"
     ),

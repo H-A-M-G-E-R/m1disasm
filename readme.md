@@ -43,3 +43,5 @@ This is possible by using the MMC3 mapper to switch the upper 64 tiles on the fl
 Spider ball sprite by BBLIR from The Spriters Resource: https://www.spriters-resource.com/custom_edited/metroidcustoms/sheet/84367/
 
 Left-facing Samus sprites by hansungkee: https://www.spriters-resource.com/profile/hansungkee/
+
+Doropie/Francesca from Magical Kid's Doropie/The Krion Conquest by Vic Tokai

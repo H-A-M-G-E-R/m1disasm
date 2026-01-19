@@ -2058,8 +2058,8 @@ SamusStand:
         beq LCC54
         ; turn around
         sta SamusDir
-        lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
-        jsr SetSamusNextAnim
+        ;lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
+        ;jsr SetSamusNextAnim
     LCC54:
     ;Load proper Samus status from table below.
     tax
@@ -2083,7 +2083,7 @@ LCC5B:
         lda #sa_Jump
         sta ObjAction
     LCC6E:
-    lda #$04                        ;Prepare to set animation delay to 4 frames.
+    lda #15                         ;Prepare to set animation delay to 15 frames.
     jsr SetSamusData                ;($CD6D)Set Samus control data and animation.
     lda ObjAction                   ;
     cmp #sa_05                      ;Is Samus action not in this table?-->
@@ -2117,7 +2117,7 @@ RTS_CC9X:
     rts
 
 SetSamusRun:
-    lda #$09
+    lda #$08
     sta WalkSoundDelay
     ldx #$00
     lda ObjAnimResetIndex
@@ -2195,7 +2195,7 @@ SamusRun:
     dec WalkSoundDelay
     bne samL09
         ; # of frames till next walk sound trigger
-        lda #$09
+        lda #$10
         sta WalkSoundDelay
         jsr SFX_SamusWalk
     samL09:
@@ -2228,11 +2228,11 @@ SamusRun:
         beq SetSamusData_3FrameAnimDelay
         ; turn around
         sta SamusDir
-        lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
-        jsr SetSamusNextAnim
+        ;lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
+        ;jsr SetSamusNextAnim
     SetSamusData_3FrameAnimDelay:
-    ; animate every 3 frames
-    lda #$03
+    ; animate every 8 frames
+    lda #$08
     ; fallthrough
 
 ;---------------------------------------[ Set Samus data ]-------------------------------------------
@@ -2424,6 +2424,15 @@ CheckHealthStatus: ;($CDFA)
     ; X speed = A
     sta ObjSpeedX
 Lx009:
+    ; set knockback anim
+    lda SamusInvincibleDelay
+    cmp #30
+    bcc +
+        lda #_id_ObjFrame_DoropieHurt.b
+        sta ObjAnimFrame
+        lda #2
+        sta ObjAnimDelay
+    +
     ; check if samus should become invisible for her i-frames blinking
     ; exit if samus was hit by a bomb
     lda SamusKnockbackIsBomb77
@@ -2434,10 +2443,13 @@ Lx009:
     bne CheckHealthBeep
 
     ; make samus invisible
-    tay
-    sty ObjAnimDelay
-    ldy #$F7
-    sty ObjAnimFrame
+    ;tay
+    ;sty ObjAnimDelay
+    ;ldy #$F7
+    ;sty ObjAnimFrame
+    lda ObjectCntrl
+    ora #$01
+    sta ObjectCntrl
 
 CheckHealthBeep:
     ; beep if health < 17
@@ -2712,9 +2724,8 @@ SetSamusJump:
     ; - 1 to get ObjAnim_SamusJumpTransition and ObjAnim_SamusJumpPntUpTransition respectively
     dey
     sty ObjAnimIndex
-    lda #$04
-    sta ObjAnimDelay
     lda #$00
+    sta ObjAnimDelay
     sta SamusJumpDsplcmnt
     lda #$FC
     sta ObjSpeedY
@@ -2849,10 +2860,19 @@ SetSamusRoll:
     ldx SamusDir
     lda #ObjAnim_SamusRoll - ObjectAnimIndexTbl.b
     sta ObjAnimResetIndex
-    lda #ObjAnim_SamusRunJump - ObjectAnimIndexTbl.b
     sta ObjAnimIndex
     lda RunAccelerationTbl,x
     sta SamusAccelX
+    ; move Samus 8 pixels down
+    ldx #$00
+    jsr StoreObjectPositionToTemp
+    stx ObjAnimDelay
+    stx Temp05_SpeedX
+    lda #$0C-$08
+    sta Temp04_SpeedY
+    jsr ApplySpeedToPosition
+    jsr LoadObjectPositionFromTemp
+
     jmp SFX_SamusBall
 
 Lx030:
@@ -2875,15 +2895,15 @@ SamusRoll:
     bne Lx032     ; branch if yes
         ;break out of "ball mode"
         lda ObjRadY
-        cmp #$07
-        bne Lx032
+        cmp #$08
+        bne ++
         sta MoveSamusUp_IsUnrollCheck
         lda ObjY
         pha
         lda ObjHi
         pha
         ; branch if not possible to stand up
-        lda #($0F-$07)*2
+        lda #($0C-$08)*2
         sta ObjectCounter
         -
             jsr MoveSamusUp
@@ -2901,14 +2921,15 @@ SamusRoll:
         stx MoveSamusUp_IsUnrollCheck
         jsr StoreObjectPositionToTemp
         stx Temp05_SpeedX
-        lda #-($0F-$07)
+        lda #-($0C-$08)
         sta Temp04_SpeedY
         jsr ApplySpeedToPosition
         jsr LoadObjectPositionFromTemp
+        ++
         jsr SetSamusStand
         ; set unroll anim
-        lda #ObjAnim_SamusUnroll - ObjectAnimIndexTbl.b
-        sta ObjAnimIndex
+        ;lda #ObjAnim_SamusUnroll - ObjectAnimIndexTbl.b
+        ;sta ObjAnimIndex
         jsr StopVertMovement
         ; unroll anim for 4 frames
         lda #$04
@@ -2950,8 +2971,8 @@ SamusRoll:
             ; not pressing right or left, stop
             jsr StopHorzMovement
         Lx034:
-        ; animate every 2 frames
-        lda #$02
+        ; animate every 15 frames
+        lda #15
     LD144:
     jmp SetSamusData                ;($CD6D)Set Samus control data and animation.
 
@@ -2966,10 +2987,6 @@ StopVertMovement: ;($D147)
 ; This routine is called only when Samus is rolled into a ball.
 
 CheckBombLaunch:
-    ; exit if Samus doesn't have Bombs
-    lda SamusGear
-    lsr
-    bcc @RTS
     ; move status of FIRE button to bit 7
     lda Joy1Change
     ora Joy1Retrig
@@ -2979,6 +2996,21 @@ CheckBombLaunch:
     ; exit if samus is on an elevator
     lda SamusOnElevator
     bne @RTS
+
+    ; branch if pressing down
+    lda Joy1Status
+    and #BUTTON_DOWN
+    bne @bomb
+    ; fire bullet
+    jsr FireWeaponForwards
+    lda #ObjAnim_DoropieDuckFire - ObjectAnimIndexTbl.b
+    jmp SetSamusNextAnim
+
+@bomb:
+    ; exit if Samus doesn't have Bombs
+    lda SamusGear
+    lsr
+    bcc @RTS
 
     ; try object slot D
     ldx #$D0
@@ -3035,8 +3067,8 @@ SamusPntUp:
             beq Lx038
             ; turn around
             sta SamusDir
-            lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
-            jsr SetSamusNextAnim
+            ;lda #ObjAnim_SamusFront - ObjectAnimIndexTbl.b
+            ;jsr SetSamusNextAnim
         Lx038:
         tax
         lda Table07,x
@@ -3053,7 +3085,7 @@ SamusPntUp:
         lda #sa_PntJump
         sta ObjAction
     Lx041:
-    lda #$04
+    lda #15
     jsr SetSamusData                ;($CD6D)Set Samus control data and animation.
     lda ObjAction
     jsr ChooseRoutine
@@ -3133,14 +3165,10 @@ FireWeaponForwards:
     lda #$00
     sta ObjSpeedY,y
     ; place bullet at arm cannon
-    lda ProjectileStatus,y
-    asl
-    ora SamusDir
-    and #$03
-    tax
+    ldx SamusDir
     lda BulletForwardsOffsetXTable,x
     sta Temp05_SpeedX
-    lda #-$06
+    lda #0
     sta Temp04_SpeedY
     jsr PlaceBulletAtArmCannon
 @exit:
@@ -3150,8 +3178,7 @@ LD26B:
     jmp SetSamusNextAnim
 
 BulletForwardsOffsetXTable:
-    .byte  $0C, -$0C ;weapon action id is even (wave beam)
-    .byte  $08, -$08 ;weapon action id is odd (power beam, ice beam, missiles)
+    .byte  20, -20
 BulletSpeedXTable:
     .byte  $04, -$04
 
@@ -3174,10 +3201,7 @@ FireWeaponUpwards:
     ldx SamusDir
     lda BulletUpwardsOffsetXTable,x
     sta Temp05_SpeedX
-    lda ProjectileStatus,y
-    and #$01
-    tax
-    lda BulletUpwardsOffsetYTable,x
+    lda #-24
     sta Temp04_SpeedY
     jsr PlaceBulletAtArmCannon
 @exit:
@@ -3200,9 +3224,7 @@ AimUpFireMidairAnimTbl:
     .byte ObjAnim_SamusJumpPntUpFire - ObjectAnimIndexTbl, ObjAnim_SamusJumpPntUpFire - ObjectAnimIndexTbl
 
 BulletUpwardsOffsetXTable:
-    .byte  $01, -$01
-BulletUpwardsOffsetYTable:
-    .byte -$14, -$10
+    .byte  4, -4
 
 InitObjAnimIndex:
     sta ObjAnimResetIndex,x
@@ -3243,7 +3265,7 @@ InitBulletHorz:
     lda #$02
     sta ProjectileRadY,y
     sta ProjectileRadX,y
-    lda #$01
+    lda #$81
     sta ObjOnScreen,y
     sta ProjectileProps,y ; init props, enable collision with enemies
     lda #$00
@@ -3525,6 +3547,10 @@ DoOneProjectile:
 UpdateBullet:
     jsr UpdateBullet_DeleteIfOffScreen
     jsr UpdateBullet_ExplodeIfHitSprite
+    ; don't move projectile on first frame
+    lda ObjOnScreen,x
+    bmi DrawBullet
+
     jsr UpdateBullet_CollisionWithBG
 CheckBulletStat:
     ldx PageIndex
@@ -3611,6 +3637,9 @@ Lx071:
         jsr TwosComplement              ;($C3D4)
         sta ObjSpeedX,x
     Lx073:
+
+    lda ObjOnScreen,x
+    bmi DrawBullet
 
     jsr UpdateBullet_CollisionWithBG
     bcs Lx074
@@ -5644,28 +5673,28 @@ SamusMoveVertically: ; unreferenced label
         bcs @endIf_D
             ;Samus bounce after hitting the ground in ball form.
             ;branch if Samus isn't rolled into a ball
-            lda ObjAction
-            cmp #sa_Roll
-            beq @landingBall
-            cmp #sa_SpiderFall
-            bne @landingNoBall
-        @landingBall:
+            ;lda ObjAction
+            ;cmp #sa_Roll
+            ;beq @landingBall
+            ;cmp #sa_SpiderFall
+            ;bne @landingNoBall
+        ;@landingBall:
             ;Divide vertical speed by 2.
-            lsr ObjSpeedY
+            ;lsr ObjSpeedY
             ;branch if Speed is not falling fast enough to bounce (speed < 2px/frame)
-            beq @landingNoBounce
+            ;beq @landingNoBounce
             ; continue division of vertical speed by 2
-            ror SamusSpeedSubPixelY
+            ;ror SamusSpeedSubPixelY
             ; negate vertical speed
-            lda #$00
-            sec
-            sbc SamusSpeedSubPixelY
-            sta SamusSpeedSubPixelY
-            lda #$00
-            sbc ObjSpeedY
-            sta ObjSpeedY
+            ;lda #$00
+            ;sec
+            ;sbc SamusSpeedSubPixelY
+            ;sta SamusSpeedSubPixelY
+            ;lda #$00
+            ;sbc ObjSpeedY
+            ;sta ObjSpeedY
             ;($E31A)Attempt to move Samus left/right.
-            jmp SamusMoveHorizontally
+            ;jmp SamusMoveHorizontally
 
         ;Samus has hit the ground after moving downwards.
         @landingNoBall:

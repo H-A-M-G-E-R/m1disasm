@@ -4,23 +4,19 @@ Palette00:
     PPUStringEnd
 
 Palette01:
-    PPUString $3F12, \
-        $19, $27
-    PPUStringEnd
-
 Palette02:
-    PPUString $3F12, \
-        $19, $35
+Palette18:
+Palette19:
+    PPUString $3F11, \
+        $07, $16, $35
     PPUStringEnd
 
 Palette03:
-    PPUString $3F12, \
-        $2C, $27
-    PPUStringEnd
-
 Palette04:
-    PPUString $3F12, \
-        $2C, $24
+Palette1A:
+Palette1B:
+    PPUString $3F11, \
+        $07, $25, $35
     PPUStringEnd
 
 Palette05:
@@ -80,25 +76,5 @@ Palette16:
 Palette17:
     PPUString $3F00, \
         $0F, $30, $30, $21
-    PPUStringEnd
-
-Palette18:
-    PPUString $3F10, \
-        $0F, $15, $34, $17
-    PPUStringEnd
-
-Palette19:
-    PPUString $3F10, \
-        $0F, $15, $34, $19
-    PPUStringEnd
-
-Palette1A:
-    PPUString $3F10, \
-        $0F, $15, $34, $28
-    PPUStringEnd
-
-Palette1B:
-    PPUString $3F10, \
-        $0F, $15, $34, $29
     PPUStringEnd
 
