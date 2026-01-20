@@ -4769,7 +4769,7 @@ DisplayBar:
         inx
         iny
         ;At end of DataDisplayTbl? If not, loop to load next byte from table.
-        cpy #10*4.b
+        cpy #8*4.b
         bne @loop
 
 ;Display 2-digit health count.
@@ -4834,7 +4834,7 @@ LE14A:
     ldx SpritePagePos               ;Restore initial sprite page pos.
     lda MaxHealth+1                 ;
     and #$F0                        ;
-    beq LE16C@checkOverflow                          ;Branch to exit if Samus has no energy tanks.
+    beq AddTanks@checkOverflow      ;Branch to exit if Samus has no energy tanks.
 
 ;Display full/empty energy tanks.
     jsr Adiv16
@@ -4845,11 +4845,18 @@ LE14A:
     lda Health+1                    ;
     jsr Adiv16                      ;($C2BF)/16. A contains # of full energy tanks.
     sta $01                         ;Storage of full tanks.
-    bne AddTanks                    ;Branch if at least 1 tank is full.
-    lda #$4A                        ;Else switch to "empty energy tank" tile.
-    sta $00
 
 AddTanks:
+    lda $01
+    cmp #$01
+    bne +
+        lda #$5D
+        sta $00
+    +
+    bpl +
+        lda #$4A
+        sta $00
+    +
     ;Add energy tank to Samus' data display.
     lda EnergyTankYPositions,y
     sta SpriteRAM.0.y,x
@@ -4867,14 +4874,14 @@ AddTanks:
     inx
     inx
     iny
-    dec $01                         ;Any more full energy tanks left?-->
-    bne LE16C                           ;If so, then branch.-->
-        lda #$4A                        ;Otherwise, switch to "empty energy tank" tile.
-        sta $00
-    LE16C:
+    dec $01
+    dec $01
     dec $03                         ;done all tanks?-->
+    dec $03
+    bmi +
     bne AddTanks                    ;if not, loop to do another.
 
++
     stx SpritePagePos               ;Store new sprite page position.
 @checkOverflow:
     ; overflow failsafe
@@ -4909,17 +4916,10 @@ Xplus4:
     rts
 
 EnergyTankXPositions:
-    .byte $18,$22,$2C,$36
-    .byte $18,$22,$2C,$36
+    .byte $18,$18,$18,$18
 
 EnergyTankYPositions:
-    .if BUILDTARGET == "NES_NTSC" || BUILDTARGET == "NES_PAL"
-        .byte $17,$17,$17,$17
-        .byte $0D,$0D,$0D,$0D
-    .elif BUILDTARGET == "NES_MZMUS" || BUILDTARGET == "NES_MZMJP" || BUILDTARGET == "NES_CNSUS"
-        .byte $15,$15,$15,$15
-        .byte $0B,$0B,$0B,$0B
-    .endif
+    .byte $21+32,$21+24,$21+16,$21+8
 
 ;------------------------------------[ Convert hex to decimal ]--------------------------------------
 
@@ -4961,24 +4961,14 @@ DivideByRepeatedSubtraction: ;($E1AD)
 ;Sprite data for Samus' data display
 
 DataDisplayTbl:
-    .byte $21,$20+CFG_NUM_SAMUS_TILES,$01,$30           ;Upper health digit.
-    .byte $21,$20+CFG_NUM_SAMUS_TILES,$01,$38           ;Lower health digit.
-    .if BUILDTARGET == "NES_NTSC" || BUILDTARGET == "NES_PAL"
-        .byte $2B,$FF,$01,$28           ;Upper missile digit.
-        .byte $2B,$FF,$01,$30           ;Middle missile digit.
-        .byte $2B,$FF,$01,$38           ;Lower missile digit.
-        .byte $2B,$02+CFG_NUM_SAMUS_TILES,$00,$18           ;Left half of missile.
-        .byte $2B,$03+CFG_NUM_SAMUS_TILES,$00,$20           ;Right half of missile.
-    .elif BUILDTARGET == "NES_MZMUS" || BUILDTARGET == "NES_MZMJP" || BUILDTARGET == "NES_CNSUS"
-        .byte $2D,$FF,$01,$28           ;Upper missile digit.
-        .byte $2D,$FF,$01,$30           ;Middle missile digit.
-        .byte $2D,$FF,$01,$38           ;Lower missile digit.
-        .byte $2D,$02+CFG_NUM_SAMUS_TILES,$00,$18           ;Left half of missile.
-        .byte $2D,$03+CFG_NUM_SAMUS_TILES,$00,$20           ;Right half of missile.
-    .endif
-    .byte $21,$19+CFG_NUM_SAMUS_TILES,$01,$18           ;E
-    .byte $21,$1A+CFG_NUM_SAMUS_TILES,$01,$20           ;N
-    .byte $21,$1B+CFG_NUM_SAMUS_TILES,$00,$28           ;..
+    .byte $21,$20+CFG_NUM_SAMUS_TILES,$00,$20           ;Upper health digit.
+    .byte $21,$20+CFG_NUM_SAMUS_TILES,$00,$28           ;Lower health digit.
+    .byte $2B,$FF,$00,$30           ;Upper missile digit.
+    .byte $2B,$FF,$00,$38           ;Middle missile digit.
+    .byte $2B,$FF,$00,$40           ;Lower missile digit.
+    .byte $2B,$02+CFG_NUM_SAMUS_TILES,$00,$20           ;Left half of missile.
+    .byte $2B,$03+CFG_NUM_SAMUS_TILES,$00,$28           ;Right half of missile.
+    .byte $21,$1B+CFG_NUM_SAMUS_TILES,$00,$18           ;L
 
 ;-------------------------------------[ Compressed nametables ]-------------------------------------
 

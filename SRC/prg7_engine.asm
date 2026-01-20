@@ -2873,6 +2873,8 @@ SetSamusRoll:
     jsr ApplySpeedToPosition
     jsr LoadObjectPositionFromTemp
 
+    lda #8
+    sta ObjRadY
     jmp SFX_SamusBall
 
 Lx030:
@@ -2931,6 +2933,8 @@ SamusRoll:
         ;lda #ObjAnim_SamusUnroll - ObjectAnimIndexTbl.b
         ;sta ObjAnimIndex
         jsr StopVertMovement
+        lda #12
+        sta ObjRadY
         ; unroll anim for 4 frames
         lda #$04
         bne LD144 ; branch always
@@ -3835,7 +3839,8 @@ BombCountdown:
     ; play sound
     jsr SFX_BombExplode
 Lx085:
-    jmp DrawBomb
+    lda #$01
+    jmp AnimDrawObject
 
 BombExplode:
     inc ProjectileDieDelay,x

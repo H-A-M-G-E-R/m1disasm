@@ -121,7 +121,7 @@ ObjAnim_WaveBeam: ;$7D
 
 ;Bomb tick animation.
 ObjAnim_BombTick: ;$7F
-    .byte _id_ObjFrame_Bomb0, _id_ObjFrame_Bomb1, $FF
+    .byte _id_ObjFrame_Bomb0, _id_ObjFrame_Bomb0, _id_ObjFrame_Bomb1, $FF
 
 ;Bomb explode animation.
 ObjAnim_BombExplode: ;$82
@@ -544,7 +544,7 @@ ObjFrame_SamusRunFire2:
 ;Samus somersault.
 ObjFrame_SamusSalto0:
 .if CFG_NUM_SAMUS_TILES == 16
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $F3,$00,$60,$00
     .byte $F3,$01,$60,$F8
     .byte $FB,$02,$60,$00
@@ -553,7 +553,7 @@ ObjFrame_SamusSalto0:
     .byte $03,$05,$60,$F8
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 32
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $F3,$07,$60,$00
     .byte $F3,$08,$60,$F8
     .byte $FB,$09,$60,$00
@@ -562,7 +562,7 @@ ObjFrame_SamusSalto0:
     .byte $03,$0C,$60,$F8
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 64
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $F3,$07,$60,$00
     .byte $F3,$08,$60,$F8
     .byte $FB,$09,$60,$00
@@ -575,7 +575,7 @@ ObjFrame_SamusSalto0:
 ;Samus somersault.
 ObjFrame_SamusSalto1:
 .if CFG_NUM_SAMUS_TILES == 16
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $F8,$06,$60,$02
     .byte $F8,$07,$60,$FA
     .byte $F8,$08,$60,$F2
@@ -584,7 +584,7 @@ ObjFrame_SamusSalto1:
     .byte $00,$0B,$60,$F2
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 32
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $F8,$0D,$60,$02
     .byte $F8,$0E,$60,$FA
     .byte $F8,$0F,$60,$F2
@@ -593,7 +593,7 @@ ObjFrame_SamusSalto1:
     .byte $00,$12,$60,$F2
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 64
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $F8,$0D,$60,$02
     .byte $F8,$0E,$60,$FA
     .byte $F8,$0F,$60,$F2
@@ -606,7 +606,7 @@ ObjFrame_SamusSalto1:
 ;Samus somersault.
 ObjFrame_SamusSalto2:
 .if CFG_NUM_SAMUS_TILES == 16
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $05,$00,$A0,$F8
     .byte $05,$01,$A0,$00
     .byte $FD,$02,$A0,$F8
@@ -615,7 +615,7 @@ ObjFrame_SamusSalto2:
     .byte $F5,$05,$A0,$00
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 32
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $05,$07,$A0,$F8
     .byte $05,$08,$A0,$00
     .byte $FD,$09,$A0,$F8
@@ -624,7 +624,7 @@ ObjFrame_SamusSalto2:
     .byte $F5,$0C,$A0,$00
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 64
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $05,$07,$A0,$F8
     .byte $05,$08,$A0,$00
     .byte $FD,$09,$A0,$F8
@@ -637,7 +637,7 @@ ObjFrame_SamusSalto2:
 ;Samus somersault.
 ObjFrame_SamusSalto3:
 .if CFG_NUM_SAMUS_TILES == 16
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $00,$06,$A0,$F6
     .byte $00,$07,$A0,$FE
     .byte $00,$08,$A0,$06
@@ -646,7 +646,7 @@ ObjFrame_SamusSalto3:
     .byte $F8,$0B,$A0,$06
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 32
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $00,$0D,$A0,$F6
     .byte $00,$0E,$A0,$FE
     .byte $00,$0F,$A0,$06
@@ -655,7 +655,7 @@ ObjFrame_SamusSalto3:
     .byte $F8,$12,$A0,$06
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 64
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $00,$0D,$A0,$F6
     .byte $00,$0E,$A0,$FE
     .byte $00,$0F,$A0,$06
@@ -875,7 +875,7 @@ ObjFrame_SamusExplode:
 ;Samus jump and point up.
 ObjFrame_SamusJumpPntUp:
 .if CFG_NUM_SAMUS_TILES == 16
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $E8,$0B,$60,$FC
     .byte $F0,$0C,$20,$00
     .byte $F0,$0D,$20,$F8
@@ -887,7 +887,7 @@ ObjFrame_SamusJumpPntUp:
     .byte $08,$07,$60,$00
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 32
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $E8,$09,$60,$FC
     .byte $F0,$0A,$20,$00
     .byte $F0,$0B,$20,$F8
@@ -899,7 +899,7 @@ ObjFrame_SamusJumpPntUp:
     .byte $08,$11,$60,$00
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 64
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $E8,$27,$60,$FC
     .byte $F0,$28,$20,$00
     .byte $F0,$29,$20,$F8
@@ -915,7 +915,7 @@ ObjFrame_SamusJumpPntUp:
 ;Samus jump and point up.
 ObjFrame_SamusJumpPntUpFire:
 .if CFG_NUM_SAMUS_TILES == 16
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $EA,$0B,$60,$FC
     .byte $F0,$0C,$20,$00
     .byte $F0,$0D,$20,$F8
@@ -927,7 +927,7 @@ ObjFrame_SamusJumpPntUpFire:
     .byte $08,$07,$60,$00
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 32
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $EA,$09,$60,$FC
     .byte $F0,$0A,$20,$00
     .byte $F0,$0B,$20,$F8
@@ -939,7 +939,7 @@ ObjFrame_SamusJumpPntUpFire:
     .byte $08,$11,$60,$00
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 64
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $EA,$27,$60,$FC
     .byte $F0,$28,$20,$00
     .byte $F0,$29,$20,$F8
@@ -964,7 +964,7 @@ ObjFrame_BombExplode0:
 ;Samus run and point up.
 ObjFrame_SamusRunPntUp0:
 .if CFG_NUM_SAMUS_TILES == 16
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $E8,$0A,$60,$FC
     .byte $F0,$0B,$20,$00
     .byte $F0,$0C,$20,$F8
@@ -975,7 +975,7 @@ ObjFrame_SamusRunPntUp0:
     .byte $08,$06,$60,$F8
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 32
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $E8,$09,$60,$FC
     .byte $F0,$0A,$20,$00
     .byte $F0,$0B,$20,$F8
@@ -986,7 +986,7 @@ ObjFrame_SamusRunPntUp0:
     .byte $08,$14,$60,$F8
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 64
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $E8,$27,$60,$FC
     .byte $F0,$28,$20,$00
     .byte $F0,$29,$20,$F8
@@ -1001,7 +1001,7 @@ ObjFrame_SamusRunPntUp0:
 ;Samus run and point up.
 ObjFrame_SamusRunPntUp1:
 .if CFG_NUM_SAMUS_TILES == 16
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $E8,$00,$60,$FC
     .byte $F0,$01,$20,$00
     .byte $F0,$02,$20,$F8
@@ -1014,7 +1014,7 @@ ObjFrame_SamusRunPntUp1:
     .byte $08,$09,$60,$F0
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 32
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $E8,$09,$60,$FC
     .byte $F0,$0A,$20,$00
     .byte $F0,$0B,$20,$F8
@@ -1027,7 +1027,7 @@ ObjFrame_SamusRunPntUp1:
     .byte $08,$17,$60,$F0
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 64
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $E8,$27,$60,$FC
     .byte $F0,$28,$20,$00
     .byte $F0,$29,$20,$F8
@@ -1044,7 +1044,7 @@ ObjFrame_SamusRunPntUp1:
 ;Samus run and point up.
 ObjFrame_SamusRunPntUp2:
 .if CFG_NUM_SAMUS_TILES == 16
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $E8,$00,$60,$FC
     .byte $F0,$01,$20,$00
     .byte $F0,$02,$20,$F8
@@ -1057,7 +1057,7 @@ ObjFrame_SamusRunPntUp2:
     .byte $08,$0E,$60,$F8
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 32
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $E8,$09,$60,$FC
     .byte $F0,$0A,$20,$00
     .byte $F0,$0B,$20,$F8
@@ -1070,7 +1070,7 @@ ObjFrame_SamusRunPntUp2:
     .byte $08,$1C,$60,$F8
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 64
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $E8,$27,$60,$FC
     .byte $F0,$28,$20,$00
     .byte $F0,$29,$20,$F8
@@ -1087,7 +1087,7 @@ ObjFrame_SamusRunPntUp2:
 ;Samus run and point up.
 ObjFrame_SamusRunPntUpFire0:
 .if CFG_NUM_SAMUS_TILES == 16
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $EA,$0A,$60,$FC
     .byte $F0,$0B,$20,$00
     .byte $F0,$0C,$20,$F8
@@ -1098,7 +1098,7 @@ ObjFrame_SamusRunPntUpFire0:
     .byte $08,$06,$60,$F8
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 32
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $EA,$09,$60,$FC
     .byte $F0,$0A,$20,$00
     .byte $F0,$0B,$20,$F8
@@ -1109,7 +1109,7 @@ ObjFrame_SamusRunPntUpFire0:
     .byte $08,$14,$60,$F8
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 64
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $EA,$27,$60,$FC
     .byte $F0,$28,$20,$00
     .byte $F0,$29,$20,$F8
@@ -1124,7 +1124,7 @@ ObjFrame_SamusRunPntUpFire0:
 ;Samus point up, run and fire.
 ObjFrame_SamusRunPntUpFire1:
 .if CFG_NUM_SAMUS_TILES == 16
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $EA,$00,$60,$FC
     .byte $F0,$01,$20,$00
     .byte $F0,$02,$20,$F8
@@ -1137,7 +1137,7 @@ ObjFrame_SamusRunPntUpFire1:
     .byte $08,$09,$60,$F0
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 32
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $EA,$09,$60,$FC
     .byte $F0,$0A,$20,$00
     .byte $F0,$0B,$20,$F8
@@ -1150,7 +1150,7 @@ ObjFrame_SamusRunPntUpFire1:
     .byte $08,$17,$60,$F0
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 64
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $EA,$27,$60,$FC
     .byte $F0,$28,$20,$00
     .byte $F0,$29,$20,$F8
@@ -1167,7 +1167,7 @@ ObjFrame_SamusRunPntUpFire1:
 ;Samus point up, run and fire.
 ObjFrame_SamusRunPntUpFire2:
 .if CFG_NUM_SAMUS_TILES == 16
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $EA,$00,$60,$FC
     .byte $F0,$01,$20,$00
     .byte $F0,$02,$20,$F8
@@ -1180,7 +1180,7 @@ ObjFrame_SamusRunPntUpFire2:
     .byte $08,$0E,$60,$F8
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 32
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $EA,$09,$60,$FC
     .byte $F0,$0A,$20,$00
     .byte $F0,$0B,$20,$F8
@@ -1193,7 +1193,7 @@ ObjFrame_SamusRunPntUpFire2:
     .byte $08,$1C,$60,$F8
     .byte $80
 .elif CFG_NUM_SAMUS_TILES == 64
-    .byte $0F,$04
+    .byte $0C,$04
     .byte $EA,$27,$60,$FC
     .byte $F0,$28,$20,$00
     .byte $F0,$29,$20,$F8
@@ -1391,7 +1391,7 @@ ObjFrame_Bomb0:
 ;Bomb tick.
 ObjFrame_Bomb1:
     .byte $04,$04
-    .byte $FC,$15+CFG_NUM_SAMUS_TILES,$20,$FC
+    .byte $FC,$15+CFG_NUM_SAMUS_TILES,$21,$FC
     .byte $80
 
 ;Bomb item.
@@ -1652,10 +1652,8 @@ ObjFrame_ChargedShotRight0:
 
 ObjFrame_ChargedShotRight1:
     .byte $08,$08
-    .byte $F8,$6E,$00,$F8
-    .byte $F8,$6F,$00,$00
-    .byte $00,$6E,$80,$F8
-    .byte $00,$6F,$80,$00
+    .byte $FC,$6E,$00,$F8
+    .byte $FC,$6F,$00,$00
     .byte $80
 
 ObjFrame_ChargedShotUp0:
@@ -1668,270 +1666,6 @@ ObjFrame_ChargedShotUp0:
 
 ObjFrame_ChargedShotUp1:
     .byte $08,$08
-    .byte $F8,$74,$00,$F8
-    .byte $00,$75,$00,$F8
-    .byte $F8,$74,$40,$00
-    .byte $00,$75,$40,$00
+    .byte $F8,$74,$00,$FC
+    .byte $00,$75,$00,$FC
     .byte $80
-
-.if CFG_UNIQUE_LEFT_FACING_SAMUS_FRAMES != 0
-ObjFrame_SamusRun0_L:
-    .byte $0F,$04
-    .byte $F0,$00,$20,$F8
-    .byte $F0,$01,$20,$00
-    .byte $F8,$2E,$20,$F8
-    .byte $F8,$2F,$20,$00
-    .byte $00,$04,$20,$F8
-    .byte $00,$05,$20,$00
-    .byte $08,$06,$20,$00
-    .byte $80
-
-ObjFrame_SamusRun1_L:
-    .byte $0F,$04
-    .byte $F0,$07,$20,$F8
-    .byte $F0,$08,$20,$00
-    .byte $F8,$30,$20,$F8
-    .byte $F8,$31,$20,$00
-    .byte $00,$0B,$20,$F8
-    .byte $00,$0C,$20,$00
-    .byte $08,$0D,$20,$F8
-    .byte $08,$0E,$20,$00
-    .byte $08,$0F,$20,$08
-    .byte $80
-
-ObjFrame_SamusRun2_L:
-    .byte $0F,$04
-    .byte $F0,$10,$20,$F8
-    .byte $F0,$11,$20,$00
-    .byte $F8,$32,$20,$F8
-    .byte $F8,$33,$20,$00
-    .byte $00,$14,$20,$F8
-    .byte $00,$15,$20,$00
-    .byte $00,$16,$20,$08
-    .byte $08,$17,$20,$F8
-    .byte $08,$18,$20,$00
-    .byte $80
-
-ObjFrame_SamusRunFire0_L:
-    .byte $0F,$04
-    .byte $F0,$00,$20,$F8
-    .byte $F0,$01,$20,$00
-    .byte $F8,$19,$60,$F0
-    .byte $F8,$2C,$20,$F8
-    .byte $F8,$2D,$20,$00
-    .byte $00,$04,$20,$F8
-    .byte $00,$05,$20,$00
-    .byte $08,$06,$20,$00
-    .byte $80
-
-ObjFrame_SamusRunFire1_L:
-    .byte $0F,$04
-    .byte $F0,$00,$20,$F8
-    .byte $F0,$01,$20,$00
-    .byte $F8,$19,$60,$F0
-    .byte $F8,$2C,$20,$F8
-    .byte $F8,$2D,$20,$00
-    .byte $00,$0B,$20,$F8
-    .byte $00,$0C,$20,$00
-    .byte $08,$0D,$20,$F8
-    .byte $08,$0E,$20,$00
-    .byte $08,$0F,$20,$08
-    .byte $80
-
-ObjFrame_SamusRunFire2_L:
-    .byte $0F,$04
-    .byte $F0,$00,$20,$F8
-    .byte $F0,$01,$20,$00
-    .byte $F8,$19,$60,$F0
-    .byte $F8,$2C,$20,$F8
-    .byte $F8,$2D,$20,$00
-    .byte $00,$14,$20,$F8
-    .byte $00,$15,$20,$00
-    .byte $00,$16,$20,$08
-    .byte $08,$17,$20,$F8
-    .byte $08,$18,$20,$00
-    .byte $80
-
-ObjFrame_SamusJump_L:
-    .byte $0F,$04
-    .byte $F0,$00,$20,$F8
-    .byte $F0,$01,$20,$00
-    .byte $F8,$2E,$20,$F8
-    .byte $F8,$2F,$20,$00
-    .byte $00,$0B,$20,$F8
-    .byte $00,$1C,$20,$00
-    .byte $00,$1D,$20,$08
-    .byte $08,$0D,$20,$F8
-    .byte $80
-
-ObjFrame_SamusJumpFire_L:
-    .byte $0F,$04
-    .byte $F0,$00,$20,$F8
-    .byte $F0,$01,$20,$00
-    .byte $F8,$19,$60,$F0
-    .byte $F8,$2C,$20,$F8
-    .byte $F8,$2D,$20,$00
-    .byte $00,$0B,$20,$F8
-    .byte $00,$1C,$20,$00
-    .byte $00,$1D,$20,$08
-    .byte $08,$0D,$20,$F8
-    .byte $80
-
-ObjFrame_SamusStand_L:
-    .byte $0F,$04
-    .byte $F0,$38,$20,$F8
-    .byte $F0,$39,$20,$00
-    .byte $F8,$3A,$20,$F8
-    .byte $F8,$3B,$20,$00
-    .byte $00,$22,$60,$F8
-    .byte $00,$23,$60,$00
-    .byte $08,$24,$20,$F8
-    .byte $08,$25,$20,$00
-    .byte $F8,$26,$20,$F4
-    .byte $80
-
-ObjFrame_SamusStandFire_L:
-    .byte $0F,$04
-    .byte $F0,$38,$20,$F8
-    .byte $F0,$39,$20,$00
-    .byte $F8,$3A,$20,$F8
-    .byte $F8,$3B,$20,$00
-    .byte $00,$22,$60,$F8
-    .byte $00,$23,$60,$00
-    .byte $08,$24,$20,$F8
-    .byte $08,$25,$20,$00
-    .byte $F8,$26,$20,$F6
-    .byte $80
-
-ObjFrame_SamusPntUp_L:
-    .byte $0F,$04
-    .byte $E8,$27,$20,$FC
-    .byte $F0,$34,$20,$F8
-    .byte $F0,$35,$20,$00
-    .byte $F8,$36,$20,$F8
-    .byte $F8,$37,$20,$00
-    .byte $00,$22,$60,$F8
-    .byte $00,$23,$60,$00
-    .byte $08,$24,$20,$F8
-    .byte $08,$25,$20,$00
-    .byte $80
-
-ObjFrame_SamusPntUpFire_L:
-    .byte $0F,$04
-    .byte $EA,$27,$20,$FC
-    .byte $F0,$34,$20,$F8
-    .byte $F0,$35,$20,$00
-    .byte $F8,$36,$20,$F8
-    .byte $F8,$37,$20,$00
-    .byte $00,$22,$60,$F8
-    .byte $00,$23,$60,$00
-    .byte $08,$24,$20,$F8
-    .byte $08,$25,$20,$00
-    .byte $80
-
-ObjFrame_SamusJumpPntUp_L:
-    .byte $0F,$04
-    .byte $E8,$27,$20,$FC
-    .byte $F0,$34,$20,$F8
-    .byte $F0,$35,$20,$00
-    .byte $F8,$36,$20,$F8
-    .byte $F8,$37,$20,$00
-    .byte $00,$0B,$20,$F8
-    .byte $00,$1C,$20,$00
-    .byte $00,$1D,$20,$08
-    .byte $08,$0D,$20,$F8
-    .byte $80
-
-ObjFrame_SamusJumpPntUpFire_L:
-    .byte $0F,$04
-    .byte $EA,$27,$20,$FC
-    .byte $F0,$34,$20,$F8
-    .byte $F0,$35,$20,$00
-    .byte $F8,$36,$20,$F8
-    .byte $F8,$37,$20,$00
-    .byte $00,$0B,$20,$F8
-    .byte $00,$1C,$20,$00
-    .byte $00,$1D,$20,$08
-    .byte $08,$0D,$20,$F8
-    .byte $80
-
-ObjFrame_SamusRunPntUp0_L:
-    .byte $0F,$04
-    .byte $E8,$27,$20,$FC
-    .byte $F0,$34,$20,$F8
-    .byte $F0,$35,$20,$00
-    .byte $F8,$36,$20,$F8
-    .byte $F8,$37,$20,$00
-    .byte $00,$04,$20,$F8
-    .byte $00,$05,$20,$00
-    .byte $08,$06,$20,$00
-    .byte $80
-
-ObjFrame_SamusRunPntUp1_L:
-    .byte $0F,$04
-    .byte $E8,$27,$20,$FC
-    .byte $F0,$34,$20,$F8
-    .byte $F0,$35,$20,$00
-    .byte $F8,$36,$20,$F8
-    .byte $F8,$37,$20,$00
-    .byte $00,$0B,$20,$F8
-    .byte $00,$0C,$20,$00
-    .byte $08,$0D,$20,$F8
-    .byte $08,$0E,$20,$00
-    .byte $08,$0F,$20,$08
-    .byte $80
-
-ObjFrame_SamusRunPntUp2_L:
-    .byte $0F,$04
-    .byte $E8,$27,$20,$FC
-    .byte $F0,$34,$20,$F8
-    .byte $F0,$35,$20,$00
-    .byte $F8,$36,$20,$F8
-    .byte $F8,$37,$20,$00
-    .byte $00,$14,$20,$F8
-    .byte $00,$15,$20,$00
-    .byte $00,$16,$20,$08
-    .byte $08,$17,$20,$F8
-    .byte $08,$18,$20,$00
-    .byte $80
-
-ObjFrame_SamusRunPntUpFire0_L:
-    .byte $0F,$04
-    .byte $EA,$27,$20,$FC
-    .byte $F0,$34,$20,$F8
-    .byte $F0,$35,$20,$00
-    .byte $F8,$36,$20,$F8
-    .byte $F8,$37,$20,$00
-    .byte $00,$04,$20,$F8
-    .byte $00,$05,$20,$00
-    .byte $08,$06,$20,$00
-    .byte $80
-
-ObjFrame_SamusRunPntUpFire1_L:
-    .byte $0F,$04
-    .byte $EA,$27,$20,$FC
-    .byte $F0,$34,$20,$F8
-    .byte $F0,$35,$20,$00
-    .byte $F8,$36,$20,$F8
-    .byte $F8,$37,$20,$00
-    .byte $00,$0B,$20,$F8
-    .byte $00,$0C,$20,$00
-    .byte $08,$0D,$20,$F8
-    .byte $08,$0E,$20,$00
-    .byte $08,$0F,$20,$08
-    .byte $80
-
-ObjFrame_SamusRunPntUpFire2_L:
-    .byte $0F,$04
-    .byte $EA,$27,$20,$FC
-    .byte $F0,$34,$20,$F8
-    .byte $F0,$35,$20,$00
-    .byte $F8,$36,$20,$F8
-    .byte $F8,$37,$20,$00
-    .byte $00,$14,$20,$F8
-    .byte $00,$15,$20,$00
-    .byte $00,$16,$20,$08
-    .byte $08,$17,$20,$F8
-    .byte $08,$18,$20,$00
-    .byte $80
-.endif
