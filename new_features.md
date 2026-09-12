@@ -26,6 +26,7 @@
 * Tile blast animation and respawn time can be customizable for each type of tile. Can set it to never respawn until the room is reloaded.
 * Objects can be placed off-grid.
 * Execute code after loading a room, just like Editroid.
+* Editroid's Doorway Scrolling Patch, togglable in config
 
 # Samus
 * Samus's GFX are CHR bankswitched, freeing up CHR for extra stuff.

@@ -5456,12 +5456,18 @@ DoOneDoorScroll:
         ldy #$20+8
     +
     sty DoorDelay
+    ; Get scroll
+.if CFG_SAVE != 0
+    lda SamusDoorData
+.else
     lda ScrollDirBeforeDoor
     ldy SamusDoorData               ;Check if scrolling should be toggled.
     cpy #$02                        ;Is door not to toggle scrolling(item room,-->
     beq +                           ;bridge room, etc.)? If so, branch to NOT toggle scrolling.
         eor #$02
     +
+.endif
+    ; Toggle if it's different
     eor ScrollDir
     and #$02
     beq +

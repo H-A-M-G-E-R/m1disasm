@@ -16,3 +16,7 @@ CFG_SAVE = 1
 ; 0 = mirror right-facing frames, 1 = use unique left-facing frames
 ; TODO: only works when CFG_NUM_SAMUS_TILES == 64
 CFG_UNIQUE_LEFT_FACING_SAMUS_FRAMES = 1
+
+; If enabled, tile #$A0 sets scrolling to vertical and #$A1 to horizontal.
+; If not, #$A0 toggles and #$A1 doesn't.
+CFG_DOORWAY_SCROLLING_PATCH = 0
