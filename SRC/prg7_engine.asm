@@ -7381,6 +7381,7 @@ EnemyStart:
         .word LoadPipeBugHole           ;($EC57)Regenerating enemies(such as Zeb).
 
 EndOfRoom:
+    jsr ExecuteScreenLoadCode ; per area bank
     jsr ChangeTilesetIfPending
     lda #$FF
     sta RoomNumber

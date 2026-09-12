@@ -66,6 +66,8 @@ SpecItmsTblPtr:
     EnAnimTable:        .word EnAnimTable               ;($9D6A)Index to values in addr tables for enemy animations.
 .ENDST
 
+.include "screen_load_code/common.asm"
+
 ; Special Tourian Routines
 GotoDeleteOffscreenRoomSprites_Tourian:
     jmp DeleteOffscreenRoomSprites_Tourian
@@ -2453,6 +2455,10 @@ PalAnim1:
 ;------------------------------------[ Special items table ]-----------------------------------------
 
 .include "data/tourian/global_objs.asm"
+
+;----------------------------------------[ Screen load code ]----------------------------------------
+
+.include "screen_load_code/tourian.asm"
 
 .ends
 

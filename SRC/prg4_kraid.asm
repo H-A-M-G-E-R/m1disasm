@@ -66,6 +66,8 @@ SpecItmsTblPtr:
     EnAnimTable:        .word EnAnimTable               ;($9D6A)Index to values in addr tables for enemy animations.
 .ENDST
 
+.include "screen_load_code/common.asm"
+
 ; Tourian-specific jump table (dummied out in other banks)
 ;  Each line is RTS, NOP, NOP in this bank
     .byte $60, $EA, $EA
@@ -1004,6 +1006,10 @@ PalAnim1:
 ;-----------------------------------[ Special items table ]-----------------------------------------
 
 .include "data/kraid/global_objs.asm"
+
+;----------------------------------------[ Screen load code ]----------------------------------------
+
+.include "screen_load_code/kraid.asm"
 
 .ends
 
