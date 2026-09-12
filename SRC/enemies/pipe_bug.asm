@@ -2,7 +2,7 @@
 
 PipeBugAIRoutine:
     ; branch if pipe bug is not active
-    lda EnStatus,x
+    lda EnsExtra.0.status,x
     cmp #enemyStatus_Active
     bne PipeBugApplySpeed
 
@@ -10,22 +10,32 @@ PipeBugAIRoutine:
     lda EnSpeedX,x
     bne PipeBugApplySpeed
 
-    ; if EnAccelY is in effect, we need to check if y speed became positive
-    lda EnAccelY,x
+    ; if EnsExtra.0.accelY is in effect, we need to check if y speed became positive
+    lda EnsExtra.0.accelY,x
     bne PipeBugCheckIfGoForwards
 
     ; branch if pipe bug is more than #$40 pixels (4 blocks) below Samus
     ; while this is true, pipe bug will continue to rise at a fixed y speed
-    lda ObjY
-    sec
-    sbc EnY,x
-    cmp #$40
-    bcs PipeBugApplySpeed
+    jsr GetEnemyXSlotPosition
+    ldy #$00
+    jsr GetObjectYSlotPosition
+    jsr SignedYDistFromYSlotToXSlot
+    ; branch if dist == 0
+    lda Temp00_Diff
+    ora Temp01_DiffHi
+    beq +
+    ; branch if dist <= #-$40
+    lda Temp00_Diff
+    cmp #-$3F
+    lda Temp01_DiffHi
+    sbc #$FF
+    bcc PipeBugApplySpeed
 
-    ; set EnAccelY to #$7F
+    ; set EnsExtra.0.accelY to #$20
     ; eventually, this gravity will make y speed positive
-    lda #$7F
-    sta EnAccelY,x
++
+    lda #$20
+    sta EnsExtra.0.accelY,x
     bne PipeBugApplySpeed ; branch always
 
 PipeBugCheckIfGoForwards:
@@ -37,7 +47,7 @@ PipeBugCheckIfGoForwards:
         lda #$00
         sta EnSpeedY,x
         sta EnSpeedSubPixelY,x
-        sta EnAccelY,x
+        sta EnsExtra.0.accelY,x
         ; set pipe bug x speed depending on its facing direction
         lda EnData05,x
         and #$01
@@ -45,22 +55,18 @@ PipeBugCheckIfGoForwards:
         lda PipeBugSpeedXTable,y
         sta EnSpeedX,x
 PipeBugApplySpeed:
-    ; exit if bit 7 of EnData05 is set
-    lda EnData05,x
-    asl
-    bmi PipeBugExit
-    
     ; exit if pipe bug is not active
-    lda EnStatus,x
+    lda EnsExtra.0.status,x
     cmp #enemyStatus_Active
     bne PipeBugExit
     
     ; get y speed
-    jsr CommonJump_12
+    ldy #$07
+    jsr CommonJump_EnemyGetDeltaY_UsingAcceleration
     ; push y speed to stack
     pha
     ; get x speed
-    jsr CommonJump_13
+    jsr CommonJump_EnemyGetDeltaX_UsingAcceleration
     ; set x speed
     sta Temp05_SpeedX
     ; set y speed
@@ -68,11 +74,11 @@ PipeBugApplySpeed:
     sta Temp04_SpeedY
 
     ; apply speed
-    jsr StorePositionToTemp
+    jsr StoreEnemyPositionToTemp
     jsr CommonJump_ApplySpeedToPosition
     ; remove bug if it is out of bounds
     bcc PipeBugDelete
-    jsr LoadPositionFromTemp
+    jsr LoadEnemyPositionFromTemp
     ; fallthrough
 
 ;Exit 1
@@ -85,12 +91,13 @@ PipeBugExit:
 PipeBugDelete:
     ; Set enemy status to 0
     lda #enemyStatus_NoEnemy
-    sta EnStatus,x
+    sta EnsExtra.0.status,x
     rts
 
 PipeBugSpeedXTable:
 .if BANK == 1 ; Brinstar
-    .byte $04, -$04
+    .byte $02, -$02
 .else ; Norfair, Kraid, Ridley
-    .byte $08, -$08
+    .byte $04, -$04
 .endif
+

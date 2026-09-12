@@ -1,0 +1,56 @@
+[
+ {
+  "obj_type": "elevator",
+  "x": 1920,
+  "y": 5251,
+  "dir": 1,
+  "to_ending": 0
+ },
+ {
+  "obj_type": "item",
+  "x": 1144,
+  "y": 5448,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 2424,
+  "y": 5448,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 2664,
+  "y": 5736,
+  "type": 8
+ },
+ {
+  "obj_type": "item",
+  "x": 2680,
+  "y": 6472,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 1400,
+  "y": 6984,
+  "type": 9
+ },
+ {
+  "obj_type": "mellows",
+  "x": 1920,
+  "y": 7296
+ },
+ {
+  "obj_type": "item",
+  "x": 2280,
+  "y": 7608,
+  "type": 8
+ },
+ {
+  "obj_type": "area_change",
+  "x": 1920,
+  "y": 4736,
+  "area": 0
+ }
+]

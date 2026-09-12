@@ -2,7 +2,7 @@
 
 ; Kraid Routine
 KraidAIRoutine:
-    lda EnStatus,x
+    lda EnsExtra.0.status,x
     cmp #enemyStatus_Explode
     bcc KraidBranch_Normal ; 0, 1, 2
     beq KraidBranch_Explode ; 3
@@ -14,12 +14,12 @@ KraidAIRoutine:
 KraidBranch_Explode:
     ; delete projectiles
     lda #enemyStatus_NoEnemy
-    sta EnStatus+$10
-    sta EnStatus+$20
-    sta EnStatus+$30
-    sta EnStatus+$40
-    sta EnStatus+$50
-    beq KraidBranch_Exit
+    sta EnsExtra.1.status
+    sta EnsExtra.2.status
+    sta EnsExtra.3.status
+    sta EnsExtra.4.status
+    sta EnsExtra.5.status
+    beq KraidBranch_Exit ; branch always
 
 KraidBranch_Normal:
     jsr KraidUpdateAllProjectiles
@@ -41,23 +41,19 @@ KraidLintAIRoutine:
     and #$02
     beq KraidLintRemove
     ; branch if lint is not exploding
-    lda EnStatus,x
+    lda EnsExtra.0.status,x
     cmp #enemyStatus_Explode
     bne KraidLintMain
 
 KraidLintRemove:
     ; lint is dead, clear enemy slot
     lda #enemyStatus_NoEnemy
-    sta EnStatus,x
+    sta EnsExtra.0.status,x
     beq KraidLintDraw ; branch always
 
 KraidLintMain:
-    ; exit if bit7 of EnData05 is set
-    lda EnData05,x
-    asl
-    bmi KraidLintDraw
     ; exit if lint is not active
-    lda EnStatus,x
+    lda EnsExtra.0.status,x
     cmp #enemyStatus_Active
     bne KraidLintDraw
 
@@ -78,7 +74,7 @@ KraidLintMain:
     ; movement has failed either because lint hit a wall or went out of bounds
     ; lint dies
     lda #enemyStatus_Explode
-    sta EnStatus,x
+    sta EnsExtra.0.status,x
 
 KraidLintDraw:
     ; draw lint
@@ -95,40 +91,40 @@ KraidNailAIRoutine: ; L9B2C
 ; Kraid Subroutine 1
 KraidUpdateAllProjectiles: ; L9B2F
     ldx #$50 ; For each of Kraid's projectiles
-@loop:
-    jsr KraidUpdateProjectile
-    txa               ;\
-    sec               ;|-- X := X-$10
-    sbc #$10          ;|
-    tax               ;/
-    bne @loop
+    @loop:
+        jsr KraidUpdateProjectile
+        txa
+        sec
+        sbc #$10
+        tax
+        bne @loop
     rts
 
 ;-------------------------------------------------------------------------------
 ; Kraid Subroutine 1.1
 KraidUpdateProjectile:
     ; remove projectile if it doesn't exist (a bit odd, but ok)
-    ldy EnStatus,x
-    beq KraidUpdateProjectile_Remove
+    ldy EnsExtra.0.status,x
+    beq @remove
     
     ; exit if projectile is not lint or nail
-    lda EnType,x
+    lda EnsExtra.0.type,x
     cmp #$0A
-    beq KraidUpdateProjectile_BranchA
+    beq @branchA
     cmp #$09
     bne KraidUpdateProjectile_Exit
 
-KraidUpdateProjectile_BranchA:
+@branchA:
     ; remove projectile if it is invisible
     lda EnData05,x
     and #$02
-    beq KraidUpdateProjectile_Remove
+    beq @remove
     ; branch if projectile is resting
     dey
-    beq KraidUpdateProjectile_Resting
+    beq @resting
     ; remove projectile if its exploding
     cpy #enemyStatus_Explode-1.b
-    beq KraidUpdateProjectile_Remove
+    beq @remove
     ; exit if projectile is not frozen
     cpy #enemyStatus_Frozen-1.b
     bne KraidUpdateProjectile_Exit
@@ -138,15 +134,15 @@ KraidUpdateProjectile_BranchA:
     cmp #$01
     bne KraidUpdateProjectile_Exit
     ; projectile state before being frozen was resting
-    beq KraidUpdateProjectile_Resting ; branch always
+    beq @resting ; branch always
 
-KraidUpdateProjectile_Remove:
+@remove:
     lda #enemyStatus_NoEnemy ; #$00
-    sta EnStatus,x
+    sta EnsExtra.0.status,x
     sta EnSpecialAttribs,x
     jsr CommonJump_0E
 
-KraidUpdateProjectile_Resting:
+@resting:
     ; initialize projectile
     ; copy Kraid's EnData05 to projectile's EnData05
     lda EnData05
@@ -167,7 +163,7 @@ KraidUpdateProjectile_Resting:
     sta Temp04_SpeedY
     ; get projectile type from table
     lda KraidProjectileType-1,y
-    sta EnType,x
+    sta EnsExtra.0.type,x
     ; Y = (X/16)*2 + the LSB of EnData05[0] (direction Kraid is facing)
     tya
     plp
@@ -186,7 +182,7 @@ KraidUpdateProjectile_Resting:
     .ENDIF
     ; store kraid's position in temp
     ldx #$00
-    jsr StorePositionToTemp
+    jsr StoreEnemyPositionToTemp
     .IF BANK != 1
         ; pull x from stack
         pla
@@ -203,31 +199,19 @@ KraidUpdateProjectile_Resting:
     ; exit if initial position for projectile is out of bounds
     bcc KraidUpdateProjectile_Exit
     ; set projectile status to enemyStatus_Resting if it was enemyStatus_NoEnemy
-    lda EnStatus,x
-    bne LoadPositionFromTemp
-    inc EnStatus,x
+    lda EnsExtra.0.status,x
+    bne @loadPosition
+    inc EnsExtra.0.status,x
+    ; Flag enemy init
+    lda #$00
+    sta EnsExtra.0.pose,x
+    sta EnsExtra2.0.props2F,x
     ; save as projectile's position
-    ; fallthrough
 
-LoadPositionFromTemp:
-    lda Temp08_PositionY
-    sta EnY,x
-    lda Temp09_PositionX
-    sta EnX,x
-    lda Temp0B_PositionHi
-    and #$01
-    sta EnHi,x
+@loadPosition:
+    jmp LoadEnemyPositionFromTemp
 
 KraidUpdateProjectile_Exit:
-    rts
-
-StorePositionToTemp:
-    lda EnY,x
-    sta Temp08_PositionY
-    lda EnX,x
-    sta Temp09_PositionX
-    lda EnHi,x
-    sta Temp0B_PositionHi
     rts
 
 KraidProjectileOffsetY:
@@ -248,13 +232,13 @@ KraidProjectileType: ; L9BDB
 KraidTryToLaunchLint:
     ; load lint counter into y (#$80 if it is zero)
     ldy KraidLintCounter
-    bne KraidTryToLaunchLint_BranchA
+    bne @endIf_A
         ldy #$80
-    KraidTryToLaunchLint_BranchA:
+    @endIf_A:
     ; exit if bit 1 of FrameCount is set
     lda FrameCount
     and #$02
-    bne KraidTryToLaunchLint_Exit
+    bne @RTS
     ; decrement lint counter
     dey
     sty KraidLintCounter
@@ -263,38 +247,38 @@ KraidTryToLaunchLint:
     asl
     ; exit if (lint counter * 2) is not #$0A, #$1A, #$2A, #$3A, #$4A, #$5A, #$6A or #$7A
     ; lint will try firing every 16 frames 8 times, then will pause for 128 frames, in a cycle
-    bmi KraidTryToLaunchLint_Exit
+    bmi @RTS
     and #$0F
     cmp #$0A
-    bne KraidTryToLaunchLint_Exit
+    bne @RTS
 
     lda #enemyStatus_Resting
     ; branch if first lint is resting
     ldx #$10
-    cmp EnStatus,x
-    beq KraidTryToLaunchLint_PrimeLintForLaunch
+    cmp EnsExtra.0.status,x
+    beq @primeForLaunch
     
     ; branch if second lint is resting
     ldx #$20
-    cmp EnStatus,x
-    beq KraidTryToLaunchLint_PrimeLintForLaunch
+    cmp EnsExtra.0.status,x
+    beq @primeForLaunch
     
     ; branch if third lint is resting
     ldx #$30
-    cmp EnStatus,x
-    beq KraidTryToLaunchLint_PrimeLintForLaunch
+    cmp EnsExtra.0.status,x
+    beq @primeForLaunch
     
     ; all lints are currently launched
     ; undo decrement lint counter so that it will try to launch again the next frame
     inc KraidLintCounter
     rts
 
-KraidTryToLaunchLint_PrimeLintForLaunch:
+@primeForLaunch:
     ; lint will launch after resting for 8 frames
     lda #$08
     sta EnDelay,x
 
-KraidTryToLaunchLint_Exit:
+@RTS:
     rts
 
 ;-------------------------------------------------------------------------------
@@ -303,13 +287,13 @@ KraidTryToLaunchLint_Exit:
 KraidTryToLaunchNail:
     ; load nail counter into y (#$60 if it is zero)
     ldy KraidNailCounter
-    bne KraidTryToLaunchNail_BranchA
+    bne @endIf_A
         ldy #$60
-    KraidTryToLaunchNail_BranchA:
+    @endIf_A:
     ; exit if bit 1 of FrameCount is set
     lda FrameCount
     and #$02
-    bne KraidTryToLaunchNail_Exit
+    bne @RTS
     ; decrement nail counter
     dey
     sty KraidNailCounter
@@ -318,30 +302,31 @@ KraidTryToLaunchNail:
     asl
     ; exit if (nail counter * 2)'s low nibble is not 0
     ; nail will try firing every 16 frames 8 times, then will pause for 128 frames, in a cycle
-    bmi KraidTryToLaunchNail_Exit
+    bmi @RTS
     and #$0F
-    bne KraidTryToLaunchNail_Exit
+    bne @RTS
 
     lda #enemyStatus_Resting
     ; branch if first nail is resting
     ldx #$40
-    cmp EnStatus,x
-    beq KraidTryToLaunchNail_PrimeNailForLaunch
+    cmp EnsExtra.0.status,x
+    beq @primeForLaunch
     
     ; branch if second nail is resting
     ldx #$50
-    cmp EnStatus,x
-    beq KraidTryToLaunchNail_PrimeNailForLaunch
+    cmp EnsExtra.0.status,x
+    beq @primeForLaunch
     
     ; all nails are currently launched
     ; undo decrement nail counter so that it will try to launch again the next frame
     inc KraidNailCounter
     rts
 
-KraidTryToLaunchNail_PrimeNailForLaunch:
+@primeForLaunch:
     ; nail will launch after resting for 8 frames
     lda #$08
     sta EnDelay,x
 
-KraidTryToLaunchNail_Exit:
+@RTS:
     rts
+

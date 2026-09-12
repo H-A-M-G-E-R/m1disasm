@@ -1,0 +1,236 @@
+[
+ {
+  "obj_type": "item",
+  "x": 6984,
+  "y": 2616,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 7240,
+  "y": 2616,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 6728,
+  "y": 2872,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 6984,
+  "y": 2872,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 7240,
+  "y": 2872,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 6776,
+  "y": 3128,
+  "type": 7
+ },
+ {
+  "obj_type": "elevator",
+  "x": 5760,
+  "y": 3459,
+  "dir": 1,
+  "to_ending": 0
+ },
+ {
+  "obj_type": "item",
+  "x": 4680,
+  "y": 3640,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 4424,
+  "y": 3896,
+  "type": 9
+ },
+ {
+  "obj_type": "mellows",
+  "x": 4480,
+  "y": 3968
+ },
+ {
+  "obj_type": "item",
+  "x": 4936,
+  "y": 3896,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 5192,
+  "y": 3896,
+  "type": 9
+ },
+ {
+  "obj_type": "enemy",
+  "x": 5532,
+  "y": 4072,
+  "slot": 4,
+  "tough": 1,
+  "miniboss": 0,
+  "type": 11
+ },
+ {
+  "obj_type": "enemy",
+  "x": 5564,
+  "y": 3992,
+  "slot": 5,
+  "tough": 0,
+  "miniboss": 0,
+  "type": 2
+ },
+ {
+  "obj_type": "item",
+  "x": 3960,
+  "y": 4152,
+  "type": 3
+ },
+ {
+  "obj_type": "tileset_change",
+  "x": 5504,
+  "y": 4480,
+  "new_tileset": 1
+ },
+ {
+  "obj_type": "tileset_change",
+  "x": 6016,
+  "y": 4480,
+  "new_tileset": 0
+ },
+ {
+  "obj_type": "enemy",
+  "x": 6300,
+  "y": 4584,
+  "slot": 3,
+  "tough": 0,
+  "miniboss": 0,
+  "type": 11
+ },
+ {
+  "obj_type": "enemy",
+  "x": 6316,
+  "y": 4504,
+  "slot": 4,
+  "tough": 0,
+  "miniboss": 0,
+  "type": 2
+ },
+ {
+  "obj_type": "enemy",
+  "x": 6556,
+  "y": 4584,
+  "slot": 2,
+  "tough": 1,
+  "miniboss": 0,
+  "type": 11
+ },
+ {
+  "obj_type": "enemy",
+  "x": 6572,
+  "y": 4504,
+  "slot": 5,
+  "tough": 0,
+  "miniboss": 0,
+  "type": 2
+ },
+ {
+  "obj_type": "item",
+  "x": 7032,
+  "y": 4408,
+  "type": 1
+ },
+ {
+  "obj_type": "door",
+  "x": 7664,
+  "y": 4456,
+  "dir": 0,
+  "type": 0
+ },
+ {
+  "obj_type": "door",
+  "x": 7696,
+  "y": 4456,
+  "dir": 1,
+  "type": 0
+ },
+ {
+  "obj_type": "item",
+  "x": 6696,
+  "y": 4936,
+  "type": 8
+ },
+ {
+  "obj_type": "door",
+  "x": 3568,
+  "y": 5224,
+  "dir": 0,
+  "type": 0
+ },
+ {
+  "obj_type": "door",
+  "x": 3600,
+  "y": 5224,
+  "dir": 1,
+  "type": 0
+ },
+ {
+  "obj_type": "item",
+  "x": 7240,
+  "y": 5176,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 4728,
+  "y": 5432,
+  "type": 6
+ },
+ {
+  "obj_type": "door",
+  "x": 6128,
+  "y": 5480,
+  "dir": 0,
+  "type": 0
+ },
+ {
+  "obj_type": "item",
+  "x": 4936,
+  "y": 5688,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 5192,
+  "y": 5688,
+  "type": 9
+ },
+ {
+  "obj_type": "elevator",
+  "x": 6528,
+  "y": 5763,
+  "dir": 0,
+  "to_ending": 0
+ },
+ {
+  "obj_type": "area_change",
+  "x": 5760,
+  "y": 2944,
+  "area": 0
+ },
+ {
+  "obj_type": "area_change",
+  "x": 6528,
+  "y": 6272,
+  "area": 4
+ }
+]

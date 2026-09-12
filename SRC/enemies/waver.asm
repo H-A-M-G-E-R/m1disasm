@@ -1,12 +1,11 @@
 ; Waver Routine
 WaverAIRoutine:
-    lda #$21
-    sta EnemyLFB88_85
-    lda #$1E
-    sta EnemyLFB88_85+1.b
-    lda EnStatus,x
+    lda #EnAnim_Waver2_R - EnAnimTable.b
+    sta EnemyFlipAfterDisplacementAnimIndex
+    lda EnsExtra.0.status,x
     cmp #enemyStatus_Explode
     beq L99F7
-        jsr CommonJump_09
+        jsr CommonJump_EnemyFlipAfterDisplacement
     L99F7:
     jmp CommonEnemyStub2
+

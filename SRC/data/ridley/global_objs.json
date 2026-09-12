@@ -1,0 +1,45 @@
+[
+ {
+  "obj_type": "item",
+  "x": 4824,
+  "y": 6248,
+  "type": 9
+ },
+ {
+  "obj_type": "elevator",
+  "x": 6528,
+  "y": 6275,
+  "dir": 1,
+  "to_ending": 0
+ },
+ {
+  "obj_type": "item",
+  "x": 4424,
+  "y": 6520,
+  "type": 8
+ },
+ {
+  "obj_type": "item",
+  "x": 6360,
+  "y": 7016,
+  "type": 9
+ },
+ {
+  "obj_type": "item",
+  "x": 3944,
+  "y": 7528,
+  "type": 8
+ },
+ {
+  "obj_type": "item",
+  "x": 5336,
+  "y": 7784,
+  "type": 9
+ },
+ {
+  "obj_type": "area_change",
+  "x": 6528,
+  "y": 5760,
+  "area": 1
+ }
+]

@@ -1,0 +1,161 @@
+{
+    "enemy": {
+        "type": 1,
+        "props": [
+            {
+                "slot": {
+                    "len": 4,
+                    "shifts": 4
+                }
+            },
+            {
+                "tough": {
+                    "len": 1,
+                    "shifts": 7
+                },
+                "miniboss":  {
+                    "len": 1,
+                    "shifts": 6
+                },
+                "type":  {
+                    "len": 6,
+                    "shifts": 0
+                }
+            },
+            {
+                "y":  {
+                    "len": 8,
+                    "shifts": 0
+                }
+            },
+            {
+                "x":  {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "door": {
+        "type": 2,
+        "props": [
+            {},
+            {
+                "dir":  {
+                    "len": 1,
+                    "shifts": 4
+                },
+                "type":  {
+                    "len": 2,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "scroll_block": {
+        "type": 3,
+        "props": [
+            {
+                "right": {
+                    "len": 1,
+                    "shifts": 7
+                },
+                "left": {
+                    "len": 1,
+                    "shifts": 6
+                },
+                "down": {
+                    "len": 1,
+                    "shifts": 5
+                },
+                "up": {
+                    "len": 1,
+                    "shifts": 4
+                }
+            }
+        ]
+    },
+    "elevator": {
+        "type": 4,
+        "props": [
+            {},
+            {
+                "dir":  {
+                    "len": 1,
+                    "shifts": 7
+                },
+                "to_ending":  {
+                    "len": 1,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "tileset_change": {
+        "type": 5,
+        "props": [
+            {},
+            {
+                "new_tileset": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "music_change": {
+        "type": 21,
+        "props": [
+            {},
+            {
+                "music":  {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "statues": {
+        "type": 6,
+        "props": [
+            {}
+        ]
+    },
+    "pipe_bug_hole": {
+        "type": 7,
+        "props": [
+            {
+                "slot": {
+                    "len": 4,
+                    "shifts": 4
+                }
+            },
+            {
+                "tough": {
+                    "len": 1,
+                    "shifts": 7
+                },
+                "miniboss":  {
+                    "len": 1,
+                    "shifts": 6
+                },
+                "type":  {
+                    "len": 6,
+                    "shifts": 0
+                }
+            },
+            {
+                "y":  {
+                    "len": 8,
+                    "shifts": 0
+                }
+            },
+            {
+                "x":  {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    }
+}

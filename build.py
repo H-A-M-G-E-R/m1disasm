@@ -19,36 +19,59 @@ banks = [
     "prg3_tourian",
     "prg4_kraid",
     "prg5_ridley",
-    "prg6_graphics",
+    "prg6_audio",
+    "prg8_brinstar_rooms",
+    "prg9_norfair_rooms",
+    "prgA_tourian_rooms",
+    "prgB_kraid_rooms",
+    "prgC_ridley_rooms",
     "prg7_engine",
+    "chr"
 ]
 
 class BuildTarget:
-    def __init__(self, md5_hash_expected_hex, filename):
+    def __init__(self, md5_hash_expected_hex, filename, mapper, lnk_filename):
         self.md5_hash_expected_hex = md5_hash_expected_hex
         self.filename = filename
+        self.mapper = mapper
+        self.lnk_filename = lnk_filename
 
 build_targets = {
     "NES_NTSC": BuildTarget(
         md5_hash_expected_hex="d7da4a907be0012abca6625471ef2c9c",
-        filename="out/M1_NES_NTSC.nes",
+        filename="out/M1_NES_NTSC_MMC5.nes",
+        mapper="MMC5",
+        lnk_filename="linkfile_mmc5"
     ),
-    "NES_PAL": BuildTarget(
-        md5_hash_expected_hex="442fcb92fce27cabdb7635bd35593d8a",
-        filename="out/M1_NES_PAL.nes",
-    )
+    #"NES_PAL": BuildTarget(
+    #    md5_hash_expected_hex="442fcb92fce27cabdb7635bd35593d8a",
+    #    filename="out/M1_NES_PAL.nes",
+    #),
+    #"NES_MZMUS": BuildTarget(
+    #    md5_hash_expected_hex="b27e46122890364407af3ee7591477ad",
+    #    filename="out/M1_NES_MZMUS.nes",
+    #),
+    #"NES_MZMJP": BuildTarget(
+    #    md5_hash_expected_hex="c1148e9e2fd7b9fc1077b44454584e24",
+    #    filename="out/M1_NES_MZMJP.nes",
+    #),
+    #"NES_CNSUS": BuildTarget(
+    #    md5_hash_expected_hex="164fe605f9d1586e9c9d50e0f1e48703",
+    #    filename="out/M1_NES_CNSUS.nes",
+    #),
 }
 
 for bt, bto in build_targets.items():
     print('-- Building target ' + bt + ' --')
     print('Assembling .asm files')
     for bank in banks:
-        run_or_exit("wla-6502 -h -D BUILDTARGET=\"" + bt + "\" -o out/" + bank + ".o -I SRC SRC/" + bank + ".asm", "Assembler Error.")
+        #run_or_exit("wla-6502 -h -w -D BUILDTARGET=\"" + bt + "\" -o out/" + bank + ".o -I SRC SRC/" + bank + ".asm", "Assembler Error.")
+        run_or_exit(f"wla-6502 -h -D BUILDTARGET=\"{bt}\" -D BUILDTARGET_MAPPER=\"{bto.mapper}\" -o out/{bank}.o -I SRC SRC/{bank}.asm", "Assembler Error.")
     print('Success\n')
 
     print('Linking .o files')
     log_filename = "out/linkerlog_" + bt + ".txt"
-    completed_process = subprocess.run("wlalink -c -S SRC/linkfile " + bto.filename + " 2> " + log_filename, shell=True)
+    completed_process = subprocess.run(f"wlalink -c -S SRC/{bto.lnk_filename} {bto.filename} 2> {log_filename}", shell=True)
     if completed_process.returncode != 0:
         print("Linker Error. Here are the last few lines of " + log_filename)
         with open(log_filename, "r") as f:
@@ -65,3 +88,4 @@ for bt, bto in build_targets.items():
     #    print("Hash matches vanilla ROM.")
     #else:
     #    print("Hash does not match vanilla ROM.")
+    #print()

@@ -80,9 +80,16 @@
             .def _entryNumber_\1 = 0
         .endif
         
-        .def _id_\2 = _entryNumber_\1
+        .def _id_\2 = _entryNumber_\1 export
     .endif
     .word ptr
+.endm
+
+.macro GFXInfoEntry args gfx, dest
+    .byte bank(gfx)
+    PtrTableEntry GFXInfo gfx
+    .word dest
+    .word _sizeof_\1
 .endm
 
 .macro EnemyMovementChoiceEntry ; args enemyMovementIndexList
@@ -104,7 +111,7 @@
     .endr
 .endm
 
-.macro EnemyMovementInstr_StopMovementSeahorse
+.macro EnemyMovementInstr_StopMovementDragon
     .byte $FA
 .endm
 
@@ -116,7 +123,7 @@
     .byte $FC
 .endm
 
-.macro EnemyMovementInstr_ClearEnData1D
+.macro EnemyMovementInstr_ClearEnJumpDsplcmnt
     .byte $FD
 .endm
 
@@ -259,5 +266,11 @@
 
 .macro SongRepeat
     .byte $FF
+.endm
+
+
+
+.macro NES_CNSUS_IllegalOpcode42
+    .byte $42
 .endm
 

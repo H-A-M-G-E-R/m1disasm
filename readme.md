@@ -6,7 +6,11 @@ Based on the prior work of SnowBro (Kent Hansen), Dirty McDingus, and the metcon
 
 The code has been manually reworked multiple times in a laborious journey to find the assembler fit for the job. (Ophis -> asm6f -> ca65 -> WLA-DX)
 
-To build, run `python build.py` in the root folder of the disassembly. Each bank will be compiled into its own object file, and then linked together. Right now, there is nothing to ensure multi-bank labels have consistant NES memory locations in every bank they're in. This may change eventually.
+Versions of WLA-DX prior to v10.7 will not work. The latest release, v10.6 back in late 2023, does not have the newest features like the `substring` function, which are used in this disassembly. Because v10.7 is not yet released, you must compile WLA-DX v10.7 from [its source code](https://github.com/vhelin/wla-dx). Instructions on how to compile can be found in WLA-DX's README.
+
+To build, run `python build.py` in the root folder of the disassembly. Each bank will be compiled into its own object file, and then linked together. Right now, there is nothing to ensure multi-bank labels have consistent NES memory locations in every bank they're in. This may change eventually.
+
+### Contributing
 
 Please be sure to verify that your code produces an exact copy of the original before submitting a pull request.
 
@@ -16,7 +20,7 @@ Subject to change.
 
  * build.py - Run this to build. Requires WLA-DX binaries to be in your path.
  * SRC/prg*.asm - Main assembly files for each bank
- * SRC/brinstar, SRC/norfair, etc. - Data pertaining to each bank
+ * SRC/data - Data pertaining to each bank
  * SRC/common_chr - Common CHR data
  * SRC/enemies - Assembly files for enemy AI routines shared between areas
  * SRC/songs - Song data for all songs in the game
@@ -25,4 +29,17 @@ Subject to change.
 
  * NES_NTSC - The NTSC version of the game released in North America. This is the most popular one. Port of the FDS version.
  * NES_PAL - The PAL version of the game released in Europe. Derived from the NTSC version.
+ * NES_MZMUS - The version of the game included as part of Metroid Zero Mission's North American release. This version is used together with GBA-side hijacks and features to produce the "Original Metroid" sub-game. Derived from the NTSC version.
+ * NES_MZMJP - The version of the game included as part of Metroid Zero Mission's European release and then its Japanese release. Removes content that the GBA-side emulation doesn't use: all tile data and the reset vector. Derived from the MZMUS version.
+ * NES_CNSUS - The version of the game used for Classic NES Series Metroid's North American and European release. Unlike MZMUS and MZMJP, its tile data is used by the emulator. Uses illegal opcode $42 for some hijacks, like opening the save menu on the password display screen. Derived from the MZMUS version.
 
+# Samus on the fly
+
+This ROM hack frees up many sprite tiles by dedicating the upper 16 tiles to Samus, allowing for additional enemies, projectiles, Samus animations, and so much more!
+
+This is possible by using the MMC3 mapper to switch the upper 64 tiles on the fly!
+
+
+Spider ball sprite by BBLIR from The Spriters Resource: https://www.spriters-resource.com/custom_edited/metroidcustoms/sheet/84367/
+
+Left-facing Samus sprites by hansungkee: https://www.spriters-resource.com/profile/hansungkee/

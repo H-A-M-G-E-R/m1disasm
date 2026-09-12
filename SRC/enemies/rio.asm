@@ -8,9 +8,9 @@ RioAIRoutine:
     cmp #enemyStatus_Explode
     beq RioExit_Explode
 
-    ; set gravity to negative #$80 (gravity pulls towards ceiling)
-    lda #$80
-    sta EnAccelY,x
+    ; set gravity to negative #$20 (gravity pulls towards ceiling)
+    lda #-$20
+    sta EnsExtra.0.accelY,x
     ; branch if y speed is negative
     lda EnSpeedY,x
     bmi RioExitA
@@ -21,23 +21,21 @@ RioAIRoutine:
     and #$10
     beq RioExitA
 
-    ; get Samus position relative to enemy
-    lda EnY,x
-    sec
-    sbc ObjY
-    ; branch if Samus is under enemy
-    bpl RioBranch
-        ; negate a
-        jsr TwosComplement
-    RioBranch:
-    ; a now contains the y distance between Samus and the enemy
+    ; get y distance between Samus and the enemy
+    jsr GetEnemyXSlotPosition
+    ldy #$00
+    jsr GetObjectYSlotPosition
+    jsr AbsYDistFromYSlotToXSlot
     ; branch if Samus is not within a block's distance 
+    lda Temp01_DiffHi
+    bne RioExitA
+    lda Temp00_Diff
     cmp #$10
     bcs RioExitA
     ; Samus is vertically aligned with the enemy
     ; stop applying gravity to enemy speed
     lda #$00
-    sta EnAccelY,x
+    sta EnsExtra.0.accelY,x
 
 RioExitA:
     ; change animation frame every 3 frames
@@ -51,3 +49,4 @@ RioExit_Resting:
     ; change animation frame every 8 frames
     lda #$08
     jmp CommonJump_01
+

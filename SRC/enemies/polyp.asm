@@ -2,8 +2,8 @@
 PolypAIRoutine:
     ; set radius to 0
     lda #$00
-    sta EnRadY,x
-    sta EnRadX,x
+    sta EnsExtra.0.radY,x
+    sta EnsExtra.0.radX,x
     ; set EnData05 to #$10
     ; the enemy is invisible and will remain resting
     lda #$10
@@ -40,23 +40,25 @@ PolypAIRoutine:
     ; polyp is trying to shoot
     ; rotate horizontal facing flag into carry
     lsr EnData05,x
-    ; set SpawnFireball_87 to #$03
-    lda #$03
-    sta SpawnFireball_87
+    ; set expected status to #$02|$01
+    lda #enemyStatus_Resting | enemyStatus_Active.b
+    sta SpawnEnProjectile_ExpectedStatus
     ; set horizontal facing flag to a random bit
-    lda RandomNumber1
+    jsr RandomNumbers
     lsr
     rol EnData05,x
     ; exit if misfired (25% random chance)
     and #$03
     beq RTS_Polyp
-    ; store random number (1, 2 or 3) into SpawnFireball_EnData0A
-    sta SpawnFireball_EnData0A
-    ; set fireball animation
+    ; store random number (1, 2 or 3) into SpawnEnProjectile_EnData0A
+    ; this chooses between EnProjectileMovement1, EnProjectileMovement2 or EnProjectileMovement3
+    sta SpawnEnProjectile_EnData0A
+    ; set EnProjectile animation
     lda #$02
-    sta SpawnFireball_AnimTableIndex
-    ; spawn fireball
-    jmp CommonJump_SpawnFireball
+    sta SpawnEnProjectile_AnimTableIndex
+    ; spawn projectile
+    jmp CommonJump_SpawnEnProjectile
 
 RTS_Polyp:
     rts
+
