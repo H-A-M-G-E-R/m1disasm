@@ -5457,7 +5457,7 @@ DoOneDoorScroll:
     +
     sty DoorDelay
     ; Get scroll
-.if CFG_SAVE != 0
+.if CFG_DOORWAY_SCROLLING_PATCH != 0
     lda SamusDoorData
 .else
     lda ScrollDirBeforeDoor
