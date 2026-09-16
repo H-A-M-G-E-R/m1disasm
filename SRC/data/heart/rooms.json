@@ -214,6 +214,12 @@
     "y": 104,
     "dir": 1,
     "type": 1
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 5
    }
   ]
  },
@@ -1482,6 +1488,12 @@
     "y": 104,
     "dir": 0,
     "type": 1
+   },
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 5
    }
   ]
  },

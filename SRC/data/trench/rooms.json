@@ -27,7 +27,14 @@
  {
   "tilemap": "DxAQDwICAhwcAgICDxAQDw4ODg4ODg4cHA4ODg4ODg4OIyMjIykjgIAjKSMjIyMOF//c9d313d7f3fXd3t//Fx7//////////////////x4a//////////////////8aGv/////P/////87/////Ghr/////EP////8Q/////xoe////zxzPzvXPHM////8eHv///w8eHh4eHh4P////Hhr/////Gvv6cvoa/////xoa/////xr/+v//Gv////8aI7L///8a/////xr///+xByM/sv//Hv////8e//+xPwcjAiP//xMTDg4TE///IwIj",
   "attrs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAAAAAAAAAAAAEBAAABAQAAAAAAAAAAAAABAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-  "objs": []
+  "objs": [
+   {
+    "obj_type": "music_change",
+    "x": 128,
+    "y": 128,
+    "music": 3
+   }
+  ]
  },
  {
   "tilemap": "Fhb/3P//////////3P8WFhYb////////////////FhsWG///////////////GRYbGxYY/////////////xkbFhYWGP///////////x4jAiMbFhsX//////////8a//8HGxYXF///////////Gv//BxcbGxv//////////xr//wcWFxcX//////////8e/w4OGxYbF/////////////8XFxsXFxcY////////////GxcbFhsbGP///////////xsXGxYXF/////////////8XGxcbFn//////////////FxcWF3///////////////xsP",
