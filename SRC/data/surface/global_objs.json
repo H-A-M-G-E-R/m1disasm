@@ -34,7 +34,7 @@
   "x": 640,
   "y": 899,
   "dir": 0,
-  "type": 3
+  "to_ending": 0
  },
  {
   "obj_type": "item",
@@ -53,7 +53,7 @@
   "x": 5248,
   "y": 899,
   "dir": 0,
-  "type": 2
+  "to_ending": 0
  },
  {
   "obj_type": "item",
@@ -72,12 +72,30 @@
   "x": 3200,
   "y": 1667,
   "dir": 0,
-  "type": 1
+  "to_ending": 0
  },
  {
   "obj_type": "item",
   "x": 4456,
   "y": 1640,
   "type": 9
+ },
+ {
+  "obj_type": "area_change",
+  "x": 640,
+  "y": 1408,
+  "area": 3
+ },
+ {
+  "obj_type": "area_change",
+  "x": 5248,
+  "y": 1408,
+  "area": 2
+ },
+ {
+  "obj_type": "area_change",
+  "x": 3200,
+  "y": 2176,
+  "area": 1
  }
 ]

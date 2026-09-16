@@ -1,4 +1,11 @@
 SpecItmsTbl:
+@y06:
+    .byte $06
+    .word @y08
+    @@x0C:
+        .byte $0C, $FF
+        .byte $2A, $00
+        .byte $00
 @y08:
     .byte $08
     .word @y0B
@@ -68,8 +75,15 @@ SpecItmsTbl:
         .byte $00
 @y15:
     .byte $15
+    .word @y17
+    @@x0C:
+        .byte $0C, $FF
+        .byte $04, $00
+        .byte $00
+@y17:
+    .byte $17
     .word $FFFF
     @@x0C:
         .byte $0C, $FF
-        .byte $04, $04
+        .byte $2A, $04
         .byte $00

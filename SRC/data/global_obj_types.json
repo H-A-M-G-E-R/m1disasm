@@ -75,8 +75,8 @@
                     "len": 1,
                     "shifts": 7
                 },
-                "type":  {
-                    "len": 6,
+                "to_ending":  {
+                    "len": 1,
                     "shifts": 0
                 }
             }
@@ -155,6 +155,30 @@
             {},
             {
                 "new_tileset": {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "music_change": {
+        "type": 26,
+        "props": [
+            {},
+            {
+                "music":  {
+                    "len": 8,
+                    "shifts": 0
+                }
+            }
+        ]
+    },
+    "area_change": {
+        "type": 42,
+        "props": [
+            {},
+            {
+                "area":  {
                     "len": 8,
                     "shifts": 0
                 }

@@ -30,7 +30,7 @@ SpecItmsTbl:
         .byte $00
     @@x02:
         .byte $02, @@x0B - @@x02
-        .byte $04, $03
+        .byte $04, $00
         .byte $00
     @@x0B:
         .byte $0B, @@x0D - @@x0B
@@ -42,7 +42,7 @@ SpecItmsTbl:
         .byte $00
     @@x14:
         .byte $14, @@x17 - @@x14
-        .byte $04, $02
+        .byte $04, $00
         .byte $00
     @@x17:
         .byte $17, $FF
@@ -50,19 +50,37 @@ SpecItmsTbl:
         .byte $00
 @y04:
     .byte $04
-    .word @y06
+    .word @y05
     @@x04:
         .byte $04, $FF
         .byte $02, $07, $48, $78
         .byte $00
+@y05:
+    .byte $05
+    .word @y06
+    @@x02:
+        .byte $02, @@x14 - @@x02
+        .byte $2A, $03
+        .byte $00
+    @@x14:
+        .byte $14, $FF
+        .byte $2A, $02
+        .byte $00
 @y06:
     .byte $06
-    .word $FFFF
+    .word @y08
     @@x0C:
         .byte $0C, @@x11 - @@x0C
-        .byte $04, $01
+        .byte $04, $00
         .byte $00
     @@x11:
         .byte $11, $FF
         .byte $02, $09, $68, $68
+        .byte $00
+@y08:
+    .byte $08
+    .word $FFFF
+    @@x0C:
+        .byte $0C, $FF
+        .byte $2A, $01
         .byte $00
