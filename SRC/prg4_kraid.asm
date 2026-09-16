@@ -84,9 +84,9 @@ AreaRoutine:
 AreaMinibossMusic:
     .byte music_Tourian
 
-AreaSamusMapPosX:
+AreaMapPosX:
     .byte $07   ;Samus start x coord on world map.
-AreaSamusMapPosY:
+AreaMapPosY:
     .byte $14   ;Samus start y coord on world map.
 AreaSamusX:
     .byte $80   ;Samus start horizontal screen position.

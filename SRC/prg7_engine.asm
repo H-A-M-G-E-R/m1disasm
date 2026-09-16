@@ -1350,9 +1350,9 @@ MoreInit:
     lda StartingFromPassword
     beq +
         ; Copy area start data when Samus loads from a password.
-        ldx #AreaTilesetIndex-AreaSamusMapPosX+1.b
+        ldx #AreaTilesetIndex-AreaMapPosX+1.b
         -
-            lda AreaSamusMapPosX-1,x
+            lda AreaMapPosX-1,x
             sta SaveSamusMapX-1,x
             dex
             bne -
