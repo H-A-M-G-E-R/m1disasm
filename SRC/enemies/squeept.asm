@@ -12,6 +12,7 @@ SqueeptAIRoutine:
     beq SqueeptExit_Resting
     
     ; branch if current status is not active
+    lda EnemyStatusPreWeaponReaction
     cmp #enemyStatus_Active
     bne L9A88
         ; status changed from resting to active
@@ -53,7 +54,7 @@ L9A88:
     sta Temp05_SpeedX
     
     ; default to jumping animation
-    lda #EnAnim_SqueeptJumping - EnAnimTbl.b
+    lda #EnAnim_SqueeptJumping - EnAnimTable.b
     ; set y speed to delta y
     ldy $00
     sty Temp04_SpeedY
@@ -61,12 +62,12 @@ L9A88:
     bmi L9AAC
         ; delta y is not negative (squeept is falling)
         ; use falling animation
-        lda #EnAnim_SqueeptFalling - EnAnimTbl.b
+        lda #EnAnim_SqueeptFalling - EnAnimTable.b
     L9AAC:
     sta EnsExtra.0.resetAnimIndex,x
     
     ; apply speed
-    jsr StoreEnemyPositionToTemp_
+    jsr StoreEnemyPositionToTemp
     jsr CommonJump_ApplySpeedToPosition
     
     ; load lava y position
@@ -87,7 +88,7 @@ L9A88:
         ora #$20
         sta EnData05,x
     L9AC7:
-    jsr LoadEnemyPositionFromTemp_
+    jsr LoadEnemyPositionFromTemp
 
 SqueeptExit_Resting:
     ; squeept is resting (jumping and falling)

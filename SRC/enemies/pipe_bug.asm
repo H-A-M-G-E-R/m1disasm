@@ -11,7 +11,7 @@ PipeBugAIRoutine:
         cmp #enemyStatus_Frozen
         bne ++
             lda #$00
-            sta EnsExtra.0.data1C,x
+            sta EnsExtra2.0.data20,x
         ++
         jmp PipeBugApplySpeed
     +
@@ -22,10 +22,10 @@ PipeBugAIRoutine:
         ; init enemy
         ; bunnyhead is not chewing
         lda #$00
-        sta EnsExtra.0.data1C,x
+        sta EnsExtra2.0.data20,x
     +
 
-    lda EnsExtra.0.data1C,x
+    lda EnsExtra2.0.data20,x
     bmi @chewing
 
     ; branch if hit Junko
@@ -45,14 +45,24 @@ PipeBugAIRoutine:
 
     ; branch if pipe bug is more than #$40 pixels (4 blocks) below Samus
     ; while this is true, pipe bug will continue to rise at a fixed y speed
-    lda ObjY
-    sec
-    sbc EnY,x
-    cmp #$40
-    bcs PipeBugApplySpeed
+    jsr GetEnemyXSlotPosition
+    ldy #$00
+    jsr GetObjectYSlotPosition
+    jsr SignedYDistFromYSlotToXSlot
+    ; branch if dist == 0
+    lda Temp00_Diff
+    ora Temp01_DiffHi
+    beq +
+    ; branch if dist <= #-$40
+    lda Temp00_Diff
+    cmp #-$3F
+    lda Temp01_DiffHi
+    sbc #$FF
+    bcc PipeBugApplySpeed
 
     ; set EnsExtra.0.accelY to #$20
     ; eventually, this gravity will make y speed positive
++
     lda #$20
     sta EnsExtra.0.accelY,x
     bne PipeBugApplySpeed ; branch always
@@ -62,14 +72,14 @@ PipeBugAIRoutine:
     and #$01
     eor SamusDir
     ora #$80
-    sta EnsExtra.0.data1C,x
+    sta EnsExtra2.0.data20,x
 
 @chewing:
     ; latch onto Junko
     lda EnData05,x
     and #$FE
     sta $00
-    lda EnsExtra.0.data1C,x
+    lda EnsExtra2.0.data20,x
     and #$01
     eor SamusDir
     ora $00
@@ -153,11 +163,11 @@ PipeBugApplySpeed:
     sta Temp04_SpeedY
 
     ; apply speed
-    jsr StoreEnemyPositionToTemp_
+    jsr StoreEnemyPositionToTemp
     jsr CommonJump_ApplySpeedToPosition
     ; remove bug if it is out of bounds
     bcc PipeBugDelete
-    jsr LoadEnemyPositionFromTemp_
+    jsr LoadEnemyPositionFromTemp
     ; fallthrough
 
 ;Exit 1

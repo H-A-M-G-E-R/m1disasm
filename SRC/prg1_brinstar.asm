@@ -58,10 +58,15 @@ PalPntrTbl:
     PtrTableEntry PalPntrTbl, Palette1A                 ;($A304)Suitless Samus power suit with missiles selected palette.
     PtrTableEntry PalPntrTbl, Palette1B                 ;($A30C)Suitless Samus varia suit with missiles selected palette.
 
-AreaPointers:
+SpecItmsTblPtr:
     .word SpecItmsTbl               ;($A3D6)Beginning of special items table.
-    .word EnFramePtrTable1          ;($9DE0)Pointer table into enemy animation data.
-    .word EnAnimTbl                 ;($9D6A)index to values in addr tables for enemy animations.
+
+.DSTRUCT AreaPointers_ROM INSTANCEOF AreaPointersStruct VALUES
+    EnFramePtrTable1:   .word EnFramePtrTable1          ;($9DE0)Pointer table into enemy animation data.
+    EnAnimTable:        .word EnAnimTable               ;($9D6A)Index to values in addr tables for enemy animations.
+.ENDST
+
+.include "screen_load_code/common.asm"
 
 ; Tourian-specific jump table (dummied out in other banks)
 ;  Each line is RTS, NOP, NOP in this bank
@@ -72,26 +77,17 @@ AreaPointers:
     .byte $60, $EA, $EA
     .byte $60, $EA, $EA
     .byte $60, $EA, $EA
-    .byte $60, $EA, $EA
-    .byte $60, $EA, $EA
 
 AreaRoutine: ; L95C3
-    jmp AreaRoutineStub ; Just an RTS
+    .byte $60, $EA, $EA ; Just an RTS
 
-; area init data
-    .byte $FF                       ;Not used.
-AreaMusicFlag:
-    .byte music_Surface
 AreaMinibossMusic:
     .byte $00
 
-;Special room numbers(used to start item room music).
-AreaItemRoomNumbers:
-    .byte $0A, $63, $0B, $52
-
-AreaSamusMapPosX:
+; area init data (for loading from password)
+AreaMapPosX:
     .byte $0A   ;Samus start x coord on world map.
-AreaSamusMapPosY:
+AreaMapPosY:
     .byte $01   ;Samus start y coord on world map.
 AreaSamusX:
     .byte $80   ;Samus start horizontal screen position.
@@ -99,19 +95,30 @@ AreaSamusY:
     .byte $B9   ;Samus start vertical screen position.
 AreaScrollDir:
     .byte $02   ;Starting scroll direction. 0 = vertical, 2 = horizontal
+AreaMusicFlag:
+    .byte music_Surface
+AreaTilesetIndex:
+    .byte $00
 
-AreaFireballKilledAnimIndex:
-    .byte EnAnim_FireballKilled - EnAnimTbl
+AreaEnProjectileKilledAnimIndex:
+    .byte EnAnim_EnProjectileKilled - EnAnimTable
 AreaExplosionAnimIndex:
-    .byte EnAnim_Explosion - EnAnimTbl
+    .byte EnAnim_Explosion - EnAnimTable
 
     .byte $00, $00
-AreaFireballFallingAnimIndex:
+AreaEnProjectileFallingAnimIndex:
     .byte $00, $00
-AreaFireballSplatterAnimIndex:
+AreaEnProjectileSplatterAnimIndex:
     .byte $00, $00, $00, $00
 AreaMellowAnimIndex:
-    .byte EnAnim_Mellow - EnAnimTbl
+    .byte EnAnim_Mellow - EnAnimTable
+
+AreaMissilePickupAnimFrame:
+    .byte _id_EnFrame_MissilePickup
+AreaSmallEnergyPickupAnimFrame:
+    .byte _id_EnFrame_SmallEnergyPickup
+AreaBigEnergyPickupAnimFrame:
+    .byte _id_EnFrame_BigEnergyPickup
 
 AreaTilesets:
     .word TileAnim0, PalAnim0
@@ -121,8 +128,8 @@ AreaTilesets:
 ChooseEnemyAIRoutine:
     lda EnsExtra.0.type,x
     jsr CommonJump_ChooseRoutine
-        .word SidehopperFloorAIRoutine ; 00 - Sidehopper
-        .word SidehopperCeilingAIRoutine ; 01 - Ceiling sidehopper
+        .word SidehopperFloorAIRoutine ; 00 - Sidehopper (unused)
+        .word SidehopperCeilingAIRoutine ; 01 - Ceiling sidehopper (unused)
         .word WaverAIRoutine ; 02 - Waver
         .word RipperAIRoutine ; 03 - Ripper
         .word SkreeAIRoutine ; 04 - Skree
@@ -140,25 +147,40 @@ ChooseEnemyAIRoutine:
 
 ; Animation related table ?
 EnemyDeathAnimIndex:
-    .byte EnAnim_27 - EnAnimTbl, EnAnim_27 - EnAnimTbl ; unused enemy
-    .byte EnAnim_29 - EnAnimTbl, EnAnim_29 - EnAnimTbl ; unused enemy
-    .byte EnAnim_2D - EnAnimTbl, EnAnim_2B - EnAnimTbl
-    .byte EnAnim_RipperExplodeFacingRight - EnAnimTbl, EnAnim_RipperExplodeFacingLeft - EnAnimTbl
-    .byte EnAnim_SkreeExplode - EnAnimTbl, EnAnim_SkreeExplode - EnAnimTbl
-    .byte EnAnim_ZoomerExplode - EnAnimTbl, EnAnim_ZoomerExplode - EnAnimTbl
-    .byte EnAnim_RioExplode - EnAnimTbl, EnAnim_RioExplode - EnAnimTbl
-    .byte EnAnim_ZebExplodeFacingRight - EnAnimTbl, EnAnim_ZebExplodeFacingLeft - EnAnimTbl
-    .byte EnAnim_72 - EnAnimTbl, EnAnim_74 - EnAnimTbl ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl ; unused enemy
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
+    .byte EnAnim_SidehopperFloorExplode - EnAnimTable ; 00 - Sidehopper (unused)
+    .byte EnAnim_SidehopperCeilingExplode - EnAnimTable ; 01 - Ceiling sidehopper (unused)
+    .byte EnAnim_WaverExplode_R - EnAnimTable ; 02 - Waver
+    .byte EnAnim_RipperExplode_R - EnAnimTable ; 03 - Ripper
+    .byte EnAnim_SkreeExplode - EnAnimTable ; 04 - Skree
+    .byte EnAnim_ZoomerExplode - EnAnimTable ; 05 - Zoomer (crawler)
+    .byte EnAnim_RioExplode - EnAnimTable ; 06 - Rio (swoopers)
+    .byte EnAnim_ZebExplode_R - EnAnimTable ; 07 - Zeb
+    .byte EnAnim_KraidExplode_R - EnAnimTable ; 08 - Kraid (crashes due to bug)
+    .byte $00 ; 09 - Kraid's lint (crashes)
+    .byte $00 ; 0A - Kraid's nail (crashes)
+    .byte EnAnim_Mellow - EnAnimTable ; 0B - Null pointers (hard crash)
+    .byte EnAnim_Mellow - EnAnimTable ; 0C - Null
+    .byte $00 ; 0D - Null
+    .byte $00 ; 0E - Null
+    .byte $00 ; 0F - Null
 
 EnemyHealthTbl:
-    .byte $08, $08, $04, $FF, $02, $02, $04, $01, $20, $FF, $FF, $04, $01, $00, $00, $00
+    .byte $08 ; 00 - Sidehopper (unused)
+    .byte $08 ; 01 - Ceiling sidehopper (unused)
+    .byte $04 ; 02 - Waver
+    .byte $FF ; 03 - Ripper
+    .byte $02 ; 04 - Skree
+    .byte $02 ; 05 - Zoomer (crawler)
+    .byte $04 ; 06 - Rio (swoopers)
+    .byte $01 ; 07 - Zeb
+    .byte $20 ; 08 - Kraid (crashes due to bug)
+    .byte $FF ; 09 - Kraid's lint (crashes)
+    .byte $FF ; 0A - Kraid's nail (crashes)
+    .byte $04 ; 0B - Null pointers (hard crash)
+    .byte $01 ; 0C - Null
+    .byte $00 ; 0D - Null
+    .byte $00 ; 0E - Null
+    .byte $00 ; 0F - Null
 
 ; Base damage caused by area enemies.
 ; Normal, tough
@@ -245,118 +267,165 @@ EnemyDropChanceTblTough:
 
 ; ResetAnimIndex table for resting enemy
 EnemyRestingAnimIndex:
-    .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl ; unused enemy
-    .byte EnAnim_0B - EnAnimTbl, EnAnim_0B - EnAnimTbl ; unused enemy
-    .byte EnAnim_17 - EnAnimTbl, EnAnim_13 - EnAnimTbl
-    .byte EnAnim_RipperFacingRight - EnAnimTbl, EnAnim_RipperFacingLeft - EnAnimTbl
-    .byte EnAnim_Skree - EnAnimTbl, EnAnim_Skree - EnAnimTbl
-    .byte EnAnim_ZoomerOnFloor - EnAnimTbl, EnAnim_ZoomerOnFloor - EnAnimTbl
-    .byte EnAnim_Rio - EnAnimTbl, EnAnim_Rio - EnAnimTbl
-    .byte EnAnim_59 - EnAnimTbl, EnAnim_57 - EnAnimTbl
-    .byte EnAnim_6C - EnAnimTbl, EnAnim_6F - EnAnimTbl ; unused enemy
-    .byte EnAnim_5B - EnAnimTbl, EnAnim_5D - EnAnimTbl ; unused enemy
-    .byte EnAnim_62 - EnAnimTbl, EnAnim_67 - EnAnimTbl ; unused enemy
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl ; unused enemy
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
+    .byte EnAnim_SidehopperFloorIdle - EnAnimTable ; 00 - Sidehopper (unused)
+    .byte EnAnim_SidehopperCeilingIdle - EnAnimTable ; 01 - Ceiling sidehopper (unused)
+    .byte EnAnim_Waver0_R - EnAnimTable ; 02 - Waver
+    .byte EnAnim_Ripper_R - EnAnimTable ; 03 - Ripper
+    .byte EnAnim_Skree - EnAnimTable ; 04 - Skree
+    .byte EnAnim_ZoomerOnFloor - EnAnimTable ; 05 - Zoomer (crawler)
+    .byte EnAnim_Rio - EnAnimTable ; 06 - Rio (swoopers)
+    .byte EnAnim_ZebResting_R - EnAnimTable ; 07 - Zeb
+    .byte EnAnim_Kraid_R - EnAnimTable ; 08 - Kraid (crashes due to bug)
+    .byte EnAnim_KraidLint_R - EnAnimTable ; 09 - Kraid's lint (crashes)
+    .byte EnAnim_KraidNailIdle_R - EnAnimTable ; 0A - Kraid's nail (crashes)
+    .byte EnAnim_Mellow - EnAnimTable ; 0B - Null pointers (hard crash)
+    .byte EnAnim_Mellow - EnAnimTable ; 0C - Null
+    .byte $00 ; 0D - Null
+    .byte $00 ; 0E - Null
+    .byte $00 ; 0F - Null
 
 ; ResetAnimIndex table for active enemy
 EnemyActiveAnimIndex:
-    .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl ; unused enemy
-    .byte EnAnim_0B - EnAnimTbl, EnAnim_0B - EnAnimTbl ; unused enemy
-    .byte EnAnim_17 - EnAnimTbl, EnAnim_13 - EnAnimTbl
-    .byte EnAnim_RipperFacingRight - EnAnimTbl, EnAnim_RipperFacingLeft - EnAnimTbl
-    .byte EnAnim_Skree - EnAnimTbl, EnAnim_Skree - EnAnimTbl
-    .byte EnAnim_ZoomerOnFloor - EnAnimTbl, EnAnim_ZoomerOnFloor - EnAnimTbl
-    .byte EnAnim_Rio - EnAnimTbl, EnAnim_Rio - EnAnimTbl
-    .byte EnAnim_ZebFacingRight - EnAnimTbl, EnAnim_ZebFacingLeft - EnAnimTbl
-    .byte EnAnim_6C - EnAnimTbl, EnAnim_6F - EnAnimTbl ; unused enemy
-    .byte EnAnim_5B - EnAnimTbl, EnAnim_5D - EnAnimTbl ; unused enemy
-    .byte EnAnim_5F - EnAnimTbl, EnAnim_64 - EnAnimTbl ; unused enemy
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl ; unused enemy
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
+    .byte EnAnim_SidehopperFloorIdle - EnAnimTable ; 00 - Sidehopper (unused)
+    .byte EnAnim_SidehopperCeilingIdle - EnAnimTable ; 01 - Ceiling sidehopper (unused)
+    .byte EnAnim_Waver0_R - EnAnimTable ; 02 - Waver
+    .byte EnAnim_Ripper_R - EnAnimTable ; 03 - Ripper
+    .byte EnAnim_Skree - EnAnimTable ; 04 - Skree
+    .byte EnAnim_ZoomerOnFloor - EnAnimTable ; 05 - Zoomer (crawler)
+    .byte EnAnim_Rio - EnAnimTable ; 06 - Rio (swoopers)
+    .byte EnAnim_Zeb_R - EnAnimTable ; 07 - Zeb
+    .byte EnAnim_Kraid_R - EnAnimTable ; 08 - Kraid (crashes due to bug)
+    .byte EnAnim_KraidLint_R - EnAnimTable ; 09 - Kraid's lint (crashes)
+    .byte EnAnim_KraidNailMoving_R - EnAnimTable ; 0A - Kraid's nail (crashes)
+    .byte EnAnim_Mellow - EnAnimTable ; 0B - Null pointers (hard crash)
+    .byte EnAnim_Mellow - EnAnimTable ; 0C - Null
+    .byte $00 ; 0D - Null
+    .byte $00 ; 0E - Null
+    .byte $00 ; 0F - Null
 
 ;another animation related table
 L967B:
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00
-    .byte $00 | $80
-    .byte $00
-    .byte $00
-    .byte $00
-    .byte $00
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 | $80 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
+    .byte $00 ; 00 - Sidehopper (unused)
+    .byte $00 ; 01 - Ceiling sidehopper (unused)
+    .byte $00 ; 02 - Waver
+    .byte $00 | $80 ; 03 - Ripper
+    .byte $00 ; 04 - Skree
+    .byte $00 ; 05 - Zoomer (crawler)
+    .byte $00 ; 06 - Rio (swoopers)
+    .byte $00 ; 07 - Zeb
+    .byte $00 ; 08 - Kraid (crashes due to bug)
+    .byte $00 ; 09 - Kraid's lint (crashes)
+    .byte $00 ; 0A - Kraid's nail (crashes)
+    .byte $00 ; 0B - Null pointers (hard crash)
+    .byte $00 | $80 ; 0C - Null
+    .byte $00 ; 0D - Null
+    .byte $00 ; 0E - Null
+    .byte $00 ; 0F - Null
 
 ; Bit 7: for when bit 1 is set, 0=force y axis only, 1=force y and x axis
+; Bit 5: 0=enemy bounces, 1=enemy doesn't bounce
 ; Bit 5: EnemyMovementInstr_FE failure -> 0=nothing. 1=set EnData05 to (~(facing dir bits) | (bits 0-4 of this)) 
 ; Bits 0-4 are used when bit 5 is set
-; Bit 4: is enemy intangible (unsure of this)
-; Bits 2-3: Was: #$00,#$04=normal enemy hit sound, #$08=big enemy hit sound, #$0C=metroid hit sound
+; Bit 4: don't do normal enemy touch Samus reaction, let the AI do a custom touch reaction
+; Bits 2-3: Was: #%00,#%01=normal enemy hit sound, #%10=big enemy hit sound, #%11=metroid hit sound
+; Bit 2: enemy doesn't automatically flip based on bit 1 of EnData05
 ; Bit 1: force enemy speed to point towards samus
 ; Bit 0: can drop big energy
 L968B:
-    .byte $01, $01, $01, $00, $86, $04, $89, $90, $81, $00, $00, $00, $82, $00, $00, $00
+    .byte %00000101 ; 00 - Sidehopper (unused)
+    .byte %00000101 ; 01 - Ceiling sidehopper (unused)
+    .byte %00000001 ; 02 - Waver
+    .byte %00000000 ; 03 - Ripper
+    .byte %10000110 ; 04 - Skree
+    .byte %00000100 ; 05 - Zoomer (crawler)
+    .byte %10000101 ; 06 - Rio (swoopers)
+    .byte %10010000 ; 07 - Zeb
+    .byte %10000001 ; 08 - Kraid (crashes due to bug)
+    .byte %00000000 ; 09 - Kraid's lint (crashes)
+    .byte %00000000 ; 0A - Kraid's nail (crashes)
+    .byte %00000000 ; 0B - Null pointers (hard crash)
+    .byte %10000010 ; 0C - Null
+    .byte %00000000 ; 0D - Null
+    .byte %00000000 ; 0E - Null
+    .byte %00000000 ; 0F - Null
 
 ; EnData0D table (set upon load, and a couple other times)
 EnemyForceSpeedTowardsSamusDelayTbl:
-    .byte $01, $01, $01, $01, $01, $01, $01, $01, $20, $01, $01, $01, $40, $00, $00, $00
+    .byte $01 ; 00 - Sidehopper (unused)
+    .byte $01 ; 01 - Ceiling sidehopper (unused)
+    .byte $01 ; 02 - Waver
+    .byte $01 ; 03 - Ripper
+    .byte $01 ; 04 - Skree
+    .byte $01 ; 05 - Zoomer (crawler)
+    .byte $01 ; 06 - Rio (swoopers)
+    .byte $01 ; 07 - Zeb
+    .byte $20 ; 08 - Kraid (crashes due to bug)
+    .byte $01 ; 09 - Kraid's lint (crashes)
+    .byte $01 ; 0A - Kraid's nail (crashes)
+    .byte $01 ; 0B - Null pointers (hard crash)
+    .byte $40 ; 0C - Null
+    .byte $00 ; 0D - Null
+    .byte $00 ; 0E - Null
+    .byte $00 ; 0F - Null
 
 ; Update EnData05 bit 4 or bit 3 depending on whether samus is close enough to the enemy
 ; bit 7: 0=EnData05 bit 4, 1=EnData05 bit 3
 ; bit 4-6: zero
 ; bit 0-3: number of blocks distance threshold in the axis indicated by EnData05 bit 7
 EnemyDistanceToSamusThreshold:
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $6 | (0 << 7)
-    .byte $00
-    .byte $3 | (1 << 7)
-    .byte $00
-    .byte $8 | (1 << 7)
-    .byte $00
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
+    .byte $00 ; 00 - Sidehopper (unused)
+    .byte $00 ; 01 - Ceiling sidehopper (unused)
+    .byte $6 | (0 << 7) ; 02 - Waver
+    .byte $00 ; 03 - Ripper
+    .byte $3 | (1 << 7) ; 04 - Skree
+    .byte $00 ; 05 - Zoomer (crawler)
+    .byte $8 | (1 << 7) ; 06 - Rio (swoopers)
+    .byte $00 ; 07 - Zeb
+    .byte $00 ; 08 - Kraid (crashes due to bug)
+    .byte $00 ; 09 - Kraid's lint (crashes)
+    .byte $00 ; 0A - Kraid's nail (crashes)
+    .byte $00 ; 0B - Null pointers (hard crash)
+    .byte $00 ; 0C - Null
+    .byte $00 ; 0D - Null
+    .byte $00 ; 0E - Null
+    .byte $00 ; 0F - Null
 
 EnemyInitDelayTbl:
-    .byte $08, $08, $01, $01, $01, $01, $10, $08, $10, $00, $00, $01, $01, $00, $00, $00
+    .byte $08 ; 00 - Sidehopper (unused)
+    .byte $08 ; 01 - Ceiling sidehopper (unused)
+    .byte $01 ; 02 - Waver
+    .byte $01 ; 03 - Ripper
+    .byte $01 ; 04 - Skree
+    .byte $01 ; 05 - Zoomer (crawler)
+    .byte $10 ; 06 - Rio (swoopers)
+    .byte $08 ; 07 - Zeb
+    .byte $10 ; 08 - Kraid (crashes due to bug)
+    .byte $00 ; 09 - Kraid's lint (crashes)
+    .byte $00 ; 0A - Kraid's nail (crashes)
+    .byte $01 ; 0B - Null pointers (hard crash)
+    .byte $01 ; 0C - Null
+    .byte $00 ; 0D - Null
+    .byte $00 ; 0E - Null
+    .byte $00 ; 0F - Null
 
 ; Index to a table starting at EnemyMovementChoices
 EnemyMovementChoiceOffset:
-    .byte EnemyMovementChoice_SidehopperFloor - EnemyMovementChoices ; unused enemy
-    .byte EnemyMovementChoice_SidehopperCeiling - EnemyMovementChoices ; unused enemy
-    .byte EnemyMovementChoice_Waver - EnemyMovementChoices
-    .byte EnemyMovementChoice_Ripper - EnemyMovementChoices
-    .byte EnemyMovementChoice_Skree - EnemyMovementChoices
-    .byte EnemyMovementChoice_Zoomer - EnemyMovementChoices ; enemy moves manually
-    .byte EnemyMovementChoice_Rio - EnemyMovementChoices
-    .byte EnemyMovementChoice_Zeb - EnemyMovementChoices
-    .byte EnemyMovementChoice_Kraid - EnemyMovementChoices ; unused enemy
-    .byte EnemyMovementChoice_KraidLint - EnemyMovementChoices ; unused enemy
-    .byte EnemyMovementChoice_KraidNail - EnemyMovementChoices ; unused enemy
-    .byte EnemyMovementChoice_Zoomer - EnemyMovementChoices ; unused enemy
-    .byte EnemyMovementChoice08 - EnemyMovementChoices ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
+    .byte EnemyMovementChoice_SidehopperFloor - EnemyMovementChoices ; 00 - Sidehopper (unused)
+    .byte EnemyMovementChoice_SidehopperCeiling - EnemyMovementChoices ; 01 - Ceiling sidehopper (unused)
+    .byte EnemyMovementChoice_Waver - EnemyMovementChoices ; 02 - Waver
+    .byte EnemyMovementChoice_Ripper - EnemyMovementChoices ; 03 - Ripper
+    .byte EnemyMovementChoice_Skree - EnemyMovementChoices ; 04 - Skree
+    .byte EnemyMovementChoice_Zoomer - EnemyMovementChoices ; 05 - Zoomer (crawler) (enemy moves manually)
+    .byte EnemyMovementChoice_Rio - EnemyMovementChoices ; 06 - Rio (swoopers)
+    .byte EnemyMovementChoice_Zeb - EnemyMovementChoices ; 07 - Zeb
+    .byte EnemyMovementChoice_Kraid - EnemyMovementChoices ; 08 - Kraid (crashes due to bug)
+    .byte EnemyMovementChoice_KraidLint - EnemyMovementChoices ; 09 - Kraid's lint (crashes)
+    .byte EnemyMovementChoice_KraidNail - EnemyMovementChoices ; 0A - Kraid's nail (crashes)
+    .byte EnemyMovementChoice_Zoomer - EnemyMovementChoices ; 0B - Null pointers (hard crash)
+    .byte EnemyMovementChoice08 - EnemyMovementChoices ; 0C - Null
+    .byte $00 ; 0D - Null
+    .byte $00 ; 0E - Null
+    .byte $00 ; 0F - Null
 
 ; EnData08*2 + one of the low bits of EnData05 is used as an index to this pointer table
 ; Pointer table to enemy movement strings
@@ -379,8 +448,8 @@ EnemyMovementPtrs:
     .word EnemyMovement0F_R, EnemyMovement0F_L
     .word EnemyMovement10_R, EnemyMovement10_L
     .word EnemyMovement11_R, EnemyMovement11_L
-; Unused padding to the above?
-    .byte $00, $00, $00, $00, $00, $00, $00, $00
+    .word $0000, $0000
+    .word $0000, $0000
 
 ; enemy accel y table ($972B)
 EnAccelYTable:
@@ -479,24 +548,39 @@ EnSpeedXTable:
 ; bit1: toggle bit2 of EnData05 in EnemyIfMoveFailedDown/EnemyIfMoveFailedUp
 ; bit0: toggle bit0 of EnData05 in EnemyIfMoveFailedRight/EnemyIfMoveFailedLeft
 L977B:
-    .byte $64, $6C, $21, $01, $04, $00, $4C, $40, $04, $00, $00, $40, $40, $00, $00, $00
+    .byte %01100100 ; 00 - Sidehopper (unused)
+    .byte %01101100 ; 01 - Ceiling sidehopper (unused)
+    .byte %00100001 ; 02 - Waver
+    .byte %00000001 ; 03 - Ripper
+    .byte %00000100 ; 04 - Skree
+    .byte %00000000 ; 05 - Zoomer (crawler)
+    .byte %01001100 ; 06 - Rio (swoopers)
+    .byte %01000000 ; 07 - Zeb
+    .byte %00000100 ; 08 - Kraid (crashes due to bug)
+    .byte %00000000 ; 09 - Kraid's lint (crashes)
+    .byte %00000000 ; 0A - Kraid's nail (crashes)
+    .byte %01000000 ; 0B - Null pointers (hard crash)
+    .byte %01000000 ; 0C - Null
+    .byte %00000000 ; 0D - Null
+    .byte %00000000 ; 0E - Null
+    .byte %00000000 ; 0F - Null
 
 ; Enemy animation related table?
-EnemyFireballRisingAnimIndexTable:
-    .byte $00, $00
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_67 - EnAnimTbl
-    .byte EnAnim_Mellow - EnAnimTbl, EnAnim_Mellow - EnAnimTbl
+EnProjectileRisingAnimIndexTable:
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
-EnemyFireballPosOffsetX:
+    .byte $00, $00
+    .byte $00, $00
+    .byte $00, $00
+EnProjectilePosOffsetX:
     .byte $0C, $F4
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
-EnemyFireballPosOffsetY:
+EnProjectilePosOffsetY:
     .byte $F4
     .byte $00
     .byte $00
@@ -504,14 +588,14 @@ EnemyFireballPosOffsetY:
 
 ; Another movement pointer table?
 ; Referenced using EnData0A
-EnemyFireballMovementPtrTable:
-    .word EnemyFireballMovement0
-    .word EnemyFireballMovement1
-    .word EnemyFireballMovement2
-    .word EnemyFireballMovement3
+EnProjectileMovementPtrTable:
+    .word EnProjectileMovement0
+    .word EnProjectileMovement1
+    .word EnProjectileMovement2
+    .word EnProjectileMovement3
 
 ; Referenced using EnData0A / 2
-EnemyFireballDamageTbl:
+EnemyProjectileDamageTbl:
     .byte $08, $08, $08, $08
 
 ; Table used for indexing the blasting animations in TileBlastAnim
@@ -526,6 +610,18 @@ TileBlastBlastAnimIndexTable:
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$8C
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$90
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$94
+
+TileBlastBlastAnimDelayTbl:
+    .byte $02 ; tile #$70
+    .byte $02 ; tile #$74
+    .byte $02 ; tile #$78
+    .byte $02 ; tile #$7C
+    .byte $02 ; tile #$80
+    .byte $02 ; tile #$84
+    .byte $02 ; tile #$88
+    .byte $02 ; tile #$8C
+    .byte $02 ; tile #$90
+    .byte $02 ; tile #$94
 
 ; Delay before tile respawns (* 4). 0 = never respawn
 TileBlastRespawnDelayTbl:
@@ -552,6 +648,18 @@ TileBlastRespawnAnimIndexTable:
     .byte TileBlastAnim4 - TileBlastAnim ; tile #$8C
     .byte TileBlastAnim9 - TileBlastAnim ; tile #$90
     .byte TileBlastAnim5 - TileBlastAnim ; tile #$94
+
+TileBlastRespawnAnimDelayTbl:
+    .byte $02 ; tile #$70
+    .byte $02 ; tile #$74
+    .byte $02 ; tile #$78
+    .byte $02 ; tile #$7C
+    .byte $02 ; tile #$80
+    .byte $02 ; tile #$84
+    .byte $02 ; tile #$88
+    .byte $02 ; tile #$8C
+    .byte $02 ; tile #$90
+    .byte $02 ; tile #$94
 
 ; Frame data for tile blasts
 
@@ -903,8 +1011,8 @@ EnemyMovement11_L:
 
 ;-------------------------------------------------------------------------------
 
-; Instruction (?) strings of a different type pointed to by EnemyFireballMovementPtrTable
-EnemyFireballMovement0:
+; Instruction (?) strings of a different type pointed to by EnProjectileMovementPtrTable
+EnProjectileMovement0:
     SignMagSpeed $04,  3, -3
     SignMagSpeed $05,  3, -2
     SignMagSpeed $06,  3, -1
@@ -914,7 +1022,7 @@ EnemyFireballMovement0:
     SignMagSpeed $50,  3,  3
     .byte $FF
 
-EnemyFireballMovement1:
+EnProjectileMovement1:
     SignMagSpeed $09,  2, -4
     SignMagSpeed $08,  2, -2
     SignMagSpeed $07,  2, -1
@@ -924,7 +1032,7 @@ EnemyFireballMovement1:
     SignMagSpeed $50,  2,  7
     .byte $FF
 
-EnemyFireballMovement2:
+EnProjectileMovement2:
     SignMagSpeed $07,  2, -4
     SignMagSpeed $06,  2, -2
     SignMagSpeed $05,  2, -1
@@ -934,7 +1042,7 @@ EnemyFireballMovement2:
     SignMagSpeed $50,  2,  7
     .byte $FF
 
-EnemyFireballMovement3:
+EnProjectileMovement3:
     SignMagSpeed $05,  2, -4
     SignMagSpeed $04,  2, -2
     SignMagSpeed $03,  2, -1
@@ -945,23 +1053,6 @@ EnemyFireballMovement3:
     .byte $FF
 
 ;-------------------------------------------------------------------------------
-
-CommonEnemyJump_00_01_02:
-    lda EnemyStatusPreAI
-    cmp #enemyStatus_Resting
-    beq @resting
-    cmp #enemyStatus_Explode
-    beq @explode
-        ; enemy default
-        lda $00
-        jmp CommonJump_00
-    @resting:
-        ; enemy resting
-        lda $01
-        jmp CommonJump_01
-    @explode:
-        ; enemy explode
-        jmp CommonJump_02
 
 .include "enemies/sidehopper.asm"
 
@@ -993,12 +1084,6 @@ CommonEnemyJump_00_01_02:
 ;-------------------------------------------------------------------------------
 ; Brinstar Kraid Routine
 .include "enemies/kraid.asm"
-; Note: For this bank the functions StorePositionToTemp and LoadPositionFromTemp
-;  are in are in kraid.asm. Extract those functions from that file if you plan
-;  on removing it.
-
-AreaRoutineStub: ;L9D35
-    rts
 
 ; Strings pointed to by TileBlastFramePtrTable
 TileBlastFrame00:
@@ -1061,14 +1146,14 @@ TileBlastFrame0F:
 TileBlastFrame10:
     ; nothing
 
-; duration, CHR bank
+; duration, CHR banks
 ; 0 = end
 TileAnim0:
 TileAnim1:
-    .byte $05, SurfaceBG_Frame0/$400
-    .byte $05, SurfaceBG_Frame1/$400
-    .byte $05, SurfaceBG_Frame2/$400
-    .byte $05, SurfaceBG_Frame3/$400
+    .byte $05, SurfaceBG_Frame0/$400, SurfaceBG_Frame0/$400+1, SurfaceBG_Frame0/$400+2, SurfaceBG_Frame0/$400+3
+    .byte $05, SurfaceBG_Frame1/$400, SurfaceBG_Frame1/$400+1, SurfaceBG_Frame1/$400+2, SurfaceBG_Frame1/$400+3
+    .byte $05, SurfaceBG_Frame2/$400, SurfaceBG_Frame2/$400+1, SurfaceBG_Frame2/$400+2, SurfaceBG_Frame2/$400+3
+    .byte $05, SurfaceBG_Frame3/$400, SurfaceBG_Frame3/$400+1, SurfaceBG_Frame3/$400+2, SurfaceBG_Frame3/$400+3
     .byte $00
 
 ; first entry is initial palette index
@@ -1088,6 +1173,10 @@ PalAnim1:
 ;------------------------------------[ Special items table ]-----------------------------------------
 
 .include "data/surface/global_objs.asm"
+
+;----------------------------------------[ Screen load code ]----------------------------------------
+
+.include "screen_load_code/brinstar.asm"
 
 .ends
 

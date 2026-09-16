@@ -21,6 +21,9 @@
     .fail "no build target specified"
 .endif
 
+.ifndef BUILDTARGET_MAPPER
+    .fail "no build target mapper specified"
+.endif
 
 .memorymap
     defaultslot 0
@@ -47,8 +50,6 @@
 
 
 ;------------------------------------------[ Misc. defines ]-----------------------------------------
-
-modeTitle              = 1
 
 ;Special item types.
 it_Squeept             = $1
@@ -98,7 +99,6 @@ ui_ICEBEAM             = %000111 << 10
 ui_ENERGYTANK          = %001000 << 10
 ui_MISSILES            = %001001 << 10
 ui_MISSILEDOOR         = %001010 << 10
-;ui_BOMBS               = %001100 << 10 ; this doesnt seem to be correct
 ui_MOTHERBRAIN         = %001110 << 10
 ui_ZEBETITE1           = %001111 << 10
 ui_ZEBETITE2           = %010000 << 10

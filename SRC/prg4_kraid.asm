@@ -58,10 +58,15 @@ PalPntrTbl:
     PtrTableEntry PalPntrTbl, Palette1A                 ;($A1C5)Suitless Samus power suit with missiles selected palette.
     PtrTableEntry PalPntrTbl, Palette1B                 ;($A1CD)Suitless Samus varia suit with missiles selected palette.
 
-AreaPointers:
+SpecItmsTblPtr:
     .word SpecItmsTbl               ;($A26D)Beginning of special items table.
-    .word EnFramePtrTable1          ;($9CF7)Address table into enemy animation data.
-    .word EnAnimTbl                 ;($9C86)Index to values in addr tables for enemy animations.
+
+.DSTRUCT AreaPointers_ROM INSTANCEOF AreaPointersStruct VALUES
+    EnFramePtrTable1:   .word EnFramePtrTable1          ;($9DE0)Pointer table into enemy animation data.
+    EnAnimTable:        .word EnAnimTable               ;($9D6A)Index to values in addr tables for enemy animations.
+.ENDST
+
+.include "screen_load_code/common.asm"
 
 ; Tourian-specific jump table (dummied out in other banks)
 ;  Each line is RTS, NOP, NOP in this bank
@@ -72,26 +77,16 @@ AreaPointers:
     .byte $60, $EA, $EA
     .byte $60, $EA, $EA
     .byte $60, $EA, $EA
-    .byte $60, $EA, $EA
-    .byte $60, $EA, $EA
 
 AreaRoutine:
-    jmp AreaRoutineStub ; Just an RTS
+    .byte $60, $EA, $EA ; Just an RTS
 
-L95CC:
-    .byte $1D                       ;Kraid's room.
-AreaMusicFlag:
-    .byte music_Trench
 AreaMinibossMusic:
     .byte music_JakeTheme
 
-;Special room numbers(used to start item room music).
-AreaItemRoomNumbers:
-.byte $22, $43, $FF, $FF
-
-AreaSamusMapPosX:
+AreaMapPosX:
     .byte $14   ;Samus start x coord on world map.
-AreaSamusMapPosY:
+AreaMapPosY:
     .byte $05   ;Samus start y coord on world map.
 AreaSamusX:
     .byte $80   ;Samus start horizontal screen position.
@@ -99,19 +94,30 @@ AreaSamusY:
     .byte $71   ;Samus start vertical screen position.
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
+AreaMusicFlag:
+    .byte music_Trench
+AreaTilesetIndex:
+    .byte $00
 
-AreaFireballKilledAnimIndex:
-    .byte EnAnim_FireballKilled - EnAnimTbl
+AreaEnProjectileKilledAnimIndex:
+    .byte EnAnim_EnProjectileKilled - EnAnimTable
 AreaExplosionAnimIndex:
-    .byte EnAnim_43 - EnAnimTbl
+    .byte EnAnim_Explosion - EnAnimTable
 
     .byte $00, $00
-AreaFireballFallingAnimIndex:
+AreaEnProjectileFallingAnimIndex:
     .byte $00, $00
-AreaFireballSplatterAnimIndex:
+AreaEnProjectileSplatterAnimIndex:
     .byte $00, $00, $00, $00
 AreaMellowAnimIndex:
-    .byte EnAnim_64 - EnAnimTbl
+    .byte EnAnim_Memu - EnAnimTable
+
+AreaMissilePickupAnimFrame:
+    .byte _id_EnFrame_MissilePickup
+AreaSmallEnergyPickupAnimFrame:
+    .byte _id_EnFrame_SmallEnergyPickup
+AreaBigEnergyPickupAnimFrame:
+    .byte _id_EnFrame_BigEnergyPickup
 
 AreaTilesets:
     .word TileAnim0, PalAnim0
@@ -122,41 +128,56 @@ ChooseEnemyAIRoutine:
     jsr CommonJump_ChooseRoutine
         .word SidehopperFloorAIRoutine ; 00 - sidehopper
         .word SidehopperCeilingAIRoutine ; 01 - ceiling sidehopper
-        .word AreaRoutineStub ; 02 - unused enemy type that doesn't properly clear itself
+        .word RemoveEnemy ; 02 - unused enemy type that doesn't properly clear itself
         .word RipperAIRoutine ; 03 - ripper
         .word SkreeAIRoutine ; 04 - skree
         .word CrawlerAIRoutine ; 05 - crawler
-        .word AreaRoutineStub ; 06 - same as 2
+        .word RemoveEnemy ; 06 - same as 2
         .word PipeBugAIRoutine ; 07 - geega
         .word KraidAIRoutine ; 08 - kraid
         .word KraidLintAIRoutine ; 09 - kraid lint
-        .word KraidNailAIRoutine ; 0a - kraid nail
-        .word AreaRoutineStub ; 0b - same as 2
-        .word AreaRoutineStub ; 0c - same as 2
-        .word AreaRoutineStub ; 0d - same as 2
-        .word AreaRoutineStub ; 0e - same as 2
-        .word AreaRoutineStub ; 0f - same as 2
+        .word KraidNailAIRoutine ; 0A - kraid nail
+        .word RemoveEnemy ; 0B - same as 2
+        .word RemoveEnemy ; 0C - same as 2
+        .word RemoveEnemy ; 0D - same as 2
+        .word RemoveEnemy ; 0E - same as 2
+        .word RemoveEnemy ; 0F - same as 2
 
 EnemyDeathAnimIndex:
-    .byte EnAnim_27 - EnAnimTbl, EnAnim_27 - EnAnimTbl
-    .byte EnAnim_29 - EnAnimTbl, EnAnim_29 - EnAnimTbl
-    .byte EnAnim_2D - EnAnimTbl, EnAnim_2B - EnAnimTbl ; unused enemy
-    .byte EnAnim_31 - EnAnimTbl, EnAnim_2F - EnAnimTbl
-    .byte EnAnim_33 - EnAnimTbl, EnAnim_33 - EnAnimTbl
-    .byte EnAnim_41 - EnAnimTbl, EnAnim_41 - EnAnimTbl
-    .byte EnAnim_48 - EnAnimTbl, EnAnim_48 - EnAnimTbl ; unused enemy
-    .byte EnAnim_50 - EnAnimTbl, EnAnim_4E - EnAnimTbl
-    .byte EnAnim_6D - EnAnimTbl, EnAnim_6F - EnAnimTbl
-    .byte $00, $00
-    .byte $00, $00
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_64 - EnAnimTbl ; unused enemy
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_64 - EnAnimTbl ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
+    .byte EnAnim_SidehopperFloorExplode - EnAnimTable ; 00 - sidehopper
+    .byte EnAnim_SidehopperCeilingExplode - EnAnimTable ; 01 - ceiling sidehopper
+    .byte EnAnim_WaverExplode_R - EnAnimTable ; 02 - unused enemy type that doesn't properly clear itself
+    .byte EnAnim_RipperExplode_R - EnAnimTable ; 03 - ripper
+    .byte EnAnim_SkreeExplode - EnAnimTable ; 04 - skree
+    .byte EnAnim_ZeelaExplode - EnAnimTable ; 05 - crawler
+    .byte $00 ; 06 - same as 2
+    .byte EnAnim_GeegaExplode_R - EnAnimTable ; 07 - geega
+    .byte EnAnim_KraidExplode_R - EnAnimTable ; 08 - kraid
+    .byte $00 ; 09 - kraid lint
+    .byte $00 ; 0A - kraid nail
+    .byte EnAnim_Memu - EnAnimTable ; 0B - same as 2
+    .byte EnAnim_Memu - EnAnimTable ; 0C - same as 2
+    .byte $00 ; 0D - same as 2
+    .byte $00 ; 0E - same as 2
+    .byte $00 ; 0F - same as 2
 
 EnemyHealthTbl:
-    .byte $08, $08, $00, $FF, $02, $02, $00, $01, $60, $FF, $FF, $00, $00, $00, $00, $00
+    .byte $08 ; 00 - sidehopper
+    .byte $08 ; 01 - ceiling sidehopper
+    .byte $00 ; 02 - unused enemy type that doesn't properly clear itself
+    .byte $FF ; 03 - ripper
+    .byte $02 ; 04 - skree
+    .byte $02 ; 05 - crawler
+    .byte $00 ; 06 - same as 2
+    .byte $01 ; 07 - geega
+    .byte $60 ; 08 - kraid
+    .byte $FF ; 09 - kraid lint
+    .byte $FF ; 0A - kraid nail
+    .byte $00 ; 0B - same as 2
+    .byte $00 ; 0C - same as 2
+    .byte $00 ; 0D - same as 2
+    .byte $00 ; 0E - same as 2
+    .byte $00 ; 0F - same as 2
 
 ; Base damage caused by area enemies.
 ; Normal, tough
@@ -238,103 +259,148 @@ EnemyDropChanceTblTough:
     .byte 90, 60, 90
 
 EnemyRestingAnimIndex:
-    .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
-    .byte EnAnim_0B - EnAnimTbl, EnAnim_0B - EnAnimTbl
-    .byte EnAnim_17 - EnAnimTbl, EnAnim_13 - EnAnimTbl ; unused enemy
-    .byte EnAnim_1B - EnAnimTbl, EnAnim_19 - EnAnimTbl
-    .byte EnAnim_23 - EnAnimTbl, EnAnim_23 - EnAnimTbl
-    .byte EnAnim_ZeelaOnFloor - EnAnimTbl, EnAnim_ZeelaOnFloor - EnAnimTbl
-    .byte EnAnim_48 - EnAnimTbl, EnAnim_48 - EnAnimTbl ; unused enemy
-    .byte EnAnim_54 - EnAnimTbl, EnAnim_52 - EnAnimTbl
-    .byte EnAnim_67 - EnAnimTbl, EnAnim_6A - EnAnimTbl
-    .byte EnAnim_56 - EnAnimTbl, EnAnim_58 - EnAnimTbl
-    .byte EnAnim_5D - EnAnimTbl, EnAnim_62 - EnAnimTbl
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_64 - EnAnimTbl ; unused enemy
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_64 - EnAnimTbl ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
+    .byte EnAnim_SidehopperFloorIdle - EnAnimTable ; 00 - sidehopper
+    .byte EnAnim_SidehopperCeilingIdle - EnAnimTable ; 01 - ceiling sidehopper
+    .byte EnAnim_Waver0_R - EnAnimTable ; 02 - unused enemy type that doesn't properly clear itself
+    .byte EnAnim_Ripper_R - EnAnimTable ; 03 - ripper
+    .byte EnAnim_Skree - EnAnimTable ; 04 - skree
+    .byte EnAnim_ZeelaOnFloor - EnAnimTable ; 05 - crawler
+    .byte $00 ; 06 - same as 2
+    .byte EnAnim_GeegaResting_R - EnAnimTable ; 07 - geega
+    .byte EnAnim_Kraid_R - EnAnimTable ; 08 - kraid
+    .byte EnAnim_KraidLint_R - EnAnimTable ; 09 - kraid lint
+    .byte EnAnim_KraidNailIdle_R - EnAnimTable ; 0A - kraid nail
+    .byte EnAnim_Memu - EnAnimTable ; 0B - same as 2
+    .byte EnAnim_Memu - EnAnimTable ; 0C - same as 2
+    .byte $00 ; 0D - same as 2
+    .byte $00 ; 0E - same as 2
+    .byte $00 ; 0F - same as 2
 
 EnemyActiveAnimIndex:
-    .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
-    .byte EnAnim_0B - EnAnimTbl, EnAnim_0B - EnAnimTbl
-    .byte EnAnim_17 - EnAnimTbl, EnAnim_13 - EnAnimTbl ; unused enemy
-    .byte EnAnim_1B - EnAnimTbl, EnAnim_19 - EnAnimTbl
-    .byte EnAnim_23 - EnAnimTbl, EnAnim_23 - EnAnimTbl
-    .byte EnAnim_ZeelaOnFloor - EnAnimTbl, EnAnim_ZeelaOnFloor - EnAnimTbl
-    .byte EnAnim_48 - EnAnimTbl, EnAnim_48 - EnAnimTbl ; unused enemy
-    .byte EnAnim_4B - EnAnimTbl, EnAnim_48 - EnAnimTbl
-    .byte EnAnim_67 - EnAnimTbl, EnAnim_6A - EnAnimTbl
-    .byte EnAnim_56 - EnAnimTbl, EnAnim_58 - EnAnimTbl
-    .byte EnAnim_5A - EnAnimTbl, EnAnim_5F - EnAnimTbl
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_64 - EnAnimTbl ; unused enemy
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_64 - EnAnimTbl ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
+    .byte EnAnim_SidehopperFloorIdle - EnAnimTable ; 00 - sidehopper
+    .byte EnAnim_SidehopperCeilingIdle - EnAnimTable ; 01 - ceiling sidehopper
+    .byte EnAnim_Waver0_R - EnAnimTable ; 02 - unused enemy type that doesn't properly clear itself
+    .byte EnAnim_Ripper_R - EnAnimTable ; 03 - ripper
+    .byte EnAnim_Skree - EnAnimTable ; 04 - skree
+    .byte EnAnim_ZeelaOnFloor - EnAnimTable ; 05 - crawler
+    .byte $00 ; 06 - same as 2
+    .byte EnAnim_Geega_R - EnAnimTable ; 07 - geega
+    .byte EnAnim_Kraid_R - EnAnimTable ; 08 - kraid
+    .byte EnAnim_KraidLint_R - EnAnimTable ; 09 - kraid lint
+    .byte EnAnim_KraidNailMoving_R - EnAnimTable ; 0A - kraid nail
+    .byte EnAnim_Memu - EnAnimTable ; 0B - same as 2
+    .byte EnAnim_Memu - EnAnimTable ; 0C - same as 2
+    .byte $00 ; 0D - same as 2
+    .byte $00 ; 0E - same as 2
+    .byte $00 ; 0F - same as 2
 
 L967B:
-    .byte $00
-    .byte $00
-    .byte $00 ; unused enemy
-    .byte $00 | $80
-    .byte $00
-    .byte $00
-    .byte $00 ; unused enemy
-    .byte $00
-    .byte $00
-    .byte $00
-    .byte $00
-    .byte $00 ; unused enemy
-    .byte $00 | $80 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
+    .byte $00 ; 00 - sidehopper
+    .byte $00 ; 01 - ceiling sidehopper
+    .byte $00 ; 02 - unused enemy type that doesn't properly clear itself
+    .byte $00 | $80 ; 03 - ripper
+    .byte $00 ; 04 - skree
+    .byte $00 ; 05 - crawler
+    .byte $00 ; 06 - same as 2
+    .byte $00 ; 07 - geega
+    .byte $00 ; 08 - kraid
+    .byte $00 ; 09 - kraid lint
+    .byte $00 ; 0A - kraid nail
+    .byte $00 ; 0B - same as 2
+    .byte $00 | $80 ; 0C - same as 2
+    .byte $00 ; 0D - same as 2
+    .byte $00 ; 0E - same as 2
+    .byte $00 ; 0F - same as 2
 
 L968B:
-    .byte $89, $89, $09, $00, $86, $04, $89, $90, $83, $00, $00, $00, $82, $00, $00, $00
+    .byte %10000101 ; 00 - sidehopper
+    .byte %10000101 ; 01 - ceiling sidehopper
+    .byte %00000001 ; 02 - unused enemy type that doesn't properly clear itself
+    .byte %00000000 ; 03 - ripper
+    .byte %10000110 ; 04 - skree
+    .byte %00000100 ; 05 - crawler
+    .byte %10000001 ; 06 - same as 2
+    .byte %10010000 ; 07 - geega
+    .byte %10000011 ; 08 - kraid
+    .byte %00000000 ; 09 - kraid lint
+    .byte %00000000 ; 0A - kraid nail
+    .byte %00000000 ; 0B - same as 2
+    .byte %10000010 ; 0C - same as 2
+    .byte %00000000 ; 0D - same as 2
+    .byte %00000000 ; 0E - same as 2
+    .byte %00000000 ; 0F - same as 2
 
-EnemyForceSpeedTowardsSamusDelayTbl:
-    .byte $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $40, $00, $00, $00
+EnemyData0DTbl:
+    .byte $01 ; 00 - sidehopper
+    .byte $01 ; 01 - ceiling sidehopper
+    .byte $01 ; 02 - unused enemy type that doesn't properly clear itself
+    .byte $01 ; 03 - ripper
+    .byte $01 ; 04 - skree
+    .byte $01 ; 05 - crawler
+    .byte $01 ; 06 - same as 2
+    .byte $01 ; 07 - geega
+    .byte $01 ; 08 - kraid
+    .byte $01 ; 09 - kraid lint
+    .byte $01 ; 0A - kraid nail
+    .byte $01 ; 0B - same as 2
+    .byte $40 ; 0C - same as 2
+    .byte $00 ; 0D - same as 2
+    .byte $00 ; 0E - same as 2
+    .byte $00 ; 0F - same as 2
 
 EnemyDistanceToSamusThreshold:
-    .byte $00
-    .byte $00
-    .byte $6 | (0 << 7) ; unused enemy
-    .byte $00
-    .byte $3 | (1 << 7)
-    .byte $00
-    .byte $4 | (1 << 7) ; unused enemy
-    .byte $00
-    .byte $00
-    .byte $00
-    .byte $00
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
+    .byte $00 ; 00 - sidehopper
+    .byte $00 ; 01 - ceiling sidehopper
+    .byte $6 | (0 << 7) ; 02 - unused enemy type that doesn't properly clear itself
+    .byte $00 ; 03 - ripper
+    .byte $3 | (1 << 7) ; 04 - skree
+    .byte $00 ; 05 - crawler
+    .byte $4 | (1 << 7) ; 06 - same as 2
+    .byte $00 ; 07 - geega
+    .byte $00 ; 08 - kraid
+    .byte $00 ; 09 - kraid lint
+    .byte $00 ; 0A - kraid nail
+    .byte $00 ; 0B - same as 2
+    .byte $00 ; 0C - same as 2
+    .byte $00 ; 0D - same as 2
+    .byte $00 ; 0E - same as 2
+    .byte $00 ; 0F - same as 2
 
 EnemyInitDelayTbl:
-    .byte $08, $08, $01, $01, $01, $01, $10, $08, $10, $00, $00, $01, $01, $00, $00, $00
+    .byte $08 ; 00 - sidehopper
+    .byte $08 ; 01 - ceiling sidehopper
+    .byte $01 ; 02 - unused enemy type that doesn't properly clear itself
+    .byte $01 ; 03 - ripper
+    .byte $01 ; 04 - skree
+    .byte $01 ; 05 - crawler
+    .byte $10 ; 06 - same as 2
+    .byte $08 ; 07 - geega
+    .byte $10 ; 08 - kraid
+    .byte $00 ; 09 - kraid lint
+    .byte $00 ; 0A - kraid nail
+    .byte $01 ; 0B - same as 2
+    .byte $01 ; 0C - same as 2
+    .byte $00 ; 0D - same as 2
+    .byte $00 ; 0E - same as 2
+    .byte $00 ; 0F - same as 2
 
 EnemyMovementChoiceOffset:
-    .byte EnemyMovementChoice_SidehopperFloor - EnemyMovementChoices
-    .byte EnemyMovementChoice_SidehopperCeiling - EnemyMovementChoices
-    .byte $00 ; unused enemy
-    .byte EnemyMovementChoice_Ripper - EnemyMovementChoices
-    .byte EnemyMovementChoice_Skree - EnemyMovementChoices
-    .byte EnemyMovementChoice_Zeela - EnemyMovementChoices ; enemy moves manually
-    .byte $00 ; unused enemy
-    .byte EnemyMovementChoice_Geega - EnemyMovementChoices
-    .byte EnemyMovementChoice_Kraid - EnemyMovementChoices
-    .byte EnemyMovementChoice_KraidLint - EnemyMovementChoices
-    .byte EnemyMovementChoice_KraidNail - EnemyMovementChoices
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
+    .byte EnemyMovementChoice_SidehopperFloor - EnemyMovementChoices ; 00 - sidehopper
+    .byte EnemyMovementChoice_SidehopperCeiling - EnemyMovementChoices ; 01 - ceiling sidehopper
+    .byte $00 ; 02 - unused enemy type that doesn't properly clear itself
+    .byte EnemyMovementChoice_Ripper - EnemyMovementChoices ; 03 - ripper
+    .byte EnemyMovementChoice_Skree - EnemyMovementChoices ; 04 - skree
+    .byte EnemyMovementChoice_Zeela - EnemyMovementChoices ; 05 - crawler (enemy moves manually)
+    .byte $00 ; 06 - same as 2
+    .byte EnemyMovementChoice_Geega - EnemyMovementChoices ; 07 - geega
+    .byte EnemyMovementChoice_Kraid - EnemyMovementChoices ; 08 - kraid
+    .byte EnemyMovementChoice_KraidLint - EnemyMovementChoices ; 09 - kraid lint
+    .byte EnemyMovementChoice_KraidNail - EnemyMovementChoices ; 0A - kraid nail
+    .byte $00 ; 0B - same as 2
+    .byte $00 ; 0C - same as 2
+    .byte $00 ; 0D - same as 2
+    .byte $00 ; 0E - same as 2
+    .byte $00 ; 0F - same as 2
 
 EnemyMovementPtrs:
     .word EnemyMovement00_R, EnemyMovement00_L
@@ -355,7 +421,8 @@ EnemyMovementPtrs:
     .word EnemyMovement0F_R, EnemyMovement0F_L
     .word EnemyMovement10_R, EnemyMovement10_L
     .word EnemyMovement11_R, EnemyMovement11_L
-    .byte $00, $00, $00, $00, $00, $00, $00, $00
+    .word $0000, $0000
+    .word $0000, $0000
 
 EnAccelYTable:
     .byte  $20 ; $00
@@ -443,36 +510,51 @@ EnSpeedXTable:
     .word  $0000 ; $13
 
 L977B:
-    .byte $64, $6C, $21, $01, $04, $00, $4C, $40, $04, $00, $00, $40, $40, $00, $00, $00
+    .byte %01100100 ; 00 - sidehopper
+    .byte %01101100 ; 01 - ceiling sidehopper
+    .byte %00100001 ; 02 - unused enemy type that doesn't properly clear itself
+    .byte %00000001 ; 03 - ripper
+    .byte %00000100 ; 04 - skree
+    .byte %00000000 ; 05 - crawler (enemy moves manually)
+    .byte %01001100 ; 06 - same as 2
+    .byte %01000000 ; 07 - geega
+    .byte %00000100 ; 08 - kraid
+    .byte %00000000 ; 09 - kraid lint
+    .byte %00000000 ; 0A - kraid nail
+    .byte %01000000 ; 0B - same as 2
+    .byte %01000000 ; 0C - same as 2
+    .byte %00000000 ; 0D - same as 2
+    .byte %00000000 ; 0E - same as 2
+    .byte %00000000 ; 0F - same as 2
 
-EnemyFireballRisingAnimIndexTable:
-    .byte $00, $00
-    .byte EnAnim_5F - EnAnimTbl, EnAnim_62 - EnAnimTbl
-    .byte EnAnim_64 - EnAnimTbl, EnAnim_64 - EnAnimTbl
+EnProjectileRisingAnimIndexTable:
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
-EnemyFireballPosOffsetX:
+    .byte $00, $00
+    .byte $00, $00
+    .byte $00, $00
+EnProjectilePosOffsetX:
     .byte $0C, $F4
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
-EnemyFireballPosOffsetY:
+EnProjectilePosOffsetY:
     .byte $F4
     .byte $00
     .byte $00
     .byte $00
 
-EnemyFireballMovementPtrTable:
-    .word EnemyFireballMovement0
-    .word EnemyFireballMovement1
-    .word EnemyFireballMovement2
-    .word EnemyFireballMovement3
+EnProjectileMovementPtrTable:
+    .word EnProjectileMovement0
+    .word EnProjectileMovement1
+    .word EnProjectileMovement2
+    .word EnProjectileMovement3
 
 ; Referenced using EnData0A / 2
-EnemyFireballDamageTbl:
+EnemyProjectileDamageTbl:
     .byte $20, $20, $20, $20
 
 TileBlastBlastAnimIndexTable:
@@ -486,6 +568,18 @@ TileBlastBlastAnimIndexTable:
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$8C
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$90
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$94
+
+TileBlastBlastAnimDelayTbl:
+    .byte $02 ; tile #$70
+    .byte $02 ; tile #$74
+    .byte $02 ; tile #$78
+    .byte $02 ; tile #$7C
+    .byte $02 ; tile #$80
+    .byte $02 ; tile #$84
+    .byte $02 ; tile #$88
+    .byte $02 ; tile #$8C
+    .byte $02 ; tile #$90
+    .byte $02 ; tile #$94
 
 TileBlastRespawnDelayTbl:
     .byte $00 ; tile #$70
@@ -510,6 +604,18 @@ TileBlastRespawnAnimIndexTable:
     .byte TileBlastAnim4 - TileBlastAnim ; tile #$8C
     .byte TileBlastAnim9 - TileBlastAnim ; tile #$90
     .byte TileBlastAnim5 - TileBlastAnim ; tile #$94
+
+TileBlastRespawnAnimDelayTbl:
+    .byte $02 ; tile #$70
+    .byte $02 ; tile #$74
+    .byte $02 ; tile #$78
+    .byte $02 ; tile #$7C
+    .byte $02 ; tile #$80
+    .byte $02 ; tile #$84
+    .byte $02 ; tile #$88
+    .byte $02 ; tile #$8C
+    .byte $02 ; tile #$90
+    .byte $02 ; tile #$94
 
 TileBlastAnim:
 TileBlastAnim0:  .byte $06,$07,$00,$FE ; blasting tile or respawning tile #$7C
@@ -748,7 +854,7 @@ EnemyMovement11_L:
     SignMagSpeed $A0, -2,  7
     EnemyMovementInstr_Restart
 
-EnemyFireballMovement0:
+EnProjectileMovement0:
     SignMagSpeed $04,  3, -3
     SignMagSpeed $05,  3, -2
     SignMagSpeed $06,  3, -1
@@ -758,7 +864,7 @@ EnemyFireballMovement0:
     SignMagSpeed $50,  3,  3
     .byte $FF
 
-EnemyFireballMovement1:
+EnProjectileMovement1:
     SignMagSpeed $09,  2, -4
     SignMagSpeed $08,  2, -2
     SignMagSpeed $07,  2, -1
@@ -768,7 +874,7 @@ EnemyFireballMovement1:
     SignMagSpeed $50,  2,  7
     .byte $FF
 
-EnemyFireballMovement2:
+EnProjectileMovement2:
     SignMagSpeed $07,  2, -4
     SignMagSpeed $06,  2, -2
     SignMagSpeed $05,  2, -1
@@ -778,7 +884,7 @@ EnemyFireballMovement2:
     SignMagSpeed $50,  2,  7
     .byte $FF
 
-EnemyFireballMovement3:
+EnProjectileMovement3:
     SignMagSpeed $05,  2, -4
     SignMagSpeed $04,  2, -2
     SignMagSpeed $03,  2, -1
@@ -787,23 +893,6 @@ EnemyFireballMovement3:
     SignMagSpeed $05,  2,  4
     SignMagSpeed $50,  2,  7
     .byte $FF
-
-CommonEnemyJump_00_01_02:
-    lda EnemyStatusPreAI
-    cmp #enemyStatus_Resting
-    beq @resting
-    cmp #enemyStatus_Explode
-    beq @explode
-        ; enemy default
-        lda $00
-        jmp CommonJump_00
-    @resting:
-        ; enemy resting
-        lda $01
-        jmp CommonJump_01
-    @explode:
-        ; enemy explode
-        jmp CommonJump_02
 
 ;-------------------------------------------------------------------------------
 
@@ -829,12 +918,6 @@ CommonEnemyJump_00_01_02:
 ;-------------------------------------------------------------------------------
 ; Kraid Routine
 .include "enemies/kraid.asm"
-; Note: For this bank the functions StorePositionToTemp and LoadPositionFromTemp
-;  are in are in kraid.asm. Extract those functions from that file if you plan
-;  on removing it.
-
-AreaRoutineStub:
-    rts
 
 ; What's this table?
 TileBlastFrame00:
@@ -906,10 +989,10 @@ TileBlastFrame10:
 
 TileAnim0:
 TileAnim1:
-    .byte $05, TrenchBG_Frame0/$400
-    .byte $05, TrenchBG_Frame1/$400
-    .byte $05, TrenchBG_Frame2/$400
-    .byte $05, TrenchBG_Frame3/$400
+    .byte $05, TrenchBG_Frame0/$400, TrenchBG_Frame0/$400+1, TrenchBG_Frame0/$400+2, TrenchBG_Frame0/$400+3
+    .byte $05, TrenchBG_Frame1/$400, TrenchBG_Frame1/$400+1, TrenchBG_Frame1/$400+2, TrenchBG_Frame1/$400+3
+    .byte $05, TrenchBG_Frame2/$400, TrenchBG_Frame2/$400+1, TrenchBG_Frame2/$400+2, TrenchBG_Frame2/$400+3
+    .byte $05, TrenchBG_Frame3/$400, TrenchBG_Frame3/$400+1, TrenchBG_Frame3/$400+2, TrenchBG_Frame3/$400+3
     .byte $00
 
 PalAnim0:
@@ -926,6 +1009,10 @@ PalAnim1:
 ;-----------------------------------[ Special items table ]-----------------------------------------
 
 .include "data/trench/global_objs.asm"
+
+;----------------------------------------[ Screen load code ]----------------------------------------
+
+.include "screen_load_code/kraid.asm"
 
 .ends
 

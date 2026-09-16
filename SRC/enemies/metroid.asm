@@ -1,6 +1,11 @@
+;data20:
+  ;bits 0-3 is #$0 to #$C, frame counter from touching to fully latched on.
+  ;bits 4-6 is #$0 to #$5, count how many bomb hits (5 for separation).
+  ;bit 7 is sign of x speed
+
 MetroidAIRoutine:
     ; Delete self if escape timer is active (EndTimer+1 != #$FF)
-    ldy EndTimer+1
+    ldy EndTimer+1.b
     iny
     beq L9804
         lda #$00
@@ -12,18 +17,39 @@ MetroidAIRoutine:
     lda #$0F
     sta $00
     sta $01
-    ; branch if bit 7 of EnData05 is set
-    lda EnData05,x
-    asl
-    bmi CommonEnemyJump_00_01_02
     ; branch if metroid is exploding
     lda EnsExtra.0.status,x
     cmp #enemyStatus_Explode
-    beq CommonEnemyJump_00_01_02
-    
+    bne +
+    jmp CommonEnemyJump_00_01_02
+
+    +
+    ; branch if enemy is not initing
+    lda EnsExtra.0.pose,x
+    bne +
+        ; enemy is initing, init metroid not latching
+        sta EnsExtra2.0.data20,x
+    +
+
+    ; check if metroid is frozen or not
+    lda EnsExtra.0.status,x
+    cmp #enemyStatus_Frozen
+    bne L9894
+        ; metroid is frozen
+        ; make it vincible with 20 health
+        lda #20
+        sta EnHealth,x
+        ; clear latch
+        lda #$00
+        sta EnsExtra2.0.data20,x
+        beq L9822 ; branch always
+    L9894:
+        ; metroid is not frozen, metroid is invincible
+        lda #$FF
+        sta EnHealth,x
+
     ; branch if metroid latch for this metroid is inactive
-    jsr LoadEnemySlotIDIntoY
-    lda MetroidLatch0400,y
+    lda EnsExtra2.0.data20,x
     beq L9822
         ; metroid latch is active, jump
         jmp L9899
@@ -97,26 +123,9 @@ MetroidAIRoutine:
     jsr GetMetroidAccel
     sta EnsExtra.0.accelY,x
     
-    ; check if metroid is frozen or not
-    lda EnsExtra.0.status,x
-    cmp #enemyStatus_Frozen
-    bne L9894
-        ; metroid is frozen
-        ; check if metroid was invincible
-        ldy EnHealth,x
-        iny
-        bne L9899
-            ; if it was invincible, make it vincible with 20 health
-            lda #20
-            sta EnHealth,x
-            bne L9899
-    L9894:
-        ; metroid is not frozen, metroid is invincible
-        lda #$FF
-        sta EnHealth,x
 L9899:
-    lda EnemyMovementPtr
-    cmp #$06
+    lda EnemyStatusPreAI
+    cmp #enemyStatus_Hurt
     bne L98A9
     cmp EnsExtra.0.status,x
     beq L98A9
@@ -127,8 +136,7 @@ L98A9:
     and #$20
     beq L990F
         ; check if metroid is latched onto Samus
-        jsr LoadEnemySlotIDIntoY
-        lda MetroidLatch0400,y
+        lda EnsExtra2.0.data20,x
         beq L98EF
             ; metroid is latched onto Samus
             ; don't count bomb hit if not hit by a bomb explosion
@@ -142,10 +150,10 @@ L98A9:
             bne L9932
             
             ; count up one bomb hit
-            lda MetroidLatch0400,y
+            lda EnsExtra2.0.data20,x
             clc
             adc #$10
-            sta MetroidLatch0400,y
+            sta EnsExtra2.0.data20,x
             
             ; check if 5 bomb hits have been dealt to the metroid
             and #$70
@@ -166,7 +174,7 @@ L98A9:
         ; let go of Samus
         lda #$00
         sta EnIsHit,x
-        sta MetroidLatch0400,y
+        sta EnsExtra2.0.data20,x
         sta EnSpeedSubPixelY,x
         sta EnSpeedSubPixelX,x
         ; set repel speed
@@ -178,15 +186,14 @@ L98A9:
         sta EnSpeedX,x
     L990F:
     ; check if metroid is latched onto Samus (again)
-    jsr LoadEnemySlotIDIntoY
-    lda MetroidLatch0400,y
+    lda EnsExtra2.0.data20,x
     bne L9932
         ; metroid is not latched
         ; check if metroid is touching Samus
         lda EnIsHit,x
         and #$04
         ; branch if metroid doesnt touch Samus
-        beq L9964
+        beq L9967
         
         ; begin attempt to latch onto Samus
         ; put sign of x speed + $01 into latch
@@ -195,23 +202,22 @@ L98A9:
         ora #$01
         tay
         jsr ClearMetroidSpeed
-        jsr LoadEnemySlotIDIntoX
         tya
-        sta MetroidLatch0400,x
-        txa
-        tay
+        sta EnsExtra2.0.data20,x
     L9932:
     ; metroid is latched
+    ; branch if bit 7 of EnData05 is set
+    lda EnData05,x
+    asl
+    bmi L9967
     ; push metroid latch to stack
-    tya
-    tax
-    lda MetroidLatch0400,x
+    lda EnsExtra2.0.data20,x
     php
     ; if metroid is not fully latched, increase latch frame counter
     and #$0F
     cmp #$0C
     beq L9941
-        inc MetroidLatch0400,x
+        inc EnsExtra2.0.data20,x
     L9941:
     ; prepare metroid offset relative to Samus's position
     ; load y offset from table
@@ -236,32 +242,12 @@ L98A9:
     ; add offset to Samus position
     jsr CommonJump_ApplySpeedToPosition
     ; set as metroid position
-    jsr LoadEnemyPositionFromTemp_
-    jmp L9967
+    jsr LoadEnemyPositionFromTemp
 
-L9964:
-    ; metroid is not latched and doesn't touch Samus
-    ; clear metroid latch (it's already clear but ok)
-    jsr ClearCurrentMetroidLatch
 L9967:
-    ; if metroid just died, clear metroid latch
-    lda EnsExtra.0.status,x
-    cmp #enemyStatus_Explode
-    bne L9971
-        jsr ClearCurrentMetroidLatch
-    L9971:
-    
-    ; MetroidOnSamus defaults to false
-    ldy #$00
-    
-    ; Don't suck Samus's energy if no metroids are fully attached to Samus
-    lda MetroidLatch0400
-    ora MetroidLatch0410
-    ora MetroidLatch0420
-    ora MetroidLatch0430
-    ora MetroidLatch0440
-    ora MetroidLatch0450
-    and #$0C
+    ; Don't suck Samus's energy if metroid isn't fully attached to Samus
+    lda EnsExtra2.0.data20,x
+    and #$0F
     cmp #$0C
     bne L999E
     
@@ -271,14 +257,17 @@ L9967:
     beq L999E
     
     ; Subtract 1/4 health point from Samus
-    sty HealthChange+1.b
-    ldy #$04
+    ldy #$02
     sty HealthChange
     jsr CommonJump_SubtractHealth
     ; Set MetroidOnSamus to true
-    ldy #$01
+    inc MetroidOnSamus
 L999E:
-    sty MetroidOnSamus
+    ; branch if bit 7 of EnData05 is set
+    lda EnData05,x
+    asl
+    bmi L99AB
+
     lda ObjectCntrl
     bmi L99AB
         lda EnsExtra.0.type,x
@@ -286,25 +275,6 @@ L999E:
         sta ObjectCntrl
     L99AB:
     jmp CommonEnemyJump_00_01_02
-
-ClearCurrentMetroidLatch:
-    jsr LoadEnemySlotIDIntoY
-ClearMetroidLatch:
-    lda #$00
-    sta MetroidLatch0400,y
-    rts
-
-LoadEnemySlotIDIntoY:
-    txa
-    jsr Adiv16_
-    tay
-    rts
-
-LoadEnemySlotIDIntoX:
-    txa
-    jsr Adiv16_
-    tax
-    rts
 
 ClearMetroidSpeed:
     lda #$00
@@ -330,17 +300,6 @@ StoreSamusPositionToTemp:
     sta Temp0B_PositionHi
     rts
 
-LoadEnemyPositionFromTemp_:
-    ; save function result as enemy position
-    lda Temp09_PositionX
-    sta EnX,x
-    lda Temp08_PositionY
-    sta EnY,x
-    lda Temp0B_PositionHi
-    and #$01
-    sta EnsExtra.0.hi,x
-    rts
-
 GetMetroidAccel:
     ; put acceleration sign bit in carry
     lsr
@@ -360,4 +319,15 @@ GetMetroidRepelSpeed:
     tay
     lda MetroidRepelSpeed,y
     rts
+
+MetroidRepelSpeed:
+    .byte -$02, $02
+
+MetroidAccel:
+    .byte $0C, -$0C ; red metroid
+    .byte $18, -$18 ; green metroid
+
+MetroidMaxSpeed:
+    .byte $01 ; red metroid
+    .byte $02 ; green metroid
 

@@ -157,9 +157,9 @@ GetMapTile:
     rts
 
 GetMapCoords:
-    lda SamusMapPosX
+    lda MapPosX
     sta MinimapX
-    lda SamusMapPosY
+    lda MapPosY
     sta MinimapY
 
     jsr GetNameTableAtScrollDir

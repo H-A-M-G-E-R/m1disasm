@@ -58,18 +58,19 @@ PalPntrTbl:
     PtrTableEntry PalPntrTbl, Palette1A                 ;($A7C1)Suitless Samus power suit with missiles selected palette.
     PtrTableEntry PalPntrTbl, Palette1B                 ;($A7C9)Suitless Samus varia suit with missiles selected palette.
 
-AreaPointers:
+SpecItmsTblPtr:
     .word SpecItmsTbl               ;($A83B)Beginning of special items table.
-    .word EnFramePtrTable1          ;($A42C)Address table into enemy animation data.
-    .word EnAnimTbl                 ;($A406)Index to values in addr tables for enemy animations.
+
+.DSTRUCT AreaPointers_ROM INSTANCEOF AreaPointersStruct VALUES
+    EnFramePtrTable1:   .word EnFramePtrTable1          ;($9DE0)Pointer table into enemy animation data.
+    EnAnimTable:        .word EnAnimTable               ;($9D6A)Index to values in addr tables for enemy animations.
+.ENDST
+
+.include "screen_load_code/common.asm"
 
 ; Special Tourian Routines
-GotoClearCurrentMetroidLatchAndMetroidOnSamus:
-    jmp ClearCurrentMetroidLatchAndMetroidOnSamus
-GotoClearAllMetroidLatches:
-    jmp ClearAllMetroidLatches
-GotoUpdateRoomSpriteInfo_Tourian:
-    jmp UpdateRoomSpriteInfo_Tourian
+GotoDeleteOffscreenRoomSprites_Tourian:
+    jmp DeleteOffscreenRoomSprites_Tourian
 GotoSpawnCannonRoutine:
     jmp SpawnCannonRoutine
 GotoSpawnMotherBrainRoutine:
@@ -86,20 +87,12 @@ GotoUpdateBullet_CollisionWithMotherBrain:
 AreaRoutine:
     jmp AreaRoutine_Tourian                       ;Area specific routine.
 
-L95CC:
-    .byte $FF                       ;Not used.
-AreaMusicFlag:
-    .byte music_Sheol
 AreaMinibossMusic:
     .byte music_JunkoTheme
 
-;Special room numbers(used to start item room music).
-AreaItemRoomNumbers:
-.byte $FF, $FF, $FF, $FF
-
-AreaSamusMapPosX:
+AreaMapPosX:
     .byte $02   ;Samus start x coord on world map.
-AreaSamusMapPosY:
+AreaMapPosY:
     .byte $05   ;Samus start y coord on world map.
 AreaSamusX:
     .byte $80   ;Samus start horizontal screen position.
@@ -107,19 +100,30 @@ AreaSamusY:
     .byte $71   ;Samus start vertical screen position.
 AreaScrollDir:
     .byte $00   ;Starting scroll direction. 0 = vertical, 2 = horizontal
+AreaMusicFlag:
+    .byte music_Sheol
+AreaTilesetIndex:
+    .byte $00
 
-AreaFireballKilledAnimIndex:
-    .byte EnAnim_FireballKilled - EnAnimTbl
+AreaEnProjectileKilledAnimIndex:
+    .byte EnAnim_EnProjectileKilled - EnAnimTable
 AreaExplosionAnimIndex:
-    .byte EnAnim_21 - EnAnimTbl
+    .byte EnAnim_Explosion - EnAnimTable
 
     .byte $00, $00
-AreaFireballFallingAnimIndex:
+AreaEnProjectileFallingAnimIndex:
     .byte $00, $00
-AreaFireballSplatterAnimIndex:
-    .byte $00, EnAnim_10 - EnAnimTbl, EnAnim_10 - EnAnimTbl, EnAnim_10 - EnAnimTbl
+AreaEnProjectileSplatterAnimIndex:
+    .byte $00, EnAnim_CannonBulletExplode - EnAnimTable, EnAnim_CannonBulletExplode - EnAnimTable, EnAnim_CannonBulletExplode - EnAnimTable
 AreaMellowAnimIndex:
     .byte $00
+
+AreaMissilePickupAnimFrame:
+    .byte _id_EnFrame_MissilePickup
+AreaSmallEnergyPickupAnimFrame:
+    .byte _id_EnFrame_SmallEnergyPickup
+AreaBigEnergyPickupAnimFrame:
+    .byte _id_EnFrame_BigEnergyPickup
 
 AreaTilesets:
     .word TileAnim0, PalAnim0
@@ -132,41 +136,56 @@ ChooseEnemyAIRoutine:
         .word MetroidAIRoutine ; 00 - red metroid
         .word MetroidAIRoutine ; 01 - green metroid
         .word L9A27 ; 02 - i dunno but it takes 30 damage with varia
-        .word RemoveEnemy_ ; 03 - disappears
+        .word RemoveEnemy ; 03 - disappears
         .word RinkaAIRoutine ; 04 - rinka
-        .word RemoveEnemy_ ; 05 - same as 3
-        .word RemoveEnemy_ ; 06 - same as 3
-        .word RemoveEnemy_ ; 07 - same as 3
-        .word RemoveEnemy_ ; 08 - same as 3
-        .word RemoveEnemy_ ; 09 - same as 3
-        .word RemoveEnemy_ ; 0A - same as 3
-        .word RemoveEnemy_ ; 0B - same as 3
-        .word RemoveEnemy_ ; 0C - same as 3
-        .word RemoveEnemy_ ; 0D - same as 3
-        .word RemoveEnemy_ ; 0E - same as 3
-        .word RemoveEnemy_ ; 0F - same as 3
+        .word RemoveEnemy ; 05 - same as 3
+        .word RemoveEnemy ; 06 - same as 3
+        .word RemoveEnemy ; 07 - same as 3
+        .word RemoveEnemy ; 08 - same as 3
+        .word RemoveEnemy ; 09 - same as 3
+        .word RemoveEnemy ; 0A - same as 3
+        .word RemoveEnemy ; 0B - same as 3
+        .word RemoveEnemy ; 0C - same as 3
+        .word RemoveEnemy ; 0D - same as 3
+        .word RemoveEnemy ; 0E - same as 3
+        .word RemoveEnemy ; 0F - same as 3
 
 
 EnemyDeathAnimIndex:
-    .byte EnAnim_08 - EnAnimTbl, EnAnim_08 - EnAnimTbl
-    .byte EnAnim_08 - EnAnimTbl, EnAnim_08 - EnAnimTbl
-    .byte EnAnim_16 - EnAnimTbl, EnAnim_16 - EnAnimTbl
-    .byte EnAnim_18 - EnAnimTbl, EnAnim_18 - EnAnimTbl ; unused enemy
-    .byte EnAnim_1F - EnAnimTbl, EnAnim_1F - EnAnimTbl
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
+    .byte EnAnim_MetroidExplode - EnAnimTable ; 00 - red metroid
+    .byte EnAnim_MetroidExplode - EnAnimTable ; 01 - green metroid
+    .byte $00 ; 02 - i dunno but it takes 30 damage with varia
+    .byte $00 ; 03 - disappears
+    .byte EnAnim_RinkaExplode - EnAnimTable ; 04 - rinka
+    .byte $00 ; 05 - same as 3
+    .byte $00 ; 06 - same as 3
+    .byte $00 ; 07 - same as 3
+    .byte $00 ; 08 - same as 3
+    .byte $00 ; 09 - same as 3
+    .byte $00 ; 0A - same as 3
+    .byte $00 ; 0B - same as 3
+    .byte $00 ; 0C - same as 3
+    .byte $00 ; 0D - same as 3
+    .byte $00 ; 0E - same as 3
+    .byte $00 ; 0F - same as 3
 
 EnemyHealthTbl:
-    .byte $FF, $FF, $01, $FF, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+    .byte $FF ; 00 - red metroid
+    .byte $FF ; 01 - green metroid
+    .byte $01 ; 02 - i dunno but it takes 30 damage with varia
+    .byte $FF ; 03 - disappears
+    .byte $01 ; 04 - rinka
+    .byte $00 ; 05 - same as 3
+    .byte $00 ; 06 - same as 3
+    .byte $00 ; 07 - same as 3
+    .byte $00 ; 08 - same as 3
+    .byte $00 ; 09 - same as 3
+    .byte $00 ; 0A - same as 3
+    .byte $00 ; 0B - same as 3
+    .byte $00 ; 0C - same as 3
+    .byte $00 ; 0D - same as 3
+    .byte $00 ; 0E - same as 3
+    .byte $00 ; 0F - same as 3
 
 ; Base damage caused by area enemies.
 ; Normal, tough
@@ -248,103 +267,148 @@ EnemyDropChanceTblTough:
     .byte 90, 60, 90
 
 EnemyRestingAnimIndex:
-    .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
-    .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
-    .byte EnAnim_16 - EnAnimTbl, EnAnim_16 - EnAnimTbl
-    .byte EnAnim_18 - EnAnimTbl, EnAnim_18 - EnAnimTbl ; unused enemy
-    .byte EnAnim_1B - EnAnimTbl, EnAnim_1B - EnAnimTbl
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
+    .byte EnAnim_Metroid - EnAnimTable ; 00 - red metroid
+    .byte EnAnim_Metroid - EnAnimTable ; 01 - green metroid
+    .byte $00 ; 02 - i dunno but it takes 30 damage with varia
+    .byte $00 ; 03 - disappears
+    .byte EnAnim_RinkaSpawning - EnAnimTable ; 04 - rinka
+    .byte $00 ; 05 - same as 3
+    .byte $00 ; 06 - same as 3
+    .byte $00 ; 07 - same as 3
+    .byte $00 ; 08 - same as 3
+    .byte $00 ; 09 - same as 3
+    .byte $00 ; 0A - same as 3
+    .byte $00 ; 0B - same as 3
+    .byte $00 ; 0C - same as 3
+    .byte $00 ; 0D - same as 3
+    .byte $00 ; 0E - same as 3
+    .byte $00 ; 0F - same as 3
 
 EnemyActiveAnimIndex:
-    .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
-    .byte EnAnim_05 - EnAnimTbl, EnAnim_05 - EnAnimTbl
-    .byte EnAnim_16 - EnAnimTbl, EnAnim_16 - EnAnimTbl
-    .byte EnAnim_18 - EnAnimTbl, EnAnim_18 - EnAnimTbl ; unused enemy
-    .byte EnAnim_1D - EnAnimTbl, EnAnim_1D - EnAnimTbl
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
-    .byte $00, $00 ; unused enemy
+    .byte EnAnim_Metroid - EnAnimTable ; 00 - red metroid
+    .byte EnAnim_Metroid - EnAnimTable ; 01 - green metroid
+    .byte $00 ; 02 - i dunno but it takes 30 damage with varia
+    .byte $00 ; 03 - disappears
+    .byte EnAnim_Rinka - EnAnimTable ; 04 - rinka
+    .byte $00 ; 05 - same as 3
+    .byte $00 ; 06 - same as 3
+    .byte $00 ; 07 - same as 3
+    .byte $00 ; 08 - same as 3
+    .byte $00 ; 09 - same as 3
+    .byte $00 ; 0A - same as 3
+    .byte $00 ; 0B - same as 3
+    .byte $00 ; 0C - same as 3
+    .byte $00 ; 0D - same as 3
+    .byte $00 ; 0E - same as 3
+    .byte $00 ; 0F - same as 3
 
 L967B:
-    .byte $00
-    .byte $00
-    .byte $00
-    .byte $00 ; unused enemy
-    .byte $02
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
+    .byte $00 ; 00 - red metroid
+    .byte $00 ; 01 - green metroid
+    .byte $00 ; 02 - i dunno but it takes 30 damage with varia
+    .byte $00 ; 03 - disappears
+    .byte $02 ; 04 - rinka
+    .byte $00 ; 05 - same as 3
+    .byte $00 ; 06 - same as 3
+    .byte $00 ; 07 - same as 3
+    .byte $00 ; 08 - same as 3
+    .byte $00 ; 09 - same as 3
+    .byte $00 ; 0A - same as 3
+    .byte $00 ; 0B - same as 3
+    .byte $00 ; 0C - same as 3
+    .byte $00 ; 0D - same as 3
+    .byte $00 ; 0E - same as 3
+    .byte $00 ; 0F - same as 3
 
 L968B:
-    .byte $FE, $FE, $00, $00, $C0, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+    .byte %11110110 ; 00 - red metroid
+    .byte %11110110 ; 01 - green metroid
+    .byte %00000000 ; 02 - i dunno but it takes 30 damage with varia
+    .byte %00000000 ; 03 - disappears
+    .byte %11000100 ; 04 - rinka
+    .byte %00000000 ; 05 - same as 3
+    .byte %00000000 ; 06 - same as 3
+    .byte %00000000 ; 07 - same as 3
+    .byte %00000000 ; 08 - same as 3
+    .byte %00000000 ; 09 - same as 3
+    .byte %00000000 ; 0A - same as 3
+    .byte %00000000 ; 0B - same as 3
+    .byte %00000000 ; 0C - same as 3
+    .byte %00000000 ; 0D - same as 3
+    .byte %00000000 ; 0E - same as 3
+    .byte %00000000 ; 0F - same as 3
 
 EnemyForceSpeedTowardsSamusDelayTbl:
-    .byte $01, $01, $00, $00, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+    .byte $01 ; 00 - red metroid
+    .byte $01 ; 01 - green metroid
+    .byte $00 ; 02 - i dunno but it takes 30 damage with varia
+    .byte $00 ; 03 - disappears
+    .byte $01 ; 04 - rinka
+    .byte $00 ; 05 - same as 3
+    .byte $00 ; 06 - same as 3
+    .byte $00 ; 07 - same as 3
+    .byte $00 ; 08 - same as 3
+    .byte $00 ; 09 - same as 3
+    .byte $00 ; 0A - same as 3
+    .byte $00 ; 0B - same as 3
+    .byte $00 ; 0C - same as 3
+    .byte $00 ; 0D - same as 3
+    .byte $00 ; 0E - same as 3
+    .byte $00 ; 0F - same as 3
 
 EnemyDistanceToSamusThreshold:
-    .byte $00
-    .byte $00
-    .byte $00
-    .byte $00 ; unused enemy
-    .byte $00
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
+    .byte $00 ; 00 - red metroid
+    .byte $00 ; 01 - green metroid
+    .byte $00 ; 02 - i dunno but it takes 30 damage with varia
+    .byte $00 ; 03 - disappears
+    .byte $00 ; 04 - rinka
+    .byte $00 ; 05 - same as 3
+    .byte $00 ; 06 - same as 3
+    .byte $00 ; 07 - same as 3
+    .byte $00 ; 08 - same as 3
+    .byte $00 ; 09 - same as 3
+    .byte $00 ; 0A - same as 3
+    .byte $00 ; 0B - same as 3
+    .byte $00 ; 0C - same as 3
+    .byte $00 ; 0D - same as 3
+    .byte $00 ; 0E - same as 3
+    .byte $00 ; 0F - same as 3
 
 EnemyInitDelayTbl:
-    .byte $01, $01, $00, $00, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+    .byte $01 ; 00 - red metroid
+    .byte $01 ; 01 - green metroid
+    .byte $00 ; 02 - i dunno but it takes 30 damage with varia
+    .byte $00 ; 03 - disappears
+    .byte $01 ; 04 - rinka
+    .byte $00 ; 05 - same as 3
+    .byte $00 ; 06 - same as 3
+    .byte $00 ; 07 - same as 3
+    .byte $00 ; 08 - same as 3
+    .byte $00 ; 09 - same as 3
+    .byte $00 ; 0A - same as 3
+    .byte $00 ; 0B - same as 3
+    .byte $00 ; 0C - same as 3
+    .byte $00 ; 0D - same as 3
+    .byte $00 ; 0E - same as 3
+    .byte $00 ; 0F - same as 3
 
 EnemyMovementChoiceOffset:
-    .byte EnemyMovementChoice_MetroidRed - EnemyMovementChoices
-    .byte EnemyMovementChoice_MetroidGreen - EnemyMovementChoices
-    .byte EnemyMovementChoice_MetroidRed - EnemyMovementChoices ; enemy doesn't move
-    .byte EnemyMovementChoice_MetroidRed - EnemyMovementChoices ; unused enemy
-    .byte EnemyMovementChoice_Rinka - EnemyMovementChoices ; enemy moves manually
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
-    .byte $00 ; unused enemy
+    .byte EnemyMovementChoice_MetroidRed - EnemyMovementChoices ; 00 - red metroid
+    .byte EnemyMovementChoice_MetroidGreen - EnemyMovementChoices ; 01 - green metroid
+    .byte EnemyMovementChoice_MetroidRed - EnemyMovementChoices ; 02 - i dunno but it takes 30 damage with varia (enemy doesn't move)
+    .byte EnemyMovementChoice_MetroidRed - EnemyMovementChoices ; 03 - disappears
+    .byte EnemyMovementChoice_Rinka - EnemyMovementChoices ; 04 - rinka (enemy moves manually)
+    .byte $00 ; 05 - same as 3
+    .byte $00 ; 06 - same as 3
+    .byte $00 ; 07 - same as 3
+    .byte $00 ; 08 - same as 3
+    .byte $00 ; 09 - same as 3
+    .byte $00 ; 0A - same as 3
+    .byte $00 ; 0B - same as 3
+    .byte $00 ; 0C - same as 3
+    .byte $00 ; 0D - same as 3
+    .byte $00 ; 0E - same as 3
+    .byte $00 ; 0F - same as 3
 
 EnemyMovementPtrs:
     .word EnemyMovement00_R, EnemyMovement00_L
@@ -365,7 +429,8 @@ EnemyMovementPtrs:
     .word EnemyMovement0F_R, EnemyMovement0F_L
     .word EnemyMovement10_R, EnemyMovement10_L
     .word EnemyMovement11_R, EnemyMovement11_L
-    .byte $00, $00, $00, $00, $00, $00, $00, $00
+    .word $0000, $0000
+    .word $0000, $0000
     
 EnAccelYTable:
     .byte  $06 ; $00
@@ -453,36 +518,51 @@ EnSpeedXTable:
     .word  $0000 ; $13
 
 L977B:
-    .byte $50, $50, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+    .byte %01010000 ; 00 - red metroid
+    .byte %01010000 ; 01 - green metroid
+    .byte %00000000 ; 02 - i dunno but it takes 30 damage with varia (enemy doesn't move)
+    .byte %00000000 ; 03 - disappears
+    .byte %00000000 ; 04 - rinka (enemy moves manually)
+    .byte %00000000 ; 05 - same as 3
+    .byte %00000000 ; 06 - same as 3
+    .byte %00000000 ; 07 - same as 3
+    .byte %00000000 ; 08 - same as 3
+    .byte %00000000 ; 09 - same as 3
+    .byte %00000000 ; 0A - same as 3
+    .byte %00000000 ; 0B - same as 3
+    .byte %00000000 ; 0C - same as 3
+    .byte %00000000 ; 0D - same as 3
+    .byte %00000000 ; 0E - same as 3
+    .byte %00000000 ; 0F - same as 3
 
-EnemyFireballRisingAnimIndexTable:
-    .byte $00, $00
-    .byte EnAnim_26 - EnAnimTbl, EnAnim_26 - EnAnimTbl
-    .byte EnAnim_26 - EnAnimTbl, EnAnim_26 - EnAnimTbl
+EnemyEnProjectileRisingAnimIndexTable:
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
-EnemyFireballPosOffsetX:
+    .byte $00, $00
+    .byte $00, $00
+    .byte $00, $00
+EnemyEnProjectilePosOffsetX:
     .byte $0C, $F4
     .byte $00, $00
     .byte $00, $00
     .byte $00, $00
-EnemyFireballPosOffsetY:
+EnemyEnProjectilePosOffsetY:
     .byte $F4
     .byte $00
     .byte $00
     .byte $00
 
-EnemyFireballMovementPtrTable:
-    .word EnemyFireballMovement0
-    .word EnemyFireballMovement1
-    .word EnemyFireballMovement2
-    .word EnemyFireballMovement3
+EnemyEnProjectileMovementPtrTable:
+    .word EnemyEnProjectileMovement0
+    .word EnemyEnProjectileMovement1
+    .word EnemyEnProjectileMovement2
+    .word EnemyEnProjectileMovement3
 
 ; Referenced using EnData0A / 2
-EnemyFireballDamageTbl:
+EnemyProjectileDamageTbl:
     .byte $30, $30, $30, $30
 
 TileBlastBlastAnimIndexTable:
@@ -496,6 +576,18 @@ TileBlastBlastAnimIndexTable:
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$8C
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$90
     .byte TileBlastAnim0 - TileBlastAnim ; tile #$94
+
+TileBlastBlastAnimDelayTbl:
+    .byte $02 ; tile #$70
+    .byte $02 ; tile #$74
+    .byte $02 ; tile #$78
+    .byte $02 ; tile #$7C
+    .byte $02 ; tile #$80
+    .byte $02 ; tile #$84
+    .byte $02 ; tile #$88
+    .byte $02 ; tile #$8C
+    .byte $02 ; tile #$90
+    .byte $02 ; tile #$94
 
 TileBlastRespawnDelayTbl:
     .byte $00 ; tile #$70
@@ -521,6 +613,18 @@ TileBlastRespawnAnimIndexTable:
     .byte TileBlastAnim9 - TileBlastAnim ; tile #$90
     .byte TileBlastAnim5 - TileBlastAnim ; tile #$94
 
+TileBlastRespawnAnimDelayTbl:
+    .byte $02 ; tile #$70
+    .byte $02 ; tile #$74
+    .byte $02 ; tile #$78
+    .byte $02 ; tile #$7C
+    .byte $02 ; tile #$80
+    .byte $02 ; tile #$84
+    .byte $02 ; tile #$88
+    .byte $02 ; tile #$8C
+    .byte $02 ; tile #$90
+    .byte $02 ; tile #$94
+
 TileBlastAnim:
 TileBlastAnim0:  .byte $06,$07,$00,$FE ; blasting tile or respawning tile #$7C
 TileBlastAnim1:  .byte $07,$06,$01,$FE ; respawning tile #$80
@@ -534,23 +638,23 @@ TileBlastAnim8:  .byte $07,$06,$0B,$FE ; respawning tile #$78
 TileBlastAnim9:  .byte $07,$06,$08,$FE ; respawning tile #$90
 
 TileBlastFramePtrTable:
-    .word TileBlastFrame00
-    .word TileBlastFrame01
-    .word TileBlastFrame02
-    .word TileBlastFrame03
-    .word TileBlastFrame04
-    .word TileBlastFrame05
+    .word TileBlastFrame_MotherBrainDeath
+    .word TileBlastFrame_DestroyMotherBrainGlass
+    .word TileBlastFrame_TimeBombMessage1
+    .word TileBlastFrame_TimeBombMessage3
+    .word TileBlastFrame_TimeBombMessage5
+    .word TileBlastFrame_TimeBombMessage7
     .word TileBlastFrame06
-    .word TileBlastFrame07
-    .word TileBlastFrame08
-    .word TileBlastFrame09
-    .word TileBlastFrame0A
-    .word TileBlastFrame0B
-    .word TileBlastFrame0C
-    .word TileBlastFrame0D
-    .word TileBlastFrame0E
-    .word TileBlastFrame0F
-    .word TileBlastFrame10
+    .word TileBlastFrame_ZebetiteDestroyed
+    .word TileBlastFrame_TimeBombMessage0
+    .word TileBlastFrame_TimeBombMessage2
+    .word TileBlastFrame_TimeBombMessage4
+    .word TileBlastFrame_TimeBombMessage6
+    .word TileBlastFrame_Zebetite0
+    .word TileBlastFrame_Zebetite1
+    .word TileBlastFrame_Zebetite2
+    .word TileBlastFrame_Zebetite3
+    .word TileBlastFrame_EscapeDoor
 
 EnemyMovementChoices:
 EnemyMovementChoice_MetroidRed:
@@ -598,39 +702,17 @@ EnemyMovement11_R:
 EnemyMovement11_L:
     ; nothing
 
-EnemyFireballMovement0:
-EnemyFireballMovement1:
+EnemyEnProjectileMovement0:
+EnemyEnProjectileMovement1:
     SignMagSpeed $50,  2,  2
     .byte $FF
 
-EnemyFireballMovement2:
+EnemyEnProjectileMovement2:
     SignMagSpeed $50,  0,  3
     .byte $FF
 
-EnemyFireballMovement3:
+EnemyEnProjectileMovement3:
     .byte $FF
-
-RemoveEnemy_:
-    lda #$00
-    sta EnsExtra.0.status,x
-    rts
-
-CommonEnemyJump_00_01_02:
-    lda EnemyStatusPreAI
-    cmp #enemyStatus_Resting
-    beq @resting
-    cmp #enemyStatus_Explode
-    beq @explode
-        ; enemy default
-        lda $00
-        jmp CommonJump_00
-    @resting:
-        ; enemy resting
-        lda $01
-        jmp CommonJump_01
-    @explode:
-        ; enemy explode
-        jmp CommonJump_02
 
 ;-------------------------------------------------------------------------------
 ; Metroid Routine
@@ -669,6 +751,7 @@ UpdateAllCannons:
 
 @updateIfPossible:
     stx CannonIndex
+    ; update cannon if it exists
     ldy Cannons.0.status,x
     bne UpdateCannon
 RTS_9B4B:
@@ -679,17 +762,17 @@ UpdateCannon:
     jsr UpdateCannon_CheckIfOnScreen
     tya
     bne RTS_9B4B
-    ; return if escape timer is active
-    ldy EndTimer+1
+    ; branch if escape timer is active
+    ldy EndTimer+1.b
     iny
     bne RTS_9B4B
-    ; escape timer is not active, behave normally
-    ; exit if cannon instr list is 5 (unused?)
-    lda Cannons.0.instrListID,x
-    cmp #$05
-    beq RTS_9B4B
-    ; run instructions
-    ; fallthrough
+        ; escape timer is not active, behave normally
+        ; exit if cannon instr list is 5 (unused?)
+        lda Cannons.0.instrListID,x
+        cmp #$05
+        beq RTS_9B4B
+        ; run instructions
+        ; fallthrough
 
 UpdateCannon_RunInstructions:
     ldy Cannons.0.instrListID,x
@@ -715,7 +798,7 @@ UpdateCannon_RunInstructions:
     ; branch if it's an angle instruction
     bpl @setAngle
         cmp #$FF
-        bne @shootFireball
+        bne @shootEnProjectile
             ; instruction is restart
             ldy Cannons.0.instrListID,x
             ; restart to first instruction
@@ -723,12 +806,12 @@ UpdateCannon_RunInstructions:
             sta Cannons.0.instrID,x
             ; go back to get instuction
             beq @getInstruction ; branch always
-        @shootFireball:
-            ; instruction is shoot fireball
+        @shootEnProjectile:
+            ; instruction is shoot projectile
             ; change to next instruction
             inc Cannons.0.instrID,x
             ; shoot
-            jsr Cannon_ShootFireball
+            jsr Cannon_ShootEnProjectile
             ldy Cannons.0.instrListID,x
             ; go back to get instuction
             jmp @getInstruction
@@ -737,27 +820,26 @@ UpdateCannon_RunInstructions:
         sta Cannons.0.angle,x
         rts
 
-Cannon_ShootFireball:
+Cannon_ShootEnProjectile:
     ; push instruction byte #$FC, #$FD or #$FE
     pha
     ; exit if mother brain is dying or dead
     lda MotherBrainStatus
     cmp #$04
     bcs @exit
-    ; loop through all enemy fireballs
-    ldy #$60
+    ; loop through all enemy projectiles
+    ldy #$B0
     @loop:
         ; branch if slot is empty
         lda EnsExtra.0.status,y
         beq @slotFound
         ; slot is not empty, check next slot
         tya
-        clc
-        adc #$10
+        sec
+        sbc #$10
         tay
-        cmp #$A0
-        bne @loop
-    ; no fireball slots found, exit
+        bcs @loop
+    ; no projectile slots found, exit
 @exit:
     pla
     rts
@@ -765,17 +847,17 @@ Cannon_ShootFireball:
 @slotFound:
     ; store slot
     sty PageIndex
-    ; set fireball position to cannon position
+    ; set projectile position to cannon position
     lda Cannons.0.y,x
     sta EnY,y
     lda Cannons.0.x,x
     sta EnX,y
     lda Cannons.0.hi,x
     sta EnsExtra.0.hi,y
-    ; set fireball status to active
-    lda #enemyStatus_Active
+    ; set projectile status to active
+    lda #enemyStatus_Active | $80.b
     sta EnsExtra.0.status,y
-    ; init fireball animation timers
+    ; init projectile animation timers
     lda #$00
     sta EnDelay,y
     sta EnsExtra.0.animDelay,y
@@ -787,17 +869,17 @@ Cannon_ShootFireball:
     ; save to x and EnData0A
     tax
     sta EnData0A,y
-    ; set fireball facing direction
+    ; set projectile facing direction
     ora #$02
     sta EnData05,y
-    ; set fireball animation
-    lda CannonFireballAnimTable-2,x
+    ; set projectile animation
+    lda CannonEnProjectileAnimTable-2,x
     sta EnsExtra.0.resetAnimIndex,y
     sta EnsExtra.0.animIndex,y
     ; store offset into temp
-    lda CannonFireballXOffsetTable-2,x
+    lda CannonEnProjectileXOffsetTable-2,x
     sta Temp05_SpeedX
-    lda CannonFireballYOffsetTable-2,x
+    lda CannonEnProjectileYOffsetTable-2,x
     sta Temp04_SpeedY
     ; store cannon position into temp
     ldx CannonIndex
@@ -811,15 +893,15 @@ Cannon_ShootFireball:
     tax
     ; apply offset to cannon position
     jsr CommonJump_ApplySpeedToPosition
-    ; use as fireball position
-    jsr LoadEnemyPositionFromTemp_
+    ; use as projectile position
+    jsr LoadEnemyPositionFromTemp
     ldx CannonIndex
     rts
 
-CannonFireballAnimTable:
-    .byte EnAnim_0C - EnAnimTbl ; cannon instr #$FE : diagonal right
-    .byte EnAnim_0A - EnAnimTbl ; cannon instr #$FD : diagonal left
-    .byte EnAnim_0E - EnAnimTbl ; cannon instr #$FC : straight down
+CannonEnProjectileAnimTable:
+    .byte EnAnim_CannonBulletDownRight - EnAnimTable ; cannon instr #$FE : diagonal right
+    .byte EnAnim_CannonBulletDownLeft - EnAnimTable ; cannon instr #$FD : diagonal left
+    .byte EnAnim_CannonBulletDown - EnAnimTable ; cannon instr #$FC : straight down
 
 DrawCannon_Normal:
     ldy Cannons.0.angle,x
@@ -870,7 +952,7 @@ UpdateCannon_CheckIfOnScreen:
 
 ;-------------------------------------------------------------------------------
 
-UpdateRoomSpriteInfo_Tourian:
+DeleteOffscreenRoomSprites_Tourian:
     ; save opposite nametable in $02
     sty $02
     
@@ -901,8 +983,8 @@ UpdateRoomSpriteInfo_Tourian:
         lda Zebetites.0.status,x
         beq @endIf_B
         ; branch if zebetite is in the current nametable
-        jsr GetVRAMPtrHi
-        eor Zebetites.0.vramPtr+1,x
+        jsr GetRoomRAMPtrHi
+        eor Zebetites.0.roomRAMPtr+1,x
         bne @endIf_B
             ; zebetite is in the opposite nametable
             ; clear status
@@ -918,9 +1000,9 @@ UpdateRoomSpriteInfo_Tourian:
     
     ; for all rinka spawners
     ldx #$00
-    jsr UpdateRoomSpriteInfo_Tourian_RinkaSpawner
+    jsr @rinkaSpawner
     ldx #$03
-    jsr UpdateRoomSpriteInfo_Tourian_RinkaSpawner
+    jsr @rinkaSpawner
 
     ; for mother brain
     ; branch if mother brain doesnt exist
@@ -959,7 +1041,7 @@ UpdateRoomSpriteInfo_Tourian:
     @endIf_D:
     rts
 
-UpdateRoomSpriteInfo_Tourian_RinkaSpawner:
+@rinkaSpawner:
     ; exit if rinka spawner doesn't exist
     lda RinkaSpawners.0.status,x
     bmi @RTS
@@ -1018,15 +1100,19 @@ SpawnCannonRoutine:
 ;-------------------------------------------------------------------------------
 ; Mother Brain Handler
 SpawnMotherBrainRoutine:
+    ; set status to idle
     lda #$01
     sta MotherBrainStatus
+    ; set hi position
     jsr GetNameTableAtScrollDir_
     sta MotherBrainHi
+    ; lock horizontal scrolling behind mother brain
     eor #$01
     tax
     lda #$04
     ora ScrollBlockOnNameTable3,x
     sta ScrollBlockOnNameTable3,x
+    ; init anim delays
     lda #$20
     sta MotherBrainAnimBrainDelay
     sta MotherBrainAnimEyeDelay
@@ -1046,9 +1132,9 @@ SpawnZebetiteRoutine:
     and #$10
     eor #$10
     ora #$84
-    sta Zebetites.0.vramPtr,x
-    jsr GetVRAMPtrHi
-    sta Zebetites.0.vramPtr+1,x
+    sta Zebetites.0.roomRAMPtr,x
+    jsr GetRoomRAMPtrHi
+    sta Zebetites.0.roomRAMPtr+1,x
     
     lda #$01
     sta Zebetites.0.status,x
@@ -1059,11 +1145,12 @@ SpawnZebetiteRoutine:
     sta Zebetites.0.isHit,x
     rts
 
-GetVRAMPtrHi:
+GetRoomRAMPtrHi:
+    ; return #$61 for nametable 0 and #$65 for nametable 3
     jsr GetNameTableAtScrollDir_
     asl
     asl
-    ora #$21+$40
+    ora #(>RoomRAMA)+1.b
     rts
 
 ;-------------------------------------------------------------------------------
@@ -1115,20 +1202,20 @@ CannonInstrList4: .byte $06, $05, $FC, $04, $05, $FF
 ; cannon instr list 5 means the cannon won't do anything
 
 CannonAnimFrameTable:
-    .byte _id_EnFrame06
-    .byte _id_EnFrame07
-    .byte _id_EnFrame08
-    .byte _id_EnFrame09
-    .byte _id_EnFrame0A
-    .byte _id_EnFrame0B
-    .byte _id_EnFrame0C
-    .byte _id_EnFrame0D
+    .byte _id_EnFrame_CannonUp
+    .byte _id_EnFrame_CannonUpLeft
+    .byte _id_EnFrame_CannonLeft
+    .byte _id_EnFrame_CannonDownLeft
+    .byte _id_EnFrame_CannonDown
+    .byte _id_EnFrame_CannonDownRight
+    .byte _id_EnFrame_CannonRight
+    .byte _id_EnFrame_CannonUpRight
 
-CannonFireballXOffsetTable:
+CannonEnProjectileXOffsetTable:
     .byte $09 ; cannon instr #$FE : diagonal right
     .byte $F7 ; cannon instr #$FD : diagonal left
     .byte $00 ; cannon instr #$FC : straight down
-CannonFireballYOffsetTable:
+CannonEnProjectileYOffsetTable:
     .byte $09 ; cannon instr #$FE : diagonal right
     .byte $09 ; cannon instr #$FD : diagonal left
     .byte $0B ; cannon instr #$FC : straight down
@@ -1140,21 +1227,21 @@ MotherBrainStatusHandler:
     beq RTS_9DF1
     jsr CommonJump_ChooseRoutine
         .word RTS_9DF1    ;#$00=Mother brain not in room,
-        .word MotherBrain_9E22     ;#$01=Mother brain in room
-        .word MotherBrain_9E36     ;#$02=Mother brain hit
-        .word MotherBrain_9E52     ;#$03=Mother brain dying
-        .word MotherBrain_9E86     ;#$04=Mother brain dissapearing
-        .word MotherBrain_9F02_05     ;#$05=Mother brain gone
-        .word MotherBrain_9F49     ;#$06=Time bomb set,
+        .word MotherBrain_Idle     ;#$01=Mother brain in room
+        .word MotherBrain_Hurt     ;#$02=Mother brain hit
+        .word MotherBrain_Killed     ;#$03=Mother brain dying
+        .word MotherBrain_Disappear     ;#$04=Mother brain dissapearing
+        .word MotherBrain_TimeBombMessage     ;#$05=Mother brain gone
+        .word MotherBrain_SetTimeBomb     ;#$06=Time bomb set,
         .word MotherBrain_9FC0     ;#$07=Time bomb exploded
-        .word MotherBrain_9F02_08     ;#$08=Initialize mother brain already dead (part 1)
+        .word MotherBrain_TimeBombMessage_ScrollBackOnScreen     ;#$08=Initialize mother brain already dead (part 1)
         .word MotherBrain_9FDA     ;#$09=Initialize mother brain already dead (part 2)
         .word RTS_9DF1    ;#$0A=Mother brain already dead.
 RTS_9DF1:
     rts
 
 ;-------------------------------------------------------------------------------
-MotherBrain_9E22_CollideWithSamus:
+MotherBrain_Idle_CollideWithSamus:
     ; exit if samus is not in the same nametable as mother brain
     lda ObjHi
     eor MotherBrainHi
@@ -1186,11 +1273,11 @@ MotherBrain_9E22_CollideWithSamus:
     jmp CommonJump_SubtractHealth
 
 ;-------------------------------------------------------------------------------
-MotherBrain_9E22:
-    jsr MotherBrain_9E22_CollideWithSamus
-    jsr MotherBrain_9E22_HandleBeingHit
-    jsr MotherBrain_9E22_UpdateAnimBrain
-    jsr MotherBrain_9E22_UpdateAnimEye
+MotherBrain_Idle: ; 03:9E22
+    jsr MotherBrain_Idle_CollideWithSamus
+    jsr MotherBrain_Idle_HandleBeingHit
+    jsr MotherBrain_Idle_UpdateAnimBrain
+    jsr MotherBrain_Idle_UpdateAnimEye
 L9E2E:
     ;jsr MotherBrain_DrawSprites
 ClearMotherBrainIsHit:
@@ -1199,16 +1286,18 @@ ClearMotherBrainIsHit:
     rts
 
 ;-------------------------------------------------------------------------------
-MotherBrain_9E36:
+MotherBrain_Hurt: ; 03:9E36
+    ; update flashing palette
     jsr UpdateMotherBrainFlashDelay
     lda MotherBrainFlashPalettesTable,y
     jsr WriteAreaPal
+    ; clear is hit flag
     jmp ClearMotherBrainIsHit
 
-MotherBrainFlashPalettesTable:
+MotherBrainFlashPalettesTable: ; 03:9E41
     .byte _id_Palette07+1, _id_Palette06+1
 
-UpdateMotherBrainFlashDelay:
+UpdateMotherBrainFlashDelay: ; 03:9E43
     ; decrement delay
     dec MotherBrainFlashDelay
     ; branch if delay is not zero
@@ -1220,92 +1309,136 @@ UpdateMotherBrainFlashDelay:
     L9E4B:
     ; save bit 1 of delay to y
     lda MotherBrainFlashDelay
-    and #$02
-    lsr
+    .if BUILDTARGET == "NES_NTSC" || BUILDTARGET == "NES_PAL" || BUILDTARGET == "NES_MZMUS" || BUILDTARGET == "NES_MZMJP"
+        and #$02
+        lsr
+    .elif BUILDTARGET == "NES_CNSUS"
+        NES_CNSUS_IllegalOpcode42
+        nop
+        nop
+    .endif
     tay
     rts
 
 ;-------------------------------------------------------------------------------
-MotherBrain_9E52:
+MotherBrain_Killed: ; 03:9E52
+    ; update flashing palette
     jsr UpdateMotherBrainFlashDelay
     tya
     pha
     lda MotherBrainFlashPalettesTable,y
     jsr WriteAreaPal
     pla
+    ; shake the screen vertically
     asl
     asl
     sta ScrollY
+    ; branch if mother brain status is not idle (flashing is not complete)
     ldy MotherBrainStatus
     dey
-    bne L9E83
-    sty MotherBrainQtyHits
-    tya
-    tax
-    L9E68:
+    bne @endIf_A
+        ; mother brain status is idle, because the UpdateMotherBrainFlashDelay is done flashing
+        ; init mother brain death string id to zero, for the disintegration
+        sty MotherBrainDeathStringID
+        ; despawn all enemies(rinka) and enProjectiles(cannon bullet)
         tya
-        sta EnsExtra.0.status,x
-        jsr Xplus16
-        cpx #$C0
-        bne L9E68
-    lda #$04
-    sta MotherBrainStatus
-    lda #$28
-    sta MotherBrainFlashDelay
-    jsr SilenceMusic
-L9E83:
+        tax
+        @loop:
+            tya
+            sta EnsExtra.0.status,x
+            jsr Xplus16
+            cpx #$C0
+            bne @loop
+        ; set mother brain status to disappearing
+        lda #$04
+        sta MotherBrainStatus
+        ; set delay until first disintegration to 40 frames
+        lda #$28
+        sta MotherBrainFlashDelay
+        ; silence music
+        jsr SilenceMusic
+    @endIf_A:
     jmp L9E2E
 
 ;-------------------------------------------------------------------------------
-MotherBrain_9E86:
+MotherBrain_Disappear: ; 03:9E86
+    ; play BombExplode SFX every frame
     jsr SFX_BombExplode
-    jsr MotherBrain_Disintegrate
-    inc MotherBrainAnimBrainDelay
+    ; disintegrate mother brain's bg tiles
+    jsr MotherBrain_Disappear_Disintegrate
+    ; increment disintegrate instruction id
+    inc MotherBrainDeathInstrID
+    ; decrement mother brain delay and set mb state to idle when it's zero
     jsr UpdateMotherBrainFlashDelay
+    ; for the first 4 enemies, if they are pickups, despawn them
+    ; (aren't enemies supposed to be all despawned here anyway?)
     ldx #$00
-    L9E98:
+    @loop:
         lda EnsExtra.0.status,x
-        cmp #$05
-        bne L9EA4
-            lda #$00
+        cmp #enemyStatus_Pickup
+        bne @endIf_A
+            lda #enemyStatus_NoEnemy
             sta EnsExtra.0.status,x
-        L9EA4:
+        @endIf_A:
         jsr Xplus16
         cmp #$40
-        bne L9E98
+        bne @loop
+    ; branch if PPUStrIndex is not zero
     lda PPUStrIndex
-    bne L9EB5
-        lda L9F00,y
+    bne @endIf_B
+        ; PPUStrIndex is zero
+        ; flash palette
+        lda MotherBrain_Disappear_PaletteTable,y
         jsr WriteAreaPal
-    L9EB5:
+    @endIf_B:
+    ; exit if status is not idle (delay is not yet zero)
     ldy MotherBrainStatus
     dey
-    bne RTS_9ED5
-    sty MotherBrainAnimBrainDelay
+    bne @RTS
+
+    ; delay is zero
+    ; time to move on to next disintegration batch
+    ; set disintegrate instruction id to zero
+    sty MotherBrainDeathInstrID
+    ; set status to disappearing
     lda #$04
     sta MotherBrainStatus
+    ; set delay until next batch to 28 frames
     lda #$1C
     sta MotherBrainFlashDelay
-    ldy MotherBrainQtyHits
-    inc MotherBrainQtyHits
+    ; increment death string id
+    ldy MotherBrainDeathStringID
+    inc MotherBrainDeathStringID
+    ; branch if death string id was 4
     cpy #$04
-    beq L9ED3
+    beq @endIf_C
+        ; death string id was not 4
+        ; exit if it was less than 4
         ldx #$00
-        bcc RTS_9ED5
-        jmp L9ED6
+        bcc @RTS
+        ; it was more than 4
+        ; mother brain is fully disintegrated, let's move on
+        jmp @endIf_D
 
-    L9ED3:
+    @endIf_C:
+    ; death string id was 4
+    ; delay until next batch will be 14 frames instead
     lsr MotherBrainFlashDelay
-RTS_9ED5:
+@RTS:
     rts
 
-L9ED6:
+@endIf_D: ; 03:9ED6
+    ; play escape music
     lda #music_Escape
+    sta CurrentRoomMusic
     sta CurrentMusic
+    ; set mother brain status to gone
     lda #$05
     sta MotherBrainStatus
-    lda #$80
-    sta MotherBrainQtyHits
+    ; set time bomb counter to #-$80 (will count up to #$00)
+    ; 2.6 seconds until time bomb is set
+    lda #-$80
+    sta MotherBrainTimeBombCounter
     rts
 
 ; high nybble of a is y position
@@ -1333,49 +1466,91 @@ Xplus16:
     ; unused
     rts
 
-L9F00: .byte _id_Palette08+1, _id_Palette09+1
+MotherBrain_Disappear_PaletteTable: ; 03:9F00
+    .byte _id_Palette08+1, _id_Palette09+1
 
 ;-------------------------------------------------------------------------------
-MotherBrain_9F02_05:
-MotherBrain_9F02_08:
-    lda MotherBrainQtyHits
-    bmi L9F33
+MotherBrain_TimeBombMessage: ; 03:9F02
+MotherBrain_TimeBombMessage_ScrollBackOnScreen:
+    ; branch if counter is negative (time bomb has yet to be set)
+    lda MotherBrainTimeBombCounter
+    bmi @endIf_A
+        ; branch if counter is 8
         cmp #$08
-        beq L9F36
+        beq @complete
         ; draw the TIME BOMB SET GET OUT FAST! message
+        ; there are 8 parts of the message, each in a TileBlast
+        ; the MotherBrainTimeBombCounter is used as an index for which part to draw
         tay
-        lda L9F41,y
-        sta TileBlasts.0.animFrame
-        lda L9F39,y
+        ; set TileBlast frame for this part
+        lda @animFrameLoTable,y
+        sta $02
+        lda @animFrameHiTable,y
+        sta $03
+        ; set low byte of roomRAM pointer to upper-left tile for TileBlast
+        lda @roomRAMPtrTable,y
         clc
-        adc #$42
-        sta TileBlasts.0.wramPtr
+        adc #<$6142
+        sta $00
+        ; save carry to stack
         php
+        ; set hi byte of roomRAM pointer from mother brain hi
+        ; also add carry from stack
         lda MotherBrainHi
         asl
         asl
         plp
-        adc #$61
-        sta TileBlasts.0.wramPtr+1
-        lda #$00
-        sta PageIndex
+        adc #>$6142
+        sta $01
+        ; exit if PPUStrIndex is not zero
+        ; (counter will not be incremented, so the same part will be attempted again next frame)
         lda PPUStrIndex
-        bne RTS_9F38
-        jsr CommonJump_DrawTileBlast
-        bcs RTS_9F38
-    L9F33:
-    inc MotherBrainQtyHits
+        bne @RTS
+        ; try to draw TileBlast and exit without incrementing counter if failed
+        jsr DrawTileBlast_Generic
+        bcs @RTS
+        ; TileBlast was drawn successfully, move on to next part
+    @endIf_A:
+    ; increment counter
+    inc MotherBrainTimeBombCounter
     rts
 
-L9F36:
+@complete:
     inc MotherBrainStatus
-RTS_9F38:
+@RTS:
     rts
 
-L9F39:  .byte $00, $40, $08, $48, $80, $C0, $88, $C8
-L9F41:  .byte $08, $02, $09, $03, $0A, $04, $0B, $05
+@roomRAMPtrTable:
+    .byte $6142 - $6142
+    .byte $6182 - $6142
+    .byte $614A - $6142
+    .byte $618A - $6142
+    .byte $61C2 - $6142
+    .byte $6202 - $6142
+    .byte $61CA - $6142
+    .byte $620A - $6142
 
-MotherBrain_9F49:
+@animFrameLoTable:
+    .byte <TileBlastFrame_TimeBombMessage0 ; TIME B
+    .byte <TileBlastFrame_TimeBombMessage1 ; GET OU
+    .byte <TileBlastFrame_TimeBombMessage2 ; OMB SET
+    .byte <TileBlastFrame_TimeBombMessage3 ; T FAST!
+    .byte <TileBlastFrame_TimeBombMessage4
+    .byte <TileBlastFrame_TimeBombMessage5 ; TIME
+    .byte <TileBlastFrame_TimeBombMessage6
+    .byte <TileBlastFrame_TimeBombMessage7
+
+@animFrameHiTable:
+    .byte >TileBlastFrame_TimeBombMessage0 ; TIME B
+    .byte >TileBlastFrame_TimeBombMessage1 ; GET OU
+    .byte >TileBlastFrame_TimeBombMessage2 ; OMB SET
+    .byte >TileBlastFrame_TimeBombMessage3 ; T FAST!
+    .byte >TileBlastFrame_TimeBombMessage4
+    .byte >TileBlastFrame_TimeBombMessage5 ; TIME
+    .byte >TileBlastFrame_TimeBombMessage6
+    .byte >TileBlastFrame_TimeBombMessage7
+
+MotherBrain_SetTimeBomb: ; 03:9F49
     ; try to spawn door until it succeeds
     jsr MotherBrain_SpawnDoor
     bcs @RTS
@@ -1385,7 +1560,7 @@ MotherBrain_9F49:
     ; timer = 9999 frames = 166.65 seconds
     lda #$99
     sta EndTimer
-    sta EndTimer+1
+    sta EndTimer+1.b
     ; enable end timer enemy
     lda #$01
     sta EndTimerEnemyIsEnabled
@@ -1395,13 +1570,14 @@ MotherBrain_9F49:
 @RTS:
     rts
 
-L9F65:  .byte $80, $B0, $A0, $90
+L9F65: ; 03:9F65
+    .byte $80, $B0, $A0, $90
 
-MotherBrain_SpawnDoor:
+MotherBrain_SpawnDoor: ; 03:9F69
     ; get obj slot
-    lda SamusMapPosX
+    lda MapPosX
     clc
-    adc SamusMapPosY
+    adc MapPosY
     sec
     rol
     and #$03
@@ -1433,21 +1609,21 @@ MotherBrain_SpawnDoor:
     lda #_id_ObjFrame_DoorOpened.b
     sta ObjAnimFrame,x
     ; create door tiles
-    lda #$10
-    sta TileBlasts.0.animFrame
+    lda #<TileBlastFrame_EscapeDoor.b
+    sta $02
+    lda #>TileBlastFrame_EscapeDoor.b
+    sta $03
     lda #$40
-    sta TileBlasts.0.wramPtr
+    sta $00
     lda MotherBrainHi
     asl
     asl
     ora #$61
-    sta TileBlasts.0.wramPtr+1
-    lda #$00
-    sta PageIndex
-    jmp CommonJump_DrawTileBlast
+    sta $01
+    jmp DrawTileBlast_Generic
 
 ;-------------------------------------------------------------------------------
-MotherBrain_9FC0:
+MotherBrain_9FC0: ; 03:9FC0
     ; play BombExplode SFX every frame
     jsr SFX_BombExplode
     ; branch if time bomb is still exploding
@@ -1467,10 +1643,11 @@ MotherBrain_9FC0:
     rts
 
 ;-------------------------------------------------------------------------------
-MotherBrain_9FDA:
+MotherBrain_9FDA: ; 03:9FDA
     ; try to spawn door until it succeeds
     jsr MotherBrain_SpawnDoor
     bcs @RTS
+    ; door was spawned successfully
     ; place end timer enemy
     lda MotherBrainHi
     sta EndTimerEnemyHi
@@ -1484,7 +1661,7 @@ MotherBrain_9FDA:
     rts
 
 ;-------------------------------------------------------------------------------
-MotherBrain_9E22_HandleBeingHit:
+MotherBrain_Idle_HandleBeingHit:
     ; exit if mother brain was not hit
     lda MotherBrainIsHit
     beq @RTS
@@ -1524,7 +1701,7 @@ MotherBrain_9E22_HandleBeingHit:
     rts
 
 ;-------------------------------------------------------------------------------
-MotherBrain_9E22_UpdateAnimBrain:
+MotherBrain_Idle_UpdateAnimBrain:
     ; decrement brain delay
     dec MotherBrainAnimBrainDelay
     ; exit if brain delay is not zero
@@ -1545,7 +1722,7 @@ MotherBrain_9E22_UpdateAnimBrain:
     rts
 
 ;-------------------------------------------------------------------------------
-MotherBrain_9E22_UpdateAnimEye:
+MotherBrain_Idle_UpdateAnimEye:
     ; decrement eye delay
     dec MotherBrainAnimEyeDelay
     ; exit if eye delay is not #$00 or #$80
@@ -1597,15 +1774,15 @@ MotherBrain_DrawSprites:
 ; animation frame id table
 MotherBrainAnimFrameTable:
 ; pulsations on the brain
-    .byte _id_EnFrame13
-    .byte _id_EnFrame14
-    .byte _id_EnFrame15
-    .byte _id_EnFrame16
+    .byte _id_EnFrame_MotherBrainPulsations0
+    .byte _id_EnFrame_MotherBrainPulsations1
+    .byte _id_EnFrame_MotherBrainPulsations2
+    .byte _id_EnFrame_MotherBrainPulsations3
 
 ; mother brain's eyes
-    .byte _id_EnFrame17
+    .byte _id_EnFrame_MotherBrainEyes
 
-MotherBrain_Disintegrate:
+MotherBrain_Disappear_Disintegrate:
     ; exit if mother brain disintegration step is zero
     ldy MotherBrainDeathStringID
     beq @RTS
@@ -1628,7 +1805,7 @@ MotherBrain_Disintegrate:
 @disintegrate:
     ; add ($6144 + MotherBrainHi*$0400) to byte
     adc #$44
-    sta TileBlasts.0.wramPtr
+    sta $00
     php
     lda MotherBrainHi
     asl
@@ -1636,12 +1813,13 @@ MotherBrain_Disintegrate:
     ora #$61
     plp
     adc #$00
-    sta TileBlasts.0.wramPtr+1
+    sta $01
     ; clear 2x2 tile region at that location
-    lda #$00
-    sta TileBlasts.0.animFrame
-    sta PageIndex
-    jmp CommonJump_DrawTileBlast
+    lda #<TileBlastFrame_MotherBrainDeath.b
+    sta $02
+    lda #>TileBlastFrame_MotherBrainDeath.b
+    sta $03
+    jmp DrawTileBlast_Generic
 
 MotherBrainDeathString:
 MotherBrainDeathString_1:
@@ -1720,35 +1898,29 @@ UpdateBullet_CollisionWithZebetiteAndMotherBrainGlass:
         @slotFound:
         ; set pointer
         lda #$8C
-        sta TileBlasts.0.wramPtr,x
-        lda Temp04_CartRAMPtr+1.b
-        sta TileBlasts.0.wramPtr+1,x
+        sta $00
+        lda Temp04_RoomRAMPtr+1.b
+        sta $01
         ; set to clear 2x3 tile region
-        lda #$01
-        sta TileBlasts.0.animFrame,x
-        ; push current samus projectile slot
-        lda PageIndex
-        pha
-        ; set TileBlast slot
-        stx PageIndex
+        lda #<TileBlastFrame_DestroyMotherBrainGlass.b
+        sta $02
+        lda #>TileBlastFrame_DestroyMotherBrainGlass.b
+        sta $03
         ; go remove the glass shield
-        jsr CommonJump_DrawTileBlast
-        ; restore projectile slot
-        pla
-        sta PageIndex
-        bne @exit ; branch always
+        jsr DrawTileBlast_Generic
+        jmp @exit
 
     @checkZebetite:
         ; tile is not #$98, check if samus shot a zebetite
         ; $04 = $04 & #$FE
-        lda Temp04_CartRAMPtr
+        lda Temp04_RoomRAMPtr
         lsr
         bcc @endIf_andFE
-            dec Temp04_CartRAMPtr
+            dec Temp04_RoomRAMPtr
         @endIf_andFE:
         ; load tile id of left tile of block samus shot
         ldy #$00
-        lda (Temp04_CartRAMPtr),y
+        lda (Temp04_RoomRAMPtr),y
         ; exit if bit 0 of tile id is set (not the case for zebetites)
         lsr
         bcs @exit
@@ -1764,12 +1936,12 @@ UpdateBullet_CollisionWithZebetiteAndMotherBrainGlass:
             lda Zebetites.0.status,y
             beq @notTheRightZebetite
             ; and if missile is touching that zebetite
-            lda Temp04_CartRAMPtr
+            lda Temp04_RoomRAMPtr
             and #$9E
-            cmp Zebetites.0.vramPtr,y
+            cmp Zebetites.0.roomRAMPtr,y
             bne @notTheRightZebetite
-            lda Temp04_CartRAMPtr+1.b
-            cmp Zebetites.0.vramPtr+1,y
+            lda Temp04_RoomRAMPtr+1.b
+            cmp Zebetites.0.roomRAMPtr+1,y
             beq @theRightZebetite
             @notTheRightZebetite:
                 ; missile is not touching that zebetite
@@ -1824,7 +1996,7 @@ RTS_A15D:
 ;-------------------------------------------------------------------------------
 UpdateAllRinkaSpawners:
     ; exit if timer is active
-    ldy EndTimer+1
+    ldy EndTimer+1.b
     iny
     bne RTS_A1DA
     
@@ -1893,8 +2065,9 @@ UpdateAllRinkaSpawners:
     lda #$F7
     sta EnsExtra.0.animFrame,x
     ; Flag enemy init
-    lda #$FF
-    sta EnsExtra.0.animIndex,x
+    lda #$00
+    sta EnsExtra.0.pose,x
+    sta EnsExtra2.0.props2F,x
     ; init rinka position
     ldy PageIndex
     lda RinkaSpawners.0.hi,y
@@ -1929,7 +2102,7 @@ RinkaSpawnPosTbl:
 ;-------------------------------------------------------------------------------
 UpdateEndTimer:
     ; exit if timer is inactive
-    ldy EndTimer+1
+    ldy EndTimer+1.b
     iny
     beq @RTS
     
@@ -1941,19 +2114,19 @@ UpdateEndTimer:
     jsr CommonJump_Base10Subtract
     sta EndTimer
     ; BCD decrement high byte of timer if overflow
-    lda EndTimer+1
+    lda EndTimer+1.b
     sta $03
     lda #$00
     jsr CommonJump_Base10Subtract
-    sta EndTimer+1
+    sta EndTimer+1.b
     
     lda EndTimer
-    ora EndTimer+1
+    ora EndTimer+1.b
     bne @RTS
     
     ; timer became zero, the time bomb exploded and samus failed to escape in time
     ; disable timer
-    dec EndTimer+1
+    dec EndTimer+1.b
     ; reset mother brain health
     sta MotherBrainQtyHits
     ; set mother brain state to bomb exploded
@@ -1999,7 +2172,7 @@ DrawEndTimerEnemy:
     
     tax
     ; set tile of hundreds digit
-    lda EndTimer+1
+    lda EndTimer+1.b
     lsr
     lsr
     lsr
@@ -2010,7 +2183,7 @@ DrawEndTimerEnemy:
     adc #$20+CFG_NUM_SAMUS_TILES.b
     sta SpriteRAM+($00<<2)+$01,x
     ; set tile of tens digit
-    lda EndTimer+1
+    lda EndTimer+1.b
     and #$0F
     clc
     adc #$20+CFG_NUM_SAMUS_TILES.b
@@ -2031,7 +2204,8 @@ RTS_A28A:
 
 ;-------------------------------------------------------------------------------
 UpdateAllZebetites:
-    lda #$10
+    ; set tile blast index to 1
+    lda #1*_sizeof_TileBlasts.0.b
     sta PageIndex
     ; run UpdateZebetite for all zebetite slots
     ldx #$20
@@ -2068,13 +2242,15 @@ UpdateZebetite:
     inc Zebetites.0.status,x
 LA2BA:
     ; set anim frame
-    lda ZebetiteAnimFrameTable,y
-    sta TileBlasts.1.animFrame
+    lda ZebetiteAnimFrameLoTable,y
+    sta $02
+    lda ZebetiteAnimFrameHiTable,y
+    sta $03
     ; set vram pointer
-    lda Zebetites.0.vramPtr,x
-    sta TileBlasts.1.wramPtr
-    lda Zebetites.0.vramPtr+1,x
-    sta TileBlasts.1.wramPtr+1
+    lda Zebetites.0.roomRAMPtr,x
+    sta $00
+    lda Zebetites.0.roomRAMPtr+1,x
+    sta $01
     ; if a ppu string is in the buffer, dont update gfx
     lda PPUStrIndex
     bne LA2DA
@@ -2082,7 +2258,7 @@ LA2BA:
         ; update zebetite gfx
         txa
         pha
-        jsr CommonJump_DrawTileBlast
+        jsr DrawTileBlast_Generic
         pla
         tax
         ; branch if gfx update is successful
@@ -2125,57 +2301,49 @@ LA30A:
     sta Zebetites.0.isHit,x
     rts
 
-ZebetiteAnimFrameTable:
-    .byte $0C, $0D, $0E, $0F, $07
+ZebetiteAnimFrameLoTable:
+    .byte <TileBlastFrame_Zebetite0
+    .byte <TileBlastFrame_Zebetite1
+    .byte <TileBlastFrame_Zebetite2
+    .byte <TileBlastFrame_Zebetite3
+    .byte <TileBlastFrame_ZebetiteDestroyed
 
-;-------------------------------------------------------------------------------
-; Samus no longer has a metroid on her
-ClearAllMetroidLatches:
-    ldy #$05
-    LA317:
-        jsr ClearMetroidLatch
-        dey
-        bpl LA317
-    sta $92
-    rts
-
-ClearCurrentMetroidLatchAndMetroidOnSamus:
-    txa
-    jsr Adiv16_
-    tay
-    jsr ClearMetroidLatch
-    sta MetroidOnSamus
-    rts
+ZebetiteAnimFrameHiTable:
+    .byte >TileBlastFrame_Zebetite0
+    .byte >TileBlastFrame_Zebetite1
+    .byte >TileBlastFrame_Zebetite2
+    .byte >TileBlastFrame_Zebetite3
+    .byte >TileBlastFrame_ZebetiteDestroyed
 
 ;-------------------------------------------------------------------------------
 
-TileBlastFrame00:
+TileBlastFrame_MotherBrainDeath:
     .byte $22
     .byte $FF, $FF
     .byte $FF, $FF
 
-TileBlastFrame01:
+TileBlastFrame_DestroyMotherBrainGlass:
     .byte $32
     .byte $FF, $FF
     .byte $FF, $FF
     .byte $FF, $FF
 
-TileBlastFrame02: ; GET OU
+TileBlastFrame_TimeBombMessage1: ; GET OU
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $E0, $DE, $ED, $FF, $E8, $EE
 
-TileBlastFrame03: ; T FAST!
+TileBlastFrame_TimeBombMessage3: ; T FAST!
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $ED, $FF, $DF, $DA, $EC, $ED, $F4, $FF
 
-TileBlastFrame04: ; TIME
+TileBlastFrame_TimeBombMessage5: ; TIME
     .byte $28
     .byte $FF, $FF, $FF, $FF, $ED, $E2, $E6, $DE
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-TileBlastFrame05:
+TileBlastFrame_TimeBombMessage7:
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
@@ -2189,62 +2357,62 @@ TileBlastFrame06:
     .byte $FF, $FF
     .byte $FF, $FF
 
-TileBlastFrame07:
+TileBlastFrame_ZebetiteDestroyed:
     .byte $42
     .byte $FF, $FF
     .byte $FF, $FF
     .byte $FF, $FF
     .byte $FF, $FF
 
-TileBlastFrame08: ; TIME B
+TileBlastFrame_TimeBombMessage0: ; TIME B
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $ED, $E2, $E6, $DE, $FF, $DB
 
-TileBlastFrame09: ; OMB SET
+TileBlastFrame_TimeBombMessage2: ; OMB SET
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $E8, $E6, $DB, $FF, $EC, $DE, $ED, $FF
 
-TileBlastFrame0A:
+TileBlastFrame_TimeBombMessage4:
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-TileBlastFrame0B:
+TileBlastFrame_TimeBombMessage6:
     .byte $28
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-TileBlastFrame0C:
+TileBlastFrame_Zebetite0:
     .byte $42
     .byte $90, $91
     .byte $90, $91
     .byte $90, $91
     .byte $90, $91
 
-TileBlastFrame0D:
+TileBlastFrame_Zebetite1:
     .byte $42
     .byte $92, $93
     .byte $92, $93
     .byte $92, $93
     .byte $92, $93
 
-TileBlastFrame0E:
+TileBlastFrame_Zebetite2:
     .byte $42
     .byte $94, $95
     .byte $94, $95
     .byte $94, $95
     .byte $94, $95
 
-TileBlastFrame0F:
+TileBlastFrame_Zebetite3:
     .byte $42
     .byte $96, $97
     .byte $96, $97
     .byte $96, $97
     .byte $96, $97
 
-TileBlastFrame10:
+TileBlastFrame_EscapeDoor:
     .byte $62
     .byte $A0, $A0
     .byte $A0, $A0
@@ -2255,10 +2423,10 @@ TileBlastFrame10:
 
 TileAnim0:
 TileAnim1:
-    .byte $05, SheolBG_Frame0/$400
-    .byte $05, SheolBG_Frame1/$400
-    .byte $05, SheolBG_Frame2/$400
-    .byte $05, SheolBG_Frame3/$400
+    .byte $05, SheolBG_Frame0/$400, SheolBG_Frame0/$400+1, SheolBG_Frame0/$400+2, SheolBG_Frame0/$400+3
+    .byte $05, SheolBG_Frame1/$400, SheolBG_Frame1/$400+1, SheolBG_Frame1/$400+2, SheolBG_Frame1/$400+3
+    .byte $05, SheolBG_Frame2/$400, SheolBG_Frame2/$400+1, SheolBG_Frame2/$400+2, SheolBG_Frame2/$400+3
+    .byte $05, SheolBG_Frame3/$400, SheolBG_Frame3/$400+1, SheolBG_Frame3/$400+2, SheolBG_Frame3/$400+3
     .byte $00
 
 PalAnim0:
@@ -2275,6 +2443,10 @@ PalAnim1:
 ;------------------------------------[ Special items table ]-----------------------------------------
 
 .include "data/sheol/global_objs.asm"
+
+;----------------------------------------[ Screen load code ]----------------------------------------
+
+.include "screen_load_code/tourian.asm"
 
 .ends
 

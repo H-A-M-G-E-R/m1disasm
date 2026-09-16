@@ -36,10 +36,10 @@
 ;    jmp InitEnResetAnimIndex
 ;CommonJump_EnemyFlipAfterDisplacement: ;$801B
 ;    jmp EnemyFlipAfterDisplacement
-;CommonJump_0A: ;$801E
-;    jmp LFBCA
-;CommonJump_SpawnFireball: ;$8021
-;    jmp SpawnFireball
+;CommonJump_InitEnActiveAnimIndex_NoL967BOffset: ;$801E
+;    jmp InitEnActiveAnimIndex_NoL967BOffset
+;CommonJump_SpawnEnProjectile: ;$8021
+;    jmp SpawnEnProjectile
 ;CommonJump_ChooseRoutine: ;$8024
 ;    jmp ChooseRoutine               ;($C27C)
 ;CommonJump_ApplySpeedToPosition: ;$8027
@@ -170,7 +170,7 @@ L80C7:
     bpl L80D8
     ; data1F >= #$80
     ; trigger resting period and clear Y accel and speed
-    jsr SetBit5OfEnData05_AndClearEnAccelY
+    jsr EnemyTriggerRestingPeriod_AndClearEnAccelY
     beq L80E2 ; branch always
 
 L80D8:
@@ -237,7 +237,7 @@ L810A:
 L8120:
     ; data1F == #$40
     ; trigger resting period
-    jsr SetBit5OfEnData05_AndClearEnAccelY
+    jsr EnemyTriggerRestingPeriod_AndClearEnAccelY
 L8123:
     ; enemy uses movement strings
     ; branch if bit 1 of L977B is clear
@@ -289,7 +289,7 @@ L8148:
 L8159:
     ; data1F == #$40
     ; trigger resting period
-    jsr SetBit5OfEnData05_AndClearEnAccelX
+    jsr EnemyTriggerRestingPeriod_AndClearEnAccelX
     beq L8169 ; branch always
 L815E:
     ; enemy uses movement strings
@@ -334,7 +334,7 @@ L8182:
     bpl L818E
         ; data1F >= #$80
         ; trigger resting period and clear X speed
-        jsr SetBit5OfEnData05_AndClearEnAccelX
+        jsr EnemyTriggerRestingPeriod_AndClearEnAccelX
         beq L8198 ; branch always
     L818E:
     ; data1F == #$40
@@ -369,21 +369,21 @@ RTS_81B0:
     rts
 
 ;-------------------------------------------------------------------------------
-SetBit5OfEnData05_AndClearEnAccelY:
-    jsr SetBit5OfEnData05
+EnemyTriggerRestingPeriod_AndClearEnAccelY:
+    jsr EnemyTriggerRestingPeriod
     sta EnsExtra.0.accelY,x
     rts
 
 ;-------------------------------------------------------------------------------
-SetBit5OfEnData05:
+EnemyTriggerRestingPeriod:
     lda #$20
     jsr OrEnData05
     lda #$00
     rts
 
 ;-------------------------------------------------------------------------------
-SetBit5OfEnData05_AndClearEnAccelX:
-    jsr SetBit5OfEnData05
+EnemyTriggerRestingPeriod_AndClearEnAccelX:
+    jsr EnemyTriggerRestingPeriod
     sta EnsExtra.0.accelX,x
     rts
 
@@ -707,11 +707,11 @@ L82FB:
         sta EnData05,x
         ; fallthrough
 ;---------------------------------------
-;SetBit5OfEnData05_AndClearEnAccelY
+;EnemyTriggerRestingPeriod_AndClearEnAccelY
 ; Move horizontally indefinitely (???)
 ; Used only at the end of seahorse's movement string
 EnemyGetDeltaY_StopMovementSeahorse:
-    jsr SetBit5OfEnData05_AndClearEnAccelY
+    jsr EnemyTriggerRestingPeriod_AndClearEnAccelY
     jmp L82A2 ; Set delta-y to zero and exit
 
 EnemyGetDeltaY_8296: ;referenced in bank 7
@@ -940,6 +940,16 @@ CommonJump_EnemyGetDeltaX_UsingAcceleration:
 ; Those checks below prevent the enemy from going to unloaded rooms.
 EnemyMoveOnePixelUp:
     ldx PageIndex
+    lda EnsExtra2.0.props2F,x
+    and #$04
+    beq +
+        stx MoveSamus_IgnoreSolidEnemyIndex
+        lda #$00
+        sta PageIndex
+        jsr MoveSamusUp
+        ldx MoveSamus_IgnoreSolidEnemyIndex
+        stx PageIndex
+    +
     ; check for collision if top boundary is at a block boundary
     lda EnY,x
     sec
@@ -1009,6 +1019,16 @@ RTS_844A:
 ; Down movement related ?
 EnemyMoveOnePixelDown:
     ldx PageIndex
+    lda EnsExtra2.0.props2F,x
+    and #$04
+    beq +
+        stx MoveSamus_IgnoreSolidEnemyIndex
+        lda #$00
+        sta PageIndex
+        jsr MoveSamusDown
+        ldx MoveSamus_IgnoreSolidEnemyIndex
+        stx PageIndex
+    +
     ; check for collision if bottom boundary is at a block boundary
     lda EnY,x
     clc
@@ -1080,6 +1100,16 @@ RTS_84A6:
 ; Left movement related
 EnemyMoveOnePixelLeft:
     ldx PageIndex
+    lda EnsExtra2.0.props2F,x
+    and #$04
+    beq +
+        stx MoveSamus_IgnoreSolidEnemyIndex
+        lda #$00
+        sta PageIndex
+        jsr MoveSamusLeft
+        ldx MoveSamus_IgnoreSolidEnemyIndex
+        stx PageIndex
+    +
     ; check for collision if left boundary is at a block boundary
     lda EnX,x
     sec
@@ -1147,6 +1177,16 @@ RTS_84FD:
 ; Right movement related
 EnemyMoveOnePixelRight:
     ldx PageIndex
+    lda EnsExtra2.0.props2F,x
+    and #$04
+    beq +
+        stx MoveSamus_IgnoreSolidEnemyIndex
+        lda #$00
+        sta PageIndex
+        jsr MoveSamusRight
+        ldx MoveSamus_IgnoreSolidEnemyIndex
+        stx PageIndex
+    +
     ; check for collision if right boundary is at a block boundary
     lda EnX,x
     clc
@@ -1237,6 +1277,10 @@ XorEnData05: ; L856B
     eor EnData05,x
     sta EnData05,x
     rts
+
+;----------------------------------------[ More enemy util ]----------------------------------------
+
+.include "more_enemy_util.asm"
 
 ;------------------------------------[ Samus enter door routines ]-----------------------------------
 
@@ -1375,7 +1419,7 @@ UpdateDoor_Closed:
         ; it is a blue door that changes music
         ; branch if escape timer is active (not #$FF)
         ; this prevents the right door in mother brain's room from opening during the escape
-        ldy EndTimer+1
+        ldy EndTimer+1.b
         iny
         bne DrawDoor
     L8BEE:
@@ -1435,7 +1479,7 @@ L8C1D:
     sta Temp09_ItemType
     lda DoorHi,x
     sta Temp08_ItemHi
-    ldy SamusMapPosX
+    ldy MapPosX
     txa
     jsr Amul16
     bcc L8C4C
@@ -1505,12 +1549,15 @@ UpdateDoor_LetSamusIn:
     bcs L8CC0
         ; the door leads to a room to the right
         ; play area music
-        jsr StartMusic
+        lda AreaMusicFlag
+        sta CurrentRoomMusic
+        sta CurrentMusic
         bne L8CC3 ; branch always
     L8CC0:
         ; the door leads to a room to the left
         ; play mother brain music
         jsr MotherBrainMusic
+        sta CurrentRoomMusic
 L8CC3:
     ; draw door
     jmp DoorSubRoutine8C71
@@ -1575,13 +1622,13 @@ WriteDoorBGTiles_Common:
     lda ObjHi,x
     sta Temp0B_PositionHi
     ; call
-    jsr MakeCartRAMPtr
+    jsr MakeRoomRAMPtr
     ldy #$00 ; init y for loop
     pla
     ; cart ram pointer of door is now in $04-$05
     ; write 6 air or door tiles in a vertical line to cart ram
     @loop:
-        sta (Temp04_CartRAMPtr),y
+        sta (Temp04_RoomRAMPtr),y
         tax
         tya
         clc
@@ -1597,10 +1644,10 @@ WriteDoorBGTiles_Common:
     lsr
     and #$06
     tay
-    lda Temp04_CartRAMPtr
-    sta DoorCartRAMPtr,y
-    lda Temp04_CartRAMPtr+1.b
-    sta DoorCartRAMPtr+1,y
+    lda Temp04_RoomRAMPtr
+    sta DoorRoomRAMPtr,y
+    lda Temp04_RoomRAMPtr+1.b
+    sta DoorRoomRAMPtr+1,y
     rts
 
 ; x coordinate of door's background tiles in pixels

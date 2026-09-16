@@ -29,6 +29,9 @@ Subject to change.
 
  * NES_NTSC - The NTSC version of the game released in North America. This is the most popular one. Port of the FDS version.
  * NES_PAL - The PAL version of the game released in Europe. Derived from the NTSC version.
+ * NES_MZMUS - The version of the game included as part of Metroid Zero Mission's North American release. This version is used together with GBA-side hijacks and features to produce the "Original Metroid" sub-game. Derived from the NTSC version.
+ * NES_MZMJP - The version of the game included as part of Metroid Zero Mission's European release and then its Japanese release. Removes content that the GBA-side emulation doesn't use: all tile data and the reset vector. Derived from the MZMUS version.
+ * NES_CNSUS - The version of the game used for Classic NES Series Metroid's North American and European release. Unlike MZMUS and MZMJP, its tile data is used by the emulator. Uses illegal opcode $42 for some hijacks, like opening the save menu on the password display screen. Derived from the MZMUS version.
 
 # Samus on the fly
 
@@ -38,6 +41,8 @@ This is possible by using the MMC3 mapper to switch the upper 64 tiles on the fl
 
 
 Spider ball sprite by BBLIR from The Spriters Resource: https://www.spriters-resource.com/custom_edited/metroidcustoms/sheet/84367/
+
+Left-facing Samus sprites by hansungkee: https://www.spriters-resource.com/profile/hansungkee/
 
 # Junkoid Rejunked
 
